@@ -1,5 +1,5 @@
 ---
-name: Custom issue template
+name: 간단한 이슈 템플릿입니다
 about: General Issue Template
 title: ''
 labels: ''
