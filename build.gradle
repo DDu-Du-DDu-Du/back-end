@@ -80,8 +80,6 @@ jacocoTestCoverageVerification {
             enabled = true
             element = 'CLASS'
 
-            excludes = ['com/ddudu/DduduApplication.java']
-
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
