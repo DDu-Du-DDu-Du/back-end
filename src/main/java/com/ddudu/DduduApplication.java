@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class DduduApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(DduduApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(DduduApplication.class, args);
+  }
 
 }
