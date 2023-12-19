@@ -51,4 +51,54 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
+
+        html.outputLocation = layout.buildDirectory.dir('jacocoReports/html')
+        xml.outputLocation = layout.buildDirectory.file('jacocoReports/jacoco.xml')
+    }
+
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: ["**/*Application*"])
+            })
+    )
+
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            excludes = ['com/ddudu/DduduApplication.java']
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.90
+            }
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 200
+            }
+        }
+    }
 }
