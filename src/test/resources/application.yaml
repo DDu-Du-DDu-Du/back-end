@@ -4,3 +4,12 @@ spring:
     url: jdbc:mysql://localhost:13307/ddudu_test
     username: ddudu
     password: ddudutest
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  flyway:
+    enabled: true
