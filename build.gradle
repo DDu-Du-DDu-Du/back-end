@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'jacoco'
 }
 
 group = 'com.devcourse'
@@ -9,6 +10,10 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
+}
+
+jacoco {
+    toolVersion = '0.8.11'
 }
 
 configurations {
@@ -22,19 +27,76 @@ repositories {
 }
 
 dependencies {
+    // SpringBoot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // MySql
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Flyway
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    annotationProcessor 'org.projectlombok:lombok'
+
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
+
+        html.outputLocation = layout.buildDirectory.dir('jacocoReports/html')
+        xml.outputLocation = layout.buildDirectory.file('jacocoReports/jacoco.xml')
+    }
+
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: ["**/*Application*"])
+            })
+    )
+
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.90
+            }
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 200
+            }
+        }
+    }
 }
