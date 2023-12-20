@@ -12,6 +12,7 @@ for CONTAINER_NAME in "${CONTAINER_NAMES[@]}"; do
   fi
 done
 
+cd local
 docker build -t "$IMAGE_NAME" .
 
 LOCAL_PASSWORD='ddudulocal'
