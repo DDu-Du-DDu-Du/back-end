@@ -1,6 +1,6 @@
 -- GOAL
-CREATE TABLE goal (
-  id          BIGINT      NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS goal (
+  id          BIGINT      AUTO_INCREMENT,
   name        VARCHAR(50) NOT NULL,
   color       CHAR(6)     NOT NULL DEFAULT '191919',
   privacy     VARCHAR(20) NOT NULL DEFAULT 'PRIVATE',
@@ -13,8 +13,8 @@ CREATE TABLE goal (
 );
 
 -- TO DO
-CREATE TABLE todo (
-  id          BIGINT      NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS todo (
+  id          BIGINT      AUTO_INCREMENT,
   goal_id     BIGINT      NOT NULL,
   name        VARCHAR(50) NOT NULL,
   status      VARCHAR(20) NOT NULL DEFAULT 'INCOMPLETED',
