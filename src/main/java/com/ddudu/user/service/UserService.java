@@ -18,7 +18,7 @@ public class UserService {
 
   private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-  public final UserRepository userRepository;
+  private final UserRepository userRepository;
 
   public SignUpResponse signUp(SignUpRequest request) {
     if (userRepository.existsByEmail(request.email())) {

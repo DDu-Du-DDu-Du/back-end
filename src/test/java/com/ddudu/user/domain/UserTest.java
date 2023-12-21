@@ -24,10 +24,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@DisplayNameGeneration(ReplaceUnderscores.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @EnableJpaAuditing
+@DisplayNameGeneration(ReplaceUnderscores.class)
 class UserTest {
 
   static Faker faker = new Faker();
