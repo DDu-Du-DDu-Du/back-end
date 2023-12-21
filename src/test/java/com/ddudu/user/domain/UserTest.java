@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,6 +139,24 @@ class UserTest {
           .email(validEmail)
           .password(validPassword)
           .nickname(nickname);
+
+      // when
+      ThrowingCallable construct = userBuilder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(construct);
+    }
+
+    @ParameterizedTest(name = "유효하지 않은 아이디 : {0}")
+    @EmptySource
+    @ValueSource(strings = {" ", "username legnth over 20"})
+    void Optional_Username이_주어지고_유효하지_않은_값이면_유저_생성을_실패한다(String optionalUsername) {
+      // given
+      UserBuilder userBuilder = builderWithEncoder
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .optionalUsername(optionalUsername);
 
       // when
       ThrowingCallable construct = userBuilder::build;

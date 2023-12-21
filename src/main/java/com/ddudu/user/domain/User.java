@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -72,7 +73,7 @@ public class User {
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
       String nickname
   ) {
-    validate(email, password, nickname);
+    validate(email, password, nickname, optionalUsername);
     this.optionalUsername = optionalUsername;
     this.email = email;
     this.password = encodePassword(password, passwordEncoder);
@@ -81,10 +82,11 @@ public class User {
     isDeleted = false;
   }
 
-  private void validate(String email, String password, String nickname) {
+  private void validate(String email, String password, String nickname, String optionalUsername) {
     validateEmail(email);
     validatePassword(password);
     validateNickname(nickname);
+    validateOptionalUsername(optionalUsername);
   }
 
   private void validateEmail(String email) {
@@ -124,6 +126,16 @@ public class User {
 
     if (nickname.length() > 20) {
       throw new IllegalArgumentException("닉네임은 최대 20자 입니다.");
+    }
+  }
+
+  private void validateOptionalUsername(String optionalUsername) {
+    if (Objects.nonNull(optionalUsername) && StringUtils.isBlank(optionalUsername)) {
+      throw new IllegalArgumentException("아이디는 공백일 수 없습니다.");
+    }
+
+    if (optionalUsername.length() > 20) {
+      throw new IllegalArgumentException("아이디는 최대 20자 입니다.");
     }
   }
 
