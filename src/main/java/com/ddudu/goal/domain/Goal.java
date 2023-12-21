@@ -1,4 +1,4 @@
-package com.ddudu.goal.model;
+package com.ddudu.goal.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.ddudu.goal.model;
+package com.ddudu.goal.domain;
 
 public enum PrivacyType {
   PRIVATE,
