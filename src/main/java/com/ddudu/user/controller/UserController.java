@@ -3,6 +3,7 @@ package com.ddudu.user.controller;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.service.UserService;
+import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ public class UserController {
   @PostMapping
   public ResponseEntity<SignUpResponse> signUp(
       @RequestBody
+      @Valid
       SignUpRequest request
   ) {
     SignUpResponse response = userService.signUp(request);
