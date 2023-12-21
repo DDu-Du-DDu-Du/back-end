@@ -65,13 +65,13 @@ jacocoTestReport {
         xml.outputLocation = layout.buildDirectory.file('jacocoReports/jacoco.xml')
     }
 
-    excludedClassFilesForReport(classDirectories)
+    excludedClassFilesForJacoco(classDirectories)
 
     finalizedBy jacocoTestCoverageVerification
 }
 
 jacocoTestCoverageVerification {
-    excludedClassFilesForReport(classDirectories)
+    excludedClassFilesForJacoco(classDirectories)
 
     violationRules {
         rule {
@@ -99,7 +99,7 @@ jacocoTestCoverageVerification {
     }
 }
 
-private excludedClassFilesForReport(classDirectories) {
+private excludedClassFilesForJacoco(classDirectories) {
     classDirectories.setFrom(
             files(classDirectories.files.collect {
                 fileTree(dir: it, exclude: [
