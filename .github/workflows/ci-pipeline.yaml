@@ -39,6 +39,16 @@ jobs:
           spring.datasource.username: ${{ secrets.TEST_DB_USER }}
           spring.datasource.password: ${{ secrets.TEST_DB_PASSWORD }}
 
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Grant permission to run gradlew
         run: chmod +x gradlew
 
