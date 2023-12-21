@@ -27,9 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class UserServiceTest {
 
-  static Faker faker = new Faker();
-  static UserBuilder builderWithEncoder = User.builder()
+  static final Faker faker = new Faker();
+  static final UserBuilder builderWithEncoder = User.builder()
       .passwordEncoder(new BCryptPasswordEncoder());
+
   String password;
   String nickname;
 

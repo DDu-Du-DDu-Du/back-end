@@ -30,12 +30,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class UserTest {
 
-  static Faker faker = new Faker();
-  static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+  static final Faker faker = new Faker();
+  static final UserBuilder builderWithEncoder = User.builder()
+      .passwordEncoder(new BCryptPasswordEncoder());
+
   String validEmail;
   String validPassword;
   String validNickname;
-  UserBuilder builderWithEncoder;
 
   @Autowired
   TestEntityManager entityManager;
@@ -51,8 +52,6 @@ class UserTest {
           .password(8, 40, false, true, true);
       validNickname = faker.oscarMovie()
           .character();
-      builderWithEncoder = User.builder()
-          .passwordEncoder(passwordEncoder);
     }
 
     @Test
