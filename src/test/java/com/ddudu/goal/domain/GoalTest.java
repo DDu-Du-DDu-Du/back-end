@@ -20,7 +20,7 @@ class GoalTest {
     @DisplayName("목표를 생성할 수 있다.")
     void create() {
       // given
-      String name = "Goal 엔티티 테스트 코드 짜기";
+      String name = "dev course";
 
       // when
       Goal goal = Goal.builder()
@@ -37,7 +37,7 @@ class GoalTest {
     @DisplayName("색상 코드, 보기 설정과 함께 목표를 생성할 수 있다.")
     void createWithColorAndPrivacyType() {
       // given
-      String name = "Goal 엔티티 테스트 코드 짜기";
+      String name = "dev course";
       String color = "999999";
       PrivacyType privacyType = PrivacyType.PUBLIC;
 
@@ -85,7 +85,7 @@ class GoalTest {
       // when then
       assertThatThrownBy(() ->
           Goal.builder()
-              .name("Goal 엔티티 테스트 코드 짜기")
+              .name("dev course")
               .color(invalidColor)
               .build()
       )
