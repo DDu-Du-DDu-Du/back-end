@@ -32,7 +32,7 @@ public class Goal {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "name", nullable = false)
+  @Column(name = "name", nullable = false, length = 50)
   private String name;
 
   @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
