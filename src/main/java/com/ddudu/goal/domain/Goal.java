@@ -1,5 +1,8 @@
 package com.ddudu.goal.domain;
 
+import static io.micrometer.common.util.StringUtils.isBlank;
+import static io.micrometer.common.util.StringUtils.isNotBlank;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -55,7 +58,7 @@ public class Goal {
     validateColor(color);
 
     this.name = name;
-    this.color = (color == null) ? DEFAULT_COLOR : color;
+    this.color = isBlank(color) ? DEFAULT_COLOR : color;
     this.privacyType = (privacyType == null) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
 
@@ -70,7 +73,7 @@ public class Goal {
   }
 
   private void validateColor(String color) {
-    if (color != null && !color.matches(HEX_COLOR_PATTERN)) {
+    if (isNotBlank(color) && !color.matches(HEX_COLOR_PATTERN)) {
       throw new IllegalArgumentException("올바르지 않은 색상 코드입니다. 색상 코드는 "
           + HEX_COLOR_CODE_LENGTH + "자리 16진수입니다.");
     }

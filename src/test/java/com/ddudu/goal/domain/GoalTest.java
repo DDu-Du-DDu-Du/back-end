@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class GoalTest {
@@ -74,6 +75,21 @@ class GoalTest {
           .build())
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("목표명은 최대 50자 입니다.");
+    }
+
+    @ParameterizedTest
+    @DisplayName("목표 생성 시 색상 코드가 빈 문자열이면 기본값으로 저장된다.")
+    @EmptySource
+    void createWithBlankColor(String emptyColor) {
+      // when
+      Goal goal = Goal.builder()
+          .name("dev course")
+          .color(emptyColor)
+          .build();
+
+      // then
+      assertThat(goal).extracting("color")
+          .isEqualTo("191919");
     }
 
     @Test
