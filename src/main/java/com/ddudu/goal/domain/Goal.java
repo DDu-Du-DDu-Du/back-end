@@ -47,7 +47,7 @@ public class Goal {
   private PrivacyType privacyType;
 
   @Column(name = "is_deleted", nullable = false)
-  private Boolean isDeleted = DEFAULT_IS_DELETED;
+  private boolean isDeleted = DEFAULT_IS_DELETED;
 
   @Builder
   public Goal(String name, String color, PrivacyType privacyType) {
