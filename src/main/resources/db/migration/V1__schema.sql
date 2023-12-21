@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS users
 (
     id                BIGINT       AUTO_INCREMENT,
-    optional_username VARCHAR(30)  UNIQUE,
+    optional_username VARCHAR(30)  NULL,
     email             VARCHAR(50)  NOT NULL,
     password          VARCHAR(255) NOT NULL,
     nickname          VARCHAR(20)  NOT NULL,
@@ -10,7 +10,9 @@ CREATE TABLE IF NOT EXISTS users
     created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_deleted        TINYINT(1)   NOT NULL DEFAULT '0',
-    CONSTRAINT pk_user_id PRIMARY KEY (id)
+    CONSTRAINT pk_user_id PRIMARY KEY (id),
+    CONSTRAINT uk_user_optional_username UNIQUE (optional_username),
+    CONSTRAINT uk_user_email UNIQUE (email)
 );
 
 -- GOAL
@@ -42,3 +44,4 @@ CREATE TABLE IF NOT EXISTS todo
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_todo_id PRIMARY KEY (id),
     CONSTRAINT fk_goal_id FOREIGN KEY (goal_id) REFERENCES goal (id)
+);

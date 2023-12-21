@@ -65,7 +65,7 @@ public class User {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   private LocalDateTime updatedAt;
 
-  @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT")
+  @Column(name = "is_deleted", nullable = false)
   private boolean isDeleted;
 
   @Builder
