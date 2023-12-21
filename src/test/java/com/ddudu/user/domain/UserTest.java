@@ -22,7 +22,7 @@ class UserTest {
   TestEntityManager entityManager;
 
   @Test
-  void User_생성_성공() {
+  void User_인스턴스를_생성한다() {
     // given
     User expected = User.builder()
         .email("email@example.com")
@@ -39,7 +39,7 @@ class UserTest {
   }
 
   @Test
-  void User_Id_Auto_Increment_적용() {
+  void User_엔티티에_Id에_Auto_Increment가_적용된다() {
     // given
     User first = User.builder()
         .email("first@example.com")
