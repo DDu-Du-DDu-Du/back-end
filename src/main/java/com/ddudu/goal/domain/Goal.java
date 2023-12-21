@@ -46,7 +46,7 @@ public class Goal {
   @Enumerated(EnumType.STRING)
   private PrivacyType privacyType;
 
-  @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT")
+  @Column(name = "is_deleted", nullable = false)
   private Boolean isDeleted = DEFAULT_IS_DELETED;
 
   @Builder

@@ -16,10 +16,12 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @Entity
 @Table(name = "todo")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EnableJpaAuditing
 public class Todo {
 
   private static final TodoStatus DEFAULT_STATUS = TodoStatus.UNCOMPLETED;
@@ -49,7 +51,7 @@ public class Todo {
   @Column(name = "end_at")
   private LocalDateTime endAt;
 
-  @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT")
+  @Column(name = "is_deleted", nullable = false)
   private Boolean isDeleted = DEFAULT_IS_DELETED;
 
   @Builder
