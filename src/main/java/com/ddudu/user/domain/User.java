@@ -30,8 +30,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 public class User {
 
-  private static final Pattern PATTERN = Pattern.compile(
+  private static final Pattern EMAIL_PATTERN = Pattern.compile(
       "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+[.][0-9A-Za-z]+$");
+  private static final Pattern PASSWORD_PATTERN = Pattern.compile(
+      "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@!%*#?&^]).{8,50}$");
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,7 +70,7 @@ public class User {
 
   @Builder
   public User(String optionalUsername, String email, String password, String nickname) {
-    validate(email);
+    validate(email, password);
     this.optionalUsername = optionalUsername;
     this.email = email;
     this.password = password;
@@ -77,8 +79,9 @@ public class User {
     isDeleted = false;
   }
 
-  private void validate(String email) {
+  private void validate(String email, String password) {
     validateEmail(email);
+    validatePassword(password);
   }
 
   private void validateEmail(String email) {
@@ -86,11 +89,28 @@ public class User {
       throw new IllegalArgumentException("이메일이 입력되지 않았습니다.");
     }
 
-    boolean matches = PATTERN.matcher(email)
+    boolean matches = EMAIL_PATTERN.matcher(email)
         .matches();
 
     if (!matches) {
       throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다.");
+    }
+  }
+
+  private void validatePassword(String password) {
+    if (StringUtils.isBlank(password)) {
+      throw new IllegalArgumentException("비밀번호가 입력되지 않았습니다.");
+    }
+
+    if (password.length() < 8) {
+      throw new IllegalArgumentException("비밀번호는 8자리 이상이어야 합니다.");
+    }
+
+    boolean matches = PASSWORD_PATTERN.matcher(password)
+        .matches();
+
+    if (!matches) {
+      throw new IllegalArgumentException("비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다.");
     }
   }
 

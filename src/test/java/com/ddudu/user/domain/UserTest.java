@@ -9,6 +9,7 @@ import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -27,77 +28,101 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 class UserTest {
 
   static Faker faker = new Faker();
-  String email;
-  String password;
-  String nickname;
+  String validEmail;
+  String validPassword;
+  String validNickname;
 
   @Autowired
   TestEntityManager entityManager;
 
-  @BeforeEach
-  void setUp() {
-    email = faker.internet()
-        .emailAddress();
-    password = faker.internet()
-        .password();
-    nickname = faker.oscarMovie()
-        .character();
-  }
+  @Nested
+  class 유저_생성_테스트 {
 
-  @Test
-  void User_인스턴스를_생성한다() {
-    // given
-    User expected = User.builder()
-        .email(email)
-        .password(password)
-        .nickname(nickname)
-        .build();
+    @BeforeEach
+    void setUp() {
+      validEmail = faker.internet()
+          .emailAddress();
+      validPassword = faker.internet()
+          .password(8, 50, false, true, true);
+      validNickname = faker.oscarMovie()
+          .character();
+    }
 
-    // when
-    User actual = entityManager.persist(expected);
+    @Test
+    void User_인스턴스를_생성한다() {
+      // given
+      User expected = User.builder()
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
 
-    // then
-    assertThat(actual).usingRecursiveComparison()
-        .isEqualTo(expected);
-  }
+      // when
+      User actual = entityManager.persist(expected);
 
-  @Test
-  void User_엔티티에_Id에_Auto_Increment가_적용된다() {
-    // given
-    User first = User.builder()
-        .email("first@example.com")
-        .password("password")
-        .nickname("jayjay")
-        .build();
-    User second = User.builder()
-        .email("second@example.com")
-        .password("password")
-        .nickname("jayjay")
-        .build();
+      // then
+      assertThat(actual).usingRecursiveComparison()
+          .isEqualTo(expected);
+    }
 
-    // when
-    User persistedFirst = entityManager.persist(first);
-    User persistedSecond = entityManager.persist(second);
+    @Test
+    void User_엔티티_Id에_Auto_Increment가_적용된다() {
+      // given
+      String differentEmail = faker.internet()
+          .emailAddress();
+      User first = User.builder()
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
+      User second = User.builder()
+          .email(differentEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
 
-    // then
-    assertThat(persistedFirst.getId()).isNotEqualTo(persistedSecond.getId());
-  }
+      // when
+      User persistedFirst = entityManager.persist(first);
+      User persistedSecond = entityManager.persist(second);
 
-  @ParameterizedTest(name = "유효하지 않은 이메일 : {0}")
-  @NullAndEmptySource
-  @ValueSource(strings = {" ", "email", "email@example", "email@example.", "email@example.com."})
-  void 유효하지_않은_이메일의_유저_생성을_실패한다(String email) {
-    // given
-    UserBuilder userBuilder = User.builder()
-        .email(email)
-        .password("password")
-        .nickname("jayjay");
+      // then
+      assertThat(persistedFirst.getId()).isNotEqualTo(persistedSecond.getId());
+    }
 
-    // when
-    ThrowingCallable construct = userBuilder::build;
+    @ParameterizedTest(name = "유효하지 않은 이메일 : {0}")
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "email", "email@example", "email@example.", "email@example.com."})
+    void 유효하지_않은_이메일의_유저_생성을_실패한다(String email) {
+      // given
+      UserBuilder userBuilder = User.builder()
+          .email(email)
+          .password(validPassword)
+          .nickname(validNickname);
 
-    // then
-    assertThatIllegalArgumentException().isThrownBy(construct);
+      // when
+      ThrowingCallable construct = userBuilder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(construct);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "short", "한글1234!%", "withoutDigits!", "withoutSpecial123"})
+    void 유효하지_않은_비밀번호의_유저_생성을_실패한다(String password) {
+      // given
+      UserBuilder userBuilder = User.builder()
+          .email(validEmail)
+          .password(password)
+          .nickname(validNickname);
+
+      // when
+      ThrowingCallable construct = userBuilder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(construct);
+    }
+
   }
 
 }
