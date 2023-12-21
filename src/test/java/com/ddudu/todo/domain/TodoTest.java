@@ -1,4 +1,4 @@
-package com.ddudu.todo.model;
+package com.ddudu.todo.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

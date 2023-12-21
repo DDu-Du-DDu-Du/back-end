@@ -1,4 +1,4 @@
-package com.ddudu.todo.model;
+package com.ddudu.todo.domain;
 
 public enum TodoStatus {
   UNCOMPLETED,
