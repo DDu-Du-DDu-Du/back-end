@@ -17,12 +17,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Slf4j
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
@@ -69,11 +68,14 @@ public class User {
   private boolean isDeleted;
 
   @Builder
-  public User(String optionalUsername, String email, String password, String nickname) {
+  public User(
+      String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
+      String nickname
+  ) {
     validate(email, password);
     this.optionalUsername = optionalUsername;
     this.email = email;
-    this.password = password;
+    this.password = encodePassword(password, passwordEncoder);
     this.nickname = nickname;
     status = UserStatus.ACTIVE;
     isDeleted = false;
@@ -112,6 +114,10 @@ public class User {
     if (!matches) {
       throw new IllegalArgumentException("비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다.");
     }
+  }
+
+  private String encodePassword(String password, PasswordEncoder passwordEncoder) {
+    return passwordEncoder.encode(password);
   }
 
 }

@@ -20,6 +20,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 @DataJpaTest
@@ -28,9 +30,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 class UserTest {
 
   static Faker faker = new Faker();
+  static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
   String validEmail;
   String validPassword;
   String validNickname;
+  UserBuilder builderWithEncoder;
 
   @Autowired
   TestEntityManager entityManager;
@@ -43,15 +47,17 @@ class UserTest {
       validEmail = faker.internet()
           .emailAddress();
       validPassword = faker.internet()
-          .password(8, 50, false, true, true);
+          .password(8, 40, false, true, true);
       validNickname = faker.oscarMovie()
           .character();
+      builderWithEncoder = User.builder()
+          .passwordEncoder(passwordEncoder);
     }
 
     @Test
     void User_인스턴스를_생성한다() {
       // given
-      User expected = User.builder()
+      User expected = builderWithEncoder
           .email(validEmail)
           .password(validPassword)
           .nickname(validNickname)
@@ -70,12 +76,12 @@ class UserTest {
       // given
       String differentEmail = faker.internet()
           .emailAddress();
-      User first = User.builder()
+      User first = builderWithEncoder
           .email(validEmail)
           .password(validPassword)
           .nickname(validNickname)
           .build();
-      User second = User.builder()
+      User second = builderWithEncoder
           .email(differentEmail)
           .password(validPassword)
           .nickname(validNickname)
@@ -94,7 +100,7 @@ class UserTest {
     @ValueSource(strings = {" ", "email", "email@example", "email@example.", "email@example.com."})
     void 유효하지_않은_이메일의_유저_생성을_실패한다(String email) {
       // given
-      UserBuilder userBuilder = User.builder()
+      UserBuilder userBuilder = builderWithEncoder
           .email(email)
           .password(validPassword)
           .nickname(validNickname);
@@ -111,7 +117,7 @@ class UserTest {
     @ValueSource(strings = {" ", "short", "한글1234!%", "withoutDigits!", "withoutSpecial123"})
     void 유효하지_않은_비밀번호의_유저_생성을_실패한다(String password) {
       // given
-      UserBuilder userBuilder = User.builder()
+      UserBuilder userBuilder = builderWithEncoder
           .email(validEmail)
           .password(password)
           .nickname(validNickname);
@@ -121,6 +127,21 @@ class UserTest {
 
       // then
       assertThatIllegalArgumentException().isThrownBy(construct);
+    }
+
+    @Test
+    void 입력된_비밀번호는_인코딩_된다() {
+      // given
+      UserBuilder userBuilder = builderWithEncoder
+          .password(validPassword)
+          .email(validEmail)
+          .nickname(validNickname);
+
+      // when
+      User user = userBuilder.build();
+
+      // then
+      assertThat(user.getPassword()).isNotEqualTo(validPassword);
     }
 
   }
