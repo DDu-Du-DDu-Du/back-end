@@ -1,5 +1,7 @@
 package com.ddudu.todo.domain;
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.goal.domain.Goal;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -61,17 +63,17 @@ public class Todo {
 
     this.goal = goal;
     this.name = name;
-    this.beginAt = (beginAt == null) ? LocalDateTime.now() : beginAt;
+    this.beginAt = isNull(beginAt) ? LocalDateTime.now() : beginAt;
   }
 
   private void validateGoal(Goal goal) {
-    if (goal == null) {
+    if (isNull(goal)) {
       throw new IllegalArgumentException("목표는 필수값입니다.");
     }
   }
 
   private void validateTodo(String name) {
-    if (name == null) {
+    if (isNull(name)) {
       throw new IllegalArgumentException("할 일은 필수값입니다.");
     }
 

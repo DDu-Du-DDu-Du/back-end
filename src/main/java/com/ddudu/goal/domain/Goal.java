@@ -2,6 +2,7 @@ package com.ddudu.goal.domain;
 
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static io.micrometer.common.util.StringUtils.isNotBlank;
+import static java.util.Objects.isNull;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,11 +60,11 @@ public class Goal {
 
     this.name = name;
     this.color = isBlank(color) ? DEFAULT_COLOR : color;
-    this.privacyType = (privacyType == null) ? DEFAULT_PRIVACY_TYPE : privacyType;
+    this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
 
   private void validateName(String name) {
-    if (name == null) {
+    if (isNull(name)) {
       throw new IllegalArgumentException("목표명은 필수값입니다.");
     }
 
