@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -31,9 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 class UserServiceTest {
 
   static final Faker faker = new Faker();
-  static final UserBuilder builderWithEncoder = User.builder()
-      .passwordEncoder(new BCryptPasswordEncoder());
+  static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+  UserBuilder builderWithEncoder;
   String password;
   String nickname;
 
@@ -47,6 +48,8 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
+      builderWithEncoder = User.builder()
+          .passwordEncoder(passwordEncoder);
       password = faker.internet()
           .password(8, 40, false, true, true);
       nickname = faker.oscarMovie()
