@@ -2,7 +2,8 @@ package com.ddudu.user.service;
 
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
-import com.ddudu.user.dto.SignUpRequest;
+import com.ddudu.user.dto.request.SignUpRequest;
+import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class UserService {
 
   public final UserRepository userRepository;
 
-  public User signUp(SignUpRequest request) {
+  public SignUpResponse signUp(SignUpRequest request) {
     if (userRepository.existsByEmail(request.email())) {
       throw new DuplicateKeyException("이미 존재하는 이메일입니다.");
     }
@@ -38,7 +39,7 @@ public class UserService {
       userBuilder.optionalUsername(request.optionalUsername());
     }
 
-    return userRepository.save(userBuilder.build());
+    return SignUpResponse.from(userRepository.save(userBuilder.build()));
   }
 
 }
