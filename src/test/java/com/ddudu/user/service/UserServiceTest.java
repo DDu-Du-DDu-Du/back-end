@@ -16,6 +16,9 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
@@ -101,18 +104,14 @@ class UserServiceTest {
           .withMessage("이미 존재하는 아이디입니다.");
     }
 
-    @Test
-    void 회원가입을_성공한다() {
+    @ParameterizedTest(name = "선택 아이디 : {0}")
+    @NullSource
+    @ValueSource(strings = "username")
+    void 회원가입을_성공한다(String username) {
       // given
       String email = faker.internet()
           .emailAddress();
-      User user = builderWithEncoder
-          .email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-
-      SignUpRequest request = new SignUpRequest(null, email, password, nickname);
+      SignUpRequest request = new SignUpRequest(username, email, password, nickname);
 
       // when
       SignUpResponse expected = userService.signUp(request);
