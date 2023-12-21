@@ -130,7 +130,11 @@ public class User {
   }
 
   private void validateOptionalUsername(String optionalUsername) {
-    if (Objects.nonNull(optionalUsername) && StringUtils.isBlank(optionalUsername)) {
+    if (Objects.isNull(optionalUsername)) {
+      return;
+    }
+
+    if (StringUtils.isBlank(optionalUsername)) {
       throw new IllegalArgumentException("아이디는 공백일 수 없습니다.");
     }
 
