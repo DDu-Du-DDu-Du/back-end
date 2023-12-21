@@ -112,7 +112,7 @@ class UserTest {
       assertThatIllegalArgumentException().isThrownBy(construct);
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "유효하지 않은 비밀번호 : {0}")
     @NullAndEmptySource
     @ValueSource(strings = {" ", "short", "한글1234!%", "withoutDigits!", "withoutSpecial123"})
     void 유효하지_않은_비밀번호의_유저_생성을_실패한다(String password) {
@@ -121,6 +121,23 @@ class UserTest {
           .email(validEmail)
           .password(password)
           .nickname(validNickname);
+
+      // when
+      ThrowingCallable construct = userBuilder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(construct);
+    }
+
+    @ParameterizedTest(name = "유효하지 않은 닉네임 : {0}")
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "nickname legnth over 20"})
+    void 유효하지_않은_닉네임의_유저_생성을_실패한다(String nickname) {
+      // given
+      UserBuilder userBuilder = builderWithEncoder
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(nickname);
 
       // when
       ThrowingCallable construct = userBuilder::build;
