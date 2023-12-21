@@ -1,5 +1,6 @@
 package com.ddudu.user.service;
 
+import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
@@ -21,12 +22,14 @@ public class UserService {
   private final UserRepository userRepository;
 
   public SignUpResponse signUp(SignUpRequest request) {
-    if (userRepository.existsByEmail(request.email())) {
+    Email email = new Email(request.email());
+
+    if (userRepository.existsByEmail(email)) {
       throw new DuplicateKeyException("이미 존재하는 이메일입니다.");
     }
 
     UserBuilder userBuilder = User.builder()
-        .email(request.email())
+        .email(email.getAddress())
         .password(request.password())
         .nickname(request.nickname())
         .passwordEncoder(passwordEncoder);

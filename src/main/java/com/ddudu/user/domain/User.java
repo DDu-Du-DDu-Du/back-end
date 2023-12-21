@@ -2,7 +2,9 @@ package com.ddudu.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -13,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,11 +31,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 public class User {
 
-  private static final Pattern EMAIL_PATTERN = Pattern.compile(
-      "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+[.][0-9A-Za-z]+$");
-  private static final Pattern PASSWORD_PATTERN = Pattern.compile(
-      "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@!%*#?&^]).{8,50}$");
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -42,11 +38,15 @@ public class User {
   @Column(name = "optional_username", length = 20, unique = true)
   private String optionalUsername;
 
-  @Column(name = "email", length = 50, nullable = false)
-  private String email;
+  @Embedded
+  @AttributeOverride(
+      name = "address", column = @Column(name = "email", length = 50, nullable = false)
+  )
+  private Email email;
 
-  @Column(name = "password", nullable = false)
-  private String password;
+  @Embedded
+  @AttributeOverride(name = "encrypted", column = @Column(name = "password", nullable = false))
+  private Password password;
 
   @Column(name = "nickname", length = 30, nullable = false)
   private String nickname;
@@ -73,50 +73,22 @@ public class User {
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
       String nickname
   ) {
-    validate(email, password, nickname, optionalUsername);
+    validate(nickname, optionalUsername);
     this.optionalUsername = optionalUsername;
-    this.email = email;
-    this.password = encodePassword(password, passwordEncoder);
+    this.email = new Email(email);
+    this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
     status = UserStatus.ACTIVE;
     isDeleted = false;
   }
 
-  private void validate(String email, String password, String nickname, String optionalUsername) {
-    validateEmail(email);
-    validatePassword(password);
+  public String getEmail() {
+    return email.getAddress();
+  }
+
+  private void validate(String nickname, String optionalUsername) {
     validateNickname(nickname);
     validateOptionalUsername(optionalUsername);
-  }
-
-  private void validateEmail(String email) {
-    if (StringUtils.isBlank(email)) {
-      throw new IllegalArgumentException("이메일이 입력되지 않았습니다.");
-    }
-
-    boolean matches = EMAIL_PATTERN.matcher(email)
-        .matches();
-
-    if (!matches) {
-      throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다.");
-    }
-  }
-
-  private void validatePassword(String password) {
-    if (StringUtils.isBlank(password)) {
-      throw new IllegalArgumentException("비밀번호가 입력되지 않았습니다.");
-    }
-
-    if (password.length() < 8) {
-      throw new IllegalArgumentException("비밀번호는 8자리 이상이어야 합니다.");
-    }
-
-    boolean matches = PASSWORD_PATTERN.matcher(password)
-        .matches();
-
-    if (!matches) {
-      throw new IllegalArgumentException("비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다.");
-    }
   }
 
   private void validateNickname(String nickname) {
@@ -141,10 +113,6 @@ public class User {
     if (optionalUsername.length() > 20) {
       throw new IllegalArgumentException("아이디는 최대 20자 입니다.");
     }
-  }
-
-  private String encodePassword(String password, PasswordEncoder passwordEncoder) {
-    return passwordEncoder.encode(password);
   }
 
 }
