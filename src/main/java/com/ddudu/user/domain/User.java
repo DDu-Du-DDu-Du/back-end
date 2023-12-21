@@ -38,7 +38,7 @@ public class User {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "optional_username", length = 30, unique = true)
+  @Column(name = "optional_username", length = 20, unique = true)
   private String optionalUsername;
 
   @Column(name = "email", length = 50, nullable = false)
@@ -72,7 +72,7 @@ public class User {
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
       String nickname
   ) {
-    validate(email, password);
+    validate(email, password, nickname);
     this.optionalUsername = optionalUsername;
     this.email = email;
     this.password = encodePassword(password, passwordEncoder);
@@ -81,9 +81,10 @@ public class User {
     isDeleted = false;
   }
 
-  private void validate(String email, String password) {
+  private void validate(String email, String password, String nickname) {
     validateEmail(email);
     validatePassword(password);
+    validateNickname(nickname);
   }
 
   private void validateEmail(String email) {
@@ -113,6 +114,16 @@ public class User {
 
     if (!matches) {
       throw new IllegalArgumentException("비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다.");
+    }
+  }
+
+  private void validateNickname(String nickname) {
+    if (StringUtils.isBlank(nickname)) {
+      throw new IllegalArgumentException("닉네임이 입력되지 않았습니다.");
+    }
+
+    if (nickname.length() > 20) {
+      throw new IllegalArgumentException("닉네임은 최대 20자 입니다.");
     }
   }
 

@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users
     optional_username VARCHAR(30)  UNIQUE,
     email             VARCHAR(50)  NOT NULL,
     password          VARCHAR(255) NOT NULL,
-    nickname          VARCHAR(30)  NOT NULL,
+    nickname          VARCHAR(20)  NOT NULL,
     status            VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
     created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

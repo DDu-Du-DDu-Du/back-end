@@ -1,8 +1,8 @@
 package com.ddudu.user.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record SignUpRequest(
     String optionalUsername,
@@ -12,7 +12,7 @@ public record SignUpRequest(
     @NotBlank(message = "비밀번호가 입력되지 않았습니다.")
     String password,
     @NotBlank(message = "닉네임이 입력되지 않았습니다.")
-    @Max(20)
+    @Size(max = 20, message = "닉네임은 최대 20자 입니다.")
     String nickname
 ) {
 
