@@ -1,5 +1,6 @@
 package com.ddudu.todo.domain;
 
+import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
 import com.ddudu.goal.domain.Goal;
@@ -73,7 +74,7 @@ public class Todo {
   }
 
   private void validateTodo(String name) {
-    if (isNull(name)) {
+    if (isBlank(name)) {
       throw new IllegalArgumentException("할 일은 필수값입니다.");
     }
 

@@ -64,7 +64,7 @@ public class Goal {
   }
 
   private void validateName(String name) {
-    if (isNull(name)) {
+    if (isBlank(name)) {
       throw new IllegalArgumentException("목표명은 필수값입니다.");
     }
 

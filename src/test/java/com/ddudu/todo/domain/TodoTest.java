@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 class TodoTest {
 
@@ -75,14 +76,16 @@ class TodoTest {
           .hasMessage("목표는 필수값입니다.");
     }
 
-    @Test
-    @DisplayName("할 일의 내용 없이는 할 일을 생성할 수 없다.")
-    void createWithoutName() {
+    @ParameterizedTest
+    @DisplayName("할 일(name)은 필수값이며 빈 문자열일 수 없다.")
+    @NullAndEmptySource
+    void createWithoutName(String invalidName) {
       // given
       Goal goal = createGoal("dev course");
 
       // when then
       assertThatThrownBy(() -> Todo.builder()
+          .name(invalidName)
           .goal(goal)
           .build())
           .isInstanceOf(IllegalArgumentException.class)

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 class GoalTest {
 
@@ -55,11 +56,13 @@ class GoalTest {
           .containsExactly(name, GoalStatus.IN_PROGRESS, color, privacyType, false);
     }
 
-    @Test
-    @DisplayName("목표명 없이는 목표를 생성할 수 없다.")
-    void createWithoutName() {
+    @ParameterizedTest
+    @DisplayName("목표명은 필수값이며 빈 문자열일 수 없다.")
+    @NullAndEmptySource
+    void createWithoutName(String invalidName) {
       // when then
       assertThatThrownBy(() -> Goal.builder()
+          .name(invalidName)
           .build())
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("목표명은 필수값입니다.");
