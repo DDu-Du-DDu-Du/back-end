@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS users
 (
     id                BIGINT       AUTO_INCREMENT,
-    optional_username VARCHAR(30)  NULL,
+    optional_username VARCHAR(20)  NULL,
     email             VARCHAR(50)  NOT NULL,
     password          VARCHAR(255) NOT NULL,
     nickname          VARCHAR(20)  NOT NULL,

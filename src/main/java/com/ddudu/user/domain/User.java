@@ -40,7 +40,8 @@ public class User {
 
   @Embedded
   @AttributeOverride(
-      name = "address", column = @Column(name = "email", length = 50, nullable = false)
+      name = "address",
+      column = @Column(name = "email", length = 50, nullable = false, unique = true)
   )
   private Email email;
 
@@ -48,7 +49,7 @@ public class User {
   @AttributeOverride(name = "encrypted", column = @Column(name = "password", nullable = false))
   private Password password;
 
-  @Column(name = "nickname", length = 30, nullable = false)
+  @Column(name = "nickname", length = 20, nullable = false)
   private String nickname;
 
   @Column(name = "status", columnDefinition = "VARCHAR", length = 20)
