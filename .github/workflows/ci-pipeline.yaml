@@ -39,14 +39,28 @@ jobs:
           spring.datasource.username: ${{ secrets.TEST_DB_USER }}
           spring.datasource.password: ${{ secrets.TEST_DB_PASSWORD }}
 
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Grant permission to run gradlew
         run: chmod +x gradlew
 
       - name: Build Gradle
         run: ./gradlew build
 
-      - name: Flush test result to the pull request
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+      - name: Flush Jacoco test report on the pull request
+        uses: madrapps/jacoco-report@v1.5
         with:
-          files: '**/build/test-results/test/TEST-*.xml'
+          title: 📊 Jacoco Test Coverage
+          paths: ${{ github.workspace }}/**/build/jacocoReports/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 60
+          min-coverage-changed-files: 60
+          update-comment: true
