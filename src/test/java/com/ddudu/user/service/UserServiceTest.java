@@ -22,6 +22,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 class UserServiceTest {
 
   static final Faker faker = new Faker();
+  static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
   UserBuilder builderWithEncoder;
   String password;
@@ -42,16 +44,13 @@ class UserServiceTest {
   @Autowired
   UserRepository userRepository;
 
-  @Autowired
-  PasswordEncoder passwordEncoder;
-
   @Nested
   class 회원가입_테스트 {
 
     @BeforeEach
     void setUp() {
       builderWithEncoder = User.builder()
-          .passwordEncoder(passwordEncoder);
+          .passwordEncoder(PASSWORD_ENCODER);
       password = faker.internet()
           .password(8, 40, false, true, true);
       nickname = faker.oscarMovie()

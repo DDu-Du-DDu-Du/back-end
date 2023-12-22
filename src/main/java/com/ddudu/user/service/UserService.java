@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-  private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+  private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
   private final UserRepository userRepository;
 
@@ -32,7 +32,7 @@ public class UserService {
         .email(email.getAddress())
         .password(request.password())
         .nickname(request.nickname())
-        .passwordEncoder(passwordEncoder);
+        .passwordEncoder(PASSWORD_ENCODER);
 
     if (Objects.nonNull(request.optionalUsername())) {
       if (userRepository.existsByOptionalUsername(request.optionalUsername())) {

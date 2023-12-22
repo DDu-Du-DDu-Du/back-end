@@ -94,7 +94,7 @@ class UserTest {
       User persistedSecond = entityManager.persist(second);
 
       // then
-      assertThat(persistedFirst.getId()).isNotEqualTo(persistedSecond.getId());
+      assertThat(persistedSecond.getId()).isGreaterThan(persistedFirst.getId());
     }
 
     @ParameterizedTest(name = "유효하지 않은 이메일 : {0}")
