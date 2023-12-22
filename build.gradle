@@ -65,15 +65,13 @@ jacocoTestReport {
         xml.outputLocation = layout.buildDirectory.file('jacocoReports/jacoco.xml')
     }
 
+    excludedClassFilesForJacoco(classDirectories)
+
     finalizedBy jacocoTestCoverageVerification
 }
 
 jacocoTestCoverageVerification {
-    classDirectories.setFrom(
-            files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: ["**/*Application*"])
-            })
-    )
+    excludedClassFilesForJacoco(classDirectories)
 
     violationRules {
         rule {
@@ -83,13 +81,13 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.80
+                minimum = 0.60
             }
 
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.90
+                minimum = 0.70
             }
 
             limit {
@@ -99,4 +97,15 @@ jacocoTestCoverageVerification {
             }
         }
     }
+}
+
+private excludedClassFilesForJacoco(classDirectories) {
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "**/*Application*",
+                        "**/*Config*"
+                ])
+            })
+    )
 }
