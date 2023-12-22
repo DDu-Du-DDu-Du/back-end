@@ -41,7 +41,7 @@ class UserControllerTest {
   MockMvc mockMvc;
 
   @Test
-  void POST_회원가입을_성공한다() throws Exception {
+  void Post_회원가입을_성공한다() throws Exception {
     // given
     String email = faker.internet()
         .emailAddress();
