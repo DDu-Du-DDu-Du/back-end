@@ -49,7 +49,7 @@ class UserControllerTest {
         .password(8, 40, false, true, true);
     String nickname = faker.funnyName()
         .name();
-    SignUpRequest request = new SignUpRequest(null, email, password, nickname);
+    SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);
     SignUpResponse response = new SignUpResponse(1L, email, nickname);
 
     given(userService.signUp(any(SignUpRequest.class)))
@@ -65,4 +65,5 @@ class UserControllerTest {
         .andExpect(status().isCreated())
         .andExpect(header().exists("location"));
   }
+
 }
