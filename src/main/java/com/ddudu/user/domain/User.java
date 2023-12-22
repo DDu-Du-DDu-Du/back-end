@@ -82,7 +82,7 @@ public class User {
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
-    this.introduction = introduction.strip();
+    this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     status = UserStatus.ACTIVE;
     isDeleted = false;
   }
