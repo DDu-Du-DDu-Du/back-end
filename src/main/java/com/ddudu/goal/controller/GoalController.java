@@ -2,6 +2,7 @@ package com.ddudu.goal.controller;
 
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
+import com.ddudu.goal.dto.response.ErrorResponse;
 import com.ddudu.goal.service.GoalService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -35,9 +36,12 @@ public class GoalController {
         .body(response);
   }
 
-  @ExceptionHandler(Exception.class)
-  public void handleException(Exception ex) {
-    ex.printStackTrace();
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException e) {
+    ErrorResponse response = new ErrorResponse(e.getMessage());
+
+    return ResponseEntity.badRequest()
+        .body(response);
   }
 
 }
