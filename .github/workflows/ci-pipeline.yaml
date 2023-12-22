@@ -64,3 +64,9 @@ jobs:
           min-coverage-overall: 60
           min-coverage-changed-files: 60
           update-comment: true
+
+      - name: Flush Checkstyle report on the status checks
+        uses: lcollins/checkstyle-github-action@v2.0.0
+        with:
+          path: '**/build/reports/checkstyle/**.xml'
+          title: 📝 Checkstyle report
