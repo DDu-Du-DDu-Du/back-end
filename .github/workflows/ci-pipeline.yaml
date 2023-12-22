@@ -68,5 +68,5 @@ jobs:
       - name: Flush Checkstyle report on the status checks
         uses: lcollins/checkstyle-github-action@v2.0.0
         with:
-          path: '**/build/reports/**.xml'
+          path: '**/build/reports/checkstyle/**.xml'
           title: 📝 Checkstyle report
