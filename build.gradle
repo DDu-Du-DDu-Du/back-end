@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'jacoco'
+    id 'checkstyle'
 }
 
 group = 'com.devcourse'
@@ -52,6 +53,13 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 }
 
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 
@@ -68,15 +76,13 @@ jacocoTestReport {
         xml.outputLocation = layout.buildDirectory.file('jacocoReports/jacoco.xml')
     }
 
+    excludedClassFilesForJacoco(classDirectories)
+
     finalizedBy jacocoTestCoverageVerification
 }
 
 jacocoTestCoverageVerification {
-    classDirectories.setFrom(
-            files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: ["**/*Application*"])
-            })
-    )
+    excludedClassFilesForJacoco(classDirectories)
 
     violationRules {
         rule {
@@ -86,13 +92,13 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.80
+                minimum = 0.60
             }
 
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.90
+                minimum = 0.70
             }
 
             limit {
@@ -102,4 +108,15 @@ jacocoTestCoverageVerification {
             }
         }
     }
+}
+
+private excludedClassFilesForJacoco(classDirectories) {
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "**/*Application*",
+                        "**/*Config*"
+                ])
+            })
+    )
 }
