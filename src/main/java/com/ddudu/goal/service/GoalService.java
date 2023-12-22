@@ -1,7 +1,9 @@
 package com.ddudu.goal.service;
 
+import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
+import com.ddudu.goal.repository.GoalRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,11 +16,17 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class GoalService {
 
+  private final GoalRepository goalRepository;
+
   @Transactional
   public CreateGoalResponse create(@Valid CreateGoalRequest request) {
-    // TODO: 목표 생성 및 응답 값 반환
+    Goal goal = Goal.builder()
+        .name(request.name())
+        .color(request.color())
+        .privacyType(request.privacyType())
+        .build();
 
-    return null;
+    return CreateGoalResponse.from(goalRepository.save(goal));
   }
 
 }
