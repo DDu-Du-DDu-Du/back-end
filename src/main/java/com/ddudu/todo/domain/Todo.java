@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -25,6 +26,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @Table(name = "todo")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EnableJpaAuditing
+@Getter
 public class Todo {
 
   private static final TodoStatus DEFAULT_STATUS = TodoStatus.UNCOMPLETED;
