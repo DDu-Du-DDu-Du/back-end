@@ -119,7 +119,7 @@ class GoalControllerTest {
     }
 
     @ParameterizedTest(name = "6자를 초과하는 색상 : {0}")
-    @MethodSource("provideLongString")
+    @ValueSource(strings = {"7letter"})
     void 색상은_6자를_넘을_수_없다(String longColor) throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, longColor, PrivacyType.PUBLIC);
