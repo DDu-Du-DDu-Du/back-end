@@ -101,7 +101,7 @@ class GoalControllerTest {
     }
 
     @ParameterizedTest(name = "50자를 초과하는 목표 : {0}")
-    @MethodSource("provideLongString")
+    @MethodSource("provide51Letters")
     void 목표는_50자를_넘을_수_없다(String longName) throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(longName, validColor, PrivacyType.PUBLIC);
@@ -142,8 +142,8 @@ class GoalControllerTest {
               .value(containsString("색상 코드는 6자리 16진수입니다.")));
     }
 
-    private static List<String> provideLongString() {
-      String longString = "a".repeat(100);
+    private static List<String> provide51Letters() {
+      String longString = "a".repeat(51);
       return List.of(longString);
     }
 

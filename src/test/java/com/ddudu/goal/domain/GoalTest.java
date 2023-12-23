@@ -67,7 +67,7 @@ class GoalTest {
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
-    @MethodSource("provideLongString")
+    @MethodSource("provide51Letters")
     void 목표명은_50자를_초과할_수_없다(String longName) {
       // when then
       assertThatThrownBy(() -> Goal.builder()
@@ -108,8 +108,8 @@ class GoalTest {
 
     }
 
-    private static List<String> provideLongString() {
-      String longString = "a".repeat(100);
+    private static List<String> provide51Letters() {
+      String longString = "a".repeat(51);
       return List.of(longString);
     }
 
