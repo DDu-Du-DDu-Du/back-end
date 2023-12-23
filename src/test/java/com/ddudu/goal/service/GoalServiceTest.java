@@ -92,11 +92,8 @@ class GoalServiceTest {
       // given
       String defaultColor = "191919";
 
-      CreateGoalRequest request = CreateGoalRequest.builder()
-          .name(validName)
-          .color(invalidColor)
-          .privacyType(PrivacyType.PUBLIC)
-          .build();
+      CreateGoalRequest request = new CreateGoalRequest(
+          validName, invalidColor, PrivacyType.PUBLIC);
 
       // when
       CreateGoalResponse expected = goalService.create(request);
@@ -111,10 +108,7 @@ class GoalServiceTest {
     @Test
     void 보기_설정을_설정하지_않으면_PRIVATE이_적용된다() {
       // given
-      CreateGoalRequest request = CreateGoalRequest.builder()
-          .name(validName)
-          .color(validColor)
-          .build();
+      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, null);
 
       // when
       CreateGoalResponse expected = goalService.create(request);

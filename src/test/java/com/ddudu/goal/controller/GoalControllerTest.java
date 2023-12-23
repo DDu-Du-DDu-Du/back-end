@@ -57,11 +57,7 @@ class GoalControllerTest {
     @Test
     void 목표_색상_보기_설정과_함께_목표를_생성할_수_있다() throws Exception {
       // given
-      CreateGoalRequest request = CreateGoalRequest.builder()
-          .name(validName)
-          .color(validColor)
-          .privacyType(PrivacyType.PUBLIC)
-          .build();
+      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
 
       CreateGoalResponse response = new CreateGoalResponse(1L, validName, validColor);
 
@@ -85,11 +81,8 @@ class GoalControllerTest {
     @NullAndEmptySource
     void 목표가_입력되지_않거나_빈_문자열일_수_없다(String invalidName) throws Exception {
       // given
-      CreateGoalRequest request = CreateGoalRequest.builder()
-          .name(invalidName)
-          .color(validColor)
-          .privacyType(PrivacyType.PUBLIC)
-          .build();
+      CreateGoalRequest request = new CreateGoalRequest(
+          invalidName, validColor, PrivacyType.PUBLIC);
 
       given(goalService.create(any(CreateGoalRequest.class)))
           .willReturn(new CreateGoalResponse(1L, validName, validColor));
@@ -109,11 +102,7 @@ class GoalControllerTest {
     @MethodSource("provideLongString")
     void 목표는_50자를_넘을_수_없다(String longName) throws Exception {
       // given
-      CreateGoalRequest request = CreateGoalRequest.builder()
-          .name(longName)
-          .color(validColor)
-          .privacyType(PrivacyType.PUBLIC)
-          .build();
+      CreateGoalRequest request = new CreateGoalRequest(longName, validColor, PrivacyType.PUBLIC);
 
       given(goalService.create(any(CreateGoalRequest.class)))
           .willReturn(new CreateGoalResponse(1L, validName, validColor));
@@ -133,11 +122,7 @@ class GoalControllerTest {
     @MethodSource("provideLongString")
     void 색상은_6자를_넘을_수_없다(String longColor) throws Exception {
       // given
-      CreateGoalRequest request = CreateGoalRequest.builder()
-          .color(longColor)
-          .name(validName)
-          .privacyType(PrivacyType.PUBLIC)
-          .build();
+      CreateGoalRequest request = new CreateGoalRequest(validName, longColor, PrivacyType.PUBLIC);
 
       given(goalService.create(any(CreateGoalRequest.class)))
           .willReturn(new CreateGoalResponse(1L, validName, validColor));
