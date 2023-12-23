@@ -80,7 +80,7 @@ class GoalControllerTest {
 
     @ParameterizedTest(name = "유효하지 않은 목표 : {0}")
     @NullAndEmptySource
-    void 목표가_입력되지_않거나_빈_문자열일_수_없다(String invalidName) throws Exception {
+    void 목표가_null_이거나_빈_문자열인_경우_Bad_Request_응답을_반환한다(String invalidName) throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(
           invalidName, validColor, PrivacyType.PUBLIC);
@@ -102,7 +102,7 @@ class GoalControllerTest {
 
     @ParameterizedTest(name = "50자를 초과하는 목표 : {0}")
     @MethodSource("provide51Letters")
-    void 목표는_50자를_넘을_수_없다(String longName) throws Exception {
+    void 목표가_50자를_초과하면_Bad_Request_응답을_반환한다(String longName) throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(longName, validColor, PrivacyType.PUBLIC);
 
@@ -123,7 +123,7 @@ class GoalControllerTest {
 
     @ParameterizedTest(name = "6자를 초과하는 색상 : {0}")
     @ValueSource(strings = {"7letter"})
-    void 색상은_6자를_넘을_수_없다(String longColor) throws Exception {
+    void 색상이_6자를_넘으면_Bad_Request_응답을_반환한다(String longColor) throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, longColor, PrivacyType.PUBLIC);
 
