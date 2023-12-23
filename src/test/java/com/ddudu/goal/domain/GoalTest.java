@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,15 +13,14 @@ import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
+@DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalTest {
 
   @Nested
-  @DisplayName("목표 생성 테스트")
-  class ConstructorTest {
+  class 목표_생성_테스트 {
 
     @Test
-    @DisplayName("목표를 생성할 수 있다.")
-    void create() {
+    void 목표를_생성할_수_있다() {
       // given
       String name = "dev course";
 
@@ -36,8 +36,7 @@ class GoalTest {
     }
 
     @Test
-    @DisplayName("색상 코드, 보기 설정과 함께 목표를 생성할 수 있다.")
-    void createWithColorAndPrivacyType() {
+    void 색상_코드_보기_설정과_함께_목표를_생성할_수_있다() {
       // given
       String name = "dev course";
       String color = "999999";
@@ -57,9 +56,8 @@ class GoalTest {
     }
 
     @ParameterizedTest
-    @DisplayName("목표명은 필수값이며 빈 문자열일 수 없다.")
     @NullAndEmptySource
-    void createWithoutName(String invalidName) {
+    void 목표명은_필수값이며_빈_문자열일_수_없다(String invalidName) {
       // when then
       assertThatThrownBy(() -> Goal.builder()
           .name(invalidName)
@@ -69,9 +67,8 @@ class GoalTest {
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
-    @DisplayName("목표 생성 시 목표명은 50자를 초과할 수 없다.")
-    @MethodSource("provideLongString")
-    void createWithLongName(String longName) {
+    @MethodSource("provide51Letters")
+    void 목표명은_50자를_초과할_수_없다(String longName) {
       // when then
       assertThatThrownBy(() -> Goal.builder()
           .name(longName)
@@ -81,9 +78,8 @@ class GoalTest {
     }
 
     @ParameterizedTest
-    @DisplayName("목표 생성 시 색상 코드가 빈 문자열이면 기본값으로 저장된다.")
     @EmptySource
-    void createWithBlankColor(String emptyColor) {
+    void 색상_코드가_빈_문자열이면_기본값으로_저장된다(String emptyColor) {
       // when
       Goal goal = Goal.builder()
           .name("dev course")
@@ -96,8 +92,7 @@ class GoalTest {
     }
 
     @Test
-    @DisplayName("목표 생성 시 색상 코드는 6자리 16진수 포맷을 따라야 한다.")
-    void createWithInvalidColor() {
+    void 색상_코드는_6자리_16진수_포맷을_따라야_한다() {
       // given
       String invalidColor = "19191!";
 
@@ -113,8 +108,8 @@ class GoalTest {
 
     }
 
-    private static List<String> provideLongString() {
-      String longString = "a".repeat(100);
+    private static List<String> provide51Letters() {
+      String longString = "a".repeat(51);
       return List.of(longString);
     }
 
