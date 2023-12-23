@@ -1,7 +1,9 @@
 package com.ddudu.goal.dto.response;
 
 import com.ddudu.goal.domain.Goal;
+import lombok.Builder;
 
+@Builder
 public record CreateGoalResponse(
     Long id,
     String name,
@@ -9,7 +11,11 @@ public record CreateGoalResponse(
 ) {
 
   public static CreateGoalResponse from(Goal goal) {
-    return new CreateGoalResponse(goal.getId(), goal.getName(), goal.getColor());
+    return CreateGoalResponse.builder()
+        .id(goal.getId())
+        .name(goal.getName())
+        .color(goal.getColor())
+        .build();
   }
 
 }
