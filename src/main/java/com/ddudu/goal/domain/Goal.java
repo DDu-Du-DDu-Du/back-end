@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "goal")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Goal {
 
   private static final GoalStatus DEFAULT_STATUS = GoalStatus.IN_PROGRESS;
