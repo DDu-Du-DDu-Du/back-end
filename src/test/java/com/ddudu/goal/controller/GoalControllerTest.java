@@ -56,7 +56,7 @@ class GoalControllerTest {
     }
 
     @Test
-    void 목표_색상_보기_설정과_함께_목표를_생성할_수_있다() throws Exception {
+    void 목표를_생성할_수_있다() throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
 
@@ -140,6 +140,27 @@ class GoalControllerTest {
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
               .value(containsString("색상 코드는 6자리 16진수입니다.")));
+    }
+
+    @Test
+    void 색상이_16진수_포맷이_아닌_경우_Bad_Rquest_응답을_반환한다() throws Exception {
+      // given
+      String invalidColor = "Z123!";
+      CreateGoalRequest request = new CreateGoalRequest(
+          validName, invalidColor, PrivacyType.PUBLIC);
+
+      given(goalService.create(any(CreateGoalRequest.class)))
+          .willThrow(new IllegalArgumentException("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다."));
+
+      // when then
+      mockMvc.perform(
+              post("/api/goals")
+                  .content(objectMapper.writeValueAsString(request))
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다.")));
     }
 
     private static List<String> provide51Letters() {
