@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TodoService {
 
   private final TodoRepository todoRepository;
 
-  @Transactional(readOnly = true)
   public TodoResponse findById(Long id) {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("할 일 아이디가 존재하지 않습니다."));
