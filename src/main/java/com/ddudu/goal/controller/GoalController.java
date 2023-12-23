@@ -50,7 +50,6 @@ public class GoalController {
   public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidEx(
       MethodArgumentNotValidException e
   ) {
-
     String errorMessage = e.getBindingResult()
         .getFieldErrors()
         .stream()

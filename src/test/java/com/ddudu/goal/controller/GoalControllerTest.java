@@ -158,7 +158,6 @@ class GoalControllerTest {
       return List.of(longString);
     }
 
-
   }
 
 }
