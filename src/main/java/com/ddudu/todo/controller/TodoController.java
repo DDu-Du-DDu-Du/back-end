@@ -19,10 +19,7 @@ public class TodoController {
   private final TodoService todoService;
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> getTodo(
-      @PathVariable
-          Long id
-  ) {
+  public ResponseEntity<?> getTodo(@PathVariable Long id) {
     try {
       TodoResponse response = todoService.findById(id);
       return ResponseEntity.ok(response);
