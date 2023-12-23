@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users
     status            VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
     created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    is_deleted        TINYINT(1)   NOT NULL DEFAULT '0',
+    is_deleted        TINYINT(1)   NOT NULL DEFAULT 0,
     CONSTRAINT pk_user_id PRIMARY KEY (id),
     CONSTRAINT uk_user_optional_username UNIQUE (optional_username),
     CONSTRAINT uk_user_email UNIQUE (email)
