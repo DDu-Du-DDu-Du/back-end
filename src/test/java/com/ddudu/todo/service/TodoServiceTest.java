@@ -11,8 +11,6 @@ import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.repository.TodoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -43,7 +41,7 @@ class TodoServiceTest {
     void 할_일_조회를_성공한다() {
       // given
       Goal goal = createGoal("dev course");
-      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal, null);
+      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
 
       // when
       TodoResponse response = todoService.findById(todo.getId());
@@ -69,7 +67,7 @@ class TodoServiceTest {
     }
 
   }
-  
+
   @Test
   void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
     // given
@@ -77,12 +75,11 @@ class TodoServiceTest {
     Goal goal2 = createGoal("book");
 
     LocalDate date = LocalDate.now();
-    LocalDateTime dateTime = LocalDateTime.of(date, LocalTime.now());
-    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, dateTime);
-    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, dateTime);
+    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
+    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
 
     // when
-    List<TodoListResponse> responses = todoService.findDailyTodoList(date.toString());
+    List<TodoListResponse> responses = todoService.findDailyTodoList(date);
 
     // then
     assertThat(responses).hasSize(2);
@@ -107,7 +104,7 @@ class TodoServiceTest {
     return goalRepository.save(goal);
   }
 
-  private Todo createTodo(String name, Goal goal, LocalDateTime dateTime) {
+  private Todo createTodo(String name, Goal goal) {
     Todo todo = Todo.builder()
         .name(name)
         .goal(goal)

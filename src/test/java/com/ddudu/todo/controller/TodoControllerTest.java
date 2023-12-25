@@ -1,5 +1,6 @@
 package com.ddudu.todo.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,7 +17,6 @@ import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -91,20 +90,46 @@ class TodoControllerTest {
   @Nested
   class 일별_할_일_리스트_조회_테스트 {
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {"2023-12-24", "2023-12-25"})
-    void 주어진_날짜로_할_일_리스트_조회를_성공한다(String validDate) throws Exception {
+    @Test
+    void 주어진_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
       // given
-      LocalDate date = (validDate == null || validDate.isEmpty()) ? LocalDate.now()
-          : LocalDate.parse(validDate, DateTimeFormatter.ISO_DATE);
-      String dateString = date.format(DateTimeFormatter.ISO_DATE);
+      LocalDate date = LocalDate.now();
       List<TodoListResponse> responses = createTodoListResponse();
 
-      given(todoService.findDailyTodoList(dateString)).willReturn(responses);
+      given(todoService.findDailyTodoList(date)).willReturn(responses);
 
       // when then
-      mockMvc.perform(get("/api/todos").param("date", dateString))
+      mockMvc.perform(get("/api/todos").param("date", date.toString()))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$").isArray())
+          .andExpect(jsonPath("$[0].goalInfo.id").value(responses.get(0)
+              .goalInfo()
+              .id()))
+          .andExpect(jsonPath("$[0].goalInfo.name").value(responses.get(0)
+              .goalInfo()
+              .name()))
+          .andExpect(jsonPath("$[0].todolist[0].id").value(responses.get(0)
+              .todolist()
+              .get(0)
+              .id()))
+          .andExpect(jsonPath("$[0].todolist[0].name").value(responses.get(0)
+              .todolist()
+              .get(0)
+              .name()))
+          .andExpect(jsonPath("$[0].todolist[0].status").value(responses.get(0)
+              .todolist()
+              .get(0)
+              .status()));
+    }
+
+    @Test
+    void 날짜를_전달받지_않으면_현재_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
+      // given
+      List<TodoListResponse> responses = createTodoListResponse();
+      given(todoService.findDailyTodoList(any())).willReturn(responses);
+
+      // when then
+      mockMvc.perform(get("/api/todos"))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
           .andExpect(jsonPath("$[0].goalInfo.id").value(responses.get(0)
@@ -135,7 +160,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식으로 입력해주세요."));
+          .andExpect(content().string("유효하지 않은 날짜입니다."));
     }
 
     @ParameterizedTest
