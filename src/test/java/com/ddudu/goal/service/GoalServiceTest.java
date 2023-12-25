@@ -1,14 +1,18 @@
 package com.ddudu.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
+import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.repository.GoalRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -118,6 +122,67 @@ class GoalServiceTest {
       assertThat(actual).isNotEmpty();
       assertThat(actual.get()
           .getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
+    }
+
+  }
+
+  @Nested
+  class 목표_조회_테스트 {
+
+    private String validName;
+
+    목표_조회_테스트() {
+      validName = "dev course";
+    }
+
+    @Test
+    void ID를_통해_단일_목표를_조회_할_수_있다() {
+      // given
+      Goal expected = createGoal(validName);
+      Long id = expected.getId();
+
+      // when
+      GoalResponse actual = goalService.getGoal(id);
+
+      // then
+      GoalStatus expectedStatus = expected.getStatus();
+      PrivacyType expectedPrivacyType = expected.getPrivacyType();
+
+      assertThat(actual).extracting(
+              "id",
+              "name",
+              "status",
+              "color",
+              "privacyType"
+          )
+          .containsExactly(
+              id,
+              expected.getName(),
+              expectedStatus.name(),
+              expected.getColor(),
+              expectedPrivacyType.name()
+          );
+    }
+
+    @Test
+    void 유효하지_않은_ID인_경우_조회에_실패한다() {
+      // given
+      Long invalidId = -1L;
+
+      // when
+      ThrowingCallable getGoal = () -> goalService.getGoal(invalidId);
+
+      // then
+      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(getGoal)
+          .withMessage("해당 아이디를 가진 목표가 존재하지 않습니다.");
+    }
+
+    private Goal createGoal(String name) {
+      Goal goal = Goal.builder()
+          .name(name)
+          .build();
+
+      return goalRepository.save(goal);
     }
 
   }
