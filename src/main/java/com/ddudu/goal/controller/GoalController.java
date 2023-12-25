@@ -1,8 +1,10 @@
 package com.ddudu.goal.controller;
 
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
+import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.ErrorResponse;
+import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.service.GoalService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -12,6 +14,8 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +40,19 @@ public class GoalController {
 
     return ResponseEntity.created(uri)
         .body(response);
+  }
+
+  @PatchMapping("/{id}")
+  public ResponseEntity<GoalResponse> update(
+      @PathVariable
+      Long id,
+      @RequestBody
+      @Valid
+      UpdateGoalRequest request
+  ) {
+    GoalResponse response = goalService.update(id, request);
+
+    return ResponseEntity.ok(response);
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
