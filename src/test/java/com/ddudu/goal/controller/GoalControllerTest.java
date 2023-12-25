@@ -147,7 +147,7 @@ class GoalControllerTest {
     }
 
     @Test
-    void 색상이_16진수_포맷이_아닌_경우_Bad_Rquest_응답을_반환한다() throws Exception {
+    void 색상이_16진수_포맷이_아닌_경우_Bad_Request_응답을_반환한다() throws Exception {
       // given
       String invalidColor = "Z123!";
       CreateGoalRequest request = new CreateGoalRequest(
