@@ -131,7 +131,8 @@ private excludedClassFilesForJacoco(classDirectories) {
             files(classDirectories.files.collect {
                 fileTree(dir: it, exclude: [
                         "**/*Application*",
-                        "**/*Config*"
+                        "**/*Config*",
+                        "**/*Q*"
                 ])
             })
     )
