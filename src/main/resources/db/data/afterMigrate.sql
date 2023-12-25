@@ -10,3 +10,9 @@ INSERT INTO users(id, optional_username, email, password, nickname) VALUES (7,'d
 INSERT INTO users(id, optional_username, email, password, nickname) VALUES (8,'injaesong', 'injaesong0@gmail.com', '$2a$10$39InvdkmJm3.4xIy4kGCyuoohtLK5rGF09HEKpBFu2fgqfCzYLPiG', '송인재');
 INSERT INTO users(id, optional_username, email, password, nickname) VALUES (9,'devcrazy', 'crazy@example.com', '$2a$10$5ZXbGs1etnGkrath/enkB.TdMj8U//jdmH3GXSRj3F3ACHi5LABHC', '개발 미친 사람');
 INSERT INTO users(id, optional_username, email, password, nickname) VALUES (10,'dingmon', 'coding@mon.co.kr', '$2a$10$k3/gS0YD9tAr69nRZRBjQOmf.MiqXa29hdCSa.Kg0i5U4/gISOsDG', '코딩몬');
+
+-- GOAL
+INSERT INTO goal(id, name, color, privacy) VALUES (1, 'dev course', '71D6E4', 'PUBLIC');
+INSERT INTO goal(id, name, color, privacy) VALUES (2, 'study', 'F2D055', 'PUBLIC');
+INSERT INTO goal(id, name, color, privacy) VALUES (3, 'event', 'F2B2C8', 'PRIVATE');
+INSERT INTO goal(id, name, color, privacy) VALUES (4, 'etc', 'C9D66A', 'PUBLIC');
