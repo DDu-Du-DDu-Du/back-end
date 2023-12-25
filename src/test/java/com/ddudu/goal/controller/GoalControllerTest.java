@@ -3,17 +3,21 @@ package com.ddudu.goal.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
+import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.service.GoalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -166,6 +170,58 @@ class GoalControllerTest {
     private static List<String> provide51Letters() {
       String longString = "a".repeat(51);
       return List.of(longString);
+    }
+
+  }
+
+  @Nested
+  class 목표_조회_API_테스트 {
+
+    @Test
+    void 목표를_조회할_수_있다() throws Exception {
+      // given
+      GoalResponse response = createGoalResponse();
+
+      given(goalService.getGoal(any(Long.class))).willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              get("/api/goals/{id}", response.id())
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(response.id()))
+          .andExpect(jsonPath("$.name").value(response.name()))
+          .andExpect(jsonPath("$.status").value(response.status()))
+          .andExpect(jsonPath("$.color").value(response.color()))
+          .andExpect(jsonPath("$.privacyType").value(response.privacyType()));
+    }
+
+    @Test
+    void ID가_유효하지_않으면_Not_Found_응답을_반환한다() throws Exception {
+      // given
+      Long invalidId = -1L;
+      given(goalService.getGoal(any(Long.class)))
+          .willThrow(new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
+
+      // when then
+      mockMvc.perform(
+              get("/api/goals/{id}", invalidId)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("해당 아이디를 가진 목표가 존재하지 않습니다.")));
+    }
+
+    private static GoalResponse createGoalResponse() {
+      return GoalResponse.builder()
+          .id(1L)
+          .name("dev course")
+          .status(GoalStatus.IN_PROGRESS.name())
+          .color("191919")
+          .privacyType(PrivacyType.PRIVATE.name())
+          .build();
     }
 
   }
