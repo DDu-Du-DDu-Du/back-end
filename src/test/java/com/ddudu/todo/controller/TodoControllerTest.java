@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.todo.dto.response.GoalInfo;
+import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,14 +48,21 @@ class TodoControllerTest {
       given(todoService.findById(anyLong())).willReturn(response);
 
       // when then
-      mockMvc.perform(get("/api/todos/{id}", response.id())
+      mockMvc.perform(get(
+              "/api/todos/{id}", response.todoInfo()
+                  .id())
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.id").value(response.id()))
-          .andExpect(jsonPath("$.goalId").value(response.goalId()))
-          .andExpect(jsonPath("$.goalName").value(response.goalName()))
-          .andExpect(jsonPath("$.name").value(response.name()))
-          .andExpect(jsonPath("$.status").value(response.status()));
+          .andExpect(jsonPath("$.goalInfo.id").value(response.goalInfo()
+              .id()))
+          .andExpect(jsonPath("$.goalInfo.name").value(response.goalInfo()
+              .name()))
+          .andExpect(jsonPath("$.todoInfo.id").value(response.todoInfo()
+              .id()))
+          .andExpect(jsonPath("$.todoInfo.name").value(response.todoInfo()
+              .name()))
+          .andExpect(jsonPath("$.todoInfo.status").value(response.todoInfo()
+              .status()));
     }
 
     @Test
@@ -70,13 +79,26 @@ class TodoControllerTest {
 
   }
 
-  private TodoResponse createTodoResponse() {
-    return TodoResponse.builder()
+  private GoalInfo createGoalInfo() {
+    return GoalInfo.builder()
         .id(1L)
-        .goalId(1L)
-        .goalName("dev course")
+        .name("dev course")
+        .build();
+  }
+
+  private TodoInfo createTodoInfo() {
+    return TodoInfo.builder()
+        .id(1L)
         .name("할 일 조회 기능 구현")
         .status("UNCOMPLETED")
+        .build();
+  }
+
+
+  private TodoResponse createTodoResponse() {
+    return TodoResponse.builder()
+        .goalInfo(createGoalInfo())
+        .todoInfo(createTodoInfo())
         .build();
   }
 

@@ -42,9 +42,12 @@ class TodoServiceTest {
       TodoResponse response = todoService.findById(todo.getId());
 
       // then
-      assertThat(response).extracting("id", "goalId", "goalName", "name", "status")
-          .containsExactly(todo.getId(), goal.getId(), goal.getName(), todo.getName(),
-              todo.getStatus().name());
+      assertThat(response).extracting(
+              "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name", "todoInfo.status")
+          .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName(),
+              todo.getStatus()
+                  .name()
+          );
     }
 
     @Test
