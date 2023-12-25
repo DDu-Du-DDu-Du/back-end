@@ -10,7 +10,6 @@ import com.ddudu.todo.repository.TodoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,8 +32,7 @@ public class TodoService {
     return TodoResponse.from(todo);
   }
 
-  public List<TodoListResponse> findDailyTodoList(String dateString) {
-    LocalDate date = parseDate(dateString);
+  public List<TodoListResponse> findDailyTodoList(LocalDate date) {
     List<Goal> goals = goalRepository.findAll();
     List<Todo> todos = todoRepository.findTodosByDate(
         date.atStartOfDay(), date.atTime(LocalTime.MAX)
@@ -54,11 +52,6 @@ public class TodoService {
           return TodoListResponse.from(goal, todoInfos);
         })
         .collect(Collectors.toList());
-  }
-
-  private LocalDate parseDate(String dateString) {
-    return (dateString == null || dateString.isEmpty()) ? LocalDate.now()
-        : LocalDate.parse(dateString, DateTimeFormatter.ISO_DATE);
   }
 
 }

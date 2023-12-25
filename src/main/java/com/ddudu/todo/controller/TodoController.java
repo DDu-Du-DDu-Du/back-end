@@ -5,16 +5,18 @@ import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestController
 @RequestMapping("/api/todos")
@@ -39,31 +41,22 @@ public class TodoController {
 
   @GetMapping
   public ResponseEntity<?> getDailyTodoList(
-      @RequestParam(name = "date", required = false)
-          String date
+      @RequestParam(required = false)
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate date
   ) {
-    try {
-      validateDate(date);
+    date = (date == null) ? LocalDate.now() : date;
 
-      List<TodoListResponse> response = todoService.findDailyTodoList(date);
-      return ResponseEntity.ok(response);
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(e.getMessage());
-    } catch (DateTimeParseException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body("유효하지 않은 날짜입니다.");
-    }
+    List<TodoListResponse> response = todoService.findDailyTodoList(date);
+    return ResponseEntity.ok(response);
   }
 
-  private void validateDate(String date) {
-    if (date != null && !date.matches("\\d{4}-\\d{2}-\\d{2}")) {
-      throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식으로 입력해주세요.");
-    }
-
-    if (date != null) {
-      LocalDate.parse(date);
-    }
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<String> handleMethodArgumentTypeMismatch(
+      MethodArgumentTypeMismatchException e
+  ) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body("유효하지 않은 날짜입니다.");
   }
 
 }
