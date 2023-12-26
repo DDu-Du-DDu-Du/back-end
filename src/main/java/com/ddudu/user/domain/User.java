@@ -2,6 +2,7 @@ package com.ddudu.user.domain;
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.BaseEntity;
+import com.ddudu.auth.domain.authority.Authority;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -68,6 +69,7 @@ public class User extends BaseEntity {
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
+    this.authority = authority != null ? authority : Authority.NORMAL;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     this.authority = authority != null ? authority : Authority.NORMAL;
     status = UserStatus.ACTIVE;
