@@ -87,12 +87,13 @@ class TodoServiceTest {
     TodoListResponse response1 = responses.get(0);
     assertThat(response1.goalInfo()
         .id()).isEqualTo(goal1.getId());
-    assertThat(response1.todolist()).hasSize(2);
+    assertThat(response1.todolist()).extracting("id")
+        .containsExactly(todo1.getId(), todo2.getId());
 
     TodoListResponse response2 = responses.get(1);
     assertThat(response2.goalInfo()
         .id()).isEqualTo(goal2.getId());
-    assertThat(response2.todolist()).hasSize(0);
+    assertThat(response2.todolist()).isEmpty();
 
   }
 
