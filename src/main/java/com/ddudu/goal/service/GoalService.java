@@ -1,6 +1,5 @@
 package com.ddudu.goal.service;
 
-import com.ddudu.goal.domain.Color;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
@@ -38,10 +37,8 @@ public class GoalService {
     Goal goal = goalRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
 
-    goal.setName(request.name());
-    goal.setStatus(request.status());
-    goal.setColor(new Color(request.color()));
-    goal.setPrivacyType(request.privacyType());
+    goal.applyGoalUpdates(
+        request.name(), request.status(), request.color(), request.privacyType());
 
     return GoalResponse.from(goal);
   }

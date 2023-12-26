@@ -69,22 +69,15 @@ public class Goal {
     return color.getCode();
   }
 
-  public void setName(String name) {
+  public void applyGoalUpdates(
+      String name, GoalStatus status, String color, PrivacyType privacyType
+  ) {
     validateName(name);
 
     this.name = name;
-  }
-
-  public void setStatus(GoalStatus status) {
     this.status = status;
-  }
-
-  public void setColor(Color color) {
-    this.color = color;
-  }
-
-  public void setPrivacyType(PrivacyType privacyType) {
-    this.privacyType = privacyType;
+    this.color = new Color(color);
+    this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
 
   private void validateName(String name) {
