@@ -10,6 +10,7 @@ import com.ddudu.todo.repository.TodoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,14 +45,14 @@ public class TodoService {
 
     return goals.stream()
         .map(goal -> {
-          List<TodoInfo> todoInfos = todosByGoal.getOrDefault(goal.getId(), List.of())
+          List<TodoInfo> todoInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
               .stream()
               .map(TodoInfo::from)
-              .collect(Collectors.toList());
+              .toList();
 
           return TodoListResponse.from(goal, todoInfos);
         })
-        .collect(Collectors.toList());
+        .toList();
   }
 
 }
