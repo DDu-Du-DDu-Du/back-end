@@ -13,3 +13,5 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   flyway:
     enabled: true
+jwt:
+  secret-key: 0JOztl/SUESOG63jJ9nmeF9SJy1K82JQjDYt9sWenfUeFwbWkzScLDiWiuTOUuN9JL3RbTnpADR7UNWHVOsafw==
