@@ -22,6 +22,10 @@ public class Password {
     encrypted = passwordEncoder.encode(rawPassword);
   }
 
+  public boolean check(String rawPassword, PasswordEncoder passwordEncoder) {
+    return passwordEncoder.matches(rawPassword, encrypted);
+  }
+
   private void validate(String password) {
     if (StringUtils.isBlank(password)) {
       throw new IllegalArgumentException("비밀번호가 입력되지 않았습니다.");
