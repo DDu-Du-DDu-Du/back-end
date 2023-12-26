@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users
     email             VARCHAR(50)  NOT NULL,
     password          VARCHAR(255) NOT NULL,
     nickname          VARCHAR(20)  NOT NULL,
+    authority         VARCHAR(15)  NOT NULL DEFAULT 'NORMAL',
     status            VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
     created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
