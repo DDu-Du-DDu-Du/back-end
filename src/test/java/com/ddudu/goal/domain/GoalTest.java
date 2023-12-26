@@ -118,6 +118,9 @@ class GoalTest {
   @Nested
   class 목표_수정_테스트 {
 
+    private String validName;
+    private String validColor;
+
     목표_수정_테스트() {
       validName = "dav course";
       validColor = "191919";
