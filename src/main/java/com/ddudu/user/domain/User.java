@@ -1,5 +1,6 @@
 package com.ddudu.user.domain;
 
+import com.ddudu.auth.domain.authority.Authority;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
@@ -14,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,6 +24,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
@@ -55,6 +58,10 @@ public class User {
   @Column(name = "introduction", length = 50)
   private String introduction;
 
+  @Column(name = "authority", columnDefinition = "VARCHAR", length = 15)
+  @Enumerated(EnumType.STRING)
+  private Authority authority;
+
   @Column(name = "status", columnDefinition = "VARCHAR", length = 20)
   @Enumerated(EnumType.STRING)
   private UserStatus status;
@@ -75,7 +82,7 @@ public class User {
   @Builder
   public User(
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
-      String nickname, String introduction
+      String nickname, String introduction, Authority authority
   ) {
     validate(nickname, optionalUsername, introduction);
     this.optionalUsername = optionalUsername;
@@ -83,6 +90,7 @@ public class User {
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
+    this.authority = authority != null ? authority : Authority.NORMAL;
     status = UserStatus.ACTIVE;
     isDeleted = false;
   }

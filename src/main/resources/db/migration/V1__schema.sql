@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users
     password          VARCHAR(255) NOT NULL,
     nickname          VARCHAR(20)  NOT NULL,
     introduction      VARCHAR(50)  NULL,
+    authority         VARCHAR(15)  NOT NULL DEFAULT 'NORMAL',
     status            VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
     created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
