@@ -1,7 +1,7 @@
 package com.ddudu.config;
 
 import com.ddudu.auth.domain.authority.Authority;
-import java.util.List;
+import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,7 +31,7 @@ public class WebSecurityConfig {
         .httpBasic(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable)
         .anonymous(anonymous -> anonymous
-            .authorities(List.of(Authority.GUEST)))
+            .authorities(Collections.singletonList(Authority.GUEST)))
         .build();
   }
 
