@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
   @Bean
-  public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain restFilterChain(HttpSecurity http) throws Exception {
     return http
         .securityMatchers(matcher -> matcher
             .requestMatchers("/api/**"))
