@@ -4,14 +4,18 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
+import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
+import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.service.GoalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -44,16 +48,16 @@ class GoalControllerTest {
   @MockBean
   private GoalService goalService;
 
+  private String validName;
+  private String validColor;
+
+  GoalControllerTest() {
+    validName = "dev course";
+    validColor = "F7A29D";
+  }
+
   @Nested
   class 목표_생성_API_테스트 {
-
-    private String validName;
-    private String validColor;
-
-    목표_생성_API_테스트() {
-      validName = "dev course";
-      validColor = "F7A29D";
-    }
 
     @Test
     void 목표를_생성할_수_있다() throws Exception {
@@ -166,6 +170,37 @@ class GoalControllerTest {
     private static List<String> provide51Letters() {
       String longString = "a".repeat(51);
       return List.of(longString);
+    }
+
+  }
+
+  @Nested
+  class 목표_수정_API_테스트 {
+
+    @Test
+    void Put_목표_수정을_성공한다() throws Exception {
+      // given
+      UpdateGoalRequest request = new UpdateGoalRequest(
+          validName, GoalStatus.IN_PROGRESS, validColor, PrivacyType.PUBLIC);
+
+      GoalResponse response = new GoalResponse(
+          1L, validName, GoalStatus.IN_PROGRESS.name(), validColor, PrivacyType.PUBLIC.name());
+
+      given(goalService.update(any(Long.class), any(UpdateGoalRequest.class)))
+          .willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              put("/api/goals/{id}", 1L)
+                  .content(objectMapper.writeValueAsString(request))
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(response.id()))
+          .andExpect(jsonPath("$.name").value(response.name()))
+          .andExpect(jsonPath("$.status").value(response.status()))
+          .andExpect(jsonPath("$.color").value(response.color()))
+          .andExpect(jsonPath("$.privacyType").value(response.privacyType()));
     }
 
   }
