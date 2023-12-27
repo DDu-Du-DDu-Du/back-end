@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,13 +29,8 @@ public class TodoController {
       @PathVariable
           Long id
   ) {
-    try {
-      TodoResponse response = todoService.findById(id);
-      return ResponseEntity.ok(response);
-    } catch (EntityNotFoundException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(e.getMessage());
-    }
+    TodoResponse response = todoService.findById(id);
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping
@@ -45,6 +41,21 @@ public class TodoController {
 
     List<TodoListResponse> response = todoService.findDailyTodoList(date);
     return ResponseEntity.ok(response);
+  }
+
+  @PatchMapping("/{id}/status")
+  public ResponseEntity<?> updateTodoStatus(
+      @PathVariable
+          Long id
+  ) {
+    TodoResponse response = todoService.updateStatus(id);
+    return ResponseEntity.ok(response);
+  }
+
+  @ExceptionHandler(EntityNotFoundException.class)
+  public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body("할 일 아이디가 존재하지 않습니다.");
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
