@@ -7,14 +7,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ddudu.auth.dto.request.LoginRequest;
 import com.ddudu.auth.dto.response.LoginResponse;
-import com.ddudu.auth.jwt.JwtIssuer;
 import com.ddudu.auth.service.AuthService;
+import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.support.TestSecretKey;
 import com.ddudu.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.jwk.source.ImmutableSecret;
-import java.time.Duration;
-import java.util.Collections;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -25,18 +23,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(AuthController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class, TestSecretKey.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class AuthControllerTest {
 
   static final Faker faker = new Faker();
-  static final String SECRET_KEY = "0JOztl/SUESOG63jJ9nmeF9SJy1K82JQjDYt9sWenfUeFwbWkzScLDiWiuTOUuN9JL3RbTnpADR7UNWHVOsafw==";
+  static final String TEST_TOKEN = "test access token";
 
   @MockBean
   AuthService authService;
@@ -50,10 +46,6 @@ class AuthControllerTest {
   @Autowired
   MockMvc mockMvc;
 
-  final JwtEncoder jwtEncoder = new NimbusJwtEncoder(
-      new ImmutableSecret<>(SECRET_KEY.getBytes()));
-  final JwtIssuer jwtIssuer = new JwtIssuer(jwtEncoder);
-
   @Nested
   class 로그인_API_테스트 {
 
@@ -65,9 +57,7 @@ class AuthControllerTest {
       String password = faker.internet()
           .password();
       LoginRequest request = new LoginRequest(email, password);
-      String jwt = jwtIssuer.issue(
-          Collections.singletonMap("user", 1L), Duration.ofMinutes(15));
-      LoginResponse response = new LoginResponse(jwt);
+      LoginResponse response = new LoginResponse(TEST_TOKEN);
 
       given(authService.login(any(LoginRequest.class)))
           .willReturn(response);

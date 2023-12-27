@@ -6,7 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.support.TestSecretKey;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = TodoController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class, TestSecretKey.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class TodoControllerTest {
 
@@ -35,6 +37,16 @@ class TodoControllerTest {
 
   @Autowired
   ObjectMapper objectMapper;
+
+  private TodoResponse createTodoResponse() {
+    return TodoResponse.builder()
+        .id(1L)
+        .goalId(1L)
+        .goalName("dev course")
+        .name("할 일 조회 기능 구현")
+        .status("UNCOMPLETED")
+        .build();
+  }
 
   @Nested
   class 할_일_1개_조회_테스트 {
@@ -68,16 +80,6 @@ class TodoControllerTest {
           .andExpect(status().isNotFound());
     }
 
-  }
-
-  private TodoResponse createTodoResponse() {
-    return TodoResponse.builder()
-        .id(1L)
-        .goalId(1L)
-        .goalName("dev course")
-        .name("할 일 조회 기능 구현")
-        .status("UNCOMPLETED")
-        .build();
   }
 
 }

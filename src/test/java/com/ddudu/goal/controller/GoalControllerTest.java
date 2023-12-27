@@ -8,11 +8,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.service.GoalService;
+import com.ddudu.support.TestSecretKey;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -31,7 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = GoalController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class, TestSecretKey.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalControllerTest {
 
@@ -53,6 +55,11 @@ class GoalControllerTest {
     목표_생성_API_테스트() {
       validName = "dev course";
       validColor = "F7A29D";
+    }
+
+    private static List<String> provide51Letters() {
+      String longString = "a".repeat(51);
+      return List.of(longString);
     }
 
     @Test
@@ -161,11 +168,6 @@ class GoalControllerTest {
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
               .value(containsString("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다.")));
-    }
-
-    private static List<String> provide51Letters() {
-      String longString = "a".repeat(51);
-      return List.of(longString);
     }
 
   }
