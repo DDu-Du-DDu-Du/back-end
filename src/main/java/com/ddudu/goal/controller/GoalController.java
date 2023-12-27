@@ -6,10 +6,12 @@ import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.ErrorResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
+import com.ddudu.goal.dto.response.GoalSummaryDTO;
 import com.ddudu.goal.service.GoalService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -50,6 +53,16 @@ public class GoalController {
       Long id
   ) {
     GoalResponse response = goalService.getGoal(id);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping
+  public ResponseEntity<List<GoalSummaryDTO>> getGoals(
+      @RequestParam
+      Long userId
+  ) {
+    List<GoalSummaryDTO> response = goalService.getGoals(userId);
 
     return ResponseEntity.ok(response);
   }
