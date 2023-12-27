@@ -42,6 +42,10 @@ public class UserService {
       userBuilder.optionalUsername(request.optionalUsername());
     }
 
+    if (Objects.nonNull(request.introduction())) {
+      userBuilder.introduction(request.introduction());
+    }
+
     return SignUpResponse.from(userRepository.save(userBuilder.build()));
   }
 

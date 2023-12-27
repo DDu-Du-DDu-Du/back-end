@@ -221,3 +221,6 @@ gradle-app.setting
 
 # Custom ignores
 DduDuStyle.xml
+
+# Ignore QueryDSL generated files
+/src/main/generated/

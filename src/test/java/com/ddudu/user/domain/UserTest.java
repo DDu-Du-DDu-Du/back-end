@@ -167,6 +167,25 @@ class UserTest {
     }
 
     @Test
+    void 자기소개가_기입되고_유효하지_않은_값이면_유저_생성을_실패한다() {
+      // given
+      String intro = faker.harryPotter()
+          .quote()
+          .repeat(2);
+      UserBuilder userBuilder = builderWithEncoder
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .introduction(intro);
+
+      // when
+      ThrowingCallable construct = userBuilder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(construct);
+    }
+
+    @Test
     void 입력된_비밀번호는_인코딩_된다() {
       // given
       UserBuilder userBuilder = builderWithEncoder
