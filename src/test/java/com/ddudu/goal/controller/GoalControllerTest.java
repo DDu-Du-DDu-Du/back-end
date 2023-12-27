@@ -64,7 +64,7 @@ class GoalControllerTest {
     }
 
   @Nested
-  class 목표_생성_API_테스트 {
+  class POST_목표_생성_API_테스트 {
 
     @Test
     void 목표를_생성할_수_있다() throws Exception {
@@ -177,10 +177,10 @@ class GoalControllerTest {
   }
 
   @Nested
-  class 목표_수정_API_테스트 {
+  class PUT_목표_수정_API_테스트 {
 
     @Test
-    void Put_목표_수정을_성공한다() throws Exception {
+    void 목표_수정을_성공한다() throws Exception {
       // given
       UpdateGoalRequest request = new UpdateGoalRequest(
           validName, GoalStatus.IN_PROGRESS, validColor, PrivacyType.PUBLIC);
@@ -208,7 +208,7 @@ class GoalControllerTest {
     }
 
     @Test
-    void Put_유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+    void 유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
       // given
       String invalidRequestJson = """
           {
@@ -237,7 +237,7 @@ class GoalControllerTest {
     }
 
     @Test
-    void Put_유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+    void 유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
       // given
       String invalidRequestJson = """
           {
