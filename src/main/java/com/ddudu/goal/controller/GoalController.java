@@ -6,8 +6,11 @@ import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.ErrorResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.service.GoalService;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -78,6 +81,20 @@ public class GoalController {
 
     return ResponseEntity.badRequest()
         .body(response);
+  }
+
+  @ExceptionHandler(InvalidFormatException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidFormatEx(
+      InvalidFormatException e
+  ) {
+    Class<?> targetType = e.getTargetType();
+    String enumTypeName = targetType.getSimpleName();
+    String validValues = Arrays.stream(targetType.getEnumConstants())
+        .map(enumConstant -> ((Enum<?>) enumConstant).name())
+        .collect(Collectors.joining(", "));
+
+    return ResponseEntity.badRequest()
+        .body(new ErrorResponse(enumTypeName + "는 [" + validValues + "] 중 하나여야 합니다."));
   }
 
 }
