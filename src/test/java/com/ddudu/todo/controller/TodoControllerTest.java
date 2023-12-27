@@ -51,7 +51,7 @@ class TodoControllerTest {
   class 할_일_1개_조회_테스트 {
 
     @Test
-    void 할_일_조회를_성공한다() throws Exception {
+    void GET_할_일_조회를_성공한다() throws Exception {
       // given
       TodoResponse response = createTodoResponse();
       given(todoService.findById(anyLong())).willReturn(response);
@@ -76,7 +76,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void 아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
+    void GET_아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
         Exception {
       // given
       Long invalidId = 999L;
@@ -93,7 +93,7 @@ class TodoControllerTest {
   class 일별_할_일_리스트_조회_테스트 {
 
     @Test
-    void 주어진_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
+    void GET_주어진_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
       // given
       LocalDate date = LocalDate.now();
       List<TodoListResponse> responses = createTodoListResponse();
@@ -126,7 +126,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void 날짜를_전달받지_않으면_현재_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
+    void GET_날짜를_전달받지_않으면_현재_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
       // given
       List<TodoListResponse> responses = createTodoListResponse();
       given(todoService.findDailyTodoList(any())).willReturn(responses);
@@ -158,7 +158,7 @@ class TodoControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"invalid-date", "20231225"})
-    void 유효하지_않은_날짜_형식으로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+    void GET_유효하지_않은_날짜_형식으로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos")
@@ -169,7 +169,8 @@ class TodoControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"2023-15-01", "2023-12-33"})
-    void 유효하지_않은_날짜로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate) throws Exception {
+    void GET_유효하지_않은_날짜로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+        throws Exception {
       // when then
       mockMvc.perform(get("/api/todos")
               .param("date", invalidDate))
