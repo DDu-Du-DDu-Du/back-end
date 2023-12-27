@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.support.TestSecretKey;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.service.UserService;
@@ -25,7 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(UserController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class, TestSecretKey.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class UserControllerTest {
 
