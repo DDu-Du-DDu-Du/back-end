@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.support.TestProperties;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.GoalInfo;
