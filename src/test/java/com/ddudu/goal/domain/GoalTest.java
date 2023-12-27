@@ -139,7 +139,6 @@ class GoalTest {
       goal.applyGoalUpdates(changedName, changedStatus, changedColor, changedPrivacyType);
 
       // then
-      assertThat(goal.getName()).isEqualTo(changedName);
       assertThat(goal).extracting("name", "status", "color", "privacyType")
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
