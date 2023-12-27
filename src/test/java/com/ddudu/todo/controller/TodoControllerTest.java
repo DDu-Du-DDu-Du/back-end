@@ -9,11 +9,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.GoalInfo;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
+import com.ddudu.support.TestSecretKey;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = TodoController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class, TestSecretKey.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class TodoControllerTest {
 
