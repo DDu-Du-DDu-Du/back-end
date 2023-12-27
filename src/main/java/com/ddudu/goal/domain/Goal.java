@@ -3,15 +3,19 @@ package com.ddudu.goal.domain;
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import com.ddudu.user.domain.User;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -37,6 +41,10 @@ public class Goal {
 
   @Column(name = "name", nullable = false, length = 50)
   private String name;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
 
   @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
   @Enumerated(EnumType.STRING)

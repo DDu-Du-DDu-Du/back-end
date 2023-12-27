@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS goal
 (
     id         BIGINT      AUTO_INCREMENT,
+    user_id    BIGINT      NOT NULL,
     name       VARCHAR(50) NOT NULL,
     color      CHAR(6)     NOT NULL DEFAULT '191919',
     privacy    VARCHAR(20) NOT NULL DEFAULT 'PRIVATE',
@@ -27,6 +28,7 @@ CREATE TABLE IF NOT EXISTS goal
     updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_goal_id PRIMARY KEY (id),
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT ck_color CHECK ( CHAR_LENGTH(color) = 6 )
 );
 
