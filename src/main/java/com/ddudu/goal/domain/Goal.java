@@ -4,10 +4,12 @@ import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
 import com.ddudu.user.domain.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -17,13 +19,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name = "goal")
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Goal {
@@ -60,6 +67,16 @@ public class Goal {
   @Column(name = "privacy", nullable = false, columnDefinition = "VARCHAR", length = 20)
   @Enumerated(EnumType.STRING)
   private PrivacyType privacyType;
+
+  @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP")
+  @CreatedDate
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+  private LocalDateTime createdAt;
+
+  @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP")
+  @LastModifiedDate
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+  private LocalDateTime updatedAt;
 
   @Column(name = "is_deleted", nullable = false)
   private boolean isDeleted = DEFAULT_IS_DELETED;
