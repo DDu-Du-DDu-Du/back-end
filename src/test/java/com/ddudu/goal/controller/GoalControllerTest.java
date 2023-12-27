@@ -205,6 +205,64 @@ class GoalControllerTest {
               .name()));
     }
 
+    @Test
+    void Put_유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+      // given
+      String invalidRequestJson = """
+          {
+              "name": "dev course",
+              "status": "INVALID TYPE",
+              "color": "191919",
+              "privacyType": "PUBLIC"
+          }
+          """;
+
+      GoalResponse response = GoalResponse.builder()
+          .build();
+
+      given(goalService.update(any(Long.class), any(UpdateGoalRequest.class)))
+          .willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              put("/api/goals/{id}", 1L)
+                  .content(invalidRequestJson)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("GoalStatus는 [IN_PROGRESS, DONE] 중 하나여야 합니다.")));
+    }
+
+    @Test
+    void Put_유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+      // given
+      String invalidRequestJson = """
+          {
+              "name": "dev course",
+              "status": "IN_PROGRESS",
+              "color": "191919",
+              "privacyType": "INVALID TYPE"
+          }
+          """;
+
+      GoalResponse response = GoalResponse.builder()
+          .build();
+
+      given(goalService.update(any(Long.class), any(UpdateGoalRequest.class)))
+          .willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              put("/api/goals/{id}", 1L)
+                  .content(invalidRequestJson)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("PrivacyType는 [PRIVATE, FOLLOWER, PUBLIC] 중 하나여야 합니다.")));
+    }
+
   }
 
 }
