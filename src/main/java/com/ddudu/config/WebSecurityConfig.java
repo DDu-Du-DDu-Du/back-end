@@ -1,7 +1,6 @@
 package com.ddudu.config;
 
 import com.ddudu.auth.domain.authority.Authority;
-import com.ddudu.auth.jwt.converter.JwtConverter;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,9 +32,6 @@ public class WebSecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .anonymous(anonymous -> anonymous
             .authorities(List.of(Authority.GUEST)))
-        .oauth2ResourceServer(oauth2 -> oauth2
-            .jwt(jwt -> jwt
-                .jwtAuthenticationConverter(new JwtConverter())))
         .build();
   }
 
