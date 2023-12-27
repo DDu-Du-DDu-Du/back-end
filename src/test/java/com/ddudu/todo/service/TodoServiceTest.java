@@ -51,7 +51,6 @@ class TodoServiceTest {
               "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name", "todoInfo.status")
           .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName(),
               todo.getStatus()
-                  .name()
           );
     }
 

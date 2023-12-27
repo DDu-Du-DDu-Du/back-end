@@ -8,9 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
-import com.ddudu.support.TestSecretKey;
+import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.GoalInfo;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -35,7 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = TodoController.class)
-@Import({WebSecurityConfig.class, TestSecretKey.class, JwtConfig.class})
+@Import(WebSecurityConfig.class)
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class TodoControllerTest {
 
@@ -72,7 +71,8 @@ class TodoControllerTest {
           .andExpect(jsonPath("$.todoInfo.name").value(response.todoInfo()
               .name()))
           .andExpect(jsonPath("$.todoInfo.status").value(response.todoInfo()
-              .status()));
+              .status()
+              .name()));
     }
 
     @Test
@@ -121,7 +121,8 @@ class TodoControllerTest {
           .andExpect(jsonPath("$[0].todolist[0].status").value(responses.get(0)
               .todolist()
               .get(0)
-              .status()));
+              .status()
+              .name()));
     }
 
     @Test
@@ -151,7 +152,8 @@ class TodoControllerTest {
           .andExpect(jsonPath("$[0].todolist[0].status").value(responses.get(0)
               .todolist()
               .get(0)
-              .status()));
+              .status()
+              .name()));
     }
 
     @ParameterizedTest
@@ -188,7 +190,7 @@ class TodoControllerTest {
     return TodoInfo.builder()
         .id(1L)
         .name("할 일 조회 기능 구현")
-        .status("UNCOMPLETED")
+        .status(TodoStatus.UNCOMPLETED)
         .build();
   }
 
