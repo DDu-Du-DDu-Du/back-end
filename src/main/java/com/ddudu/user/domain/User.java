@@ -55,6 +55,9 @@ public class User {
   @Column(name = "nickname", length = 20, nullable = false)
   private String nickname;
 
+  @Column(name = "introduction", length = 50)
+  private String introduction;
+
   @Column(name = "authority", columnDefinition = "VARCHAR", length = 15)
   @Enumerated(EnumType.STRING)
   private Authority authority;
@@ -79,13 +82,14 @@ public class User {
   @Builder
   public User(
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
-      String nickname, Authority authority
+      String nickname, String introduction, Authority authority
   ) {
-    validate(nickname, optionalUsername);
+    validate(nickname, optionalUsername, introduction);
     this.optionalUsername = optionalUsername;
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
+    this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     this.authority = authority != null ? authority : Authority.NORMAL;
     status = UserStatus.ACTIVE;
     isDeleted = false;
@@ -95,9 +99,16 @@ public class User {
     return email.getAddress();
   }
 
-  private void validate(String nickname, String optionalUsername) {
+  private void validate(String nickname, String optionalUsername, String introduction) {
     validateNickname(nickname);
-    validateOptionalUsername(optionalUsername);
+
+    if (Objects.nonNull(optionalUsername)) {
+      validateOptionalUsername(optionalUsername);
+    }
+
+    if (Objects.nonNull(introduction)) {
+      validateIntroduction(introduction);
+    }
   }
 
   private void validateNickname(String nickname) {
@@ -111,16 +122,18 @@ public class User {
   }
 
   private void validateOptionalUsername(String optionalUsername) {
-    if (Objects.isNull(optionalUsername)) {
-      return;
-    }
-
     if (StringUtils.isBlank(optionalUsername)) {
       throw new IllegalArgumentException("아이디는 공백일 수 없습니다.");
     }
 
     if (optionalUsername.length() > 20) {
       throw new IllegalArgumentException("아이디는 최대 20자 입니다.");
+    }
+  }
+
+  private void validateIntroduction(String introduction) {
+    if (introduction.length() > 50) {
+      throw new IllegalArgumentException("자기소개는 최대 50자 입니다.");
     }
   }
 

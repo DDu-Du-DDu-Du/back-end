@@ -43,7 +43,7 @@ class UserControllerTest {
   MockMvc mockMvc;
 
   @Test
-  void POST_회원가입을_성공한다() throws Exception {
+  void Post_회원가입을_성공한다() throws Exception {
     // given
     String email = faker.internet()
         .emailAddress();
@@ -51,7 +51,7 @@ class UserControllerTest {
         .password(8, 40, false, true, true);
     String nickname = faker.funnyName()
         .name();
-    SignUpRequest request = new SignUpRequest(null, email, password, nickname);
+    SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);
     SignUpResponse response = new SignUpResponse(1L, email, nickname);
 
     given(userService.signUp(any(SignUpRequest.class)))
