@@ -184,7 +184,7 @@ class GoalControllerTest {
           validName, GoalStatus.IN_PROGRESS, validColor, PrivacyType.PUBLIC);
 
       GoalResponse response = new GoalResponse(
-          1L, validName, GoalStatus.IN_PROGRESS.name(), validColor, PrivacyType.PUBLIC.name());
+          1L, validName, GoalStatus.IN_PROGRESS, validColor, PrivacyType.PUBLIC);
 
       given(goalService.update(any(Long.class), any(UpdateGoalRequest.class)))
           .willReturn(response);
@@ -198,9 +198,11 @@ class GoalControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(response.id()))
           .andExpect(jsonPath("$.name").value(response.name()))
-          .andExpect(jsonPath("$.status").value(response.status()))
+          .andExpect(jsonPath("$.status").value(response.status()
+              .name()))
           .andExpect(jsonPath("$.color").value(response.color()))
-          .andExpect(jsonPath("$.privacyType").value(response.privacyType()));
+          .andExpect(jsonPath("$.privacyType").value(response.privacyType()
+              .name()));
     }
 
   }
