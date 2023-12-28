@@ -6,6 +6,7 @@ import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
+import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.repository.GoalRepository;
 import java.util.Optional;
@@ -30,16 +31,16 @@ class GoalServiceTest {
   @Autowired
   GoalRepository goalRepository;
 
+  private String validName;
+  private String validColor;
+
+  GoalServiceTest() {
+    validName = "dev course";
+    validColor = "F7A29D";
+  }
+
   @Nested
   class 목표_생성_테스트 {
-
-    private String validName;
-    private String validColor;
-
-    목표_생성_테스트() {
-      validName = "dev course";
-      validColor = "F7A29D";
-    }
 
     @Test
     void 목표를_생성할_수_있다() {
@@ -118,6 +119,44 @@ class GoalServiceTest {
       assertThat(actual).isNotEmpty();
       assertThat(actual.get()
           .getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
+    }
+
+  }
+
+  @Nested
+  class 목표_수정_테스트 {
+
+    @Test
+    void 목표를_수정_할_수_있다() {
+      // given
+      Goal goal = createGoal();
+
+      String changedName = "데브 코스";
+      String changedColor = "999999";
+      GoalStatus changedStatus = GoalStatus.DONE;
+      PrivacyType changedPrivacyType = PrivacyType.PUBLIC;
+
+      UpdateGoalRequest request = new UpdateGoalRequest(
+          changedName, changedStatus, changedColor, changedPrivacyType);
+
+      // when
+      goalService.update(goal.getId(), request);
+
+      // then
+      Goal actual = goalRepository.findById(goal.getId())
+          .get();
+      assertThat(actual).extracting("name", "status", "color", "privacyType")
+          .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
+    }
+
+    private Goal createGoal() {
+      Goal goal = Goal.builder()
+          .name(validName)
+          .color(validColor)
+          .privacyType(PrivacyType.PRIVATE)
+          .build();
+
+      return goalRepository.save(goal);
     }
 
   }
