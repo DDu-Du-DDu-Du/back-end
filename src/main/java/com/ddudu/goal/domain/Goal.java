@@ -96,6 +96,17 @@ public class Goal {
     return color.getCode();
   }
 
+  public void applyGoalUpdates(
+      String name, GoalStatus status, String color, PrivacyType privacyType
+  ) {
+    validateName(name);
+
+    this.name = name;
+    this.status = status;
+    this.color = new Color(color);
+    this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
+  }
+
   private void validate(String name, User user) {
     validateName(name);
     validateUser(user);
@@ -116,6 +127,5 @@ public class Goal {
       throw new IllegalArgumentException("사용자는 필수값입니다.");
     }
   }
-
-
+  
 }

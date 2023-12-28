@@ -22,3 +22,11 @@ INSERT INTO goal(id, user_id, name, color, privacy) VALUES (2, 8, 'study', 'F3D0
 INSERT INTO goal(id, user_id, name, color, privacy) VALUES (3, 8, 'event', 'F1B5CA', 'PRIVATE');
 INSERT INTO goal(id, user_id, name, color, privacy) VALUES (4, 8, 'etc', 'C7D567', 'PUBLIC');
 INSERT INTO goal(id, user_id, name, privacy, status) VALUES (5, 8, 'college', 'PUBLIC', 'DONE');
+
+-- TO DO
+TRUNCATE TABLE todo;
+insert into todo(id, name, goal_id, status) values (1, '10시 30분 마르코 팀미팅', 1, 'UNCOMPLETED');
+insert into todo(id, name, goal_id, status, end_at) values (2, '9시 QR 출셕', 1, 'COMPLETE', NOW());
+insert into todo(id, name, goal_id, status) values (3, '1시 RBF', 1, 'UNCOMPLETED');
+insert into todo(id, name, goal_id, status) values (4, '2시 말코리즘 간단 리뷰', 1, 'UNCOMPLETED');
+insert into todo(id, name, goal_id, status, end_at) values (5, '9시 뚜두뚜두 스크럼', 1, 'COMPLETE', NOW());

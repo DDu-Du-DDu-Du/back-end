@@ -6,11 +6,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
+import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.repository.TodoRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.util.List;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -54,8 +57,9 @@ class TodoServiceTest {
       TodoResponse response = todoService.findById(todo.getId());
 
       // then
-      assertThat(response).extracting("id", "goalId", "goalName", "name", "status")
-          .containsExactly(todo.getId(), goal.getId(), goal.getName(), todo.getName(),
+      assertThat(response).extracting(
+              "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name", "todoInfo.status")
+          .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName(),
               todo.getStatus()
                   .name()
           );
@@ -74,7 +78,38 @@ class TodoServiceTest {
 
   }
 
+  @Test
+  void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
+    // given
+    User user = createUser();
+    Goal goal1 = createGoal("dev course", user);
+    Goal goal2 = createGoal("book", user);
+
+    LocalDate date = LocalDate.now();
+    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
+    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
+
+    // when
+    List<TodoListResponse> responses = todoService.findDailyTodoList(date);
+
+    // then
+    assertThat(responses).hasSize(2);
+
+    TodoListResponse response1 = responses.get(0);
+    assertThat(response1.goalInfo()
+        .id()).isEqualTo(goal1.getId());
+    assertThat(response1.todolist()).extracting("id")
+        .containsExactly(todo1.getId(), todo2.getId());
+
+    TodoListResponse response2 = responses.get(1);
+    assertThat(response2.goalInfo()
+        .id()).isEqualTo(goal2.getId());
+    assertThat(response2.todolist()).isEmpty();
+
+  }
+
   private Goal createGoal(String name, User user) {
+
     Goal goal = Goal.builder()
         .name(name)
         .user(user)

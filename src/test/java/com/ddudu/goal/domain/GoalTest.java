@@ -149,6 +149,28 @@ class GoalTest {
 
   }
 
+  @Nested
+  class 목표_수정_테스트 {
+
+    @Test
+    void 목표명_색상_상태_공개_설정을_수정_할_수_있다() {
+      // given
+      Goal goal = createGoal();
+      String changedName = "데브 코스";
+      String changedColor = "999999";
+      GoalStatus changedStatus = GoalStatus.DONE;
+      PrivacyType changedPrivacyType = PrivacyType.PUBLIC;
+
+      // when
+      goal.applyGoalUpdates(changedName, changedStatus, changedColor, changedPrivacyType);
+
+      // then
+      assertThat(goal).extracting("name", "status", "color", "privacyType")
+          .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
+    }
+
+  }
+
   private User createUser() {
     String email = faker.internet()
         .emailAddress();
@@ -162,6 +184,15 @@ class GoalTest {
         .email(email)
         .password(password)
         .nickname(nickname)
+        .build();
+  }
+
+  private Goal createGoal() {
+    return Goal.builder()
+        .name(name)
+        .user(user)
+        .color(color)
+        .privacyType(PrivacyType.PRIVATE)
         .build();
   }
 

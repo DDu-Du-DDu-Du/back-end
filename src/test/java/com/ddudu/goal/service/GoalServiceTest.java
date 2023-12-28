@@ -7,6 +7,7 @@ import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
+import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryDTO;
@@ -184,9 +185,9 @@ class GoalServiceTest {
           .containsExactly(
               id,
               expected.getName(),
-              expectedStatus.name(),
+              expectedStatus,
               expected.getColor(),
-              expectedPrivacyType.name()
+              expectedPrivacyType
           );
     }
 
@@ -249,6 +250,34 @@ class GoalServiceTest {
       // then
       assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(getGoals)
           .withMessage("해당 아이디를 가진 사용자가 존재하지 않습니다.");
+    }
+
+  }
+
+  @Nested
+  class 목표_수정_테스트 {
+
+    @Test
+    void 목표를_수정_할_수_있다() {
+      // given
+      Goal goal = createGoal(user, validName);
+
+      String changedName = "데브 코스";
+      String changedColor = "999999";
+      GoalStatus changedStatus = GoalStatus.DONE;
+      PrivacyType changedPrivacyType = PrivacyType.PUBLIC;
+
+      UpdateGoalRequest request = new UpdateGoalRequest(
+          changedName, changedStatus, changedColor, changedPrivacyType);
+
+      // when
+      goalService.update(goal.getId(), request);
+
+      // then
+      Goal actual = goalRepository.findById(goal.getId())
+          .get();
+      assertThat(actual).extracting("name", "status", "color", "privacyType")
+          .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 
   }
