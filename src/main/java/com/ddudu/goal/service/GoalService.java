@@ -26,9 +26,17 @@ public class GoalService {
   private final UserRepository userRepository;
 
   @Transactional
-  public CreateGoalResponse create(@Valid CreateGoalRequest request) {
+  public CreateGoalResponse create(
+      Long userId,
+      @Valid
+      CreateGoalRequest request
+  ) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
+
     Goal goal = Goal.builder()
         .name(request.name())
+        .user(user)
         .color(request.color())
         .privacyType(request.privacyType())
         .build();

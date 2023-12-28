@@ -36,11 +36,12 @@ public class GoalController {
 
   @PostMapping
   public ResponseEntity<CreateGoalResponse> create(
+      Long userId,
       @RequestBody
       @Valid
       CreateGoalRequest request
   ) {
-    CreateGoalResponse response = goalService.create(request);
+    CreateGoalResponse response = goalService.create(userId, request);
     URI uri = URI.create("/api/goals/" + response.id());
 
     return ResponseEntity.created(uri)
