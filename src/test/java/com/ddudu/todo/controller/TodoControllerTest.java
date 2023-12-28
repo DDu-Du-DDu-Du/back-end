@@ -19,6 +19,7 @@ import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Collections;
@@ -248,6 +249,24 @@ class TodoControllerTest {
           .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
     }
 
+    @Test
+    void GET_날짜를_전달받지_않으면_이번_주간의_할_일_달성률_조회를_성공한다() throws Exception {
+      // given
+      LocalDate date = LocalDate.now();
+      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
+      List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(mondayDate, 7);
+      given(todoService.findWeeklyTodoCompletion(mondayDate)).willReturn(responses);
+
+      // when then
+      mockMvc.perform(get("/api/todos/weekly")
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(7))
+          .andExpect(jsonPath("$[0].date").value(mondayDate.toString()))
+          .andExpect(jsonPath("$[0].totalTodos").value(0))
+          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"invalid-date", "20231225", "2023-15-01", "2023-12-33"})
     void GET_유효하지_않은_날짜로_주간_할_일_달성률을_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
@@ -278,9 +297,29 @@ class TodoControllerTest {
           .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
     }
 
+    @Test
+    void GET_날짜를_전달받지_않으면_오늘_날짜를_기준으로_이번_달의_할_일_달성률_조회를_성공한다() throws Exception {
+      // given
+      YearMonth yearMonth = YearMonth.now();
+      int daysInMonth = yearMonth.lengthOfMonth();
+      List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
+          yearMonth.atDay(1), daysInMonth);
+      given(todoService.findMonthlyTodoCompletion(yearMonth)).willReturn(responses);
+
+      // when then
+      mockMvc.perform(get("/api/todos/monthly")
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(daysInMonth))
+          .andExpect(jsonPath("$[0].date").value(yearMonth.atDay(1)
+              .toString()))
+          .andExpect(jsonPath("$[0].totalTodos").value(0))
+          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"invalid-date", "202312", "2023-15"})
-    void GET_유효하지_않은_연월로_주간_할_일_달성률을_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+    void GET_유효하지_않은_날짜로_월간_할_일_달성률을_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos/monthly")
