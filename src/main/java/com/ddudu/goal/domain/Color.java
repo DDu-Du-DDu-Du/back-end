@@ -21,15 +21,20 @@ public class Color {
   private String code;
 
   public Color(String code) {
+    this.code = confirmCode(code);
+  }
+
+  private String confirmCode(String code) {
+    if (isBlank(code)) {
+      return DEFAULT_COLOR_CODE;
+    }
+
     validate(code);
-    this.code = isBlank(code) ? DEFAULT_COLOR_CODE : code;
+
+    return code;
   }
 
   private void validate(String code) {
-    if (isBlank(code)) {
-      return;
-    }
-
     boolean matches = HEX_COLOR_CODE_PATTERN.matcher(code)
         .matches();
 
