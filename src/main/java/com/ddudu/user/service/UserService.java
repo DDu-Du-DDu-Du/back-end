@@ -10,7 +10,6 @@ import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
