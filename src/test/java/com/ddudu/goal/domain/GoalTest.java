@@ -15,6 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
@@ -23,9 +24,19 @@ class GoalTest {
   static final Faker faker = new Faker();
 
   User user;
+  String name;
+  String color;
+  PrivacyType privacyType;
+
   @BeforeEach
   void setUp() {
     user = createUser();
+    name = faker.lorem()
+        .word();
+    color = faker.color()
+        .hex()
+        .substring(1);
+    privacyType = PrivacyType.PUBLIC;
   }
 
   @Nested
@@ -33,9 +44,6 @@ class GoalTest {
 
     @Test
     void 목표를_생성할_수_있다() {
-      // given
-      String name = "dev course";
-
       // when
       Goal goal = Goal.builder()
           .name(name)
@@ -51,11 +59,6 @@ class GoalTest {
 
     @Test
     void 색상_코드_보기_설정과_함께_목표를_생성할_수_있다() {
-      // given
-      String name = "dev course";
-      String color = "999999";
-      PrivacyType privacyType = PrivacyType.PUBLIC;
-
       // when
       Goal goal = Goal.builder()
           .name(name)
@@ -111,7 +114,7 @@ class GoalTest {
     void 색상_코드가_빈_문자열이면_기본값으로_저장된다(String emptyColor) {
       // when
       Goal goal = Goal.builder()
-          .name("dev course")
+          .name(name)
           .user(user)
           .color(emptyColor)
           .build();
@@ -129,7 +132,7 @@ class GoalTest {
       // when then
       assertThatThrownBy(() ->
           Goal.builder()
-              .name("dev course")
+              .name(name)
               .user(user)
               .color(invalidColor)
               .build()
