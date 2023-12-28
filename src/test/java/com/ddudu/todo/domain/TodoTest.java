@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 class TodoTest {
 
@@ -111,12 +113,22 @@ class TodoTest {
     private static Goal createGoal(String name) {
       return Goal.builder()
           .name(name)
+          .user(createUser())
           .build();
     }
 
     private static List<String> provideLongString() {
       String longString = "a".repeat(100);
       return List.of(longString);
+    }
+
+    private static User createUser() {
+      return User.builder()
+          .passwordEncoder(new BCryptPasswordEncoder())
+          .email("email@naver.com")
+          .password("password123!")
+          .nickname("nickname")
+          .build();
     }
 
   }

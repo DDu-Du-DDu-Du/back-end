@@ -8,17 +8,25 @@ import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.repository.TodoRepository;
+import com.ddudu.user.domain.User;
+import com.ddudu.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import net.datafaker.Faker;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class TodoServiceTest {
+
+  static final Faker faker = new Faker();
 
   @Autowired
   TodoService todoService;
@@ -29,13 +37,17 @@ class TodoServiceTest {
   @Autowired
   GoalRepository goalRepository;
 
+  @Autowired
+  UserRepository userRepository;
+
   @Nested
   class 할_일_1개_조회_테스트 {
 
     @Test
     void 할_일_조회를_성공한다() {
       // given
-      Goal goal = createGoal("dev course");
+      User user = createUser();
+      Goal goal = createGoal("dev course", user);
       Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
 
       // when
@@ -44,7 +56,9 @@ class TodoServiceTest {
       // then
       assertThat(response).extracting("id", "goalId", "goalName", "name", "status")
           .containsExactly(todo.getId(), goal.getId(), goal.getName(), todo.getName(),
-              todo.getStatus().name());
+              todo.getStatus()
+                  .name()
+          );
     }
 
     @Test
@@ -60,9 +74,10 @@ class TodoServiceTest {
 
   }
 
-  private Goal createGoal(String name) {
+  private Goal createGoal(String name, User user) {
     Goal goal = Goal.builder()
         .name(name)
+        .user(user)
         .build();
 
     return goalRepository.save(goal);
@@ -75,6 +90,24 @@ class TodoServiceTest {
         .build();
 
     return todoRepository.save(todo);
+  }
+
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, false, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
+
+    User user = User.builder()
+        .passwordEncoder(new BCryptPasswordEncoder())
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .build();
+
+    return userRepository.save(user);
   }
 
 }
