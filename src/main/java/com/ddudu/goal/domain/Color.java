@@ -2,6 +2,8 @@ package com.ddudu.goal.domain;
 
 import static io.micrometer.common.util.StringUtils.isBlank;
 
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.goal.exception.GoalErrorCode;
 import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
@@ -39,8 +41,7 @@ public class Color {
         .matches();
 
     if (!matches) {
-      throw new IllegalArgumentException("올바르지 않은 색상 코드입니다. 색상 코드는 "
-          + HEX_COLOR_CODE_LENGTH + "자리 16진수입니다.");
+      throw new InvalidParameterException(GoalErrorCode.INVALID_COLOR_FORMAT);
     }
   }
 

@@ -3,6 +3,8 @@ package com.ddudu.goal.domain;
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.goal.exception.GoalErrorCode;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -82,11 +84,11 @@ public class Goal {
 
   private void validateName(String name) {
     if (isBlank(name)) {
-      throw new IllegalArgumentException("목표명은 필수값입니다.");
+      throw new InvalidParameterException(GoalErrorCode.BLANK_NAME);
     }
 
     if (name.length() > MAX_NAME_LENGTH) {
-      throw new IllegalArgumentException("목표명은 최대 " + MAX_NAME_LENGTH + "자 입니다.");
+      throw new InvalidParameterException(GoalErrorCode.EXCESSIVE_NAME_LENGTH);
     }
   }
 

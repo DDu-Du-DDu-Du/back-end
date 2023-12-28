@@ -1,12 +1,13 @@
 package com.ddudu.goal.service;
 
+import com.ddudu.common.exception.DataNotFound;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
+import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.repository.GoalRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class GoalService {
   @Transactional
   public GoalResponse update(Long id, @Valid UpdateGoalRequest request) {
     Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
+        .orElseThrow(() -> new DataNotFound(GoalErrorCode.ID_NOT_EXISTING));
 
     goal.applyGoalUpdates(
         request.name(), request.status(), request.color(), request.privacyType());
