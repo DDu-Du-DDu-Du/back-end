@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface GoalRepository extends JpaRepository<Goal, Long> {
 
-  @Query("SELECT g FROM Goal g ORDER BY g.status DESC, g.createdAt ASC")
+  @Query("SELECT g FROM Goal g WHERE g.user=:user ORDER BY g.status DESC, g.createdAt ASC")
   List<Goal> findAllByUser(User user);
 
 }
