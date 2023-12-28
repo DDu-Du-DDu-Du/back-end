@@ -220,6 +220,7 @@ class GoalControllerTest {
               .name()));
     }
 
+    @Nested
     class 단일_목표_조회_API_테스트 {
 
       @Test
