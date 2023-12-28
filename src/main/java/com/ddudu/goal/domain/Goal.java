@@ -20,6 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -82,16 +83,22 @@ public class Goal {
   private boolean isDeleted = DEFAULT_IS_DELETED;
 
   @Builder
-  public Goal(String name, String color, PrivacyType privacyType) {
-    validateName(name);
+  public Goal(String name, User user, String color, PrivacyType privacyType) {
+    validate(name, user);
 
     this.name = name;
+    this.user = user;
     this.color = new Color(color);
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
 
   public String getColor() {
     return color.getCode();
+  }
+
+  private void validate(String name, User user) {
+    validateName(name);
+    validateUser(user);
   }
 
   private void validateName(String name) {
@@ -103,5 +110,12 @@ public class Goal {
       throw new IllegalArgumentException("목표명은 최대 " + MAX_NAME_LENGTH + "자 입니다.");
     }
   }
+
+  private void validateUser(User user) {
+    if (Objects.isNull(user)) {
+      throw new IllegalArgumentException("사용자는 필수값입니다.");
+    }
+  }
+
 
 }
