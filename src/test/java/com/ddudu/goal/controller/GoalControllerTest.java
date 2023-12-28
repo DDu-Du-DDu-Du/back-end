@@ -15,10 +15,13 @@ import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
+import com.ddudu.goal.dto.response.GoalSummaryDTO;
 import com.ddudu.goal.service.GoalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import net.datafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -39,6 +42,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalControllerTest {
 
+  static final Faker faker = new Faker();
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -48,30 +53,34 @@ class GoalControllerTest {
   @MockBean
   private GoalService goalService;
 
+  String validName;
+  String validColor;
+
+  @BeforeEach
+  void setUp() {
+    validName = faker.lorem()
+        .word();
+    validColor = faker.color()
+        .hex()
+        .substring(1);
+  }
+
   @Nested
   class 목표_생성_API_테스트 {
-
-    private String validName;
-    private String validColor;
-
-    목표_생성_API_테스트() {
-      validName = "dev course";
-      validColor = "F7A29D";
-    }
 
     @Test
     void 목표를_생성할_수_있다() throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
-
       CreateGoalResponse response = new CreateGoalResponse(1L, validName, validColor);
 
-      given(goalService.create(any(CreateGoalRequest.class)))
+      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
           .willReturn(response);
 
       // when then
       mockMvc.perform(
               post("/api/goals")
+                  .param("userId", "1")
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -89,13 +98,14 @@ class GoalControllerTest {
       CreateGoalRequest request = new CreateGoalRequest(
           invalidName, validColor, PrivacyType.PUBLIC);
 
-      given(goalService.create(any(CreateGoalRequest.class)))
+      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
           .willReturn(CreateGoalResponse.builder()
               .build());
 
       // when then
       mockMvc.perform(
               post("/api/goals")
+                  .param("userId", "1")
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -110,13 +120,14 @@ class GoalControllerTest {
       // given
       CreateGoalRequest request = new CreateGoalRequest(longName, validColor, PrivacyType.PUBLIC);
 
-      given(goalService.create(any(CreateGoalRequest.class)))
+      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
           .willReturn(CreateGoalResponse.builder()
               .build());
 
       // when then
       mockMvc.perform(
               post("/api/goals")
+                  .param("userId", "1")
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -131,13 +142,14 @@ class GoalControllerTest {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, longColor, PrivacyType.PUBLIC);
 
-      given(goalService.create(any(CreateGoalRequest.class)))
+      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
           .willReturn(CreateGoalResponse.builder()
               .build());
 
       // when then
       mockMvc.perform(
               post("/api/goals")
+                  .param("userId", "1")
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -153,12 +165,13 @@ class GoalControllerTest {
       CreateGoalRequest request = new CreateGoalRequest(
           validName, invalidColor, PrivacyType.PUBLIC);
 
-      given(goalService.create(any(CreateGoalRequest.class)))
+      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
           .willThrow(new IllegalArgumentException("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다."));
 
       // when then
       mockMvc.perform(
               post("/api/goals")
+                  .param("userId", "1")
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -175,7 +188,7 @@ class GoalControllerTest {
   }
 
   @Nested
-  class 목표_조회_API_테스트 {
+  class 단일_목표_조회_API_테스트 {
 
     @Test
     void 목표를_조회할_수_있다() throws Exception {
@@ -222,6 +235,62 @@ class GoalControllerTest {
           .color("191919")
           .privacyType(PrivacyType.PRIVATE.name())
           .build();
+    }
+
+  }
+
+  @Nested
+  class 전체_목표_조회_API_테스트 {
+
+    @Test
+    void Get_사용자의_전체_목표를_조회할_수_있다() throws Exception {
+      // given
+      List<GoalSummaryDTO> response = createGoalSummaryDTO();
+      GoalSummaryDTO firstElement = response.get(0);
+
+      given(goalService.getGoals(any(Long.class))).willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              get("/api/goals")
+                  .param("userId", "1")
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$").isArray())
+          .andExpect(jsonPath("$[0].id").value(firstElement.id()))
+          .andExpect(jsonPath("$[0].name").value(firstElement.name()))
+          .andExpect(jsonPath("$[0].status").value(firstElement.status()))
+          .andExpect(jsonPath("$[0].color").value(firstElement.color()));
+    }
+
+    @Test
+    void Get_사용자가_존재하지_않은_경우_404_Not_Found_응답을_반환한다() throws Exception {
+      // given
+      String invalidUserId = "-1";
+      given(goalService.getGoals(any(Long.class))).willThrow(
+          new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
+
+      // when then
+      mockMvc.perform(
+              get("/api/goals")
+                  .queryParam("userId", invalidUserId)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("해당 아이디를 가진 사용자가 존재하지 않습니다.")));
+    }
+
+    private List<GoalSummaryDTO> createGoalSummaryDTO() {
+      GoalSummaryDTO goalSummaryDTO = GoalSummaryDTO.builder()
+          .id(1L)
+          .name("dev course")
+          .status(GoalStatus.IN_PROGRESS.name())
+          .color("191919")
+          .build();
+
+      return List.of(goalSummaryDTO);
     }
 
   }
