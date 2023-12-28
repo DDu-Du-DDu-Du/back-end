@@ -85,7 +85,7 @@ public class Todo {
     }
   }
 
-  public void updateStatus() {
+  public void switchStatus() {
     if (this.status == TodoStatus.UNCOMPLETED) {
       this.status = TodoStatus.COMPLETE;
       this.endAt = LocalDateTime.now();
