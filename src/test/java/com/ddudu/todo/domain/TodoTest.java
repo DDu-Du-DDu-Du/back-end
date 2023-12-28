@@ -3,7 +3,9 @@ package com.ddudu.todo.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.todo.exception.TodoErrorCode;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,17 @@ class TodoTest {
   @Nested
   @DisplayName("할 일 생성 테스트")
   class ConstructorTest {
+
+    private static Goal createGoal(String name) {
+      return Goal.builder()
+          .name(name)
+          .build();
+    }
+
+    private static List<String> provideLongString() {
+      String longString = "a".repeat(100);
+      return List.of(longString);
+    }
 
     @Test
     @DisplayName("할 일을 생성할 수 있다.")
@@ -72,8 +85,8 @@ class TodoTest {
       assertThatThrownBy(() -> Todo.builder()
           .name("Todo 엔티티 테스트 코드 짜기")
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("목표는 필수값입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(TodoErrorCode.NULL_GOAL_VALUE.getMessage());
     }
 
     @ParameterizedTest
@@ -88,8 +101,8 @@ class TodoTest {
           .name(invalidName)
           .goal(goal)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("할 일은 필수값입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(TodoErrorCode.BLANK_NAME.getMessage());
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
@@ -104,19 +117,8 @@ class TodoTest {
           .name(longName)
           .goal(goal)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("할 일은 최대 50자 입니다.");
-    }
-
-    private static Goal createGoal(String name) {
-      return Goal.builder()
-          .name(name)
-          .build();
-    }
-
-    private static List<String> provideLongString() {
-      String longString = "a".repeat(100);
-      return List.of(longString);
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(TodoErrorCode.EXCESSIVE_NAME_LENGTH.getMessage());
     }
 
   }

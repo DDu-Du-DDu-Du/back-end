@@ -3,10 +3,12 @@ package com.ddudu.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -95,8 +97,8 @@ class UserServiceTest {
       ThrowingCallable signUp = () -> userService.signUp(request);
 
       // then
-      assertThatExceptionOfType(DuplicateKeyException.class).isThrownBy(signUp)
-          .withMessage("이미 존재하는 이메일입니다.");
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(signUp)
+          .withMessage(UserErrorCode.DUPLICATE_EMAIL.getMessage());
     }
 
     @Test
@@ -123,8 +125,8 @@ class UserServiceTest {
       ThrowingCallable signUp = () -> userService.signUp(request);
 
       // then
-      assertThatExceptionOfType(DuplicateKeyException.class).isThrownBy(signUp)
-          .withMessage("이미 존재하는 아이디입니다.");
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(signUp)
+          .withMessage(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getMessage());
     }
 
     @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")

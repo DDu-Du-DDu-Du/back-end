@@ -3,6 +3,8 @@ package com.ddudu.goal.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.goal.exception.GoalErrorCode;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -62,8 +64,8 @@ class GoalTest {
       assertThatThrownBy(() -> Goal.builder()
           .name(invalidName)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("목표명은 필수값입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(GoalErrorCode.BLANK_NAME.getMessage());
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
@@ -73,8 +75,8 @@ class GoalTest {
       assertThatThrownBy(() -> Goal.builder()
           .name(longName)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("목표명은 최대 50자 입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getMessage());
     }
 
     @ParameterizedTest
@@ -103,8 +105,8 @@ class GoalTest {
               .color(invalidColor)
               .build()
       )
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(GoalErrorCode.INVALID_COLOR_FORMAT.getMessage());
 
     }
 

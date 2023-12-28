@@ -3,13 +3,14 @@ package com.ddudu.todo.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.common.exception.DataNotFound;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
+import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.todo.repository.TodoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -33,40 +34,6 @@ class TodoServiceTest {
 
   @Autowired
   GoalRepository goalRepository;
-
-  @Nested
-  class 할_일_1개_조회_테스트 {
-
-    @Test
-    void 할_일_조회를_성공한다() {
-      // given
-      Goal goal = createGoal("dev course");
-      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
-
-      // when
-      TodoResponse response = todoService.findById(todo.getId());
-
-      // then
-      assertThat(response).extracting(
-              "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name", "todoInfo.status")
-          .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName(),
-              todo.getStatus()
-                  .name()
-          );
-    }
-
-    @Test
-    void 아이디가_존재하지_않아_할_일_조회를_실패한다() {
-      // given
-      Long invalidId = 999L;
-
-      // when then
-      assertThatThrownBy(() -> todoService.findById(invalidId))
-          .isInstanceOf(EntityNotFoundException.class)
-          .hasMessage("할 일 아이디가 존재하지 않습니다.");
-    }
-
-  }
 
   @Test
   void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
@@ -112,6 +79,40 @@ class TodoServiceTest {
         .build();
 
     return todoRepository.save(todo);
+  }
+
+  @Nested
+  class 할_일_1개_조회_테스트 {
+
+    @Test
+    void 할_일_조회를_성공한다() {
+      // given
+      Goal goal = createGoal("dev course");
+      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
+
+      // when
+      TodoResponse response = todoService.findById(todo.getId());
+
+      // then
+      assertThat(response).extracting(
+              "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name", "todoInfo.status")
+          .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName(),
+              todo.getStatus()
+                  .name()
+          );
+    }
+
+    @Test
+    void 아이디가_존재하지_않아_할_일_조회를_실패한다() {
+      // given
+      Long invalidId = 999L;
+
+      // when then
+      assertThatThrownBy(() -> todoService.findById(invalidId))
+          .isInstanceOf(DataNotFound.class)
+          .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
   }
 
 }

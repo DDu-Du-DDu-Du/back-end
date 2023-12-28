@@ -1,13 +1,14 @@
 package com.ddudu.todo.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.common.exception.DataNotFound;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.todo.dto.response.GoalInfo;
 import com.ddudu.todo.dto.response.TodoInfo;
@@ -15,7 +16,6 @@ import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +45,37 @@ class TodoControllerTest {
 
   @Autowired
   ObjectMapper objectMapper;
+
+  private GoalInfo createGoalInfo() {
+    return GoalInfo.builder()
+        .id(1L)
+        .name("dev course")
+        .build();
+  }
+
+  private TodoInfo createTodoInfo() {
+    return TodoInfo.builder()
+        .id(1L)
+        .name("할 일 조회 기능 구현")
+        .status("UNCOMPLETED")
+        .build();
+  }
+
+  private TodoResponse createTodoResponse() {
+    return TodoResponse.builder()
+        .goalInfo(createGoalInfo())
+        .todoInfo(createTodoInfo())
+        .build();
+  }
+
+  private List<TodoListResponse> createTodoListResponse() {
+    TodoListResponse todolist = TodoListResponse.builder()
+        .goalInfo(createGoalInfo())
+        .todolist(Collections.singletonList(createTodoInfo()))
+        .build();
+
+    return Collections.singletonList(todolist);
+  }
 
   @Nested
   class 할_일_1개_조회_테스트 {
@@ -78,7 +109,7 @@ class TodoControllerTest {
         Exception {
       // given
       Long invalidId = 999L;
-      given(todoService.findById(anyLong())).willThrow(EntityNotFoundException.class);
+      given(todoService.findById(anyLong())).willThrow(DataNotFound.class);
 
       // when then
       mockMvc.perform(get("/api/todos/{id}", invalidId))
@@ -160,7 +191,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
     }
 
     @ParameterizedTest
@@ -170,40 +201,9 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
     }
 
-  }
-
-  private GoalInfo createGoalInfo() {
-    return GoalInfo.builder()
-        .id(1L)
-        .name("dev course")
-        .build();
-  }
-
-  private TodoInfo createTodoInfo() {
-    return TodoInfo.builder()
-        .id(1L)
-        .name("할 일 조회 기능 구현")
-        .status("UNCOMPLETED")
-        .build();
-  }
-
-  private TodoResponse createTodoResponse() {
-    return TodoResponse.builder()
-        .goalInfo(createGoalInfo())
-        .todoInfo(createTodoInfo())
-        .build();
-  }
-
-  private List<TodoListResponse> createTodoListResponse() {
-    TodoListResponse todolist = TodoListResponse.builder()
-        .goalInfo(createGoalInfo())
-        .todolist(Collections.singletonList(createTodoInfo()))
-        .build();
-
-    return Collections.singletonList(todolist);
   }
 
 }
