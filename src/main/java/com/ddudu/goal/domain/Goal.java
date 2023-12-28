@@ -69,6 +69,17 @@ public class Goal {
     return color.getCode();
   }
 
+  public void applyGoalUpdates(
+      String name, GoalStatus status, String color, PrivacyType privacyType
+  ) {
+    validateName(name);
+
+    this.name = name;
+    this.status = status;
+    this.color = new Color(color);
+    this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
+  }
+
   private void validateName(String name) {
     if (isBlank(name)) {
       throw new IllegalArgumentException("목표명은 필수값입니다.");
