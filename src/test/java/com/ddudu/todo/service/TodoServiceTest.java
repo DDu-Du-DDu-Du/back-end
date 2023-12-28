@@ -7,11 +7,14 @@ import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
+import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.repository.TodoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -127,6 +130,60 @@ class TodoServiceTest {
       assertThatThrownBy(() -> todoService.updateStatus(invalidId))
           .isInstanceOf(EntityNotFoundException.class)
           .hasMessage("할 일 아이디가 존재하지 않습니다.");
+    }
+
+  }
+
+  @Nested
+  class 할_일_달성률_조회_테스트 {
+
+    @Test
+    void 주간_할_일_달성률_조회를_성공한다() {
+      // given
+      Goal goal1 = createGoal("dev course");
+      Goal goal2 = createGoal("book");
+
+      Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
+
+      LocalDate date = LocalDate.now();
+      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
+      DayOfWeek dayOfWeek = date.getDayOfWeek();
+      int dayIndex = dayOfWeek.getValue() - 1;
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findWeeklyTodoCompletion(mondayDate);
+
+      // then
+      assertThat(responses).hasSize(7);
+
+      assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date.toString(), 2, 2);
+    }
+
+    @Test
+    void 월간_할_일_달성률_조회를_성공한다() {
+      // given
+      Goal goal1 = createGoal("dev course");
+      Goal goal2 = createGoal("book");
+
+      Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
+
+      LocalDate date = LocalDate.now();
+      YearMonth yearMonth = YearMonth.now();
+      int daysInMonth = yearMonth.lengthOfMonth();
+      int dayOfMonthIndex = date.getDayOfMonth() - 1;
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findMonthlyTodoCompletion(yearMonth);
+
+      // then
+      assertThat(responses).hasSize(daysInMonth);
+
+      assertThat(responses.get(dayOfMonthIndex)).extracting(
+              "date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date.toString(), 2, 2);
     }
 
   }
