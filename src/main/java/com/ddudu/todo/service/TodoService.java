@@ -59,7 +59,7 @@ public class TodoService {
   public TodoResponse updateStatus(Long id) {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("할 일 아이디가 존재하지 않습니다."));
-    todo.updateStatus();
+    todo.switchStatus();
 
     return TodoResponse.from(todo);
   }
