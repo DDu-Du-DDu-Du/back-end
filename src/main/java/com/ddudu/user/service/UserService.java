@@ -1,10 +1,12 @@
 package com.ddudu.user.service;
 
+import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ public class UserService {
     Email email = new Email(request.email());
 
     if (userRepository.existsByEmail(email)) {
-      throw new DuplicateKeyException("이미 존재하는 이메일입니다.");
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
     }
 
     UserBuilder userBuilder = User.builder()
@@ -36,7 +38,7 @@ public class UserService {
 
     if (Objects.nonNull(request.optionalUsername())) {
       if (userRepository.existsByOptionalUsername(request.optionalUsername())) {
-        throw new DuplicateKeyException("이미 존재하는 아이디입니다.");
+        throw new DuplicateResourceException(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME);
       }
 
       userBuilder.optionalUsername(request.optionalUsername());

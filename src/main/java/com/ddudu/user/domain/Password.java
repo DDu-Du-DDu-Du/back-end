@@ -1,5 +1,7 @@
 package com.ddudu.user.domain;
 
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
@@ -24,18 +26,18 @@ public class Password {
 
   private void validate(String password) {
     if (StringUtils.isBlank(password)) {
-      throw new IllegalArgumentException("비밀번호가 입력되지 않았습니다.");
+      throw new InvalidParameterException(UserErrorCode.BLANK_PASSWORD);
     }
 
     if (password.length() < MIN_PASSWORD_LENGTH) {
-      throw new IllegalArgumentException("비밀번호는 8자리 이상이어야 합니다.");
+      throw new InvalidParameterException(UserErrorCode.INSUFFICIENT_PASSWORD_LENGTH);
     }
 
     boolean matches = PASSWORD_PATTERN.matcher(password)
         .matches();
 
     if (!matches) {
-      throw new IllegalArgumentException("비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다.");
+      throw new InvalidParameterException(UserErrorCode.INVALID_PASSWORD_FORMAT);
     }
   }
 

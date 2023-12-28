@@ -1,5 +1,7 @@
 package com.ddudu.user.domain;
 
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.user.exception.UserErrorCode;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
@@ -105,27 +107,27 @@ public class User {
 
   private void validateNickname(String nickname) {
     if (StringUtils.isBlank(nickname)) {
-      throw new IllegalArgumentException("닉네임이 입력되지 않았습니다.");
+      throw new InvalidParameterException(UserErrorCode.BLANK_NICKNAME);
     }
 
     if (nickname.length() > 20) {
-      throw new IllegalArgumentException("닉네임은 최대 20자 입니다.");
+      throw new InvalidParameterException(UserErrorCode.EXCESSIVE_NICKNAME_LENGTH);
     }
   }
 
   private void validateOptionalUsername(String optionalUsername) {
     if (StringUtils.isBlank(optionalUsername)) {
-      throw new IllegalArgumentException("아이디는 공백일 수 없습니다.");
+      throw new InvalidParameterException(UserErrorCode.BLANK_OPTIONAL_USERNAME);
     }
 
     if (optionalUsername.length() > 20) {
-      throw new IllegalArgumentException("아이디는 최대 20자 입니다.");
+      throw new InvalidParameterException(UserErrorCode.EXCESSIVE_OPTIONAL_USERNAME_LENGTH);
     }
   }
 
   private void validateIntroduction(String introduction) {
     if (introduction.length() > 50) {
-      throw new IllegalArgumentException("자기소개는 최대 50자 입니다.");
+      throw new InvalidParameterException(UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH);
     }
   }
 
