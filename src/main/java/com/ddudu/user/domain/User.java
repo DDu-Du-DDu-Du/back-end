@@ -33,6 +33,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 public class User {
 
+  private static final int MAX_NICKNAME_LENGTH = 20;
+  private static final int MAX_OPTIONAL_USERNAME_LENGTH = 20;
+  private static final int MAX_INTRODUCTION_LENGTH = 50;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -110,7 +114,7 @@ public class User {
       throw new InvalidParameterException(UserErrorCode.BLANK_NICKNAME);
     }
 
-    if (nickname.length() > 20) {
+    if (nickname.length() > MAX_NICKNAME_LENGTH) {
       throw new InvalidParameterException(UserErrorCode.EXCESSIVE_NICKNAME_LENGTH);
     }
   }
@@ -120,13 +124,13 @@ public class User {
       throw new InvalidParameterException(UserErrorCode.BLANK_OPTIONAL_USERNAME);
     }
 
-    if (optionalUsername.length() > 20) {
+    if (optionalUsername.length() > MAX_OPTIONAL_USERNAME_LENGTH) {
       throw new InvalidParameterException(UserErrorCode.EXCESSIVE_OPTIONAL_USERNAME_LENGTH);
     }
   }
 
   private void validateIntroduction(String introduction) {
-    if (introduction.length() > 50) {
+    if (introduction.length() > MAX_INTRODUCTION_LENGTH) {
       throw new InvalidParameterException(UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH);
     }
   }
