@@ -2,10 +2,12 @@ package com.ddudu.auth.jwt;
 
 import java.util.Collections;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+@Slf4j
 public class JwtAuthToken extends JwtAuthenticationToken {
 
   private final Long userId;
@@ -17,9 +19,11 @@ public class JwtAuthToken extends JwtAuthenticationToken {
 
   public long getUserId() {
     if (Objects.isNull(userId)) {
+      log.error("JWT ({}) is somehow created without user id", getToken().getTokenValue());
       throw new IllegalStateException("User is not able to be loaded from this token.");
     }
 
     return userId;
   }
+
 }
