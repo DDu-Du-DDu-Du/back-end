@@ -185,6 +185,8 @@ class UserServiceTest {
       ThrowingCallable login = () -> userService.loadFromToken(token);
 
       // then
+      assertThat(token).isNotNull();
+      assertThat(token.getUserId()).isEqualTo(randomId);
       assertThatExceptionOfType(InvalidBearerTokenException.class).isThrownBy(login);
     }
 
