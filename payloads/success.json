@@ -1,0 +1,12 @@
+{
+  "text": "PR 업데이트 됐습니당",
+  "blocks": [
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "✨빌드 결과✨: ${{ job.status }}✅ 열심히 하셨네요 ㅎㅎ🎉\n링크: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+      }
+    }
+  ]
+}
