@@ -71,22 +71,20 @@ jobs:
           path: '**/build/reports/checkstyle/**.xml'
           title: 📝 Checkstyle report
 
-      - name: Send a slack notification
+      - name: Send a slack notification on successful workflow
         uses: slackapi/slack-github-action@v1.24.0
+        if: success()
         with:
-          payload: |
-            {
-              "text": "PR 업데이트 됐습니당",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "[업데이트 링크](${{ github.event.pull_request.html_url || github.event.head_commit.url }})\n빌드 결과: ${{ job.status }}"
-                  }
-                }
-              ]
-            }
+          payload: "./github/workflows/payloads/success.json"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+      - name: Send a slack notification on unsuccessful workflow
+        uses: slackapi/slack-github-action@v1.24.0
+        if: failure()
+        with:
+          payload: "./github/workflows/payloads/failure.json"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
