@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,9 +37,8 @@ public class UserController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<UserResponse> validateToken() {
-    JwtAuthToken token = (JwtAuthToken) SecurityContextHolder.getContext()
-        .getAuthentication();
+  public ResponseEntity<UserResponse> validateToken(Authentication authentication) {
+    JwtAuthToken token = (JwtAuthToken) authentication;
     UserResponse response = userService.loadFromToken(token);
 
     return ResponseEntity.ok(response);
