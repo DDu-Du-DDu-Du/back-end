@@ -11,8 +11,8 @@ import com.ddudu.user.repository.UserRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +56,7 @@ public class UserService {
   public UserResponse loadFromToken(JwtAuthToken jwtAuthToken) {
     Long userId = jwtAuthToken.getUserId();
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new AccessDeniedException("잘못된 토큰입니다."));
+        .orElseThrow(() -> new InvalidBearerTokenException("잘못된 토큰입니다."));
 
     return UserResponse.from(user);
   }
