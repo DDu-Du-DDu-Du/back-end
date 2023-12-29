@@ -70,3 +70,23 @@ jobs:
         with:
           path: '**/build/reports/checkstyle/**.xml'
           title: 📝 Checkstyle report
+
+      - name: Send a slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "PR 업데이트 됐습니당",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "[업데이트 링크](${{ github.event.pull_request.html_url || github.event.head_commit.url }})\빌드 결과: ${{ job.status }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
