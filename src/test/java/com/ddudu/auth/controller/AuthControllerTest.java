@@ -47,7 +47,7 @@ class AuthControllerTest {
   MockMvc mockMvc;
 
   @Nested
-  class 로그인_API_테스트 {
+  class POST_로그인_API_테스트 {
 
     @Test
     void 로그인_성공_시_OK_응답을_반환한다() throws Exception {
