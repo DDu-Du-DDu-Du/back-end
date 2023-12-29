@@ -72,17 +72,18 @@ jobs:
           title: 📝 Checkstyle report
 
       - name: Send a slack notification
+        id: slack
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
             {
-              "text": "PR 업데이트 됐습니당",
+              "text": "Sorry for inconvenience. Currently testing CI",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "[업데이트 링크](${{ github.event.pull_request.html_url || github.event.head_commit.url }})\빌드 결과: ${{ job.status }}"
+                    "text": "[Update](${{ github.event.pull_request.html_url || github.event.head_commit.url }})\Check Result: ${{ job.status }}"
                   }
                 }
               ]
