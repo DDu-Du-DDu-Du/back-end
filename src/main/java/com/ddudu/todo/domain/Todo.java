@@ -85,4 +85,14 @@ public class Todo {
     }
   }
 
+  public void switchStatus() {
+    if (this.status == TodoStatus.UNCOMPLETED) {
+      this.status = TodoStatus.COMPLETE;
+      this.endAt = LocalDateTime.now();
+    } else {
+      this.status = TodoStatus.UNCOMPLETED;
+      this.endAt = null;
+    }
+  }
+
 }
