@@ -24,17 +24,16 @@ public class JwtIssuer {
   }
 
   public String issue(Map<String, Object> claims, Duration expirationDuration) {
+    Instant now = Instant.now();
     JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS512)
         .type(JWT)
         .build();
     JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
-        .issuedAt(Instant.now())
-        .expiresAt(Instant.now().plus(expirationDuration))
+        .issuedAt(now)
+        .expiresAt(now.plus(expirationDuration))
         .issuer(issuer);
 
-    for (String claim : claims.keySet()) {
-      claimSet.claim(claim, claims.get(claim));
-    }
+    claims.forEach(claimSet::claim);
 
     JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
         jwsHeader, claimSet.build());
