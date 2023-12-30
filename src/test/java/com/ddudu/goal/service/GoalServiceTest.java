@@ -10,7 +10,7 @@ import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
-import com.ddudu.goal.dto.response.GoalSummaryDTO;
+import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
@@ -215,7 +215,7 @@ class GoalServiceTest {
       List<Goal> expected = createGoals(user, List.of(validName));
 
       // when
-      List<GoalSummaryDTO> actual = goalService.getGoals(user.getId());
+      List<GoalSummaryResponse> actual = goalService.getGoals(user.getId());
 
       // then
       assertThat(actual).isNotEmpty();

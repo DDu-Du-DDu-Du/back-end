@@ -4,15 +4,15 @@ import com.ddudu.goal.domain.Goal;
 import lombok.Builder;
 
 @Builder
-public record GoalSummaryDTO(
+public record GoalSummaryResponse(
     Long id,
     String name,
     String status,
     String color
 ) {
 
-  public static GoalSummaryDTO from(Goal goal) {
-    return GoalSummaryDTO.builder()
+  public static GoalSummaryResponse from(Goal goal) {
+    return GoalSummaryResponse.builder()
         .id(goal.getId())
         .name(goal.getName())
         .status(goal.getStatus()

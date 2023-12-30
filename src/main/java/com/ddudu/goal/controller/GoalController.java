@@ -7,7 +7,7 @@ import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.ErrorResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
-import com.ddudu.goal.dto.response.GoalSummaryDTO;
+import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.service.GoalService;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.persistence.EntityNotFoundException;
@@ -77,11 +77,11 @@ public class GoalController {
   }
 
   @GetMapping
-  public ResponseEntity<List<GoalSummaryDTO>> getGoals(
+  public ResponseEntity<List<GoalSummaryResponse>> getGoals(
       @RequestParam
       Long userId
   ) {
-    List<GoalSummaryDTO> response = goalService.getGoals(userId);
+    List<GoalSummaryResponse> response = goalService.getGoals(userId);
 
     return ResponseEntity.ok(response);
   }

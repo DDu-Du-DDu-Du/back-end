@@ -5,7 +5,7 @@ import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
-import com.ddudu.goal.dto.response.GoalSummaryDTO;
+import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
@@ -63,14 +63,14 @@ public class GoalService {
     return GoalResponse.from(goal);
   }
 
-  public List<GoalSummaryDTO> getGoals(Long userId) {
+  public List<GoalSummaryResponse> getGoals(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
 
     List<Goal> goals = goalRepository.findAllByUser(user);
 
     return goals.stream()
-        .map(GoalSummaryDTO::from)
+        .map(GoalSummaryResponse::from)
         .toList();
   }
 

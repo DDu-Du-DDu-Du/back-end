@@ -17,7 +17,7 @@ import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
-import com.ddudu.goal.dto.response.GoalSummaryDTO;
+import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.service.GoalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -338,8 +338,8 @@ class GoalControllerTest {
       @Test
       void Get_사용자의_전체_목표를_조회할_수_있다() throws Exception {
         // given
-        List<GoalSummaryDTO> response = createGoalSummaryDTO();
-        GoalSummaryDTO firstElement = response.get(0);
+        List<GoalSummaryResponse> response = createGoalSummaryDTO();
+        GoalSummaryResponse firstElement = response.get(0);
 
         given(goalService.getGoals(any(Long.class))).willReturn(response);
 
@@ -375,15 +375,15 @@ class GoalControllerTest {
                 .value(containsString("해당 아이디를 가진 사용자가 존재하지 않습니다.")));
       }
 
-      private List<GoalSummaryDTO> createGoalSummaryDTO() {
-        GoalSummaryDTO goalSummaryDTO = GoalSummaryDTO.builder()
+      private List<GoalSummaryResponse> createGoalSummaryDTO() {
+        GoalSummaryResponse goalSummaryResponse = GoalSummaryResponse.builder()
             .id(1L)
             .name("dev course")
             .status(GoalStatus.IN_PROGRESS.name())
             .color("191919")
             .build();
 
-        return List.of(goalSummaryDTO);
+        return List.of(goalSummaryResponse);
       }
 
     }
