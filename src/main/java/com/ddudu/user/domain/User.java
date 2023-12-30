@@ -1,7 +1,7 @@
 package com.ddudu.user.domain;
 
-import com.ddudu.common.BaseEntity;
 import com.ddudu.auth.domain.authority.Authority;
+import com.ddudu.common.BaseEntity;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -13,13 +13,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
