@@ -3,6 +3,7 @@ package com.ddudu.todo.domain;
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import com.ddudu.common.BaseTimeEntity;
 import com.ddudu.goal.domain.Goal;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,14 +21,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @Entity
 @Table(name = "todo")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EnableJpaAuditing
 @Getter
-public class Todo {
+public class Todo extends BaseTimeEntity {
 
   private static final TodoStatus DEFAULT_STATUS = TodoStatus.UNCOMPLETED;
   private static final Boolean DEFAULT_IS_DELETED = false;
