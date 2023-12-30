@@ -169,7 +169,7 @@ class GoalServiceTest {
       Long id = expected.getId();
 
       // when
-      GoalResponse actual = goalService.getGoal(id);
+      GoalResponse actual = goalService.getById(id);
 
       // then
       GoalStatus expectedStatus = expected.getStatus();
@@ -197,7 +197,7 @@ class GoalServiceTest {
       Long invalidId = -1L;
 
       // when
-      ThrowingCallable getGoal = () -> goalService.getGoal(invalidId);
+      ThrowingCallable getGoal = () -> goalService.getById(invalidId);
 
       // then
       assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(getGoal)
@@ -215,7 +215,7 @@ class GoalServiceTest {
       List<Goal> expected = createGoals(user, List.of(validName));
 
       // when
-      List<GoalSummaryResponse> actual = goalService.getGoals(user.getId());
+      List<GoalSummaryResponse> actual = goalService.getAllById(user.getId());
 
       // then
       assertThat(actual).isNotEmpty();
@@ -245,7 +245,7 @@ class GoalServiceTest {
       Long invalidUserId = 1234567890L;
 
       // when
-      ThrowingCallable getGoals = () -> goalService.getGoals(invalidUserId);
+      ThrowingCallable getGoals = () -> goalService.getAllById(invalidUserId);
 
       // then
       assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(getGoals)

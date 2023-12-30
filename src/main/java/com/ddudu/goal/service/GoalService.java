@@ -56,14 +56,14 @@ public class GoalService {
     return GoalResponse.from(goal);
   }
 
-  public GoalResponse getGoal(Long id) {
+  public GoalResponse getById(Long id) {
     Goal goal = goalRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
 
     return GoalResponse.from(goal);
   }
 
-  public List<GoalSummaryResponse> getGoals(Long userId) {
+  public List<GoalSummaryResponse> getAllById(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
 

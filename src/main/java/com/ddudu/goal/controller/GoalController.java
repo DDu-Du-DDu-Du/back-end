@@ -67,21 +67,21 @@ public class GoalController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<GoalResponse> getGoal(
+  public ResponseEntity<GoalResponse> getById(
       @PathVariable
       Long id
   ) {
-    GoalResponse response = goalService.getGoal(id);
+    GoalResponse response = goalService.getById(id);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping
-  public ResponseEntity<List<GoalSummaryResponse>> getGoals(
+  public ResponseEntity<List<GoalSummaryResponse>> getAllById(
       @RequestParam
       Long userId
   ) {
-    List<GoalSummaryResponse> response = goalService.getGoals(userId);
+    List<GoalSummaryResponse> response = goalService.getAllById(userId);
 
     return ResponseEntity.ok(response);
   }
