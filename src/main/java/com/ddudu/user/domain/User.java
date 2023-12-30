@@ -1,6 +1,6 @@
 package com.ddudu.user.domain;
 
-import com.ddudu.common.BaseTimeEntity;
+import com.ddudu.common.BaseEntity;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -23,7 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class User extends BaseTimeEntity {
+public class User extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,9 +53,6 @@ public class User extends BaseTimeEntity {
   @Enumerated(EnumType.STRING)
   private UserStatus status;
 
-  @Column(name = "is_deleted", nullable = false)
-  private boolean isDeleted;
-
   @Builder
   public User(
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
@@ -68,7 +65,6 @@ public class User extends BaseTimeEntity {
     this.nickname = nickname;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     status = UserStatus.ACTIVE;
-    isDeleted = false;
   }
 
   public String getEmail() {
