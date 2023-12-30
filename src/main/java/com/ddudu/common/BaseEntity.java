@@ -13,7 +13,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-public class BaseTimeEntity {
+public class BaseEntity {
+
+  private static final Boolean DEFAULT_IS_DELETED = false;
 
   @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP")
   @CreatedDate
@@ -24,5 +26,8 @@ public class BaseTimeEntity {
   @LastModifiedDate
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
   private LocalDateTime updatedAt;
+
+  @Column(name = "is_deleted", nullable = false)
+  private boolean isDeleted = DEFAULT_IS_DELETED;
 
 }
