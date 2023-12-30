@@ -219,7 +219,7 @@ class GoalServiceTest {
 
       // then
       assertThat(actual).isNotEmpty();
-      //assertThat(actual.size()).isEqualTo(expected.size());
+      assertThat(actual.size()).isEqualTo(expected.size());
       assertThat(actual.get(0)).extracting(
               "id",
               "name",
