@@ -2,6 +2,7 @@ package com.ddudu.goal.controller;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -76,7 +77,7 @@ class GoalControllerTest {
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
       CreateGoalResponse response = new CreateGoalResponse(1L, validName, validColor);
 
-      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
+      given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willReturn(response);
 
       // when then
@@ -100,7 +101,7 @@ class GoalControllerTest {
       CreateGoalRequest request = new CreateGoalRequest(
           invalidName, validColor, PrivacyType.PUBLIC);
 
-      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
+      given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willReturn(CreateGoalResponse.builder()
               .build());
 
@@ -122,7 +123,7 @@ class GoalControllerTest {
       // given
       CreateGoalRequest request = new CreateGoalRequest(longName, validColor, PrivacyType.PUBLIC);
 
-      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
+      given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willReturn(CreateGoalResponse.builder()
               .build());
 
@@ -144,7 +145,7 @@ class GoalControllerTest {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, longColor, PrivacyType.PUBLIC);
 
-      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
+      given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willReturn(CreateGoalResponse.builder()
               .build());
 
@@ -167,7 +168,7 @@ class GoalControllerTest {
       CreateGoalRequest request = new CreateGoalRequest(
           validName, invalidColor, PrivacyType.PUBLIC);
 
-      given(goalService.create(any(Long.class), any(CreateGoalRequest.class)))
+      given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willThrow(new IllegalArgumentException("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다."));
 
       // when then
@@ -201,7 +202,7 @@ class GoalControllerTest {
       GoalResponse response = new GoalResponse(
           1L, validName, GoalStatus.IN_PROGRESS, validColor, PrivacyType.PUBLIC);
 
-      given(goalService.update(any(Long.class), any(UpdateGoalRequest.class)))
+      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
           .willReturn(response);
 
       // when then
@@ -228,7 +229,7 @@ class GoalControllerTest {
         // given
         GoalResponse response = createGoalResponse();
 
-        given(goalService.getById(any(Long.class))).willReturn(response);
+        given(goalService.getById(anyLong())).willReturn(response);
 
         // when then
         mockMvc.perform(
@@ -260,7 +261,7 @@ class GoalControllerTest {
         GoalResponse response = GoalResponse.builder()
             .build();
 
-        given(goalService.update(any(Long.class), any(UpdateGoalRequest.class)))
+        given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
             .willReturn(response);
 
         // when then
@@ -289,7 +290,7 @@ class GoalControllerTest {
         GoalResponse response = GoalResponse.builder()
             .build();
 
-        given(goalService.update(any(Long.class), any(UpdateGoalRequest.class)))
+        given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
             .willReturn(response);
 
         // when then
@@ -307,7 +308,7 @@ class GoalControllerTest {
       void ID가_유효하지_않으면_Not_Found_응답을_반환한다() throws Exception {
         // given
         Long invalidId = -1L;
-        given(goalService.getById(any(Long.class)))
+        given(goalService.getById(anyLong()))
             .willThrow(new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
 
         // when then
@@ -341,7 +342,7 @@ class GoalControllerTest {
         List<GoalSummaryResponse> response = createGoalSummaryDTO();
         GoalSummaryResponse firstElement = response.get(0);
 
-        given(goalService.getAllById(any(Long.class))).willReturn(response);
+        given(goalService.getAllById(anyLong())).willReturn(response);
 
         // when then
         mockMvc.perform(
@@ -361,7 +362,7 @@ class GoalControllerTest {
       void Get_사용자가_존재하지_않은_경우_404_Not_Found_응답을_반환한다() throws Exception {
         // given
         String invalidUserId = "-1";
-        given(goalService.getAllById(any(Long.class))).willThrow(
+        given(goalService.getAllById(anyLong())).willThrow(
             new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
 
         // when then
