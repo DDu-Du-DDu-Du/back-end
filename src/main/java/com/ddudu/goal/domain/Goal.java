@@ -107,6 +107,10 @@ public class Goal {
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
 
+  public void delete() {
+    this.isDeleted = true;
+  }
+
   private void validate(String name, User user) {
     validateName(name);
     validateUser(user);
@@ -127,5 +131,5 @@ public class Goal {
       throw new IllegalArgumentException("사용자는 필수값입니다.");
     }
   }
-  
+
 }

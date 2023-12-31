@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,6 +85,17 @@ public class GoalController {
     List<GoalSummaryResponse> response = goalService.getAllById(userId);
 
     return ResponseEntity.ok(response);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity delete(
+      @PathVariable
+      Long id
+  ) {
+    goalService.delete(id);
+
+    return ResponseEntity.noContent()
+        .build();
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
