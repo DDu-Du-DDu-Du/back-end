@@ -58,11 +58,6 @@ class GoalControllerTest {
     validColor = "F7A29D";
   }
 
-    private static List<String> provide51Letters() {
-      String longString = "a".repeat(51);
-      return List.of(longString);
-    }
-
   @Nested
   class POST_목표_생성_API_테스트 {
 
