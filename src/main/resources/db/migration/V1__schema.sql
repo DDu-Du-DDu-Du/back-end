@@ -48,3 +48,15 @@ CREATE TABLE IF NOT EXISTS todo
     CONSTRAINT pk_todo_id PRIMARY KEY (id),
     CONSTRAINT fk_goal_id FOREIGN KEY (goal_id) REFERENCES goal (id)
 );
+
+-- FRIEND
+CREATE TABLE IF NOT EXISTS followings
+(
+    id          BIGINT AUTO_INCREMENT,
+    follower_id BIGINT NOT NULL,
+    followee_id BIGINT NOT NULL,
+    status      VARCHAR(20) NOT NULL,
+    CONSTRAINT pk_friend_id PRIMARY KEY (id),
+    CONSTRAINT fk_follower_id FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON DELETE CASCADE
+);
