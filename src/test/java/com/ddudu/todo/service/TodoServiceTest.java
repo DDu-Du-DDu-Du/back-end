@@ -158,7 +158,7 @@ class TodoServiceTest {
       assertThat(responses).hasSize(7);
 
       assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
-          .containsExactly(date.toString(), 2, 2);
+          .containsExactly(date, 2, 2);
     }
 
     @Test
@@ -183,7 +183,7 @@ class TodoServiceTest {
 
       assertThat(responses.get(dayOfMonthIndex)).extracting(
               "date", "totalTodos", "uncompletedTodos")
-          .containsExactly(date.toString(), 2, 2);
+          .containsExactly(date, 2, 2);
     }
 
   }
