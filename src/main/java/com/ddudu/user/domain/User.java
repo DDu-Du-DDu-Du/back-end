@@ -2,8 +2,10 @@ package com.ddudu.user.domain;
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.BaseEntity;
+import com.ddudu.friend.domain.Following;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -12,7 +14,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -58,12 +63,16 @@ public class User extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private UserStatus status;
 
+  @OneToMany(mappedBy = "follower", cascade = CascadeType.PERSIST, orphanRemoval = true)
+  private List<Following> followings = new ArrayList<>();
+
   @Builder
   public User(
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
       String nickname, String introduction, Authority authority
   ) {
     validate(nickname, optionalUsername, introduction);
+
     this.optionalUsername = optionalUsername;
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
