@@ -65,8 +65,9 @@ public class TodoController {
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
   ) {
+    DayOfWeek weekStart = DayOfWeek.MONDAY;
     date = (date == null) ? LocalDate.now()
-        .with(DayOfWeek.MONDAY) : date.with(DayOfWeek.MONDAY);
+        .with(weekStart) : date.with(weekStart);
 
     List<TodoCompletionResponse> completionList = todoService.findWeeklyTodoCompletion(date);
     return ResponseEntity.ok(completionList);
