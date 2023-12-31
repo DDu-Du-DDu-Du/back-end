@@ -30,7 +30,7 @@ public class TodoController {
   private final TodoService todoService;
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> getTodo(
+  public ResponseEntity<TodoResponse> getTodo(
       @PathVariable
           Long id
   ) {
@@ -39,8 +39,10 @@ public class TodoController {
   }
 
   @GetMapping
-  public ResponseEntity<?> getDailyTodoList(
-      LocalDate date
+  public ResponseEntity<List<TodoListResponse>> getDailyTodoList(
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM-dd")
+          LocalDate date
   ) {
     date = (date == null) ? LocalDate.now() : date;
 
@@ -49,7 +51,7 @@ public class TodoController {
   }
 
   @PatchMapping("/{id}/status")
-  public ResponseEntity<?> updateTodoStatus(
+  public ResponseEntity<TodoResponse> updateTodoStatus(
       @PathVariable
           Long id
   ) {
@@ -59,7 +61,9 @@ public class TodoController {
 
   @GetMapping("/weekly")
   public ResponseEntity<List<TodoCompletionResponse>> getWeeklyTodoCompletion(
-      LocalDate date
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM-dd")
+          LocalDate date
   ) {
     date = (date == null) ? LocalDate.now()
         .with(DayOfWeek.MONDAY) : date.with(DayOfWeek.MONDAY);
