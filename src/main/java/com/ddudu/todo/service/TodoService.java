@@ -90,7 +90,7 @@ public class TodoService {
             startDate, endDate)
         .stream()
         .collect(
-            Collectors.toMap(response -> LocalDate.parse(response.date()), response -> response));
+            Collectors.toMap(TodoCompletionResponse::date, response -> response));
 
     List<TodoCompletionResponse> completionList = new ArrayList<>();
     for (LocalDateTime currentDate = startDate; currentDate.isBefore(endDate);
