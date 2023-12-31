@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -387,6 +389,38 @@ class GoalControllerTest {
         return List.of(goalSummaryResponse);
       }
 
+    }
+
+  }
+
+  @Nested
+  class 목표_삭제_API_테스트 {
+
+    @Test
+    void DELETE_목표_삭제를_성공한다() throws Exception {
+      // when then
+      mockMvc.perform(
+              delete("/api/goals/{id}", 1L)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void DELETE_리소스가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws Exception {
+      // given
+      willThrow(new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."))
+          .given(goalService)
+          .delete(anyLong());
+
+      // when then
+      mockMvc.perform(
+              delete("/api/goals/{id}", 1L)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("해당 아이디를 가진 사용자가 존재하지 않습니다.")));
     }
 
   }

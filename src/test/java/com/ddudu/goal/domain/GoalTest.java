@@ -171,6 +171,23 @@ class GoalTest {
 
   }
 
+  @Nested
+  class 목표_삭제_테스트 {
+
+    @Test
+    void 목표를_삭제_상태로_변경할_수_있다() {
+      // given
+      Goal goal = createGoal();
+
+      // when
+      goal.delete();
+
+      // then
+      assertThat(goal.isDeleted()).isEqualTo(true);
+    }
+
+  }
+
   private User createUser() {
     String email = faker.internet()
         .emailAddress();

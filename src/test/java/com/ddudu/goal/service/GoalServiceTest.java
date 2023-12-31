@@ -192,6 +192,20 @@ class GoalServiceTest {
     }
 
     @Test
+    void 삭제된_목표의_ID인_경우_조회에_실패한다() {
+      // given
+      Goal goal = createGoal(user, validName);
+      goalRepository.delete(goal);
+
+      // when
+      ThrowingCallable getGoal = () -> goalService.getById(goal.getId());
+
+      // then
+      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(getGoal)
+          .withMessage("해당 아이디를 가진 목표가 존재하지 않습니다.");
+    }
+
+    @Test
     void 유효하지_않은_ID인_경우_조회에_실패한다() {
       // given
       Long invalidId = -1L;
@@ -278,6 +292,26 @@ class GoalServiceTest {
           .get();
       assertThat(actual).extracting("name", "status", "color", "privacyType")
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
+    }
+
+  }
+
+  @Nested
+  class 목표_삭제_테스트 {
+
+    @Test
+    void 목표를_삭제_할_수_있다() {
+      // given
+      Goal goal = createGoal(user, validName);
+      Optional<Goal> found = goalRepository.findById(goal.getId());
+      assertThat(found).isNotEmpty();
+
+      // when
+      goalService.delete(goal.getId());
+
+      // then
+      Optional<Goal> foundAfterDeleted = goalRepository.findById(goal.getId());
+      assertThat(foundAfterDeleted).isEmpty();
     }
 
   }
