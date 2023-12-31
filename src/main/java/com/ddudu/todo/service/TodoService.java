@@ -70,7 +70,7 @@ public class TodoService {
 
   public List<TodoCompletionResponse> findWeeklyTodoCompletion(LocalDate date) {
     LocalDateTime startDate = date.atStartOfDay();
-    LocalDateTime endDate = startDate.plusDays(6);
+    LocalDateTime endDate = startDate.plusDays(7);
 
     return generateCompletions(startDate, endDate);
   }
@@ -78,8 +78,7 @@ public class TodoService {
   public List<TodoCompletionResponse> findMonthlyTodoCompletion(YearMonth yearMonth) {
     LocalDateTime startDate = yearMonth.atDay(1)
         .atStartOfDay();
-    LocalDateTime endDate = startDate.plusMonths(1)
-        .minusDays(1);
+    LocalDateTime endDate = startDate.plusMonths(1);
 
     return generateCompletions(startDate, endDate);
   }
@@ -94,7 +93,7 @@ public class TodoService {
             Collectors.toMap(response -> LocalDate.parse(response.date()), response -> response));
 
     List<TodoCompletionResponse> completionList = new ArrayList<>();
-    for (LocalDateTime currentDate = startDate; !currentDate.isAfter(endDate);
+    for (LocalDateTime currentDate = startDate; currentDate.isBefore(endDate);
         currentDate = currentDate.plusDays(1)) {
       TodoCompletionResponse response = completionByDate.getOrDefault(
           currentDate.toLocalDate(),

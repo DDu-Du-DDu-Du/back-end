@@ -68,7 +68,8 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
         )
         .from(todo)
         .where(
-            todo.beginAt.between(startDate, endDate),
+            todo.beginAt.goe(startDate),
+            todo.beginAt.lt(endDate),
             todo.isDeleted.eq(false)
         )
         .groupBy(Expressions.dateTemplate(LocalDate.class, "{0}", todo.beginAt))
@@ -85,6 +86,5 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
             .build())
         .toList();
   }
-
 
 }
