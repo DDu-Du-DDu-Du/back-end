@@ -72,7 +72,7 @@ public class TodoService {
     LocalDateTime startDate = date.atStartOfDay();
     LocalDateTime endDate = startDate.plusDays(6);
 
-    return generateCompletionList(startDate, endDate);
+    return generateCompletions(startDate, endDate);
   }
 
   public List<TodoCompletionResponse> findMonthlyTodoCompletion(YearMonth yearMonth) {
@@ -81,10 +81,10 @@ public class TodoService {
     LocalDateTime endDate = startDate.plusMonths(1)
         .minusDays(1);
 
-    return generateCompletionList(startDate, endDate);
+    return generateCompletions(startDate, endDate);
   }
 
-  private List<TodoCompletionResponse> generateCompletionList(
+  private List<TodoCompletionResponse> generateCompletions(
       LocalDateTime startDate, LocalDateTime endDate
   ) {
     Map<LocalDate, TodoCompletionResponse> completionByDate = todoRepository.findTodosCompletion(
