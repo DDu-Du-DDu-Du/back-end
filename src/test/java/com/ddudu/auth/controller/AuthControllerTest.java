@@ -10,7 +10,7 @@ import com.ddudu.auth.dto.response.LoginResponse;
 import com.ddudu.auth.service.AuthService;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
-import com.ddudu.support.TestSecretKey;
+import com.ddudu.support.TestProperties;
 import com.ddudu.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.datafaker.Faker;
@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(AuthController.class)
-@Import({WebSecurityConfig.class, TestSecretKey.class, JwtConfig.class})
+@Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class AuthControllerTest {
 

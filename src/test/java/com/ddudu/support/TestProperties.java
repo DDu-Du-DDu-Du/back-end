@@ -6,14 +6,17 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 @TestConfiguration
-public class TestSecretKey {
+public class TestProperties {
 
   @Value("${jwt.secret-key}")
   private String secretKey;
 
+  @Value("${jwt.expired-after}")
+  private int expiredAfter;
+
   @Bean
   public JwtProperties jwtProperties() {
-    return new JwtProperties(secretKey);
+    return new JwtProperties(secretKey, expiredAfter);
   }
 
 }

@@ -3,6 +3,7 @@ package com.ddudu.auth.service;
 import com.ddudu.auth.dto.request.LoginRequest;
 import com.ddudu.auth.dto.response.LoginResponse;
 import com.ddudu.auth.jwt.JwtIssuer;
+import com.ddudu.config.properties.JwtProperties;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
@@ -24,6 +25,7 @@ public class AuthService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtIssuer jwtIssuer;
+  private final JwtProperties jwtProperties;
 
   public LoginResponse login(LoginRequest request) {
     Email email = new Email(request.email());
@@ -40,7 +42,7 @@ public class AuthService {
     claims.put("user", user.getId());
     claims.put("auth", user.getAuthority());
 
-    String jwt = jwtIssuer.issue(claims, Duration.ofMinutes(15));
+    String jwt = jwtIssuer.issue(claims, Duration.ofMinutes(jwtProperties.getExpiredAfter()));
 
     return new LoginResponse(jwt);
   }

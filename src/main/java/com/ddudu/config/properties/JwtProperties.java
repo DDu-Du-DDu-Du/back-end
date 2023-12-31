@@ -9,10 +9,12 @@ import org.springframework.boot.context.properties.bind.ConstructorBinding;
 public class JwtProperties {
 
   private final String secretKey;
+  private final int expiredAfter;
 
   @ConstructorBinding
-  public JwtProperties(String secretKey) {
+  public JwtProperties(String secretKey, int expiredAfter) {
     this.secretKey = secretKey;
+    this.expiredAfter = expiredAfter;
   }
 
 }

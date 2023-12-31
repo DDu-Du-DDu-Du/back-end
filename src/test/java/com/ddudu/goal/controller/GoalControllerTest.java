@@ -18,7 +18,7 @@ import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.service.GoalService;
-import com.ddudu.support.TestSecretKey;
+import com.ddudu.support.TestProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -37,7 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = GoalController.class)
-@Import({WebSecurityConfig.class, TestSecretKey.class, JwtConfig.class})
+@Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalControllerTest {
 
