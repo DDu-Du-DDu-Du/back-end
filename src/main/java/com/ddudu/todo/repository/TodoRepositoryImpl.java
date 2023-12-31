@@ -4,6 +4,7 @@ import com.ddudu.todo.domain.QTodo;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
+import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -44,6 +45,9 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
   ) {
     QTodo todo = QTodo.todo;
 
+    DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
+        LocalDate.class, "{0}", todo.beginAt);
+
     NumberTemplate<Long> totalTodosTemplate = Expressions.numberTemplate(
         Long.class,
         "COUNT({0})", todo.id
@@ -59,7 +63,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
 
     return jpaQueryFactory
         .select(
-            Expressions.dateTemplate(LocalDate.class, "{0}", todo.beginAt)
+            dateTemplate
                 .as("date"),
             totalTodosTemplate
                 .as("totalTodos"),
@@ -72,7 +76,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
             todo.beginAt.lt(endDate),
             todo.isDeleted.eq(false)
         )
-        .groupBy(Expressions.dateTemplate(LocalDate.class, "{0}", todo.beginAt))
+        .groupBy(dateTemplate)
         .fetch()
         .stream()
         .map(result -> TodoCompletionResponse.builder()
