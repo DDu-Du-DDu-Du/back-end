@@ -71,10 +71,10 @@ class GoalControllerTest {
   }
 
   @Nested
-  class 목표_생성_API_테스트 {
+  class POST_목표_생성_API_테스트 {
 
     @Test
-    void 목표를_생성할_수_있다() throws Exception {
+    void 목표_생성을_성공한다() throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
       CreateGoalResponse response = new CreateGoalResponse(1L, validName, validColor);
@@ -193,10 +193,10 @@ class GoalControllerTest {
   }
 
   @Nested
-  class 목표_수정_API_테스트 {
+  class PUT_목표_수정_API_테스트 {
 
     @Test
-    void Put_목표_수정을_성공한다() throws Exception {
+    void 목표_수정을_성공한다() throws Exception {
       // given
       UpdateGoalRequest request = new UpdateGoalRequest(
           validName, GoalStatus.IN_PROGRESS, validColor, PrivacyType.PUBLIC);
@@ -224,10 +224,10 @@ class GoalControllerTest {
     }
 
     @Nested
-    class 단일_목표_조회_API_테스트 {
+    class GET_단일_목표_조회_API_테스트 {
 
       @Test
-      void 목표를_조회할_수_있다() throws Exception {
+      void 목표_조회를_성공한다() throws Exception {
         // given
         GoalResponse response = createGoalResponse();
 
@@ -249,7 +249,7 @@ class GoalControllerTest {
       }
 
       @Test
-      void Put_유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+      void 유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
         // given
         String invalidRequestJson = """
             {
@@ -278,7 +278,7 @@ class GoalControllerTest {
       }
 
       @Test
-      void Put_유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+      void 유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
         // given
         String invalidRequestJson = """
             {
@@ -336,10 +336,10 @@ class GoalControllerTest {
     }
 
     @Nested
-    class 전체_목표_조회_API_테스트 {
+    class GET_전체_목표_조회_API_테스트 {
 
       @Test
-      void Get_사용자의_전체_목표를_조회할_수_있다() throws Exception {
+      void 사용자의_전체_목표_조회를_성공한다() throws Exception {
         // given
         List<GoalSummaryResponse> response = createGoalSummaryDTO();
         GoalSummaryResponse firstElement = response.get(0);
@@ -361,7 +361,7 @@ class GoalControllerTest {
       }
 
       @Test
-      void Get_사용자가_존재하지_않은_경우_404_Not_Found_응답을_반환한다() throws Exception {
+      void 사용자가_존재하지_않은_경우_Not_Found_응답을_반환한다() throws Exception {
         // given
         String invalidUserId = "-1";
         given(goalService.getAllById(anyLong())).willThrow(
@@ -394,10 +394,10 @@ class GoalControllerTest {
   }
 
   @Nested
-  class 목표_삭제_API_테스트 {
+  class DELETE_목표_삭제_API_테스트 {
 
     @Test
-    void DELETE_목표_삭제를_성공한다() throws Exception {
+    void 목표_삭제를_성공한다() throws Exception {
       // when then
       mockMvc.perform(
               delete("/api/goals/{id}", 1L)
@@ -407,7 +407,7 @@ class GoalControllerTest {
     }
 
     @Test
-    void DELETE_리소스가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws Exception {
+    void 리소스가_존재하지_않으면_Not_Found_응답을_반환한다() throws Exception {
       // given
       willThrow(new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."))
           .given(goalService)
