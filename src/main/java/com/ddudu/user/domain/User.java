@@ -86,6 +86,16 @@ public class User extends BaseEntity {
     return email.getAddress();
   }
 
+  public void addFollowing(Following following) {
+    Objects.requireNonNull(following);
+    followings.add(following);
+  }
+
+  public void unfollow(Following following) {
+    Objects.requireNonNull(following);
+    followings.remove(following);
+  }
+
   private void validate(String nickname, String optionalUsername, String introduction) {
     validateNickname(nickname);
 
