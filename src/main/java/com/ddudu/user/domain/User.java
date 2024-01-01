@@ -2,7 +2,7 @@ package com.ddudu.user.domain;
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.BaseEntity;
-import com.ddudu.friend.domain.Following;
+import com.ddudu.following.domain.Following;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
@@ -63,7 +63,7 @@ public class User extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private UserStatus status;
 
-  @OneToMany(mappedBy = "follower", cascade = CascadeType.PERSIST, orphanRemoval = true)
+  @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Following> followings = new ArrayList<>();
 
   @Builder

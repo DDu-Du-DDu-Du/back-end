@@ -1,4 +1,4 @@
-package com.ddudu.friend.domain;
+package com.ddudu.following.domain;
 
 public enum FriendStatus {
   FOLLOWING,
