@@ -41,6 +41,17 @@ class UserTest {
   @Autowired
   TestEntityManager entityManager;
 
+  @BeforeEach
+  void setUp() {
+    builderWithEncoder = User.builder()
+        .passwordEncoder(PASSWORD_ENCODER);
+    validEmail = faker.internet()
+        .emailAddress();
+    validPassword = faker.internet()
+        .password(8, 40, true, true, true);
+    validNickname = faker.oscarMovie()
+        .character();
+  }
   @Nested
   class 유저_생성_테스트 {
 
