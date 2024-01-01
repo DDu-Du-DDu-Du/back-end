@@ -3,7 +3,7 @@ package com.ddudu.todo.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.ddudu.common.exception.DataNotFound;
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
@@ -109,7 +109,7 @@ class TodoServiceTest {
 
       // when then
       assertThatThrownBy(() -> todoService.findById(invalidId))
-          .isInstanceOf(DataNotFound.class)
+          .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
     }
 

@@ -69,8 +69,8 @@ public class GeneralExceptionHandler {
         .body(response);
   }
 
-  @ExceptionHandler(DataNotFound.class)
-  public ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFound e) {
+  @ExceptionHandler(DataNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFoundException e) {
     log.warn(e.getMessage(), e);
 
     ErrorResponse response = ErrorResponse.from(e);

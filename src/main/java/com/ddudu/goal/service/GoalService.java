@@ -1,6 +1,6 @@
 package com.ddudu.goal.service;
 
-import com.ddudu.common.exception.DataNotFound;
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
@@ -36,7 +36,7 @@ public class GoalService {
   @Transactional
   public GoalResponse update(Long id, @Valid UpdateGoalRequest request) {
     Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new DataNotFound(GoalErrorCode.ID_NOT_EXISTING));
+        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
     goal.applyGoalUpdates(
         request.name(), request.status(), request.color(), request.privacyType());

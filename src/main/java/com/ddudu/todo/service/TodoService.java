@@ -1,6 +1,6 @@
 package com.ddudu.todo.service;
 
-import com.ddudu.common.exception.DataNotFound;
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
@@ -29,7 +29,7 @@ public class TodoService {
 
   public TodoResponse findById(Long id) {
     Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new DataNotFound(TodoErrorCode.ID_NOT_EXISTING));
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
     return TodoResponse.from(todo);
   }

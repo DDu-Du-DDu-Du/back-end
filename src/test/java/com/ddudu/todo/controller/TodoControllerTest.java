@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.common.exception.DataNotFound;
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.todo.dto.response.GoalInfo;
 import com.ddudu.todo.dto.response.TodoInfo;
@@ -109,7 +109,7 @@ class TodoControllerTest {
         Exception {
       // given
       Long invalidId = 999L;
-      given(todoService.findById(anyLong())).willThrow(DataNotFound.class);
+      given(todoService.findById(anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
       mockMvc.perform(get("/api/todos/{id}", invalidId))
