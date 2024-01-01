@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS goal
     updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_goal_id PRIMARY KEY (id),
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_goal_user_id FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT ck_color CHECK ( CHAR_LENGTH(color) = 6 )
 );
 
@@ -47,6 +47,6 @@ CREATE TABLE IF NOT EXISTS todo
     updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_todo_id PRIMARY KEY (id),
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_todo_user_id FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT fk_goal_id FOREIGN KEY (goal_id) REFERENCES goal (id)
 );
