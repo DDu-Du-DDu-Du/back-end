@@ -120,6 +120,7 @@ class TodoTest {
     private static Goal createGoal(String name) {
       return Goal.builder()
           .name(name)
+          .user(createUser())
           .build();
     }
 
@@ -142,6 +143,15 @@ class TodoTest {
     private static List<String> provideLongString() {
       String longString = "a".repeat(100);
       return List.of(longString);
+    }
+
+    private static User createUser() {
+      return User.builder()
+          .passwordEncoder(new BCryptPasswordEncoder())
+          .email("email@naver.com")
+          .password("password123!")
+          .nickname("nickname")
+          .build();
     }
 
   }

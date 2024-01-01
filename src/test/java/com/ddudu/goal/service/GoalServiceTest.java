@@ -1,6 +1,7 @@
 package com.ddudu.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.GoalStatus;
@@ -8,8 +9,17 @@ import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
+import com.ddudu.goal.dto.response.GoalResponse;
+import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.repository.GoalRepository;
+import com.ddudu.user.domain.User;
+import com.ddudu.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
+import net.datafaker.Faker;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -18,6 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -25,18 +36,29 @@ import org.springframework.transaction.annotation.Transactional;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalServiceTest {
 
+  static final Faker faker = new Faker();
+
   @Autowired
   GoalService goalService;
 
   @Autowired
   GoalRepository goalRepository;
 
-  private String validName;
-  private String validColor;
+  @Autowired
+  UserRepository userRepository;
 
-  GoalServiceTest() {
-    validName = "dev course";
-    validColor = "F7A29D";
+  User user;
+  String validName;
+  String validColor;
+
+  @BeforeEach
+  void setUp() {
+    user = createUser();
+    validName = faker.lorem()
+        .word();
+    validColor = faker.color()
+        .hex()
+        .substring(1);
   }
 
   @Nested
@@ -48,7 +70,7 @@ class GoalServiceTest {
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
 
       // when
-      CreateGoalResponse expected = goalService.create(request);
+      CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
@@ -63,7 +85,7 @@ class GoalServiceTest {
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
 
       // when
-      CreateGoalResponse expected = goalService.create(request);
+      CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
@@ -78,7 +100,7 @@ class GoalServiceTest {
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
 
       // when
-      CreateGoalResponse expected = goalService.create(request);
+      CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
@@ -97,7 +119,7 @@ class GoalServiceTest {
           validName, invalidColor, PrivacyType.PUBLIC);
 
       // when
-      CreateGoalResponse expected = goalService.create(request);
+      CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
@@ -112,13 +134,122 @@ class GoalServiceTest {
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, null);
 
       // when
-      CreateGoalResponse expected = goalService.create(request);
+      CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
       assertThat(actual).isNotEmpty();
       assertThat(actual.get()
           .getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
+    }
+
+    @Test
+    void 사용자ID가_유효하지_않으면_예외가_발생한다() {
+      // given
+      Long invalidUserId = 1234567890L;
+      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, null);
+
+      // when
+      ThrowingCallable create = () -> goalService.create(invalidUserId, request);
+
+      // then
+      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(create)
+          .withMessage("해당 아이디를 가진 사용자가 존재하지 않습니다.");
+    }
+
+  }
+
+  @Nested
+  class 단일_목표_조회_테스트 {
+
+    @Test
+    void ID를_통해_목표를_조회_할_수_있다() {
+      // given
+      Goal expected = createGoal(user, validName);
+      Long id = expected.getId();
+
+      // when
+      GoalResponse actual = goalService.getById(id);
+
+      // then
+      GoalStatus expectedStatus = expected.getStatus();
+      PrivacyType expectedPrivacyType = expected.getPrivacyType();
+
+      assertThat(actual).extracting(
+              "id",
+              "name",
+              "status",
+              "color",
+              "privacyType"
+          )
+          .containsExactly(
+              id,
+              expected.getName(),
+              expectedStatus,
+              expected.getColor(),
+              expectedPrivacyType
+          );
+    }
+
+    @Test
+    void 유효하지_않은_ID인_경우_조회에_실패한다() {
+      // given
+      Long invalidId = -1L;
+
+      // when
+      ThrowingCallable getGoal = () -> goalService.getById(invalidId);
+
+      // then
+      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(getGoal)
+          .withMessage("해당 아이디를 가진 목표가 존재하지 않습니다.");
+    }
+
+  }
+
+  @Nested
+  class 전체_목표_조회_테스트 {
+
+    @Test
+    void 사용자의_전체_목표를_조회_할_수_있다() {
+      // given
+      List<Goal> expected = createGoals(user, List.of(validName));
+
+      // when
+      List<GoalSummaryResponse> actual = goalService.getAllById(user.getId());
+
+      // then
+      assertThat(actual).isNotEmpty();
+      assertThat(actual.size()).isEqualTo(expected.size());
+      assertThat(actual.get(0)).extracting(
+              "id",
+              "name",
+              "status",
+              "color"
+          )
+          .containsExactly(
+              expected.get(0)
+                  .getId(),
+              expected.get(0)
+                  .getName(),
+              expected.get(0)
+                  .getStatus()
+                  .name(),
+              expected.get(0)
+                  .getColor()
+          );
+    }
+
+    @Test
+    void 유효하지_않은_사용자_ID인_경우_조회에_실패한다() {
+      // given
+      Long invalidUserId = 1234567890L;
+
+      // when
+      ThrowingCallable getGoals = () -> goalService.getAllById(invalidUserId);
+
+      // then
+      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(getGoals)
+          .withMessage("해당 아이디를 가진 사용자가 존재하지 않습니다.");
     }
 
   }
@@ -129,7 +260,7 @@ class GoalServiceTest {
     @Test
     void 목표를_수정_할_수_있다() {
       // given
-      Goal goal = createGoal();
+      Goal goal = createGoal(user, validName);
 
       String changedName = "데브 코스";
       String changedColor = "999999";
@@ -149,16 +280,39 @@ class GoalServiceTest {
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 
-    private Goal createGoal() {
-      Goal goal = Goal.builder()
-          .name(validName)
-          .color(validColor)
-          .privacyType(PrivacyType.PRIVATE)
-          .build();
+  }
 
-      return goalRepository.save(goal);
-    }
+  private List<Goal> createGoals(User user, List<String> names) {
+    return names.stream()
+        .map(name -> createGoal(user, name))
+        .toList();
+  }
 
+  private Goal createGoal(User user, String name) {
+    Goal goal = Goal.builder()
+        .name(name)
+        .user(user)
+        .build();
+
+    return goalRepository.save(goal);
+  }
+
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, false, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
+
+    User user = User.builder()
+        .passwordEncoder(new BCryptPasswordEncoder())
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .build();
+
+    return userRepository.save(user);
   }
 
 }

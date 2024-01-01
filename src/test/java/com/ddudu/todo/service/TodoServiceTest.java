@@ -49,7 +49,7 @@ class TodoServiceTest {
 
   @Autowired
   UserRepository userRepository;
-
+  
   @Nested
   class 할_일_생성_테스트 {
 
@@ -66,8 +66,8 @@ class TodoServiceTest {
     @Test
     void 할_일_생성에_성공한다() {
       // given
-      Goal goal = createGoal("dev course");
-      User user = createUser("코딩몬");
+      User user = createUser();
+      Goal goal = createGoal("dev course", user);
       CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
 
       // when
@@ -84,7 +84,8 @@ class TodoServiceTest {
     void 사용자ID가_유효하지_않으면_예외가_발생한다() {
       // give
       Long invalidUserId = 1234567890L;
-      Goal goal = createGoal("dev course");
+      User user = createUser();
+      Goal goal = createGoal("dev course", user);
       CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
 
       // when
@@ -99,7 +100,7 @@ class TodoServiceTest {
     void 목표ID가_유효하지_않으면_예외가_발생한다() {
       // given
       Long invalidGoalId = 1234567890L;
-      User user = createUser("코딩몬");
+      User user = createUser();
       CreateTodoRequest request = new CreateTodoRequest(invalidGoalId, name, beginAt);
 
       // when
@@ -118,8 +119,8 @@ class TodoServiceTest {
     @Test
     void 할_일_조회를_성공한다() {
       // given
-      Goal goal = createGoal("dev course");
-      User user = createUser("코딩몬");
+      User user = createUser();
+      Goal goal = createGoal("dev course", user);
       Todo todo = createTodo("할 일 1개 조회 기능 구현", goal, user);
 
       // when
@@ -149,11 +150,9 @@ class TodoServiceTest {
   @Test
   void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
     // given
-    Goal goal1 = createGoal("dev course");
-    Goal goal2 = createGoal("book");
-
-    User user = createUser("코딩몬");
-
+    User user = createUser();
+    Goal goal1 = createGoal("dev course", user);
+    Goal goal2 = createGoal("book", user);
     LocalDate date = LocalDate.now();
     Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
     Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
@@ -183,8 +182,8 @@ class TodoServiceTest {
     @Test
     void 할_일_상태_업데이트를_성공한다() {
       // given
-      Goal goal = createGoal("dev course");
-      User user = createUser("코딩몬");
+      User user = createUser();
+      Goal goal = createGoal("dev course", user);
       Todo todo = createTodo("할 일 1개 조회 기능 구현", goal, user);
       TodoStatus beforeUpdated = todo.getStatus();
 
@@ -212,9 +211,10 @@ class TodoServiceTest {
 
   }
 
-  private Goal createGoal(String name) {
+  private Goal createGoal(String name, User user) {
     Goal goal = Goal.builder()
         .name(name)
+        .user(user)
         .build();
 
     return goalRepository.save(goal);
@@ -230,11 +230,13 @@ class TodoServiceTest {
     return todoRepository.save(todo);
   }
 
-  private User createUser(String nickname) {
+  private User createUser() {
     String email = faker.internet()
         .emailAddress();
     String password = faker.internet()
         .password(8, 40, false, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
 
     User user = User.builder()
         .passwordEncoder(new BCryptPasswordEncoder())
