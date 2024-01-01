@@ -244,7 +244,7 @@ class TodoControllerTest {
         Exception {
       // given
       Long invalidId = 999L;
-      given(todoService.updateStatus(anyLong())).willThrow(EntityNotFoundException.class);
+      given(todoService.updateStatus(anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
       mockMvc.perform(patch("/api/todos/{id}/status", invalidId)
