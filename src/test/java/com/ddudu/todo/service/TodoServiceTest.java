@@ -2,29 +2,41 @@ package com.ddudu.todo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
+import com.ddudu.todo.dto.request.CreateTodoRequest;
+import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.repository.TodoRepository;
+import com.ddudu.user.domain.User;
+import com.ddudu.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import net.datafaker.Faker;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class TodoServiceTest {
+
+  static final Faker faker = new Faker();
 
   @Autowired
   TodoService todoService;
@@ -35,6 +47,71 @@ class TodoServiceTest {
   @Autowired
   GoalRepository goalRepository;
 
+  @Autowired
+  UserRepository userRepository;
+
+  @Nested
+  class 할_일_생성_테스트 {
+
+    String name;
+    LocalDateTime beginAt;
+
+    @BeforeEach
+    void setUp() {
+      name = faker.lorem()
+          .word();
+      beginAt = LocalDateTime.now();
+    }
+
+    @Test
+    void 할_일_생성에_성공한다() {
+      // given
+      Goal goal = createGoal("dev course");
+      User user = createUser("코딩몬");
+      CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
+
+      // when
+      TodoInfo response = todoService.create(user.getId(), request);
+
+      // then
+      Todo actual = todoRepository.findById(response.id())
+          .get();
+      assertThat(actual).extracting("name", "beginAt", "goal", "user")
+          .containsExactly(name, beginAt, goal, user);
+    }
+
+    @Test
+    void 사용자ID가_유효하지_않으면_예외가_발생한다() {
+      // give
+      Long invalidUserId = 1234567890L;
+      Goal goal = createGoal("dev course");
+      CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
+
+      // when
+      ThrowingCallable create = () -> todoService.create(invalidUserId, request);
+
+      // then
+      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(create)
+          .withMessage("해당 아이디를 가진 사용자가 존재하지 않습니다.");
+    }
+
+    @Test
+    void 목표ID가_유효하지_않으면_예외가_발생한다() {
+      // given
+      Long invalidGoalId = 1234567890L;
+      User user = createUser("코딩몬");
+      CreateTodoRequest request = new CreateTodoRequest(invalidGoalId, name, beginAt);
+
+      // when
+      ThrowingCallable create = () -> todoService.create(user.getId(), request);
+
+      // then
+      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(create)
+          .withMessage("해당 아이디를 가진 목표가 존재하지 않습니다.");
+    }
+
+  }
+
   @Nested
   class 할_일_1개_조회_테스트 {
 
@@ -42,7 +119,8 @@ class TodoServiceTest {
     void 할_일_조회를_성공한다() {
       // given
       Goal goal = createGoal("dev course");
-      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
+      User user = createUser("코딩몬");
+      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal, user);
 
       // when
       TodoResponse response = todoService.findById(todo.getId());
@@ -74,9 +152,11 @@ class TodoServiceTest {
     Goal goal1 = createGoal("dev course");
     Goal goal2 = createGoal("book");
 
+    User user = createUser("코딩몬");
+
     LocalDate date = LocalDate.now();
-    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
-    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
+    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
+    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
     // when
     List<TodoListResponse> responses = todoService.findDailyTodoList(date);
@@ -104,7 +184,8 @@ class TodoServiceTest {
     void 할_일_상태_업데이트를_성공한다() {
       // given
       Goal goal = createGoal("dev course");
-      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
+      User user = createUser("코딩몬");
+      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal, user);
       TodoStatus beforeUpdated = todo.getStatus();
 
       // when
@@ -139,13 +220,30 @@ class TodoServiceTest {
     return goalRepository.save(goal);
   }
 
-  private Todo createTodo(String name, Goal goal) {
+  private Todo createTodo(String name, Goal goal, User user) {
     Todo todo = Todo.builder()
         .name(name)
         .goal(goal)
+        .user(user)
         .build();
 
     return todoRepository.save(todo);
+  }
+
+  private User createUser(String nickname) {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, false, true, true);
+
+    User user = User.builder()
+        .passwordEncoder(new BCryptPasswordEncoder())
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .build();
+
+    return userRepository.save(user);
   }
 
 }
