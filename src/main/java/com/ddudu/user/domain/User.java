@@ -88,12 +88,12 @@ public class User extends BaseEntity {
   }
 
   public void addFollowing(Following following) {
-    Objects.requireNonNull(following);
+    Objects.requireNonNull(following, "Following cannot be null");
     followings.add(following);
   }
 
   public void unfollow(Following following) {
-    Objects.requireNonNull(following);
+    Objects.requireNonNull(following, "Following cannot be null");
     followings.remove(following);
   }
 
