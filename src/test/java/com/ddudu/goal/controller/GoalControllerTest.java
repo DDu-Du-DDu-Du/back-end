@@ -61,6 +61,11 @@ class GoalControllerTest {
   @Nested
   class POST_목표_생성_API_테스트 {
 
+    private static List<String> provide51Letters() {
+      String longString = "a".repeat(51);
+      return List.of(longString);
+    }
+
     @Test
     void 목표를_생성할_수_있다() throws Exception {
       // given
