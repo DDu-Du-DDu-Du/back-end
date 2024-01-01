@@ -4,38 +4,45 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
+import net.datafaker.Faker;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+@DisplayNameGeneration(ReplaceUnderscores.class)
 class TodoTest {
 
+  static final Faker faker = new Faker();
+
   @Nested
-  @DisplayName("할 일 생성 테스트")
-  class ConstructorTest {
+  class 할_일_생성_테스트 {
 
     @Test
-    @DisplayName("할 일을 생성할 수 있다.")
-    void create() {
+    void 할_일을_생성할_수_있다() {
       // given
       String name = "Todo 엔티티 테스트 코드 짜기";
       Goal goal = createGoal("dev course");
+      User user = createUser("코딩몬");
 
       // when
       Todo todo = Todo.builder()
           .name(name)
           .goal(goal)
+          .user(user)
           .build();
 
       // then
       assertThat(todo)
-          .extracting("goal", "name", "status", "isDeleted")
-          .containsExactly(goal, name, TodoStatus.UNCOMPLETED, false);
+          .extracting("goal", "user", "name", "status", "isDeleted")
+          .containsExactly(goal, user, name, TodoStatus.UNCOMPLETED, false);
       assertThat(todo).extracting("beginAt")
           .isNotNull();
       assertThat(todo).extracting("endAt")
@@ -43,17 +50,18 @@ class TodoTest {
     }
 
     @Test
-    @DisplayName("할 일 시작 날짜와 함께 할 일을 생성할 수 있다.")
-    void createWithBeginAt() {
+    void 할_일_시작_날짜와_함께_할_일을_생성할_수_있다() {
       // given
       String name = "Todo 엔티티 테스트 코드 짜기";
       Goal goal = createGoal("dev course");
+      User user = createUser("코딩몬");
       LocalDateTime beginAt = LocalDateTime.of(2023, 12, 25, 0, 0);
 
       // when
       Todo todo = Todo.builder()
           .name(name)
           .goal(goal)
+          .user(user)
           .beginAt(beginAt)
           .build();
 
@@ -66,8 +74,7 @@ class TodoTest {
     }
 
     @Test
-    @DisplayName("목표 없이는 할 일을 생성할 수 없다.")
-    void createWithoutGoal() {
+    void 목표_없이는_할_일을_생성할_수_없다() {
       // when then
       assertThatThrownBy(() -> Todo.builder()
           .name("Todo 엔티티 테스트 코드 짜기")
@@ -77,32 +84,34 @@ class TodoTest {
     }
 
     @ParameterizedTest
-    @DisplayName("할 일(name)은 필수값이며 빈 문자열일 수 없다.")
     @NullAndEmptySource
-    void createWithoutName(String invalidName) {
+    void 할_일은_필수값이며_빈_문자열일_수_없다(String invalidName) {
       // given
       Goal goal = createGoal("dev course");
+      User user = createUser("코딩몬");
 
       // when then
       assertThatThrownBy(() -> Todo.builder()
           .name(invalidName)
           .goal(goal)
+          .user(user)
           .build())
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("할 일은 필수값입니다.");
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
-    @DisplayName("할 일 생성 시 할 일의 내용은 50자를 초과할 수 없다.")
     @MethodSource("provideLongString")
-    void createWithLongName(String longName) {
+    void 할_일_생성_시_할_일의_내용은_50자를_초과할_수_없다(String longName) {
       // given
       Goal goal = createGoal("dev course");
+      User user = createUser("코딩몬");
 
       // when then
       assertThatThrownBy(() -> Todo.builder()
           .name(longName)
           .goal(goal)
+          .user(user)
           .build())
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("할 일은 최대 50자 입니다.");
@@ -111,6 +120,22 @@ class TodoTest {
     private static Goal createGoal(String name) {
       return Goal.builder()
           .name(name)
+          .build();
+    }
+
+    private static User createUser(String name) {
+      String email = faker.internet()
+          .emailAddress();
+      String password = faker.internet()
+          .password(8, 40, false, true, true);
+      String nickname = faker.oscarMovie()
+          .character();
+
+      return User.builder()
+          .passwordEncoder(new BCryptPasswordEncoder())
+          .email(email)
+          .password(password)
+          .nickname(nickname)
           .build();
     }
 
