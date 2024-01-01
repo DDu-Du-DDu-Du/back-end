@@ -3,7 +3,10 @@ package com.ddudu.user.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
+import com.ddudu.following.domain.Following;
+import com.ddudu.following.domain.FriendStatus;
 import com.ddudu.user.domain.User.UserBuilder;
+import java.util.List;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,20 +44,20 @@ class UserTest {
   @Autowired
   TestEntityManager entityManager;
 
+  @BeforeEach
+  void setUp() {
+    builderWithEncoder = User.builder()
+        .passwordEncoder(passwordEncoder);
+    validEmail = faker.internet()
+        .emailAddress();
+    validPassword = faker.internet()
+        .password(8, 40, true, true, true);
+    validNickname = faker.oscarMovie()
+        .character();
+  }
+
   @Nested
   class 유저_생성_테스트 {
-
-    @BeforeEach
-    void setUp() {
-      builderWithEncoder = User.builder()
-          .passwordEncoder(passwordEncoder);
-      validEmail = faker.internet()
-          .emailAddress();
-      validPassword = faker.internet()
-          .password(8, 40, false, true, true);
-      validNickname = faker.oscarMovie()
-          .character();
-    }
 
     @Test
     void User_인스턴스를_생성한다() {
@@ -198,6 +201,91 @@ class UserTest {
 
       // then
       assertThat(user.getPassword()).isNotEqualTo(validPassword);
+    }
+
+  }
+
+  @Nested
+  class 유저_팔로잉_테스트 {
+
+    @Test
+    void 팔로우_추가를_성공한다() {
+      // given
+      User expectedFollower = builderWithEncoder
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
+      String followeeEmail = faker.internet()
+          .emailAddress();
+      User expectedFollowee = builderWithEncoder
+          .email(followeeEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
+      User actualFollower = entityManager.persistFlushFind(expectedFollower);
+      User actualFollowee = entityManager.persistFlushFind(expectedFollowee);
+
+      // when
+      Following following = Following.builder()
+          .followee(actualFollowee)
+          .follower(actualFollower)
+          .status(FriendStatus.FOLLOWING)
+          .build();
+
+      actualFollower.addFollowing(following);
+
+      actualFollower = entityManager.persistFlushFind(actualFollower);
+
+      // then
+      List<Following> followings = actualFollower.getFollowings();
+
+      assertThat(followings).isNotEmpty();
+
+      Following actualFollowing = followings.get(0);
+
+      assertThat(actualFollowing.getId()).isNotNull();
+    }
+
+    @Test
+    void 팔로잉을_취소한다() {
+      // given
+      User expectedFollower = builderWithEncoder
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
+      String followeeEmail = faker.internet()
+          .emailAddress();
+      User expectedFollowee = builderWithEncoder
+          .email(followeeEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
+      User actualFollower = entityManager.persistFlushFind(expectedFollower);
+      User actualFollowee = entityManager.persistFlushFind(expectedFollowee);
+      Following following = Following.builder()
+          .followee(actualFollowee)
+          .follower(actualFollower)
+          .status(FriendStatus.FOLLOWING)
+          .build();
+
+      actualFollower.addFollowing(following);
+      entityManager.persistAndFlush(actualFollower);
+
+      // when
+      actualFollower.unfollow(following);
+
+      actualFollower = entityManager.persistFlushFind(actualFollower);
+
+      // then
+      List<Following> followings = actualFollower.getFollowings();
+
+      assertThat(followings).isEmpty();
+
+      Following actualFollowing = entityManager.find(Following.class, following.getId());
+
+      assertThat(actualFollowing).isNull();
     }
 
   }
