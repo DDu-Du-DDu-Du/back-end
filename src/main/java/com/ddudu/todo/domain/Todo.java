@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 
 import com.ddudu.common.BaseEntity;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,6 +41,10 @@ public class Todo extends BaseEntity {
   @JoinColumn(name = "goal_id")
   private Goal goal;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
+
   @Column(name = "name", length = 50, nullable = false)
   private String name;
 
@@ -54,18 +59,30 @@ public class Todo extends BaseEntity {
   private LocalDateTime endAt;
 
   @Builder
-  public Todo(Goal goal, String name, LocalDateTime beginAt) {
-    validateGoal(goal);
-    validateTodo(name);
+  public Todo(Goal goal, User user, String name, LocalDateTime beginAt) {
+    validate(goal, user, name);
 
     this.goal = goal;
+    this.user = user;
     this.name = name;
     this.beginAt = isNull(beginAt) ? LocalDateTime.now() : beginAt;
+  }
+
+  private void validate(Goal goal, User user, String name) {
+    validateGoal(goal);
+    validateUser(user);
+    validateTodo(name);
   }
 
   private void validateGoal(Goal goal) {
     if (isNull(goal)) {
       throw new IllegalArgumentException("목표는 필수값입니다.");
+    }
+  }
+
+  private void validateUser(User user) {
+    if (isNull(user)) {
+      throw new IllegalArgumentException("사용자는 필수값입니다.");
     }
   }
 
