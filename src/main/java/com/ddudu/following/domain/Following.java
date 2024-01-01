@@ -1,5 +1,6 @@
 package com.ddudu.following.domain;
 
+import com.ddudu.common.BaseEntity;
 import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "followings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Following {
+public class Following extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
