@@ -301,7 +301,7 @@ class GoalServiceTest {
     String email = faker.internet()
         .emailAddress();
     String password = faker.internet()
-        .password(8, 40, false, true, true);
+        .password(8, 40, true, true, true);
     String nickname = faker.oscarMovie()
         .character();
 

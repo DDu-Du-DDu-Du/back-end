@@ -54,7 +54,7 @@ class UserServiceTest {
       String intro = faker.howIMetYourMother()
           .catchPhrase();
       String password = faker.internet()
-          .password(8, 40, false, true, true);
+          .password(8, 40, true, true, true);
       String nickname = faker.oscarMovie()
           .character();
 
@@ -71,7 +71,7 @@ class UserServiceTest {
       builderWithEncoder = User.builder()
           .passwordEncoder(PASSWORD_ENCODER);
       password = faker.internet()
-          .password(8, 40, false, true, true);
+          .password(8, 40, true, true, true);
       nickname = faker.oscarMovie()
           .character();
     }

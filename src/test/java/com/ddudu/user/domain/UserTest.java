@@ -51,7 +51,7 @@ class UserTest {
       validEmail = faker.internet()
           .emailAddress();
       validPassword = faker.internet()
-          .password(8, 40, false, true, true);
+          .password(8, 40, true, true, true);
       validNickname = faker.oscarMovie()
           .character();
     }
