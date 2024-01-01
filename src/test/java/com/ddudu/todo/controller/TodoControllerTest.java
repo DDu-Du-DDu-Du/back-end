@@ -5,12 +5,15 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.todo.domain.TodoStatus;
+import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.response.GoalInfo;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -19,8 +22,11 @@ import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import net.datafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -39,6 +45,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class TodoControllerTest {
 
+  static final Faker faker = new Faker();
+
   @MockBean
   TodoService todoService;
 
@@ -47,6 +55,52 @@ class TodoControllerTest {
 
   @Autowired
   ObjectMapper objectMapper;
+
+  @Nested
+  class POST_할_일_생성_API_테스트 {
+
+    String name;
+    LocalDateTime beginAt;
+
+    @BeforeEach
+    void setUp() {
+      name = faker.lorem()
+          .word();
+      beginAt = faker.date()
+          .birthday()
+          .toLocalDateTime();
+    }
+
+    @Test
+    void 할_일_생성을_성공한다() throws Exception {
+      // given
+      Long goalId = 1L;
+      CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
+      TodoInfo response = TodoInfo.builder()
+          .id(1L)
+          .name(name)
+          .status(TodoStatus.UNCOMPLETED)
+          .build();
+
+      given(todoService.create(anyLong(), any(CreateTodoRequest.class)))
+          .willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              post("/api/todos")
+                  .param("userId", "1")
+                  .content(objectMapper.writeValueAsString(request))
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isCreated())
+          .andExpect(header().exists("location"))
+          .andExpect(jsonPath("$.id").value(response.id()))
+          .andExpect(jsonPath("$.name").value(response.name()))
+          .andExpect(jsonPath("$.status").value(response.status()
+              .name()));
+    }
+    
+  }
 
   @Nested
   class 할_일_1개_조회_테스트 {
