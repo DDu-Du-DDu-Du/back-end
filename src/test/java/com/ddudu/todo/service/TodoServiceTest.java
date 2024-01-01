@@ -114,7 +114,8 @@ class TodoServiceTest {
     @Test
     void 할_일_상태_업데이트를_성공한다() {
       // given
-      Goal goal = createGoal("dev course");
+      User user = createUser();
+      Goal goal = createGoal("dev course", user);
       Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
       TodoStatus beforeUpdated = todo.getStatus();
 
