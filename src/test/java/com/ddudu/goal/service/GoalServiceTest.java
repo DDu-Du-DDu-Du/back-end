@@ -195,7 +195,7 @@ class GoalServiceTest {
     void 삭제된_목표의_ID인_경우_조회에_실패한다() {
       // given
       Goal goal = createGoal(user, validName);
-      goalRepository.delete(goal);
+      goal.delete();
 
       // when
       ThrowingCallable getGoal = () -> goalService.getById(goal.getId());
