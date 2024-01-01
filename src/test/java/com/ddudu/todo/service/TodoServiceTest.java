@@ -7,6 +7,7 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
+import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.exception.TodoErrorCode;
@@ -79,6 +80,40 @@ class TodoServiceTest {
         .build();
 
     return todoRepository.save(todo);
+  }
+
+  @Nested
+  class 할_일_상태_업데이트_테스트 {
+
+    @Test
+    void 할_일_상태_업데이트를_성공한다() {
+      // given
+      Goal goal = createGoal("dev course");
+      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
+      TodoStatus beforeUpdated = todo.getStatus();
+
+      // when
+      TodoResponse response = todoService.updateStatus(todo.getId());
+
+      // then
+      assertThat(response).extracting(
+              "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name")
+          .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName());
+      assertThat(response.todoInfo()
+          .status()).isNotEqualTo(beforeUpdated);
+    }
+
+    @Test
+    void 아이디가_존재하지_않아_할_일_상태_업데이트를_실패한다() {
+      // given
+      Long invalidId = 999L;
+
+      // when then
+      assertThatThrownBy(() -> todoService.updateStatus(invalidId))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage("할 일 아이디가 존재하지 않습니다.");
+    }
+
   }
 
   @Nested

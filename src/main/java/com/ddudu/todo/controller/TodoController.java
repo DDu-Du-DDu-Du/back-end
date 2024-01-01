@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,15 @@ public class TodoController {
     date = (date == null) ? LocalDate.now() : date;
 
     List<TodoListResponse> response = todoService.findDailyTodoList(date);
+    return ResponseEntity.ok(response);
+  }
+
+  @PatchMapping("/{id}/status")
+  public ResponseEntity<?> updateTodoStatus(
+      @PathVariable
+          Long id
+  ) {
+    TodoResponse response = todoService.updateStatus(id);
     return ResponseEntity.ok(response);
   }
 

@@ -3,6 +3,7 @@ package com.ddudu.todo.domain;
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import com.ddudu.common.BaseEntity;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.todo.exception.TodoErrorCode;
@@ -22,18 +23,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @Entity
 @Table(name = "todo")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EnableJpaAuditing
 @Getter
-public class Todo {
+public class Todo extends BaseEntity {
 
   private static final TodoStatus DEFAULT_STATUS = TodoStatus.UNCOMPLETED;
-  private static final Boolean DEFAULT_IS_DELETED = false;
-
   private static final int MAX_NAME_LENGTH = 50;
 
   @Id
@@ -58,9 +55,6 @@ public class Todo {
   @Column(name = "end_at")
   private LocalDateTime endAt;
 
-  @Column(name = "is_deleted", nullable = false)
-  private boolean isDeleted = DEFAULT_IS_DELETED;
-
   @Builder
   public Todo(Goal goal, String name, LocalDateTime beginAt) {
     validateGoal(goal);
@@ -84,6 +78,16 @@ public class Todo {
 
     if (name.length() > MAX_NAME_LENGTH) {
       throw new InvalidParameterException(TodoErrorCode.EXCESSIVE_NAME_LENGTH);
+    }
+  }
+
+  public void switchStatus() {
+    if (this.status == TodoStatus.UNCOMPLETED) {
+      this.status = TodoStatus.COMPLETE;
+      this.endAt = LocalDateTime.now();
+    } else {
+      this.status = TodoStatus.UNCOMPLETED;
+      this.endAt = null;
     }
   }
 

@@ -5,11 +5,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.GoalInfo;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -57,7 +59,7 @@ class TodoControllerTest {
     return TodoInfo.builder()
         .id(1L)
         .name("할 일 조회 기능 구현")
-        .status("UNCOMPLETED")
+        .status(TodoStatus.UNCOMPLETED)
         .build();
   }
 
@@ -78,7 +80,7 @@ class TodoControllerTest {
   }
 
   @Nested
-  class 할_일_1개_조회_테스트 {
+  class GET_할_일_1개_조회_테스트 {
 
     @Test
     void 할_일_조회를_성공한다() throws Exception {
@@ -101,7 +103,8 @@ class TodoControllerTest {
           .andExpect(jsonPath("$.todoInfo.name").value(response.todoInfo()
               .name()))
           .andExpect(jsonPath("$.todoInfo.status").value(response.todoInfo()
-              .status()));
+              .status()
+              .name()));
     }
 
     @Test
@@ -119,7 +122,7 @@ class TodoControllerTest {
   }
 
   @Nested
-  class 일별_할_일_리스트_조회_테스트 {
+  class GET_일별_할_일_리스트_조회_테스트 {
 
     @Test
     void 주어진_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
@@ -150,7 +153,8 @@ class TodoControllerTest {
           .andExpect(jsonPath("$[0].todolist[0].status").value(responses.get(0)
               .todolist()
               .get(0)
-              .status()));
+              .status()
+              .name()));
     }
 
     @Test
@@ -180,7 +184,8 @@ class TodoControllerTest {
           .andExpect(jsonPath("$[0].todolist[0].status").value(responses.get(0)
               .todolist()
               .get(0)
-              .status()));
+              .status()
+              .name()));
     }
 
     @ParameterizedTest
@@ -202,6 +207,49 @@ class TodoControllerTest {
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
+    }
+
+  }
+
+  @Nested
+  class PATCH_할_일_상태_변경_테스트 {
+
+    @Test
+    void 할_일_상태_변경을_성공한다() throws Exception {
+      // given
+      TodoResponse response = createTodoResponse();
+      given(todoService.updateStatus(anyLong())).willReturn(response);
+
+      // when then
+      mockMvc.perform(patch(
+              "/api/todos/{id}/status", response.todoInfo()
+                  .id())
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.goalInfo.id").value(response.goalInfo()
+              .id()))
+          .andExpect(jsonPath("$.goalInfo.name").value(response.goalInfo()
+              .name()))
+          .andExpect(jsonPath("$.todoInfo.id").value(response.todoInfo()
+              .id()))
+          .andExpect(jsonPath("$.todoInfo.name").value(response.todoInfo()
+              .name()))
+          .andExpect(jsonPath("$.todoInfo.status").value(response.todoInfo()
+              .status()
+              .name()));
+    }
+
+    @Test
+    void 아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
+        Exception {
+      // given
+      Long invalidId = 999L;
+      given(todoService.updateStatus(anyLong())).willThrow(EntityNotFoundException.class);
+
+      // when then
+      mockMvc.perform(patch("/api/todos/{id}/status", invalidId)
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNotFound());
     }
 
   }

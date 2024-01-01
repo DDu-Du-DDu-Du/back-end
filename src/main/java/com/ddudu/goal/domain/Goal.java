@@ -3,6 +3,7 @@ package com.ddudu.goal.domain;
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import com.ddudu.common.BaseEntity;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.goal.exception.GoalErrorCode;
 import jakarta.persistence.AttributeOverride;
@@ -24,12 +25,10 @@ import lombok.NoArgsConstructor;
 @Table(name = "goal")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Goal {
+public class Goal extends BaseEntity {
 
   private static final GoalStatus DEFAULT_STATUS = GoalStatus.IN_PROGRESS;
   private static final PrivacyType DEFAULT_PRIVACY_TYPE = PrivacyType.PRIVATE;
-  private static final Boolean DEFAULT_IS_DELETED = false;
-
   private static final int MAX_NAME_LENGTH = 50;
 
   @Id
@@ -54,9 +53,6 @@ public class Goal {
   @Column(name = "privacy", nullable = false, columnDefinition = "VARCHAR", length = 20)
   @Enumerated(EnumType.STRING)
   private PrivacyType privacyType;
-
-  @Column(name = "is_deleted", nullable = false)
-  private boolean isDeleted = DEFAULT_IS_DELETED;
 
   @Builder
   public Goal(String name, String color, PrivacyType privacyType) {
