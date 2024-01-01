@@ -13,8 +13,6 @@ import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
 import com.ddudu.todo.domain.TodoStatus;
-import com.ddudu.support.TestProperties;
-import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.GoalInfo;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;

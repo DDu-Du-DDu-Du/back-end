@@ -14,13 +14,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
@@ -71,9 +69,8 @@ public class User extends BaseEntity {
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
-    this.authority = authority != null ? authority : Authority.NORMAL;
+    this.authority = Objects.nonNull(authority) ? authority : Authority.NORMAL;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
-    this.authority = authority != null ? authority : Authority.NORMAL;
     status = UserStatus.ACTIVE;
   }
 
