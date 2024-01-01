@@ -17,10 +17,11 @@ INSERT INTO users(id, optional_username, email, password, nickname) VALUES (10,'
 SET foreign_key_checks = 0;
 TRUNCATE TABLE goal;
 SET foreign_key_checks = 1;
-INSERT INTO goal(id, name, color, privacy) VALUES (1, 'dev course', '71D6E4', 'PUBLIC');
-INSERT INTO goal(id, name, color, privacy) VALUES (2, 'study', 'F2D055', 'PUBLIC');
-INSERT INTO goal(id, name, color, privacy) VALUES (3, 'event', 'F2B2C8', 'PRIVATE');
-INSERT INTO goal(id, name, color, privacy) VALUES (4, 'etc', 'C9D66A', 'PUBLIC');
+INSERT INTO goal(id, user_id, name, color, privacy) VALUES (1, 8, 'dev course', '75D7E4', 'PUBLIC');
+INSERT INTO goal(id, user_id, name, color, privacy) VALUES (2, 8, 'study', 'F3D056', 'PUBLIC');
+INSERT INTO goal(id, user_id, name, color, privacy) VALUES (3, 8, 'event', 'F1B5CA', 'PRIVATE');
+INSERT INTO goal(id, user_id, name, color, privacy) VALUES (4, 8, 'etc', 'C7D567', 'PUBLIC');
+INSERT INTO goal(id, user_id, name, privacy, status) VALUES (5, 8, 'college', 'PUBLIC', 'DONE');
 
 -- TO DO
 TRUNCATE TABLE todo;
