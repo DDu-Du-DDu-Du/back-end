@@ -1,4 +1,4 @@
-package com.ddudu.friend.domain;
+package com.ddudu.following.domain;
 
 import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
