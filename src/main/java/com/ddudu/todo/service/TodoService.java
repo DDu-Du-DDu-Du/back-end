@@ -44,7 +44,7 @@ public class TodoService {
         .name(request.name())
         .goal(goal)
         .user(user)
-        .beginAt(request.begin_at())
+        .beginAt(request.beginAt())
         .build();
 
     return TodoInfo.from(todoRepository.save(todo));
