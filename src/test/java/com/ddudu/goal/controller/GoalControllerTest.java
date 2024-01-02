@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
@@ -20,6 +21,7 @@ import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.service.GoalService;
+import com.ddudu.support.TestProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -41,23 +43,19 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = GoalController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalControllerTest {
 
   static final Faker faker = new Faker();
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private ObjectMapper objectMapper;
-
-  @MockBean
-  private GoalService goalService;
-
   String validName;
   String validColor;
+  @Autowired
+  private MockMvc mockMvc;
+  @Autowired
+  private ObjectMapper objectMapper;
+  @MockBean
+  private GoalService goalService;
 
   @BeforeEach
   void setUp() {
@@ -69,7 +67,12 @@ class GoalControllerTest {
   }
 
   @Nested
-  class 목표_생성_API_테스트 {
+  class POST_목표_생성_API_테스트 {
+
+    private static List<String> provide51Letters() {
+      String longString = "a".repeat(51);
+      return List.of(longString);
+    }
 
     @Test
     void 목표를_생성할_수_있다() throws Exception {
@@ -183,18 +186,13 @@ class GoalControllerTest {
               .value(containsString("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다.")));
     }
 
-    private static List<String> provide51Letters() {
-      String longString = "a".repeat(51);
-      return List.of(longString);
-    }
-
   }
 
   @Nested
-  class 목표_수정_API_테스트 {
+  class PUT_목표_수정_API_테스트 {
 
     @Test
-    void Put_목표_수정을_성공한다() throws Exception {
+    void 목표_수정을_성공한다() throws Exception {
       // given
       UpdateGoalRequest request = new UpdateGoalRequest(
           validName, GoalStatus.IN_PROGRESS, validColor, PrivacyType.PUBLIC);
@@ -221,172 +219,172 @@ class GoalControllerTest {
               .name()));
     }
 
-    @Nested
-    class 단일_목표_조회_API_테스트 {
+    @Test
+    void 유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+      // given
+      String invalidRequestJson = """
+          {
+              "name": "dev course",
+              "status": "INVALID TYPE",
+              "color": "191919",
+              "privacyType": "PUBLIC"
+          }
+          """;
 
-      @Test
-      void 목표를_조회할_수_있다() throws Exception {
-        // given
-        GoalResponse response = createGoalResponse();
+      GoalResponse response = GoalResponse.builder()
+          .build();
 
-        given(goalService.getById(anyLong())).willReturn(response);
+      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
+          .willReturn(response);
 
-        // when then
-        mockMvc.perform(
-                get("/api/goals/{id}", response.id())
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id").value(response.id()))
-            .andExpect(jsonPath("$.name").value(response.name()))
-            .andExpect(jsonPath("$.status").value(response.status()
-                .name()))
-            .andExpect(jsonPath("$.color").value(response.color()))
-            .andExpect(jsonPath("$.privacyType").value(response.privacyType()
-                .name()));
-      }
-
-      @Test
-      void Put_유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
-        // given
-        String invalidRequestJson = """
-            {
-                "name": "dev course",
-                "status": "INVALID TYPE",
-                "color": "191919",
-                "privacyType": "PUBLIC"
-            }
-            """;
-
-        GoalResponse response = GoalResponse.builder()
-            .build();
-
-        given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
-            .willReturn(response);
-
-        // when then
-        mockMvc.perform(
-                put("/api/goals/{id}", 1L)
-                    .content(invalidRequestJson)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message")
-                .value(containsString("GoalStatus는 [IN_PROGRESS, DONE] 중 하나여야 합니다.")));
-      }
-
-      @Test
-      void Put_유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
-        // given
-        String invalidRequestJson = """
-            {
-                "name": "dev course",
-                "status": "IN_PROGRESS",
-                "color": "191919",
-                "privacyType": "INVALID TYPE"
-            }
-            """;
-
-        GoalResponse response = GoalResponse.builder()
-            .build();
-
-        given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
-            .willReturn(response);
-
-        // when then
-        mockMvc.perform(
-                put("/api/goals/{id}", 1L)
-                    .content(invalidRequestJson)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message")
-                .value(containsString("PrivacyType는 [PRIVATE, FOLLOWER, PUBLIC] 중 하나여야 합니다.")));
-      }
-
-      @Test
-      void ID가_유효하지_않으면_Not_Found_응답을_반환한다() throws Exception {
-        // given
-        Long invalidId = -1L;
-        given(goalService.getById(anyLong()))
-            .willThrow(new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
-
-        // when then
-        mockMvc.perform(
-                get("/api/goals/{id}", invalidId)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message")
-                .value(containsString("해당 아이디를 가진 목표가 존재하지 않습니다.")));
-      }
-
-      private static GoalResponse createGoalResponse() {
-        return GoalResponse.builder()
-            .id(1L)
-            .name("dev course")
-            .status(GoalStatus.IN_PROGRESS)
-            .color("191919")
-            .privacyType(PrivacyType.PRIVATE)
-            .build();
-      }
-
+      // when then
+      mockMvc.perform(
+              put("/api/goals/{id}", 1L)
+                  .content(invalidRequestJson)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("GoalStatus는 [IN_PROGRESS, DONE] 중 하나여야 합니다.")));
     }
 
-    @Nested
-    class 전체_목표_조회_API_테스트 {
+    @Test
+    void 유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+      // given
+      String invalidRequestJson = """
+          {
+              "name": "dev course",
+              "status": "IN_PROGRESS",
+              "color": "191919",
+              "privacyType": "INVALID TYPE"
+          }
+          """;
 
-      @Test
-      void Get_사용자의_전체_목표를_조회할_수_있다() throws Exception {
-        // given
-        List<GoalSummaryResponse> response = createGoalSummaryDTO();
-        GoalSummaryResponse firstElement = response.get(0);
+      GoalResponse response = GoalResponse.builder()
+          .build();
 
-        given(goalService.getAllById(anyLong())).willReturn(response);
+      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
+          .willReturn(response);
 
-        // when then
-        mockMvc.perform(
-                get("/api/goals")
-                    .param("userId", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$[0].id").value(firstElement.id()))
-            .andExpect(jsonPath("$[0].name").value(firstElement.name()))
-            .andExpect(jsonPath("$[0].status").value(firstElement.status()))
-            .andExpect(jsonPath("$[0].color").value(firstElement.color()));
-      }
+      // when then
+      mockMvc.perform(
+              put("/api/goals/{id}", 1L)
+                  .content(invalidRequestJson)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("PrivacyType는 [PRIVATE, FOLLOWER, PUBLIC] 중 하나여야 합니다.")));
+    }
 
-      @Test
-      void Get_사용자가_존재하지_않은_경우_404_Not_Found_응답을_반환한다() throws Exception {
-        // given
-        String invalidUserId = "-1";
-        given(goalService.getAllById(anyLong())).willThrow(
-            new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
+  }
 
-        // when then
-        mockMvc.perform(
-                get("/api/goals")
-                    .queryParam("userId", invalidUserId)
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message")
-                .value(containsString("해당 아이디를 가진 사용자가 존재하지 않습니다.")));
-      }
+  @Nested
+  class GET_단일_목표_조회_API_테스트 {
 
-      private List<GoalSummaryResponse> createGoalSummaryDTO() {
-        GoalSummaryResponse goalSummaryResponse = GoalSummaryResponse.builder()
-            .id(1L)
-            .name("dev course")
-            .status(GoalStatus.IN_PROGRESS.name())
-            .color("191919")
-            .build();
+    private static GoalResponse createGoalResponse() {
+      return GoalResponse.builder()
+          .id(1L)
+          .name("dev course")
+          .status(GoalStatus.IN_PROGRESS)
+          .color("191919")
+          .privacyType(PrivacyType.PRIVATE)
+          .build();
+    }
 
-        return List.of(goalSummaryResponse);
-      }
+    @Test
+    void 목표를_조회할_수_있다() throws Exception {
+      // given
+      GoalResponse response = createGoalResponse();
 
+      given(goalService.getById(anyLong())).willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              get("/api/goals/{id}", response.id())
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(response.id()))
+          .andExpect(jsonPath("$.name").value(response.name()))
+          .andExpect(jsonPath("$.status").value(response.status()
+              .name()))
+          .andExpect(jsonPath("$.color").value(response.color()))
+          .andExpect(jsonPath("$.privacyType").value(response.privacyType()
+              .name()));
+    }
+
+    @Test
+    void ID가_유효하지_않으면_Not_Found_응답을_반환한다() throws Exception {
+      // given
+      Long invalidId = -1L;
+      given(goalService.getById(anyLong()))
+          .willThrow(new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
+
+      // when then
+      mockMvc.perform(
+              get("/api/goals/{id}", invalidId)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("해당 아이디를 가진 목표가 존재하지 않습니다.")));
+    }
+
+  }
+
+  @Nested
+  class GET_전체_목표_조회_API_테스트 {
+
+    @Test
+    void 사용자의_전체_목표를_조회할_수_있다() throws Exception {
+      // given
+      List<GoalSummaryResponse> response = createGoalSummaryDTO();
+      GoalSummaryResponse firstElement = response.get(0);
+
+      given(goalService.getAllById(anyLong())).willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              get("/api/goals")
+                  .param("userId", "1")
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$").isArray())
+          .andExpect(jsonPath("$[0].id").value(firstElement.id()))
+          .andExpect(jsonPath("$[0].name").value(firstElement.name()))
+          .andExpect(jsonPath("$[0].status").value(firstElement.status()))
+          .andExpect(jsonPath("$[0].color").value(firstElement.color()));
+    }
+
+    @Test
+    void 사용자가_존재하지_않은_경우_404_Not_Found_응답을_반환한다() throws Exception {
+      // given
+      String invalidUserId = "-1";
+      given(goalService.getAllById(anyLong())).willThrow(
+          new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
+
+      // when then
+      mockMvc.perform(
+              get("/api/goals")
+                  .queryParam("userId", invalidUserId)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("해당 아이디를 가진 사용자가 존재하지 않습니다.")));
+    }
+
+    private List<GoalSummaryResponse> createGoalSummaryDTO() {
+      GoalSummaryResponse goalSummaryResponse = GoalSummaryResponse.builder()
+          .id(1L)
+          .name("dev course")
+          .status(GoalStatus.IN_PROGRESS.name())
+          .color("191919")
+          .build();
+
+      return List.of(goalSummaryResponse);
     }
 
   }

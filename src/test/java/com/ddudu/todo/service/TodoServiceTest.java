@@ -47,6 +47,72 @@ class TodoServiceTest {
   @Autowired
   UserRepository userRepository;
 
+  @Test
+  void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
+    // given
+    User user = createUser();
+    Goal goal1 = createGoal("dev course", user);
+    Goal goal2 = createGoal("book", user);
+
+    LocalDate date = LocalDate.now();
+    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
+    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
+
+    // when
+    List<TodoListResponse> responses = todoService.findDailyTodoList(date);
+
+    // then
+    assertThat(responses).hasSize(2);
+
+    TodoListResponse response1 = responses.get(0);
+    assertThat(response1.goalInfo()
+        .id()).isEqualTo(goal1.getId());
+    assertThat(response1.todolist()).extracting("id")
+        .containsExactly(todo1.getId(), todo2.getId());
+
+    TodoListResponse response2 = responses.get(1);
+    assertThat(response2.goalInfo()
+        .id()).isEqualTo(goal2.getId());
+    assertThat(response2.todolist()).isEmpty();
+
+  }
+
+  private Goal createGoal(String name, User user) {
+    Goal goal = Goal.builder()
+        .name(name)
+        .user(user)
+        .build();
+
+    return goalRepository.save(goal);
+  }
+
+  private Todo createTodo(String name, Goal goal) {
+    Todo todo = Todo.builder()
+        .name(name)
+        .goal(goal)
+        .build();
+
+    return todoRepository.save(todo);
+  }
+
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, true, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
+
+    User user = User.builder()
+        .passwordEncoder(new BCryptPasswordEncoder())
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .build();
+
+    return userRepository.save(user);
+  }
+
   @Nested
   class 할_일_1개_조회_테스트 {
 
@@ -78,36 +144,6 @@ class TodoServiceTest {
           .isInstanceOf(EntityNotFoundException.class)
           .hasMessage("할 일 아이디가 존재하지 않습니다.");
     }
-
-  }
-
-  @Test
-  void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
-    // given
-    User user = createUser();
-    Goal goal1 = createGoal("dev course", user);
-    Goal goal2 = createGoal("book", user);
-
-    LocalDate date = LocalDate.now();
-    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
-    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
-
-    // when
-    List<TodoListResponse> responses = todoService.findDailyTodoList(date);
-
-    // then
-    assertThat(responses).hasSize(2);
-
-    TodoListResponse response1 = responses.get(0);
-    assertThat(response1.goalInfo()
-        .id()).isEqualTo(goal1.getId());
-    assertThat(response1.todolist()).extracting("id")
-        .containsExactly(todo1.getId(), todo2.getId());
-
-    TodoListResponse response2 = responses.get(1);
-    assertThat(response2.goalInfo()
-        .id()).isEqualTo(goal2.getId());
-    assertThat(response2.todolist()).isEmpty();
 
   }
 
@@ -200,42 +236,6 @@ class TodoServiceTest {
           .containsExactly(date, 2, 2);
     }
 
-  }
-
-  private Goal createGoal(String name, User user) {
-    Goal goal = Goal.builder()
-        .name(name)
-        .user(user)
-        .build();
-
-    return goalRepository.save(goal);
-  }
-
-  private Todo createTodo(String name, Goal goal) {
-    Todo todo = Todo.builder()
-        .name(name)
-        .goal(goal)
-        .build();
-
-    return todoRepository.save(todo);
-  }
-
-  private User createUser() {
-    String email = faker.internet()
-        .emailAddress();
-    String password = faker.internet()
-        .password(8, 40, false, true, true);
-    String nickname = faker.oscarMovie()
-        .character();
-
-    User user = User.builder()
-        .passwordEncoder(new BCryptPasswordEncoder())
-        .email(email)
-        .password(password)
-        .nickname(nickname)
-        .build();
-
-    return userRepository.save(user);
   }
 
 }
