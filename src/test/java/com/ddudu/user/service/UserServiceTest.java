@@ -6,11 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.auth.jwt.JwtAuthToken;
 import com.ddudu.auth.jwt.converter.JwtConverter;
+import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -26,7 +28,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -96,6 +97,16 @@ class UserServiceTest {
       );
     }
 
+    @BeforeEach
+    void setUp() {
+      builderWithEncoder = User.builder()
+          .passwordEncoder(passwordEncoder);
+      password = faker.internet()
+          .password(8, 40, false, true, true);
+      nickname = faker.oscarMovie()
+          .character();
+    }
+
     @Test
     void 이메일이_이미_존재하면_회원가입을_실패한다() {
       // given
@@ -115,8 +126,8 @@ class UserServiceTest {
       ThrowingCallable signUp = () -> userService.signUp(request);
 
       // then
-      assertThatExceptionOfType(DuplicateKeyException.class).isThrownBy(signUp)
-          .withMessage("이미 존재하는 이메일입니다.");
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(signUp)
+          .withMessage(UserErrorCode.DUPLICATE_EMAIL.getMessage());
     }
 
     @Test
@@ -143,8 +154,8 @@ class UserServiceTest {
       ThrowingCallable signUp = () -> userService.signUp(request);
 
       // then
-      assertThatExceptionOfType(DuplicateKeyException.class).isThrownBy(signUp)
-          .withMessage("이미 존재하는 아이디입니다.");
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(signUp)
+          .withMessage(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getMessage());
     }
 
     @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")

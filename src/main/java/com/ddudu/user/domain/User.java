@@ -1,38 +1,36 @@
 package com.ddudu.user.domain;
 
 import com.ddudu.auth.domain.authority.Authority;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ddudu.common.BaseEntity;
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "users")
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class User {
+public class User extends BaseEntity {
+
+  private static final int MAX_NICKNAME_LENGTH = 20;
+  private static final int MAX_OPTIONAL_USERNAME_LENGTH = 20;
+  private static final int MAX_INTRODUCTION_LENGTH = 50;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,19 +64,6 @@ public class User {
   @Enumerated(EnumType.STRING)
   private UserStatus status;
 
-  @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP")
-  @CreatedDate
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  private LocalDateTime createdAt;
-
-  @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP")
-  @LastModifiedDate
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-  private LocalDateTime updatedAt;
-
-  @Column(name = "is_deleted", nullable = false)
-  private boolean isDeleted;
-
   @Builder
   public User(
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
@@ -89,10 +74,9 @@ public class User {
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
+    this.authority = Objects.nonNull(authority) ? authority : Authority.NORMAL;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
-    this.authority = authority != null ? authority : Authority.NORMAL;
     status = UserStatus.ACTIVE;
-    isDeleted = false;
   }
 
   public String getEmail() {
@@ -113,27 +97,27 @@ public class User {
 
   private void validateNickname(String nickname) {
     if (StringUtils.isBlank(nickname)) {
-      throw new IllegalArgumentException("닉네임이 입력되지 않았습니다.");
+      throw new InvalidParameterException(UserErrorCode.BLANK_NICKNAME);
     }
 
-    if (nickname.length() > 20) {
-      throw new IllegalArgumentException("닉네임은 최대 20자 입니다.");
+    if (nickname.length() > MAX_NICKNAME_LENGTH) {
+      throw new InvalidParameterException(UserErrorCode.EXCESSIVE_NICKNAME_LENGTH);
     }
   }
 
   private void validateOptionalUsername(String optionalUsername) {
     if (StringUtils.isBlank(optionalUsername)) {
-      throw new IllegalArgumentException("아이디는 공백일 수 없습니다.");
+      throw new InvalidParameterException(UserErrorCode.BLANK_OPTIONAL_USERNAME);
     }
 
-    if (optionalUsername.length() > 20) {
-      throw new IllegalArgumentException("아이디는 최대 20자 입니다.");
+    if (optionalUsername.length() > MAX_OPTIONAL_USERNAME_LENGTH) {
+      throw new InvalidParameterException(UserErrorCode.EXCESSIVE_OPTIONAL_USERNAME_LENGTH);
     }
   }
 
   private void validateIntroduction(String introduction) {
-    if (introduction.length() > 50) {
-      throw new IllegalArgumentException("자기소개는 최대 50자 입니다.");
+    if (introduction.length() > MAX_INTRODUCTION_LENGTH) {
+      throw new InvalidParameterException(UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH);
     }
   }
 

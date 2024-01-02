@@ -1,5 +1,7 @@
 package com.ddudu.user.domain;
 
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
@@ -24,14 +26,14 @@ public class Email {
 
   private void validate(String email) {
     if (StringUtils.isBlank(email)) {
-      throw new IllegalArgumentException("이메일이 입력되지 않았습니다.");
+      throw new InvalidParameterException(UserErrorCode.BLANK_EMAIL);
     }
 
     boolean matches = EMAIL_PATTERN.matcher(email)
         .matches();
 
     if (!matches) {
-      throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다.");
+      throw new InvalidParameterException(UserErrorCode.INVALID_EMAIL_FORMAT);
     }
   }
 

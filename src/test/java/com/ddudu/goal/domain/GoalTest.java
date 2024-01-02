@@ -3,7 +3,12 @@ package com.ddudu.goal.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.goal.exception.GoalErrorCode;
+import com.ddudu.user.domain.User;
 import java.util.List;
+import net.datafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -12,47 +17,104 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalTest {
 
+  static final Faker faker = new Faker();
+
+  User user;
+  String name;
+  String color;
+  PrivacyType privacyType;
+
+  @BeforeEach
+  void setUp() {
+    user = createUser();
+    name = faker.lorem()
+        .word();
+    color = faker.color()
+        .hex()
+        .substring(1);
+    privacyType = PrivacyType.PUBLIC;
+  }
+
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, false, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
+
+    return User.builder()
+        .passwordEncoder(new BCryptPasswordEncoder())
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .build();
+  }
+
+  private Goal createGoal() {
+    return Goal.builder()
+        .name(name)
+        .user(user)
+        .color(color)
+        .privacyType(PrivacyType.PRIVATE)
+        .build();
+  }
+
   @Nested
   class 목표_생성_테스트 {
 
+    private static List<String> provide51Letters() {
+      String longString = "a".repeat(51);
+      return List.of(longString);
+    }
+
     @Test
     void 목표를_생성할_수_있다() {
-      // given
-      String name = "dev course";
-
       // when
       Goal goal = Goal.builder()
           .name(name)
+          .user(user)
           .build();
 
       // then
       assertThat(goal)
-          .extracting("name", "status", "color", "privacyType", "isDeleted")
-          .containsExactly(name, GoalStatus.IN_PROGRESS, "191919", PrivacyType.PRIVATE, false);
+          .extracting("name", "user", "status", "color", "privacyType", "isDeleted")
+          .containsExactly(
+              name, user, GoalStatus.IN_PROGRESS, "191919", PrivacyType.PRIVATE, false);
     }
 
     @Test
     void 색상_코드_보기_설정과_함께_목표를_생성할_수_있다() {
-      // given
-      String name = "dev course";
-      String color = "999999";
-      PrivacyType privacyType = PrivacyType.PUBLIC;
-
       // when
       Goal goal = Goal.builder()
           .name(name)
+          .user(user)
           .color(color)
           .privacyType(privacyType)
           .build();
 
       // then
       assertThat(goal)
-          .extracting("name", "status", "color", "privacyType", "isDeleted")
-          .containsExactly(name, GoalStatus.IN_PROGRESS, color, privacyType, false);
+          .extracting("name", "user", "status", "color", "privacyType", "isDeleted")
+          .containsExactly(name, user, GoalStatus.IN_PROGRESS, color, privacyType, false);
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void 사용자는_필수값이다(User invalidUser) {
+      // when then
+      assertThatThrownBy(() -> Goal.builder()
+          .name(name)
+          .user(invalidUser)
+          .build())
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessage("사용자는 필수값입니다.");
     }
 
     @ParameterizedTest
@@ -61,9 +123,10 @@ class GoalTest {
       // when then
       assertThatThrownBy(() -> Goal.builder()
           .name(invalidName)
+          .user(user)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("목표명은 필수값입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(GoalErrorCode.BLANK_NAME.getMessage());
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
@@ -72,9 +135,10 @@ class GoalTest {
       // when then
       assertThatThrownBy(() -> Goal.builder()
           .name(longName)
+          .user(user)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("목표명은 최대 50자 입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getMessage());
     }
 
     @ParameterizedTest
@@ -82,7 +146,8 @@ class GoalTest {
     void 색상_코드가_빈_문자열이면_기본값으로_저장된다(String emptyColor) {
       // when
       Goal goal = Goal.builder()
-          .name("dev course")
+          .name(name)
+          .user(user)
           .color(emptyColor)
           .build();
 
@@ -99,32 +164,20 @@ class GoalTest {
       // when then
       assertThatThrownBy(() ->
           Goal.builder()
-              .name("dev course")
+              .name(name)
+              .user(user)
               .color(invalidColor)
               .build()
       )
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(GoalErrorCode.INVALID_COLOR_FORMAT.getMessage());
 
-    }
-
-    private static List<String> provide51Letters() {
-      String longString = "a".repeat(51);
-      return List.of(longString);
     }
 
   }
 
   @Nested
   class 목표_수정_테스트 {
-
-    private String validName;
-    private String validColor;
-
-    목표_수정_테스트() {
-      validName = "dav course";
-      validColor = "191919";
-    }
 
     @Test
     void 목표명_색상_상태_공개_설정을_수정_할_수_있다() {
@@ -141,14 +194,6 @@ class GoalTest {
       // then
       assertThat(goal).extracting("name", "status", "color", "privacyType")
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
-    }
-
-    private Goal createGoal() {
-      return Goal.builder()
-          .name(validName)
-          .color(validColor)
-          .privacyType(PrivacyType.PRIVATE)
-          .build();
     }
 
   }

@@ -13,7 +13,7 @@ import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.auth.jwt.JwtAuthToken;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
-import com.ddudu.support.TestSecretKey;
+import com.ddudu.support.TestProperties;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UserResponse;
@@ -40,7 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(UserController.class)
-@Import({WebSecurityConfig.class, TestSecretKey.class, JwtConfig.class})
+@Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class UserControllerTest {
 
