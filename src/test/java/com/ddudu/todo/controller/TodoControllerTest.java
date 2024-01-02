@@ -76,11 +76,7 @@ class TodoControllerTest {
       // given
       Long goalId = 1L;
       CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
-      TodoInfo response = TodoInfo.builder()
-          .id(1L)
-          .name(name)
-          .status(TodoStatus.UNCOMPLETED)
-          .build();
+      TodoInfo response = createTodoInfo();
 
       given(todoService.create(anyLong(), any(CreateTodoRequest.class)))
           .willReturn(response);
@@ -99,7 +95,7 @@ class TodoControllerTest {
           .andExpect(jsonPath("$.status").value(response.status()
               .name()));
     }
-    
+
   }
 
   @Nested
