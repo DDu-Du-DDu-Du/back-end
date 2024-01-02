@@ -3,9 +3,8 @@ package com.ddudu.goal.domain;
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
-import com.ddudu.user.domain.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ddudu.common.BaseEntity;
+import com.ddudu.user.domain.User;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -20,14 +19,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -109,9 +104,9 @@ public class Goal extends BaseEntity {
   }
 
   private void validateUser(User user) {
-    if (Objects.isNull(user)) {
+    if (isNull(user)) {
       throw new IllegalArgumentException("사용자는 필수값입니다.");
     }
   }
-  
+
 }
