@@ -3,13 +3,14 @@ package com.ddudu.following.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.following.domain.Following;
 import com.ddudu.following.dto.request.FollowRequest;
 import com.ddudu.following.dto.response.FollowResponse;
+import com.ddudu.following.exception.FollowingErrorCode;
 import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -74,7 +75,8 @@ class FollowingServiceTest {
       ThrowingCallable create = () -> followingService.create(request);
 
       // then
-      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(create);
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
+          .withMessage(FollowingErrorCode.FOLLOWER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -89,7 +91,8 @@ class FollowingServiceTest {
       ThrowingCallable create = () -> followingService.create(request);
 
       // then
-      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(create);
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
+          .withMessage(FollowingErrorCode.FOLLOWEE_NOT_EXISTING.getMessage());
     }
 
     @Test

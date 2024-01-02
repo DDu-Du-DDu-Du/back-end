@@ -54,6 +54,7 @@ class UserTest {
     validNickname = faker.oscarMovie()
         .character();
   }
+
   @Nested
   class 유저_생성_테스트 {
 
