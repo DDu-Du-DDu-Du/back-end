@@ -36,7 +36,7 @@ public class TodoController {
       Long userId,
       @RequestBody
       @Valid
-      CreateTodoRequest request
+          CreateTodoRequest request
   ) {
     TodoInfo response = todoService.create(userId, request);
     URI uri = URI.create("/api/todos/" + response.id());
@@ -46,9 +46,9 @@ public class TodoController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<TodoResponse> getTodo(
+  public ResponseEntity<TodoResponse> get(
       @PathVariable
-      Long id
+          Long id
   ) {
     TodoResponse response = todoService.findById(id);
 
@@ -56,49 +56,50 @@ public class TodoController {
   }
 
   @GetMapping
-  public ResponseEntity<List<TodoListResponse>> getDailyTodoList(
+  public ResponseEntity<List<TodoListResponse>> getDaily(
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+          LocalDate date
   ) {
     date = (date == null) ? LocalDate.now() : date;
-
     List<TodoListResponse> response = todoService.findDailyTodoList(date);
+
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/weekly")
-  public ResponseEntity<List<TodoCompletionResponse>> getWeeklyTodoCompletion(
+  public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+          LocalDate date
   ) {
     DayOfWeek weekStart = DayOfWeek.MONDAY;
     date = (date == null) ? LocalDate.now()
         .with(weekStart) : date.with(weekStart);
-
     List<TodoCompletionResponse> completionList = todoService.findWeeklyTodoCompletion(date);
+
     return ResponseEntity.ok(completionList);
   }
 
   @GetMapping("/monthly")
-  public ResponseEntity<List<TodoCompletionResponse>> getMonthlyTodoCompletion(
+  public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
       @RequestParam(value = "date", required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
-      YearMonth yearMonth
+          YearMonth yearMonth
   ) {
     yearMonth = (yearMonth == null) ? YearMonth.now() : yearMonth;
-
     List<TodoCompletionResponse> completionList = todoService.findMonthlyTodoCompletion(yearMonth);
+
     return ResponseEntity.ok(completionList);
   }
 
   @PatchMapping("/{id}/status")
   public ResponseEntity<TodoResponse> updateTodoStatus(
       @PathVariable
-      Long id
+          Long id
   ) {
     TodoResponse response = todoService.updateStatus(id);
+
     return ResponseEntity.ok(response);
   }
 
