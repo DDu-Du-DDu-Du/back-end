@@ -30,4 +30,10 @@ public class BaseEntity {
   @Column(name = "is_deleted", nullable = false)
   private boolean isDeleted = DEFAULT_IS_DELETED;
 
+  public void delete() {
+    if (!isDeleted) {
+      isDeleted = true;
+    }
+  }
+
 }
