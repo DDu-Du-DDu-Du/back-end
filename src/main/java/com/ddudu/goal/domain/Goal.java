@@ -6,16 +6,21 @@ import static java.util.Objects.isNull;
 import com.ddudu.common.BaseEntity;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.goal.exception.GoalErrorCode;
+import com.ddudu.user.domain.User;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +44,10 @@ public class Goal extends BaseEntity {
   @Column(name = "name", nullable = false, length = 50)
   private String name;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
+
   @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
   @Enumerated(EnumType.STRING)
   private GoalStatus status = DEFAULT_STATUS;
@@ -55,10 +64,11 @@ public class Goal extends BaseEntity {
   private PrivacyType privacyType;
 
   @Builder
-  public Goal(String name, String color, PrivacyType privacyType) {
-    validateName(name);
+  public Goal(String name, User user, String color, PrivacyType privacyType) {
+    validate(name, user);
 
     this.name = name;
+    this.user = user;
     this.color = new Color(color);
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
@@ -78,6 +88,11 @@ public class Goal extends BaseEntity {
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
 
+  private void validate(String name, User user) {
+    validateName(name);
+    validateUser(user);
+  }
+
   private void validateName(String name) {
     if (isBlank(name)) {
       throw new InvalidParameterException(GoalErrorCode.BLANK_NAME);
@@ -85,6 +100,12 @@ public class Goal extends BaseEntity {
 
     if (name.length() > MAX_NAME_LENGTH) {
       throw new InvalidParameterException(GoalErrorCode.EXCESSIVE_NAME_LENGTH);
+    }
+  }
+
+  private void validateUser(User user) {
+    if (Objects.isNull(user)) {
+      throw new IllegalArgumentException("사용자는 필수값입니다.");
     }
   }
 

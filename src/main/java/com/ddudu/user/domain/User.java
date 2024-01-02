@@ -1,5 +1,6 @@
 package com.ddudu.user.domain;
 
+import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.BaseEntity;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.user.exception.UserErrorCode;
@@ -55,6 +56,10 @@ public class User extends BaseEntity {
   @Column(name = "introduction", length = 50)
   private String introduction;
 
+  @Column(name = "authority", columnDefinition = "VARCHAR", length = 15)
+  @Enumerated(EnumType.STRING)
+  private Authority authority;
+
   @Column(name = "status", columnDefinition = "VARCHAR", length = 20)
   @Enumerated(EnumType.STRING)
   private UserStatus status;
@@ -62,13 +67,14 @@ public class User extends BaseEntity {
   @Builder
   public User(
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
-      String nickname, String introduction
+      String nickname, String introduction, Authority authority
   ) {
     validate(nickname, optionalUsername, introduction);
     this.optionalUsername = optionalUsername;
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
+    this.authority = Objects.nonNull(authority) ? authority : Authority.NORMAL;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     status = UserStatus.ACTIVE;
   }

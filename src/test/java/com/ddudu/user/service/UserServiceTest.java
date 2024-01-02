@@ -35,15 +35,19 @@ import org.springframework.transaction.annotation.Transactional;
 class UserServiceTest {
 
   static final Faker faker = new Faker();
-  static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+
+  UserBuilder builderWithEncoder;
   String password;
   String nickname;
-  UserBuilder builderWithEncoder;
+
   @Autowired
   UserService userService;
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  PasswordEncoder passwordEncoder;
 
   @Nested
   class 회원가입_테스트 {
@@ -71,7 +75,7 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
       builderWithEncoder = User.builder()
-          .passwordEncoder(PASSWORD_ENCODER);
+          .passwordEncoder(passwordEncoder);
       password = faker.internet()
           .password(8, 40, false, true, true);
       nickname = faker.oscarMovie()

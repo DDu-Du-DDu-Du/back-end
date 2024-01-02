@@ -33,7 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 class UserTest {
 
   static final Faker faker = new Faker();
-  static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+  static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
   UserBuilder builderWithEncoder;
   String validEmail;
@@ -49,7 +49,7 @@ class UserTest {
     @BeforeEach
     void setUp() {
       builderWithEncoder = User.builder()
-          .passwordEncoder(passwordEncoder);
+          .passwordEncoder(PASSWORD_ENCODER);
       validEmail = faker.internet()
           .emailAddress();
       validPassword = faker.internet()
