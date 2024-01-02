@@ -1,6 +1,6 @@
 package com.ddudu.following.domain;
 
-public enum FriendStatus {
+public enum FollowingStatus {
   FOLLOWING,
   REQUESTED,
   IGNORED,

@@ -40,15 +40,15 @@ public class Following extends BaseEntity {
 
   @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
   @Enumerated(EnumType.STRING)
-  private FriendStatus status;
+  private FollowingStatus status;
 
   @Builder
-  public Following(User follower, User followee, FriendStatus status) {
+  public Following(User follower, User followee, FollowingStatus status) {
     validate(follower, followee);
 
     this.follower = follower;
     this.followee = followee;
-    this.status = Objects.nonNull(status) ? status : FriendStatus.FOLLOWING;
+    this.status = Objects.nonNull(status) ? status : FollowingStatus.FOLLOWING;
   }
 
   private void validate(User follower, User followee) {
