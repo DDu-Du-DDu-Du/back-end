@@ -32,8 +32,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
         .join(todo.goal)
         .fetchJoin()
         .where(
-            todo.beginAt.between(startDate, endDate),
-            todo.isDeleted.eq(false)
+            todo.beginAt.between(startDate, endDate)
         )
         .orderBy(todo.status.desc(), todo.endAt.asc())
         .fetch();
@@ -73,8 +72,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
         .from(todo)
         .where(
             todo.beginAt.goe(startDate),
-            todo.beginAt.lt(endDate),
-            todo.isDeleted.eq(false)
+            todo.beginAt.lt(endDate)
         )
         .groupBy(dateTemplate)
         .fetch()
