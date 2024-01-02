@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 class TodoServiceTest {
 
   static final Faker faker = new Faker();
+  User user;
 
   @Autowired
   TodoService todoService;
@@ -47,8 +48,6 @@ class TodoServiceTest {
 
   @Autowired
   UserRepository userRepository;
-
-  User user;
 
   @BeforeEach
   void setUp() {
@@ -88,32 +87,49 @@ class TodoServiceTest {
 
   }
 
-  @Test
-  void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
-    // given
-    Goal goal1 = createGoal("dev course", user);
-    Goal goal2 = createGoal("book", user);
-    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
-    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+  @Nested
+  class 일별_할_일_조회_테스트 {
 
-    LocalDate date = LocalDate.now();
+    @Test
+    void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
+      // given
+      Goal goal1 = createGoal("dev course", user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
-    // when
-    List<TodoListResponse> responses = todoService.findDailyTodoList(date);
+      LocalDate date = LocalDate.now();
 
-    // then
-    assertThat(responses).hasSize(2);
+      // when
+      List<TodoListResponse> responses = todoService.findDailyTodoList(user.getId(), date);
 
-    TodoListResponse response1 = responses.get(0);
-    assertThat(response1.goalInfo()
-        .id()).isEqualTo(goal1.getId());
-    assertThat(response1.todolist()).extracting("id")
-        .containsExactly(todo1.getId(), todo2.getId());
+      // then
+      assertThat(responses).hasSize(2);
 
-    TodoListResponse response2 = responses.get(1);
-    assertThat(response2.goalInfo()
-        .id()).isEqualTo(goal2.getId());
-    assertThat(response2.todolist()).isEmpty();
+      TodoListResponse response1 = responses.get(0);
+      assertThat(response1.goalInfo()
+          .id()).isEqualTo(goal1.getId());
+      assertThat(response1.todolist()).extracting("id")
+          .containsExactly(todo1.getId(), todo2.getId());
+
+      TodoListResponse response2 = responses.get(1);
+      assertThat(response2.goalInfo()
+          .id()).isEqualTo(goal2.getId());
+      assertThat(response2.todolist()).isEmpty();
+
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
+      // given
+      Long invalidUserId = 999L;
+      LocalDate date = LocalDate.now();
+
+      // when then
+      assertThatThrownBy(() -> todoService.findDailyTodoList(invalidUserId, date))
+          .isInstanceOf(EntityNotFoundException.class)
+          .hasMessage("사용자가 존재하지 않습니다.");
+    }
 
   }
 
@@ -168,13 +184,26 @@ class TodoServiceTest {
       int dayIndex = dayOfWeek.getValue() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findWeeklyTodoCompletion(mondayDate);
+      List<TodoCompletionResponse> responses = todoService.findWeeklyTodoCompletion(
+          user.getId(), mondayDate);
 
       // then
       assertThat(responses).hasSize(7);
 
       assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
           .containsExactly(date, 2, 2);
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidUserId = 999L;
+      LocalDate date = LocalDate.now();
+
+      // when then
+      assertThatThrownBy(() -> todoService.findWeeklyTodoCompletion(invalidUserId, date))
+          .isInstanceOf(EntityNotFoundException.class)
+          .hasMessage("사용자가 존재하지 않습니다.");
     }
 
     @Test
@@ -191,7 +220,8 @@ class TodoServiceTest {
       int dayOfMonthIndex = date.getDayOfMonth() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findMonthlyTodoCompletion(yearMonth);
+      List<TodoCompletionResponse> responses = todoService.findMonthlyTodoCompletion(
+          user.getId(), yearMonth);
 
       // then
       assertThat(responses).hasSize(daysInMonth);
@@ -199,6 +229,18 @@ class TodoServiceTest {
       assertThat(responses.get(dayOfMonthIndex)).extracting(
               "date", "totalTodos", "uncompletedTodos")
           .containsExactly(date, 2, 2);
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidUserId = 999L;
+      YearMonth yearMonth = YearMonth.now();
+
+      // when then
+      assertThatThrownBy(() -> todoService.findMonthlyTodoCompletion(invalidUserId, yearMonth))
+          .isInstanceOf(EntityNotFoundException.class)
+          .hasMessage("사용자가 존재하지 않습니다.");
     }
 
   }
@@ -226,7 +268,7 @@ class TodoServiceTest {
     String email = faker.internet()
         .emailAddress();
     String password = faker.internet()
-        .password(8, 40, false, true, true);
+        .password(8, 40, true, true, true);
     String nickname = faker.oscarMovie()
         .character();
 

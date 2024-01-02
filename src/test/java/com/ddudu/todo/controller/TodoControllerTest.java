@@ -103,10 +103,12 @@ class TodoControllerTest {
       LocalDate date = LocalDate.now();
       List<TodoListResponse> responses = createTodoListResponse();
 
-      given(todoService.findDailyTodoList(date)).willReturn(responses);
+      given(todoService.findDailyTodoList(anyLong(), any(LocalDate.class))).willReturn(responses);
 
       // when then
-      mockMvc.perform(get("/api/todos").param("date", date.toString()))
+      mockMvc.perform(get("/api/todos")
+              .param("userId", "1")
+              .param("date", date.toString()))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
           .andExpect(jsonPath("$[0].goalInfo.id").value(responses.get(0)
@@ -134,10 +136,11 @@ class TodoControllerTest {
     void 날짜를_전달받지_않으면_현재_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
       // given
       List<TodoListResponse> responses = createTodoListResponse();
-      given(todoService.findDailyTodoList(any())).willReturn(responses);
+      given(todoService.findDailyTodoList(anyLong(), any())).willReturn(responses);
 
       // when then
-      mockMvc.perform(get("/api/todos"))
+      mockMvc.perform(get("/api/todos")
+              .param("userId", "1"))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
           .andExpect(jsonPath("$[0].goalInfo.id").value(responses.get(0)
@@ -167,6 +170,7 @@ class TodoControllerTest {
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos")
+              .param("userId", "1")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
           .andExpect(content().string("유효하지 않은 날짜입니다."));
@@ -225,10 +229,12 @@ class TodoControllerTest {
       // given
       LocalDate date = LocalDate.of(2024, 1, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(date, 7);
-      given(todoService.findWeeklyTodoCompletion(date)).willReturn(responses);
+      given(todoService.findWeeklyTodoCompletion(anyLong(), any(LocalDate.class))).willReturn(
+          responses);
 
       // when then
       mockMvc.perform(get("/api/todos/weekly")
+              .param("userId", "1")
               .param("date", date.toString())
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
@@ -244,10 +250,12 @@ class TodoControllerTest {
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(mondayDate, 7);
-      given(todoService.findWeeklyTodoCompletion(mondayDate)).willReturn(responses);
+      given(todoService.findWeeklyTodoCompletion(anyLong(), any(LocalDate.class))).willReturn(
+          responses);
 
       // when then
       mockMvc.perform(get("/api/todos/weekly")
+              .param("userId", "1")
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(7))
@@ -262,6 +270,7 @@ class TodoControllerTest {
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos/weekly")
+              .param("userId", "1")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
           .andExpect(content().string("유효하지 않은 날짜입니다."));
@@ -273,10 +282,12 @@ class TodoControllerTest {
       YearMonth yearMonth = YearMonth.of(2024, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
           yearMonth.atDay(1), 31);
-      given(todoService.findMonthlyTodoCompletion(yearMonth)).willReturn(responses);
+      given(todoService.findMonthlyTodoCompletion(anyLong(), any(YearMonth.class))).willReturn(
+          responses);
 
       // when then
       mockMvc.perform(get("/api/todos/monthly")
+              .param("userId", "1")
               .param("date", yearMonth.toString())
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
@@ -293,10 +304,12 @@ class TodoControllerTest {
       int daysInMonth = yearMonth.lengthOfMonth();
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
           yearMonth.atDay(1), daysInMonth);
-      given(todoService.findMonthlyTodoCompletion(yearMonth)).willReturn(responses);
+      given(todoService.findMonthlyTodoCompletion(anyLong(), any(YearMonth.class))).willReturn(
+          responses);
 
       // when then
       mockMvc.perform(get("/api/todos/monthly")
+              .param("userId", "1")
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(daysInMonth))
@@ -312,6 +325,7 @@ class TodoControllerTest {
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos/monthly")
+              .param("userId", "1")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
           .andExpect(content().string("유효하지 않은 날짜입니다."));
