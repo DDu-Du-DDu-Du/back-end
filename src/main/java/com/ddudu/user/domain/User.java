@@ -2,7 +2,6 @@ package com.ddudu.user.domain;
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.BaseEntity;
-import com.ddudu.auth.domain.authority.Authority;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;

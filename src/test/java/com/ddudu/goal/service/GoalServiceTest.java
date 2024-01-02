@@ -61,6 +61,39 @@ class GoalServiceTest {
         .substring(1);
   }
 
+  private List<Goal> createGoals(User user, List<String> names) {
+    return names.stream()
+        .map(name -> createGoal(user, name))
+        .toList();
+  }
+
+  private Goal createGoal(User user, String name) {
+    Goal goal = Goal.builder()
+        .name(name)
+        .user(user)
+        .build();
+
+    return goalRepository.save(goal);
+  }
+
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, false, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
+
+    User user = User.builder()
+        .passwordEncoder(new BCryptPasswordEncoder())
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .build();
+
+    return userRepository.save(user);
+  }
+
   @Nested
   class 목표_생성_테스트 {
 
@@ -280,39 +313,6 @@ class GoalServiceTest {
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 
-  }
-
-  private List<Goal> createGoals(User user, List<String> names) {
-    return names.stream()
-        .map(name -> createGoal(user, name))
-        .toList();
-  }
-
-  private Goal createGoal(User user, String name) {
-    Goal goal = Goal.builder()
-        .name(name)
-        .user(user)
-        .build();
-
-    return goalRepository.save(goal);
-  }
-
-  private User createUser() {
-    String email = faker.internet()
-        .emailAddress();
-    String password = faker.internet()
-        .password(8, 40, false, true, true);
-    String nickname = faker.oscarMovie()
-        .character();
-
-    User user = User.builder()
-        .passwordEncoder(new BCryptPasswordEncoder())
-        .email(email)
-        .password(password)
-        .nickname(nickname)
-        .build();
-
-    return userRepository.save(user);
   }
 
 }
