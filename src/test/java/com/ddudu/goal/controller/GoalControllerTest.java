@@ -231,7 +231,7 @@ class GoalControllerTest {
         // given
         GoalResponse response = createGoalResponse();
 
-        given(goalService.getById(anyLong())).willReturn(response);
+        given(goalService.findById(anyLong())).willReturn(response);
 
         // when then
         mockMvc.perform(
@@ -310,7 +310,7 @@ class GoalControllerTest {
       void ID가_유효하지_않으면_Not_Found_응답을_반환한다() throws Exception {
         // given
         Long invalidId = -1L;
-        given(goalService.getById(anyLong()))
+        given(goalService.findById(anyLong()))
             .willThrow(new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
 
         // when then
@@ -344,7 +344,7 @@ class GoalControllerTest {
         List<GoalSummaryResponse> response = createGoalSummaryDTO();
         GoalSummaryResponse firstElement = response.get(0);
 
-        given(goalService.getAllById(anyLong())).willReturn(response);
+        given(goalService.findAllByUser(anyLong())).willReturn(response);
 
         // when then
         mockMvc.perform(
@@ -364,7 +364,7 @@ class GoalControllerTest {
       void 사용자가_존재하지_않은_경우_Not_Found_응답을_반환한다() throws Exception {
         // given
         String invalidUserId = "-1";
-        given(goalService.getAllById(anyLong())).willThrow(
+        given(goalService.findAllByUser(anyLong())).willThrow(
             new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
 
         // when then

@@ -72,17 +72,17 @@ public class GoalController {
       @PathVariable
       Long id
   ) {
-    GoalResponse response = goalService.getById(id);
+    GoalResponse response = goalService.findById(id);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping
-  public ResponseEntity<List<GoalSummaryResponse>> getAllById(
+  public ResponseEntity<List<GoalSummaryResponse>> getAllByUser(
       @RequestParam
       Long userId
   ) {
-    List<GoalSummaryResponse> response = goalService.getAllById(userId);
+    List<GoalSummaryResponse> response = goalService.findAllByUser(userId);
 
     return ResponseEntity.ok(response);
   }
