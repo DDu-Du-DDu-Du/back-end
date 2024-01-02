@@ -48,5 +48,5 @@ CREATE TABLE IF NOT EXISTS todo
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_todo_id PRIMARY KEY (id),
     CONSTRAINT fk_todo_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_goal_id FOREIGN KEY (goal_id) REFERENCES goal (id)
+    CONSTRAINT fk_todo_goal_id FOREIGN KEY (goal_id) REFERENCES goal (id)
 );
