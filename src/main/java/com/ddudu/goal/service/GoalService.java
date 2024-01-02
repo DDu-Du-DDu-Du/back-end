@@ -76,10 +76,8 @@ public class GoalService {
 
   @Transactional
   public void delete(Long id) {
-    Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
-
-    goal.delete();
+    goalRepository.findById(id)
+        .ifPresent(Goal::delete);
   }
 
 }
