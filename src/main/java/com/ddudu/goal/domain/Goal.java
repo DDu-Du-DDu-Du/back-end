@@ -20,7 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -104,7 +103,7 @@ public class Goal extends BaseEntity {
   }
 
   private void validateUser(User user) {
-    if (Objects.isNull(user)) {
+    if (isNull(user)) {
       throw new IllegalArgumentException("사용자는 필수값입니다.");
     }
   }
