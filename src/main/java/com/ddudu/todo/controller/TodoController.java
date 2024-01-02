@@ -70,6 +70,7 @@ public class TodoController {
 
   @GetMapping("/weekly")
   public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
+      Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
@@ -84,6 +85,7 @@ public class TodoController {
 
   @GetMapping("/monthly")
   public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
+      Long userId,
       @RequestParam(value = "date", required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
           YearMonth yearMonth

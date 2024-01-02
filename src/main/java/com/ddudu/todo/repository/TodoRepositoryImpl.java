@@ -42,7 +42,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
 
   @Override
   public List<TodoCompletionResponse> findTodosCompletion(
-      LocalDateTime startDate, LocalDateTime endDate
+      LocalDateTime startDate, LocalDateTime endDate, User user
   ) {
     QTodo todo = QTodo.todo;
 
@@ -74,7 +74,8 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
         .from(todo)
         .where(
             todo.beginAt.goe(startDate),
-            todo.beginAt.lt(endDate)
+            todo.beginAt.lt(endDate),
+            todo.user.eq(user)
         )
         .groupBy(dateTemplate)
         .fetch()

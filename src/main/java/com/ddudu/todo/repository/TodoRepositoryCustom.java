@@ -10,6 +10,8 @@ public interface TodoRepositoryCustom {
 
   List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, User user);
 
-  List<TodoCompletionResponse> findTodosCompletion(LocalDateTime startDate, LocalDateTime endDate);
+  List<TodoCompletionResponse> findTodosCompletion(
+      LocalDateTime startDate, LocalDateTime endDate, User user
+  );
 
 }
