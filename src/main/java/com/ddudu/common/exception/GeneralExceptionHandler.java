@@ -69,6 +69,16 @@ public class GeneralExceptionHandler {
         .body(response);
   }
 
+  @ExceptionHandler(InvalidAuthenticationException.class)
+  public ResponseEntity<ErrorResponse> handleUnauthorizedException(InvalidAuthenticationException e) {
+    log.warn(e.getMessage(), e);
+
+    ErrorResponse response = ErrorResponse.from(e);
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body(response);
+  }
+
   @ExceptionHandler(DataNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFoundException e) {
     log.warn(e.getMessage(), e);
