@@ -30,7 +30,7 @@ public class TodoController {
   private final TodoService todoService;
 
   @GetMapping("/{id}")
-  public ResponseEntity<TodoResponse> getTodo(
+  public ResponseEntity<TodoResponse> get(
       @PathVariable
           Long id
   ) {
@@ -39,7 +39,7 @@ public class TodoController {
   }
 
   @GetMapping
-  public ResponseEntity<List<TodoListResponse>> getDailyTodoList(
+  public ResponseEntity<List<TodoListResponse>> getDaily(
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
@@ -51,7 +51,7 @@ public class TodoController {
   }
 
   @PatchMapping("/{id}/status")
-  public ResponseEntity<TodoResponse> updateTodoStatus(
+  public ResponseEntity<TodoResponse> updateStatus(
       @PathVariable
           Long id
   ) {
@@ -60,7 +60,7 @@ public class TodoController {
   }
 
   @GetMapping("/weekly")
-  public ResponseEntity<List<TodoCompletionResponse>> getWeeklyTodoCompletion(
+  public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
@@ -74,7 +74,7 @@ public class TodoController {
   }
 
   @GetMapping("/monthly")
-  public ResponseEntity<List<TodoCompletionResponse>> getMonthlyTodoCompletion(
+  public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
       @RequestParam(value = "date", required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
           YearMonth yearMonth
