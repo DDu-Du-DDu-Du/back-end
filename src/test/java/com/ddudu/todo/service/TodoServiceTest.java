@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import net.datafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -47,15 +48,21 @@ class TodoServiceTest {
   @Autowired
   UserRepository userRepository;
 
+  User user;
+
+  @BeforeEach
+  void setUp() {
+    user = createUser();
+  }
+
   @Nested
   class 할_일_1개_조회_테스트 {
 
     @Test
     void 할_일_조회를_성공한다() {
       // given
-      User user = createUser();
       Goal goal = createGoal("dev course", user);
-      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
+      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal, user);
 
       // when
       TodoResponse response = todoService.findById(todo.getId());
@@ -84,13 +91,12 @@ class TodoServiceTest {
   @Test
   void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
     // given
-    User user = createUser();
     Goal goal1 = createGoal("dev course", user);
     Goal goal2 = createGoal("book", user);
+    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
+    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
     LocalDate date = LocalDate.now();
-    Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
-    Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
 
     // when
     List<TodoListResponse> responses = todoService.findDailyTodoList(date);
@@ -117,9 +123,8 @@ class TodoServiceTest {
     @Test
     void 할_일_상태_업데이트를_성공한다() {
       // given
-      User user = createUser();
       Goal goal = createGoal("dev course", user);
-      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
+      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal, user);
       TodoStatus beforeUpdated = todo.getStatus();
 
       // when
@@ -152,12 +157,10 @@ class TodoServiceTest {
     @Test
     void 주간_할_일_달성률_조회를_성공한다() {
       // given
-      User user = createUser();
       Goal goal1 = createGoal("dev course", user);
       Goal goal2 = createGoal("book", user);
-
-      Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
-      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
+      Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
@@ -177,12 +180,10 @@ class TodoServiceTest {
     @Test
     void 월간_할_일_달성률_조회를_성공한다() {
       // given
-      User user = createUser();
       Goal goal1 = createGoal("dev course", user);
       Goal goal2 = createGoal("book", user);
-
-      Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
-      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
+      Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
       LocalDate date = LocalDate.now();
       YearMonth yearMonth = YearMonth.now();
@@ -211,10 +212,11 @@ class TodoServiceTest {
     return goalRepository.save(goal);
   }
 
-  private Todo createTodo(String name, Goal goal) {
+  private Todo createTodo(String name, Goal goal, User user) {
     Todo todo = Todo.builder()
         .name(name)
         .goal(goal)
+        .user(user)
         .build();
 
     return todoRepository.save(todo);
