@@ -1,5 +1,7 @@
 package com.ddudu.auth.jwt;
 
+import com.ddudu.auth.exception.AuthErrorCode;
+import com.ddudu.common.exception.InvalidTokenException;
 import java.util.Collections;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +22,7 @@ public class JwtAuthToken extends JwtAuthenticationToken {
   public long getUserId() {
     if (Objects.isNull(userId)) {
       log.error("JWT ({}) is somehow created without user id", getToken().getTokenValue());
-      throw new IllegalStateException("User is not able to be loaded from this token.");
+      throw new InvalidTokenException(AuthErrorCode.BAD_TOKEN_CONTENT);
     }
 
     return userId;

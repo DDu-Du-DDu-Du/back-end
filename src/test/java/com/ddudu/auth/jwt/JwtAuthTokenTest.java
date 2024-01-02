@@ -1,8 +1,10 @@
 package com.ddudu.auth.jwt;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.auth.domain.authority.Authority;
+import com.ddudu.auth.exception.AuthErrorCode;
+import com.ddudu.common.exception.InvalidTokenException;
 import java.time.Instant;
 import java.util.Collections;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -28,8 +30,8 @@ class JwtAuthTokenTest {
     ThrowingCallable getUserId = token::getUserId;
 
     // then
-    assertThatIllegalStateException().isThrownBy(getUserId)
-        .withMessage("User is not able to be loaded from this token.");
+    assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(getUserId)
+        .withMessage(AuthErrorCode.BAD_TOKEN_CONTENT.getMessage());
   }
 
 }

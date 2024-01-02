@@ -7,6 +7,7 @@ import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.auth.jwt.JwtAuthToken;
 import com.ddudu.auth.jwt.converter.JwtConverter;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
@@ -198,7 +199,8 @@ class UserServiceTest {
       // then
       assertThat(token).isNotNull();
       assertThat(token.getUserId()).isEqualTo(randomId);
-      assertThatExceptionOfType(InvalidBearerTokenException.class).isThrownBy(login);
+      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(login)
+          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
     }
 
     @Test

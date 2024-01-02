@@ -2,11 +2,13 @@ package com.ddudu.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.auth.dto.request.LoginRequest;
 import com.ddudu.auth.dto.response.LoginResponse;
+import com.ddudu.auth.exception.AuthErrorCode;
+import com.ddudu.common.exception.BadCredentialsException;
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Map;
@@ -19,7 +21,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -67,8 +68,8 @@ class AuthServiceTest {
       ThrowingCallable login = () -> authService.login(request);
 
       // then
-      assertThatIllegalArgumentException().isThrownBy(login)
-          .withMessage("입력하신 이메일은 없는 이메일입니다.");
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
+          .withMessage(AuthErrorCode.EMAIL_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -94,7 +95,7 @@ class AuthServiceTest {
 
       // then
       assertThatExceptionOfType(BadCredentialsException.class).isThrownBy(login)
-          .withMessage("비밀번호가 일치하지 않습니다");
+          .withMessage(AuthErrorCode.BAD_CREDENTIALS.getMessage());
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.ddudu.user.service;
 
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.auth.jwt.JwtAuthToken;
+import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
@@ -57,7 +58,7 @@ public class UserService {
   public UserResponse loadFromToken(JwtAuthToken jwtAuthToken) {
     Long userId = jwtAuthToken.getUserId();
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new InvalidBearerTokenException("잘못된 토큰입니다."));
+        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
 
     return UserResponse.from(user);
   }
