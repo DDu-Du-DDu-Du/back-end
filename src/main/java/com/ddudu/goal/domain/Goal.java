@@ -108,7 +108,9 @@ public class Goal {
   }
 
   public void delete() {
-    this.isDeleted = true;
+    if (!isDeleted) {
+      isDeleted = true;
+    }
   }
 
   private void validate(String name, User user) {
