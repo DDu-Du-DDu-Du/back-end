@@ -72,26 +72,28 @@ public class TodoService {
     return TodoResponse.from(todo);
   }
 
-  public List<TodoCompletionResponse> findWeeklyTodoCompletion(LocalDate date) {
+  public List<TodoCompletionResponse> findWeeklyTodoCompletion(Long userId, LocalDate date) {
+    User user = findUser(userId);
     LocalDateTime startDate = date.atStartOfDay();
     LocalDateTime endDate = startDate.plusDays(7);
 
-    return generateCompletions(startDate, endDate);
+    return generateCompletions(startDate, endDate, user);
   }
 
-  public List<TodoCompletionResponse> findMonthlyTodoCompletion(YearMonth yearMonth) {
+  public List<TodoCompletionResponse> findMonthlyTodoCompletion(Long userId, YearMonth yearMonth) {
+    User user = findUser(userId);
     LocalDateTime startDate = yearMonth.atDay(1)
         .atStartOfDay();
     LocalDateTime endDate = startDate.plusMonths(1);
 
-    return generateCompletions(startDate, endDate);
+    return generateCompletions(startDate, endDate, user);
   }
 
   private List<TodoCompletionResponse> generateCompletions(
-      LocalDateTime startDate, LocalDateTime endDate
+      LocalDateTime startDate, LocalDateTime endDate, User user
   ) {
     Map<LocalDate, TodoCompletionResponse> completionByDate = todoRepository.findTodosCompletion(
-            startDate, endDate)
+            startDate, endDate, user)
         .stream()
         .collect(
             Collectors.toMap(TodoCompletionResponse::date, response -> response));

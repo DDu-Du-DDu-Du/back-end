@@ -62,6 +62,7 @@ public class TodoController {
 
   @GetMapping("/weekly")
   public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
+      Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
@@ -70,19 +71,22 @@ public class TodoController {
     date = (date == null) ? LocalDate.now()
         .with(weekStart) : date.with(weekStart);
 
-    List<TodoCompletionResponse> completionList = todoService.findWeeklyTodoCompletion(date);
+    List<TodoCompletionResponse> completionList = todoService.findWeeklyTodoCompletion(
+        userId, date);
     return ResponseEntity.ok(completionList);
   }
 
   @GetMapping("/monthly")
   public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
+      Long userId,
       @RequestParam(value = "date", required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
           YearMonth yearMonth
   ) {
     yearMonth = (yearMonth == null) ? YearMonth.now() : yearMonth;
 
-    List<TodoCompletionResponse> completionList = todoService.findMonthlyTodoCompletion(yearMonth);
+    List<TodoCompletionResponse> completionList = todoService.findMonthlyTodoCompletion(
+        userId, yearMonth);
     return ResponseEntity.ok(completionList);
   }
 
