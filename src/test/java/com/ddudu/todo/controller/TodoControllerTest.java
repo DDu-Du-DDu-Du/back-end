@@ -12,15 +12,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.GoalInfo;
+import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -224,6 +228,108 @@ class TodoControllerTest {
 
   }
 
+  @Nested
+  class 할_일_달성률_조회_테스트 {
+
+    @Test
+    void GET_주간_할_일_달성률_조회를_성공한다() throws Exception {
+      // given
+      LocalDate date = LocalDate.of(2024, 1, 1);
+      List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(date, 7);
+      given(todoService.findWeeklyTodoCompletion(date)).willReturn(responses);
+
+      // when then
+      mockMvc.perform(get("/api/todos/weekly")
+              .param("date", date.toString())
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(7))
+          .andExpect(jsonPath("$[0].date").value("2024-01-01"))
+          .andExpect(jsonPath("$[0].totalTodos").value(0))
+          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+    }
+
+    @Test
+    void GET_날짜를_전달받지_않으면_이번_주간의_할_일_달성률_조회를_성공한다() throws Exception {
+      // given
+      LocalDate date = LocalDate.now();
+      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
+      List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(mondayDate, 7);
+      given(todoService.findWeeklyTodoCompletion(mondayDate)).willReturn(responses);
+
+      // when then
+      mockMvc.perform(get("/api/todos/weekly")
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(7))
+          .andExpect(jsonPath("$[0].date").value(mondayDate.toString()))
+          .andExpect(jsonPath("$[0].totalTodos").value(0))
+          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid-date", "20231225", "2023-15-01", "2023-12-33"})
+    void GET_유효하지_않은_날짜로_주간_할_일_달성률을_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+        throws Exception {
+      // when then
+      mockMvc.perform(get("/api/todos/weekly")
+              .param("date", invalidDate))
+          .andExpect(status().isBadRequest())
+          .andExpect(content().string("유효하지 않은 날짜입니다."));
+    }
+
+    @Test
+    void GET_월간_할_일_달성률_조회를_성공한다() throws Exception {
+      // given
+      YearMonth yearMonth = YearMonth.of(2024, 1);
+      List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
+          yearMonth.atDay(1), 31);
+      given(todoService.findMonthlyTodoCompletion(yearMonth)).willReturn(responses);
+
+      // when then
+      mockMvc.perform(get("/api/todos/monthly")
+              .param("date", yearMonth.toString())
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(31))
+          .andExpect(jsonPath("$[0].date").value("2024-01-01"))
+          .andExpect(jsonPath("$[0].totalTodos").value(0))
+          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+    }
+
+    @Test
+    void GET_날짜를_전달받지_않으면_오늘_날짜를_기준으로_이번_달의_할_일_달성률_조회를_성공한다() throws Exception {
+      // given
+      YearMonth yearMonth = YearMonth.now();
+      int daysInMonth = yearMonth.lengthOfMonth();
+      List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
+          yearMonth.atDay(1), daysInMonth);
+      given(todoService.findMonthlyTodoCompletion(yearMonth)).willReturn(responses);
+
+      // when then
+      mockMvc.perform(get("/api/todos/monthly")
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(daysInMonth))
+          .andExpect(jsonPath("$[0].date").value(yearMonth.atDay(1)
+              .toString()))
+          .andExpect(jsonPath("$[0].totalTodos").value(0))
+          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid-date", "202312", "2023-15"})
+    void GET_유효하지_않은_날짜로_월간_할_일_달성률을_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+        throws Exception {
+      // when then
+      mockMvc.perform(get("/api/todos/monthly")
+              .param("date", invalidDate))
+          .andExpect(status().isBadRequest())
+          .andExpect(content().string("유효하지 않은 날짜입니다."));
+    }
+
+  }
+
   private GoalInfo createGoalInfo() {
     return GoalInfo.builder()
         .id(1L)
@@ -253,6 +359,15 @@ class TodoControllerTest {
         .build();
 
     return Collections.singletonList(todolist);
+  }
+
+  private List<TodoCompletionResponse> createEmptyTodoCompletionResponseList(
+      LocalDate startDate, int numDays
+  ) {
+    return IntStream.range(0, numDays)
+        .mapToObj(startDate::plusDays)
+        .map(TodoCompletionResponse::createEmptyResponse)
+        .toList();
   }
 
 }
