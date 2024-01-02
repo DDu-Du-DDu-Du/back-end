@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.common.exception.GeneralExceptionHandler;
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = {GoalController.class, GeneralExceptionHandler.class})
+@WebMvcTest(controllers = GoalController.class)
 @Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalControllerTest {
@@ -324,7 +324,7 @@ class GoalControllerTest {
       // given
       Long invalidId = -1L;
       given(goalService.getById(anyLong()))
-          .willThrow(new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
+          .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
       // when then
       mockMvc.perform(
@@ -333,7 +333,7 @@ class GoalControllerTest {
           )
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message")
-              .value(containsString("해당 아이디를 가진 목표가 존재하지 않습니다.")));
+              .value(containsString(GoalErrorCode.ID_NOT_EXISTING.getMessage())));
     }
 
   }
@@ -368,7 +368,7 @@ class GoalControllerTest {
       // given
       String invalidUserId = "-1";
       given(goalService.getAllById(anyLong())).willThrow(
-          new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
+          new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
       // when then
       mockMvc.perform(
@@ -378,7 +378,7 @@ class GoalControllerTest {
           )
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message")
-              .value(containsString("해당 아이디를 가진 사용자가 존재하지 않습니다.")));
+              .value(containsString(GoalErrorCode.USER_NOT_EXISTING.getMessage())));
     }
 
     private List<GoalSummaryResponse> createGoalSummaryDTO() {

@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -317,7 +316,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos/weekly")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message", containsString("형식이 유효하지 않습니다")));
     }
 
     @Test
@@ -367,7 +366,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos/monthly")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message", containsString("형식이 유효하지 않습니다")));
     }
 
   }
