@@ -8,6 +8,8 @@ import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.repository.TodoRepository;
+import com.ddudu.user.domain.User;
+import com.ddudu.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,6 +31,7 @@ public class TodoService {
 
   private final TodoRepository todoRepository;
   private final GoalRepository goalRepository;
+  private final UserRepository userRepository;
 
   public TodoResponse findById(Long id) {
     Todo todo = todoRepository.findById(id)
@@ -37,10 +40,11 @@ public class TodoService {
     return TodoResponse.from(todo);
   }
 
-  public List<TodoListResponse> findDailyTodoList(LocalDate date) {
+  public List<TodoListResponse> findDailyTodoList(Long userId, LocalDate date) {
+    User user = findUser(userId);
     List<Goal> goals = goalRepository.findAll();
     List<Todo> todos = todoRepository.findTodosByDate(
-        date.atStartOfDay(), date.atTime(LocalTime.MAX)
+        date.atStartOfDay(), date.atTime(LocalTime.MAX), user
     );
 
     Map<Long, List<Todo>> todosByGoal = todos.stream()
@@ -103,6 +107,11 @@ public class TodoService {
     }
 
     return completionList;
+  }
+
+  private User findUser(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new EntityNotFoundException("사용자가 존재하지 않습니다."));
   }
 
 }

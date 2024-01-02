@@ -4,6 +4,7 @@ import com.ddudu.todo.domain.QTodo;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
+import com.ddudu.user.domain.User;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
@@ -24,7 +25,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
   }
 
   @Override
-  public List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate) {
+  public List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, User user) {
     QTodo todo = QTodo.todo;
 
     return jpaQueryFactory
@@ -32,7 +33,8 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
         .join(todo.goal)
         .fetchJoin()
         .where(
-            todo.beginAt.between(startDate, endDate)
+            todo.beginAt.between(startDate, endDate),
+            todo.user.eq(user)
         )
         .orderBy(todo.status.desc(), todo.endAt.asc())
         .fetch();
