@@ -5,15 +5,16 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
+import java.util.Objects;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -99,8 +100,10 @@ class FollowingTest {
           .withMessage("Followee cannot be null");
     }
 
-    @Test
-    void 팔로잉_생성을_성공한다() {
+    @ParameterizedTest(name = "생성 시 상태: {0}")
+    @NullSource
+    @ValueSource(strings = "REQUESTED")
+    void 팔로잉_생성을_성공한다(String statusName) {
       // given
       User followee = builderWithEncoder
           .email(validEmail)
@@ -116,11 +119,14 @@ class FollowingTest {
           .build();
       User expectedFollower = entityManager.persistFlushFind(follower);
       User expectedFollowee = entityManager.persistFlushFind(followee);
+      FollowingStatus status = Objects.nonNull(statusName) ? FollowingStatus.valueOf(statusName)
+          : null;
 
       // when
       Following following = Following.builder()
           .follower(expectedFollower)
           .followee(expectedFollowee)
+          .status(status)
           .build();
 
       // then
@@ -132,4 +138,5 @@ class FollowingTest {
     }
 
   }
+
 }
