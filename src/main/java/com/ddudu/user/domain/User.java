@@ -2,7 +2,6 @@ package com.ddudu.user.domain;
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.BaseEntity;
-import com.ddudu.following.domain.Following;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
@@ -84,16 +83,6 @@ public class User extends BaseEntity {
 
   public String getEmail() {
     return email.getAddress();
-  }
-
-  public void addFollowing(Following following) {
-    Objects.requireNonNull(following);
-    followings.add(following);
-  }
-
-  public void unfollow(Following following) {
-    Objects.requireNonNull(following);
-    followings.remove(following);
   }
 
   private void validate(String nickname, String optionalUsername, String introduction) {
