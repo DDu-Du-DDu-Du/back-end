@@ -57,12 +57,13 @@ public class TodoController {
 
   @GetMapping
   public ResponseEntity<List<TodoListResponse>> getDaily(
+      Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
   ) {
     date = (date == null) ? LocalDate.now() : date;
-    List<TodoListResponse> response = todoService.findDailyTodoList(date);
+    List<TodoListResponse> response = todoService.findDailyTodoList(userId, date);
 
     return ResponseEntity.ok(response);
   }

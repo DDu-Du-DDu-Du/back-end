@@ -62,10 +62,11 @@ public class TodoService {
     return TodoResponse.from(todo);
   }
 
-  public List<TodoListResponse> findDailyTodoList(LocalDate date) {
+  public List<TodoListResponse> findDailyTodoList(Long userId, LocalDate date) {
+    User user = findUser(userId);
     List<Goal> goals = goalRepository.findAll();
     List<Todo> todos = todoRepository.findTodosByDate(
-        date.atStartOfDay(), date.atTime(LocalTime.MAX)
+        date.atStartOfDay(), date.atTime(LocalTime.MAX), user
     );
 
     Map<Long, List<Todo>> todosByGoal = todos.stream()
@@ -128,6 +129,11 @@ public class TodoService {
     }
 
     return completionList;
+  }
+
+  private User findUser(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new EntityNotFoundException("사용자가 존재하지 않습니다."));
   }
 
 }
