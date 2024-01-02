@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
+import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.repository.TodoRepository;
@@ -61,7 +62,6 @@ class TodoServiceTest {
               "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name", "todoInfo.status")
           .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName(),
               todo.getStatus()
-                  .name()
           );
     }
 
@@ -108,8 +108,42 @@ class TodoServiceTest {
 
   }
 
-  private Goal createGoal(String name, User user) {
+  @Nested
+  class 할_일_상태_업데이트_테스트 {
 
+    @Test
+    void 할_일_상태_업데이트를_성공한다() {
+      // given
+      User user = createUser();
+      Goal goal = createGoal("dev course", user);
+      Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
+      TodoStatus beforeUpdated = todo.getStatus();
+
+      // when
+      TodoResponse response = todoService.updateStatus(todo.getId());
+
+      // then
+      assertThat(response).extracting(
+              "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name")
+          .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName());
+      assertThat(response.todoInfo()
+          .status()).isNotEqualTo(beforeUpdated);
+    }
+
+    @Test
+    void 아이디가_존재하지_않아_할_일_상태_업데이트를_실패한다() {
+      // given
+      Long invalidId = 999L;
+
+      // when then
+      assertThatThrownBy(() -> todoService.updateStatus(invalidId))
+          .isInstanceOf(EntityNotFoundException.class)
+          .hasMessage("할 일 아이디가 존재하지 않습니다.");
+    }
+
+  }
+
+  private Goal createGoal(String name, User user) {
     Goal goal = Goal.builder()
         .name(name)
         .user(user)
