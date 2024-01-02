@@ -3,7 +3,9 @@ package com.ddudu.todo.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +32,7 @@ class TodoTest {
       // given
       String name = "Todo 엔티티 테스트 코드 짜기";
       Goal goal = createGoal("dev course");
-      User user = createUser("코딩몬");
+      User user = createUser();
 
       // when
       Todo todo = Todo.builder()
@@ -54,7 +56,7 @@ class TodoTest {
       // given
       String name = "Todo 엔티티 테스트 코드 짜기";
       Goal goal = createGoal("dev course");
-      User user = createUser("코딩몬");
+      User user = createUser();
       LocalDateTime beginAt = LocalDateTime.of(2023, 12, 25, 0, 0);
 
       // when
@@ -79,8 +81,8 @@ class TodoTest {
       assertThatThrownBy(() -> Todo.builder()
           .name("Todo 엔티티 테스트 코드 짜기")
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("목표는 필수값입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(TodoErrorCode.NULL_GOAL_VALUE.getMessage());
     }
 
     @ParameterizedTest
@@ -88,7 +90,7 @@ class TodoTest {
     void 할_일은_필수값이며_빈_문자열일_수_없다(String invalidName) {
       // given
       Goal goal = createGoal("dev course");
-      User user = createUser("코딩몬");
+      User user = createUser();
 
       // when then
       assertThatThrownBy(() -> Todo.builder()
@@ -96,8 +98,8 @@ class TodoTest {
           .goal(goal)
           .user(user)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("할 일은 필수값입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(TodoErrorCode.BLANK_NAME.getMessage());
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
@@ -105,7 +107,7 @@ class TodoTest {
     void 할_일_생성_시_할_일의_내용은_50자를_초과할_수_없다(String longName) {
       // given
       Goal goal = createGoal("dev course");
-      User user = createUser("코딩몬");
+      User user = createUser();
 
       // when then
       assertThatThrownBy(() -> Todo.builder()
@@ -113,8 +115,8 @@ class TodoTest {
           .goal(goal)
           .user(user)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("할 일은 최대 50자 입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(TodoErrorCode.EXCESSIVE_NAME_LENGTH.getMessage());
     }
 
     private static Goal createGoal(String name) {
@@ -124,7 +126,7 @@ class TodoTest {
           .build();
     }
 
-    private static User createUser(String name) {
+    private static User createUser() {
       String email = faker.internet()
           .emailAddress();
       String password = faker.internet()
@@ -143,15 +145,6 @@ class TodoTest {
     private static List<String> provideLongString() {
       String longString = "a".repeat(100);
       return List.of(longString);
-    }
-
-    private static User createUser() {
-      return User.builder()
-          .passwordEncoder(new BCryptPasswordEncoder())
-          .email("email@naver.com")
-          .password("password123!")
-          .nickname("nickname")
-          .build();
     }
 
   }

@@ -1,6 +1,9 @@
 package com.ddudu.user.domain;
 
+import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.BaseEntity;
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -24,6 +27,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User extends BaseEntity {
+
+  private static final int MAX_NICKNAME_LENGTH = 20;
+  private static final int MAX_OPTIONAL_USERNAME_LENGTH = 20;
+  private static final int MAX_INTRODUCTION_LENGTH = 50;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +56,10 @@ public class User extends BaseEntity {
   @Column(name = "introduction", length = 50)
   private String introduction;
 
+  @Column(name = "authority", columnDefinition = "VARCHAR", length = 15)
+  @Enumerated(EnumType.STRING)
+  private Authority authority;
+
   @Column(name = "status", columnDefinition = "VARCHAR", length = 20)
   @Enumerated(EnumType.STRING)
   private UserStatus status;
@@ -56,13 +67,14 @@ public class User extends BaseEntity {
   @Builder
   public User(
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
-      String nickname, String introduction
+      String nickname, String introduction, Authority authority
   ) {
     validate(nickname, optionalUsername, introduction);
     this.optionalUsername = optionalUsername;
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
+    this.authority = Objects.nonNull(authority) ? authority : Authority.NORMAL;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     status = UserStatus.ACTIVE;
   }
@@ -85,27 +97,27 @@ public class User extends BaseEntity {
 
   private void validateNickname(String nickname) {
     if (StringUtils.isBlank(nickname)) {
-      throw new IllegalArgumentException("닉네임이 입력되지 않았습니다.");
+      throw new InvalidParameterException(UserErrorCode.BLANK_NICKNAME);
     }
 
-    if (nickname.length() > 20) {
-      throw new IllegalArgumentException("닉네임은 최대 20자 입니다.");
+    if (nickname.length() > MAX_NICKNAME_LENGTH) {
+      throw new InvalidParameterException(UserErrorCode.EXCESSIVE_NICKNAME_LENGTH);
     }
   }
 
   private void validateOptionalUsername(String optionalUsername) {
     if (StringUtils.isBlank(optionalUsername)) {
-      throw new IllegalArgumentException("아이디는 공백일 수 없습니다.");
+      throw new InvalidParameterException(UserErrorCode.BLANK_OPTIONAL_USERNAME);
     }
 
-    if (optionalUsername.length() > 20) {
-      throw new IllegalArgumentException("아이디는 최대 20자 입니다.");
+    if (optionalUsername.length() > MAX_OPTIONAL_USERNAME_LENGTH) {
+      throw new InvalidParameterException(UserErrorCode.EXCESSIVE_OPTIONAL_USERNAME_LENGTH);
     }
   }
 
   private void validateIntroduction(String introduction) {
-    if (introduction.length() > 50) {
-      throw new IllegalArgumentException("자기소개는 최대 50자 입니다.");
+    if (introduction.length() > MAX_INTRODUCTION_LENGTH) {
+      throw new InvalidParameterException(UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH);
     }
   }
 

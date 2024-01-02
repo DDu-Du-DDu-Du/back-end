@@ -4,7 +4,9 @@ import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
 import com.ddudu.common.BaseEntity;
+import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -76,7 +78,7 @@ public class Todo extends BaseEntity {
 
   private void validateGoal(Goal goal) {
     if (isNull(goal)) {
-      throw new IllegalArgumentException("목표는 필수값입니다.");
+      throw new InvalidParameterException(TodoErrorCode.NULL_GOAL_VALUE);
     }
   }
 
@@ -88,11 +90,11 @@ public class Todo extends BaseEntity {
 
   private void validateTodo(String name) {
     if (isBlank(name)) {
-      throw new IllegalArgumentException("할 일은 필수값입니다.");
+      throw new InvalidParameterException(TodoErrorCode.BLANK_NAME);
     }
 
     if (name.length() > MAX_NAME_LENGTH) {
-      throw new IllegalArgumentException("할 일은 최대 " + MAX_NAME_LENGTH + "자 입니다.");
+      throw new InvalidParameterException(TodoErrorCode.EXCESSIVE_NAME_LENGTH);
     }
   }
 
