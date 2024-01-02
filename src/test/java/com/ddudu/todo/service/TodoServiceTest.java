@@ -54,6 +54,13 @@ class TodoServiceTest {
   @Autowired
   UserRepository userRepository;
 
+  User user;
+
+  @BeforeEach
+  void setUp() {
+    user = createUser();
+  }
+
   @Nested
   class 할_일_생성_테스트 {
 
@@ -70,7 +77,6 @@ class TodoServiceTest {
     @Test
     void 할_일_생성에_성공한다() {
       // given
-      User user = createUser();
       Goal goal = createGoal("dev course", user);
       CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
 
@@ -123,7 +129,6 @@ class TodoServiceTest {
     @Test
     void 할_일_조회를_성공한다() {
       // given
-      User user = createUser();
       Goal goal = createGoal("dev course", user);
       Todo todo = createTodo("할 일 1개 조회 기능 구현", goal, user);
 
@@ -156,12 +161,12 @@ class TodoServiceTest {
     @Test
     void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
       // given
-      User user = createUser();
       Goal goal1 = createGoal("dev course", user);
       Goal goal2 = createGoal("book", user);
-      LocalDate date = LocalDate.now();
       Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
       Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+
+      LocalDate date = LocalDate.now();
 
       // when
       List<TodoListResponse> responses = todoService.findDailyTodoList(date);
@@ -190,7 +195,6 @@ class TodoServiceTest {
     @Test
     void 할_일_상태_업데이트를_성공한다() {
       // given
-      User user = createUser();
       Goal goal = createGoal("dev course", user);
       Todo todo = createTodo("할 일 1개 조회 기능 구현", goal, user);
       TodoStatus beforeUpdated = todo.getStatus();
@@ -225,12 +229,10 @@ class TodoServiceTest {
     @Test
     void 주간_할_일_달성률_조회를_성공한다() {
       // given
-      User user = createUser();
       Goal goal1 = createGoal("dev course", user);
-      createGoal("book", user);
-
-      createTodo("할 일 1개 조회 기능 구현", goal1, user);
-      createTodo("JPA N+1 문제 해결", goal1, user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
@@ -249,10 +251,8 @@ class TodoServiceTest {
     @Test
     void 월간_할_일_달성률_조회를_성공한다() {
       // given
-      User user = createUser();
       Goal goal1 = createGoal("dev course", user);
       Goal goal2 = createGoal("book", user);
-
       Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1, user);
       Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
