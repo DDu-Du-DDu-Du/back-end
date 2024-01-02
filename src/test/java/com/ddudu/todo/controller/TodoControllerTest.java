@@ -53,10 +53,10 @@ class TodoControllerTest {
   ObjectMapper objectMapper;
 
   @Nested
-  class 할_일_1개_조회_테스트 {
+  class GET_할_일_1개_조회_테스트 {
 
     @Test
-    void GET_할_일_조회를_성공한다() throws Exception {
+    void 할_일_조회를_성공한다() throws Exception {
       // given
       TodoResponse response = createTodoResponse();
       given(todoService.findById(anyLong())).willReturn(response);
@@ -81,7 +81,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void GET_아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
+    void 아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
         Exception {
       // given
       Long invalidId = 999L;
@@ -95,10 +95,10 @@ class TodoControllerTest {
   }
 
   @Nested
-  class 일별_할_일_리스트_조회_테스트 {
+  class GET_일별_할_일_리스트_조회_테스트 {
 
     @Test
-    void GET_주어진_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
+    void 주어진_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
       // given
       LocalDate date = LocalDate.now();
       List<TodoListResponse> responses = createTodoListResponse();
@@ -131,7 +131,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void GET_날짜를_전달받지_않으면_현재_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
+    void 날짜를_전달받지_않으면_현재_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
       // given
       List<TodoListResponse> responses = createTodoListResponse();
       given(todoService.findDailyTodoList(any())).willReturn(responses);
@@ -162,19 +162,8 @@ class TodoControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"invalid-date", "20231225"})
-    void GET_유효하지_않은_날짜_형식으로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
-        throws Exception {
-      // when then
-      mockMvc.perform(get("/api/todos")
-              .param("date", invalidDate))
-          .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"2023-15-01", "2023-12-33"})
-    void GET_유효하지_않은_날짜로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+    @ValueSource(strings = {"invalid-date", "20231225", "2023-15-01", "2023-12-33"})
+    void 유효하지_않은_날짜로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos")
@@ -186,10 +175,10 @@ class TodoControllerTest {
   }
 
   @Nested
-  class 할_일_상태_변경_테스트 {
+  class PATCH_할_일_상태_변경_테스트 {
 
     @Test
-    void PATCH_할_일_상태_변경을_성공한다() throws Exception {
+    void 할_일_상태_변경을_성공한다() throws Exception {
       // given
       TodoResponse response = createTodoResponse();
       given(todoService.updateStatus(anyLong())).willReturn(response);
@@ -214,7 +203,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void PATCH_아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
+    void 아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
         Exception {
       // given
       Long invalidId = 999L;
@@ -229,10 +218,10 @@ class TodoControllerTest {
   }
 
   @Nested
-  class 할_일_달성률_조회_테스트 {
+  class GET_할_일_달성률_조회_테스트 {
 
     @Test
-    void GET_주간_할_일_달성률_조회를_성공한다() throws Exception {
+    void 주간_할_일_달성률_조회를_성공한다() throws Exception {
       // given
       LocalDate date = LocalDate.of(2024, 1, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(date, 7);
@@ -250,7 +239,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void GET_날짜를_전달받지_않으면_이번_주간의_할_일_달성률_조회를_성공한다() throws Exception {
+    void 날짜를_전달받지_않으면_이번_주간의_할_일_달성률_조회를_성공한다() throws Exception {
       // given
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
@@ -269,7 +258,7 @@ class TodoControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"invalid-date", "20231225", "2023-15-01", "2023-12-33"})
-    void GET_유효하지_않은_날짜로_주간_할_일_달성률을_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+    void 유효하지_않은_날짜로_주간_할_일_달성률을_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos/weekly")
@@ -279,7 +268,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void GET_월간_할_일_달성률_조회를_성공한다() throws Exception {
+    void 월간_할_일_달성률_조회를_성공한다() throws Exception {
       // given
       YearMonth yearMonth = YearMonth.of(2024, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
@@ -298,7 +287,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void GET_날짜를_전달받지_않으면_오늘_날짜를_기준으로_이번_달의_할_일_달성률_조회를_성공한다() throws Exception {
+    void 날짜를_전달받지_않으면_오늘_날짜를_기준으로_이번_달의_할_일_달성률_조회를_성공한다() throws Exception {
       // given
       YearMonth yearMonth = YearMonth.now();
       int daysInMonth = yearMonth.lengthOfMonth();
@@ -319,7 +308,7 @@ class TodoControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"invalid-date", "202312", "2023-15"})
-    void GET_유효하지_않은_날짜로_월간_할_일_달성률을_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+    void 유효하지_않은_날짜로_월간_할_일_달성률을_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos/monthly")
