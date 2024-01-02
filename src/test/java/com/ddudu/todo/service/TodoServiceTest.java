@@ -169,7 +169,7 @@ class TodoServiceTest {
       LocalDate date = LocalDate.now();
 
       // when
-      List<TodoListResponse> responses = todoService.findDailyTodoList(date);
+      List<TodoListResponse> responses = todoService.findDailyTodoList(user.getId(), date);
 
       // then
       assertThat(responses).hasSize(2);
@@ -185,6 +185,18 @@ class TodoServiceTest {
           .id()).isEqualTo(goal2.getId());
       assertThat(response2.todolist()).isEmpty();
 
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
+      // given
+      Long invalidUserId = 999L;
+      LocalDate date = LocalDate.now();
+
+      // when then
+      assertThatThrownBy(() -> todoService.findDailyTodoList(invalidUserId, date))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
@@ -240,12 +252,25 @@ class TodoServiceTest {
       int dayIndex = dayOfWeek.getValue() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findWeeklyTodoCompletion(mondayDate);
+      List<TodoCompletionResponse> responses = todoService.findWeeklyTodoCompletion(
+          user.getId(), mondayDate);
 
       // then
       assertThat(responses).hasSize(7);
       assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
           .containsExactly(date, 2, 2);
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidUserId = 999L;
+      LocalDate date = LocalDate.now();
+
+      // when then
+      assertThatThrownBy(() -> todoService.findWeeklyTodoCompletion(invalidUserId, date))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -262,7 +287,8 @@ class TodoServiceTest {
       int dayOfMonthIndex = date.getDayOfMonth() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findMonthlyTodoCompletion(yearMonth);
+      List<TodoCompletionResponse> responses = todoService.findMonthlyTodoCompletion(
+          user.getId(), yearMonth);
 
       // then
       assertThat(responses).hasSize(daysInMonth);
@@ -270,6 +296,18 @@ class TodoServiceTest {
       assertThat(responses.get(dayOfMonthIndex)).extracting(
               "date", "totalTodos", "uncompletedTodos")
           .containsExactly(date, 2, 2);
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidUserId = 999L;
+      YearMonth yearMonth = YearMonth.now();
+
+      // when then
+      assertThatThrownBy(() -> todoService.findMonthlyTodoCompletion(invalidUserId, yearMonth))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
