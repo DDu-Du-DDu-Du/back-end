@@ -1,7 +1,11 @@
--- USER
+-- CLEAR
 SET foreign_key_checks = 0;
 TRUNCATE TABLE users;
+TRUNCATE TABLE goal;
+TRUNCATE TABLE todo;
 SET foreign_key_checks = 1;
+
+-- USER
 INSERT INTO users(id, email, password, nickname) VALUES (1, 'nicolette.mills@hotmail.com', '$2a$10$Q6KjyLPE6QrpqkGkFb0ezOqe0EaZZpaht11UgefOqNyUB0N0XjnQO', 'Kenya Dewit');
 INSERT INTO users(id, email, password, nickname) VALUES (2, 'brian.mayer@hotmail.com', '$2a$10$Q6KjyLPE6QrpqkGkFb0ezOqe0EaZZpaht11UgefOqNyUB0N0XjnQO', 'Jack Pott');
 INSERT INTO users(id, email, password, nickname) VALUES (3, 'shayne.bogisich@gmail.com', '$2a$10$Q6KjyLPE6QrpqkGkFb0ezOqe0EaZZpaht11UgefOqNyUB0N0XjnQO', 'Lou Pole');
@@ -11,12 +15,9 @@ INSERT INTO users(id, optional_username, email, password, nickname) VALUES (6,'p
 INSERT INTO users(id, optional_username, email, password, nickname) VALUES (7,'devcourselove', 'love@devcourse.com', '$2a$10$eFFAmSR2O/W9lUCmKL5fe.OmH3j/T5/23iUvpRWHm7dBmupdOatOO', '데브코스 사랑함');
 INSERT INTO users(id, optional_username, email, password, nickname) VALUES (8,'injaesong', 'injaesong0@gmail.com', '$2a$10$39InvdkmJm3.4xIy4kGCyuoohtLK5rGF09HEKpBFu2fgqfCzYLPiG', '송인재');
 INSERT INTO users(id, optional_username, email, password, nickname) VALUES (9,'devcrazy', 'crazy@example.com', '$2a$10$5ZXbGs1etnGkrath/enkB.TdMj8U//jdmH3GXSRj3F3ACHi5LABHC', '개발 미친 사람');
-INSERT INTO users(id, optional_username, email, password, nickname) VALUES (10,'dingmon', 'coding@mon.co.kr', '$2a$10$k3/gS0YD9tAr69nRZRBjQOmf.MiqXa29hdCSa.Kg0i5U4/gISOsDG', '코딩몬');
+INSERT INTO users(id, optional_username, email, password, nickname, follows_after_approval) VALUES (10,'dingmon', 'coding@mon.co.kr', '$2a$10$k3/gS0YD9tAr69nRZRBjQOmf.MiqXa29hdCSa.Kg0i5U4/gISOsDG', '코딩몬', true);
 
 -- GOAL
-SET foreign_key_checks = 0;
-TRUNCATE TABLE goal;
-SET foreign_key_checks = 1;
 INSERT INTO goal(id, user_id, name, color, privacy) VALUES (1, 8, 'dev course', '75D7E4', 'PUBLIC');
 INSERT INTO goal(id, user_id, name, color, privacy) VALUES (2, 8, 'study', 'F3D056', 'PUBLIC');
 INSERT INTO goal(id, user_id, name, color, privacy) VALUES (3, 8, 'event', 'F1B5CA', 'PRIVATE');
@@ -24,7 +25,6 @@ INSERT INTO goal(id, user_id, name, color, privacy) VALUES (4, 8, 'etc', 'C7D567
 INSERT INTO goal(id, user_id, name, privacy, status) VALUES (5, 8, 'college', 'PUBLIC', 'DONE');
 
 -- TO DO
-TRUNCATE TABLE todo;
 insert into todo(id, name, goal_id, status) values (1, '10시 30분 마르코 팀미팅', 1, 'UNCOMPLETED');
 insert into todo(id, name, goal_id, status, end_at) values (2, '9시 QR 출셕', 1, 'COMPLETE', NOW());
 insert into todo(id, name, goal_id, status) values (3, '1시 RBF', 1, 'UNCOMPLETED');
