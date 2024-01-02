@@ -11,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.goal.domain.GoalStatus;
@@ -20,10 +22,10 @@ import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
+import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.service.GoalService;
 import com.ddudu.support.TestProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,10 +52,13 @@ class GoalControllerTest {
   static final Faker faker = new Faker();
   String validName;
   String validColor;
+
   @Autowired
   private MockMvc mockMvc;
+
   @Autowired
   private ObjectMapper objectMapper;
+
   @MockBean
   private GoalService goalService;
 
@@ -116,7 +121,7 @@ class GoalControllerTest {
                   .contentType(MediaType.APPLICATION_JSON)
           )
           .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.message")
+          .andExpect(jsonPath("$.[0].message")
               .value(containsString("목표가 입력되지 않았습니다.")));
     }
 
@@ -138,7 +143,7 @@ class GoalControllerTest {
                   .contentType(MediaType.APPLICATION_JSON)
           )
           .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.message")
+          .andExpect(jsonPath("$.[0].message")
               .value(containsString("목표는 최대 50자 입니다.")));
     }
 
@@ -160,7 +165,7 @@ class GoalControllerTest {
                   .contentType(MediaType.APPLICATION_JSON)
           )
           .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.message")
+          .andExpect(jsonPath("$.[0].message")
               .value(containsString("색상 코드는 6자리 16진수입니다.")));
     }
 
@@ -172,7 +177,7 @@ class GoalControllerTest {
           validName, invalidColor, PrivacyType.PUBLIC);
 
       given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
-          .willThrow(new IllegalArgumentException("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다."));
+          .willThrow(new InvalidParameterException(GoalErrorCode.INVALID_COLOR_FORMAT));
 
       // when then
       mockMvc.perform(
@@ -183,7 +188,7 @@ class GoalControllerTest {
           )
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
-              .value(containsString("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다.")));
+              .value(containsString(GoalErrorCode.INVALID_COLOR_FORMAT.getMessage())));
     }
 
   }
@@ -319,7 +324,7 @@ class GoalControllerTest {
       // given
       Long invalidId = -1L;
       given(goalService.getById(anyLong()))
-          .willThrow(new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
+          .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
       // when then
       mockMvc.perform(
@@ -328,7 +333,7 @@ class GoalControllerTest {
           )
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message")
-              .value(containsString("해당 아이디를 가진 목표가 존재하지 않습니다.")));
+              .value(containsString(GoalErrorCode.ID_NOT_EXISTING.getMessage())));
     }
 
   }
@@ -363,7 +368,7 @@ class GoalControllerTest {
       // given
       String invalidUserId = "-1";
       given(goalService.getAllById(anyLong())).willThrow(
-          new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
+          new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
       // when then
       mockMvc.perform(
@@ -373,7 +378,7 @@ class GoalControllerTest {
           )
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message")
-              .value(containsString("해당 아이디를 가진 사용자가 존재하지 않습니다.")));
+              .value(containsString(GoalErrorCode.USER_NOT_EXISTING.getMessage())));
     }
 
     private List<GoalSummaryResponse> createGoalSummaryDTO() {

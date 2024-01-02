@@ -1,14 +1,15 @@
 package com.ddudu.todo.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
@@ -20,7 +21,6 @@ import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -127,7 +127,7 @@ class TodoControllerTest {
         Exception {
       // given
       Long invalidId = 999L;
-      given(todoService.findById(anyLong())).willThrow(EntityNotFoundException.class);
+      given(todoService.findById(anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
       mockMvc.perform(get("/api/todos/{id}", invalidId))
@@ -211,7 +211,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
     }
 
     @ParameterizedTest
@@ -221,7 +221,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
     }
 
   }
@@ -259,7 +259,7 @@ class TodoControllerTest {
         Exception {
       // given
       Long invalidId = 999L;
-      given(todoService.updateStatus(anyLong())).willThrow(EntityNotFoundException.class);
+      given(todoService.updateStatus(anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
       mockMvc.perform(patch("/api/todos/{id}/status", invalidId)
@@ -316,7 +316,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos/weekly")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message", containsString("형식이 유효하지 않습니다")));
     }
 
     @Test
@@ -366,7 +366,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos/monthly")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message", containsString("형식이 유효하지 않습니다")));
     }
 
   }

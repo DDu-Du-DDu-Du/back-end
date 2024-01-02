@@ -1,5 +1,6 @@
 package com.ddudu.todo.service;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
@@ -7,8 +8,8 @@ import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
+import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.todo.repository.TodoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -32,7 +33,7 @@ public class TodoService {
 
   public TodoResponse findById(Long id) {
     Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("할 일 아이디가 존재하지 않습니다."));
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
     return TodoResponse.from(todo);
   }
@@ -62,7 +63,7 @@ public class TodoService {
   @Transactional
   public TodoResponse updateStatus(Long id) {
     Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("할 일 아이디가 존재하지 않습니다."));
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
     todo.switchStatus();
 
     return TodoResponse.from(todo);

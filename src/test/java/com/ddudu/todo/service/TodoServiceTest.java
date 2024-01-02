@@ -3,6 +3,7 @@ package com.ddudu.todo.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
@@ -10,10 +11,10 @@ import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
+import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.todo.repository.TodoRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -129,9 +130,8 @@ class TodoServiceTest {
       // then
       assertThat(response).extracting(
               "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name", "todoInfo.status")
-          .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName(),
-              todo.getStatus()
-          );
+          .containsExactly(
+              goal.getId(), goal.getName(), todo.getId(), todo.getName(), todo.getStatus());
     }
 
     @Test
@@ -141,8 +141,8 @@ class TodoServiceTest {
 
       // when then
       assertThatThrownBy(() -> todoService.findById(invalidId))
-          .isInstanceOf(EntityNotFoundException.class)
-          .hasMessage("할 일 아이디가 존재하지 않습니다.");
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
   }
@@ -176,7 +176,7 @@ class TodoServiceTest {
 
       // when then
       assertThatThrownBy(() -> todoService.updateStatus(invalidId))
-          .isInstanceOf(EntityNotFoundException.class)
+          .isInstanceOf(DataNotFoundException.class)
           .hasMessage("할 일 아이디가 존재하지 않습니다.");
     }
 
