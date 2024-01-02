@@ -11,23 +11,29 @@ import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.repository.TodoRepository;
+import com.ddudu.user.domain.User;
+import com.ddudu.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import net.datafaker.Faker;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class TodoServiceTest {
+
+  static final Faker faker = new Faker();
 
   @Autowired
   TodoService todoService;
@@ -38,13 +44,17 @@ class TodoServiceTest {
   @Autowired
   GoalRepository goalRepository;
 
+  @Autowired
+  UserRepository userRepository;
+
   @Nested
   class 할_일_1개_조회_테스트 {
 
     @Test
     void 할_일_조회를_성공한다() {
       // given
-      Goal goal = createGoal("dev course");
+      User user = createUser();
+      Goal goal = createGoal("dev course", user);
       Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
 
       // when
@@ -74,8 +84,9 @@ class TodoServiceTest {
   @Test
   void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
     // given
-    Goal goal1 = createGoal("dev course");
-    Goal goal2 = createGoal("book");
+    User user = createUser();
+    Goal goal1 = createGoal("dev course", user);
+    Goal goal2 = createGoal("book", user);
 
     LocalDate date = LocalDate.now();
     Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
@@ -106,7 +117,8 @@ class TodoServiceTest {
     @Test
     void 할_일_상태_업데이트를_성공한다() {
       // given
-      Goal goal = createGoal("dev course");
+      User user = createUser();
+      Goal goal = createGoal("dev course", user);
       Todo todo = createTodo("할 일 1개 조회 기능 구현", goal);
       TodoStatus beforeUpdated = todo.getStatus();
 
@@ -140,8 +152,9 @@ class TodoServiceTest {
     @Test
     void 주간_할_일_달성률_조회를_성공한다() {
       // given
-      Goal goal1 = createGoal("dev course");
-      Goal goal2 = createGoal("book");
+      User user = createUser();
+      Goal goal1 = createGoal("dev course", user);
+      Goal goal2 = createGoal("book", user);
 
       Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
       Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
@@ -164,8 +177,9 @@ class TodoServiceTest {
     @Test
     void 월간_할_일_달성률_조회를_성공한다() {
       // given
-      Goal goal1 = createGoal("dev course");
-      Goal goal2 = createGoal("book");
+      User user = createUser();
+      Goal goal1 = createGoal("dev course", user);
+      Goal goal2 = createGoal("book", user);
 
       Todo todo1 = createTodo("할 일 1개 조회 기능 구현", goal1);
       Todo todo2 = createTodo("JPA N+1 문제 해결", goal1);
@@ -188,9 +202,10 @@ class TodoServiceTest {
 
   }
 
-  private Goal createGoal(String name) {
+  private Goal createGoal(String name, User user) {
     Goal goal = Goal.builder()
         .name(name)
+        .user(user)
         .build();
 
     return goalRepository.save(goal);
@@ -203,6 +218,24 @@ class TodoServiceTest {
         .build();
 
     return todoRepository.save(todo);
+  }
+
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, false, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
+
+    User user = User.builder()
+        .passwordEncoder(new BCryptPasswordEncoder())
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .build();
+
+    return userRepository.save(user);
   }
 
 }
