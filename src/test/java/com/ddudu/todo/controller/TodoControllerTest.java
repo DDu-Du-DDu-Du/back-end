@@ -214,19 +214,9 @@ class TodoControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"invalid-date", "20231225"})
-    void 유효하지_않은_날짜_형식으로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+    @ValueSource(strings = {"invalid-date", "20231225", "2023-15-01", "2023-12-33"})
+    void 유효하지_않은_날짜로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
         throws Exception {
-      // when then
-      mockMvc.perform(get("/api/todos")
-              .param("date", invalidDate))
-          .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"2023-15-01", "2023-12-33"})
-    void 유효하지_않은_날짜로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate) throws Exception {
       // when then
       mockMvc.perform(get("/api/todos")
               .param("date", invalidDate))
