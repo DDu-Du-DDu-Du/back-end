@@ -22,11 +22,11 @@ public class GoalRepositoryImpl implements GoalRepositoryCustom {
   public List<Goal> findAllByUser(User user) {
     return jpaQueryFactory
         .selectFrom(goal)
-        .where(
-            goal.user.eq(user),
-            goal.isDeleted.eq(false)
+        .where(goal.user.eq(user))
+        .orderBy(
+            goal.status.desc(),
+            goal.createdAt.asc()
         )
-        .orderBy(goal.status.desc(), goal.createdAt.asc())
         .fetch();
   }
 
