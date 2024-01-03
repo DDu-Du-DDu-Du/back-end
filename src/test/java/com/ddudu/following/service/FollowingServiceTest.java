@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.following.domain.Following;
 import com.ddudu.following.dto.request.FollowRequest;
 import com.ddudu.following.dto.response.FollowResponse;
@@ -69,10 +70,10 @@ class FollowingServiceTest {
       long randomId = faker.random()
           .nextLong();
       User followee = createUser();
-      FollowRequest request = new FollowRequest(randomId, followee.getId());
+      FollowRequest request = new FollowRequest(followee.getId());
 
       // when
-      ThrowingCallable create = () -> followingService.create(request);
+      ThrowingCallable create = () -> followingService.create(randomId, request);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
@@ -85,10 +86,10 @@ class FollowingServiceTest {
       User follower = createUser();
       long randomId = faker.random()
           .nextLong();
-      FollowRequest request = new FollowRequest(follower.getId(), randomId);
+      FollowRequest request = new FollowRequest(randomId);
 
       // when
-      ThrowingCallable create = () -> followingService.create(request);
+      ThrowingCallable create = () -> followingService.create(follower.getId(), request);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
@@ -96,14 +97,40 @@ class FollowingServiceTest {
     }
 
     @Test
-    void 팔로우_생성을_성공한다() {
+    void 이미_팔로우를_했으면_팔로잉_생성을_실패한다() {
       // given
       User follower = createUser();
       User followee = createUser();
-      FollowRequest request = new FollowRequest(follower.getId(), followee.getId());
+
+      User actualFollower = userRepository.save(follower);
+      User actualFollowee = userRepository.save(followee);
+
+      Following following = Following.builder()
+          .followee(actualFollowee)
+          .follower(actualFollower)
+          .build();
+
+      followingRepository.save(following);
+
+      FollowRequest request = new FollowRequest(followee.getId());
 
       // when
-      FollowResponse expected = followingService.create(request);
+      ThrowingCallable construct = () -> followingService.create(follower.getId(), request);
+
+      // then
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(construct)
+          .withMessage(FollowingErrorCode.ALREADY_FOLLOWING.getMessage());
+    }
+
+    @Test
+    void 팔로잉_생성을_성공한다() {
+      // given
+      User follower = createUser();
+      User followee = createUser();
+      FollowRequest request = new FollowRequest(followee.getId());
+
+      // when
+      FollowResponse expected = followingService.create(follower.getId(), request);
 
       // then
       Optional<Following> found = followingRepository.findById(expected.id());
