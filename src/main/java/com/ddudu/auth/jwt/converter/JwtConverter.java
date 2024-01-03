@@ -14,7 +14,7 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
 
   private static final String USER_PRINCIPAL_NAME = "user";
 
-  private final JwtAuthorityConverter jwtAuthorityConverter = new JwtAuthorityConverter();
+  private final JwtAuthorityConverter jwtAuthorityConverter;
 
   @Override
   public AbstractAuthenticationToken convert(Jwt jwt) {
