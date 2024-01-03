@@ -70,7 +70,9 @@ public class GeneralExceptionHandler {
   }
 
   @ExceptionHandler(InvalidAuthenticationException.class)
-  public ResponseEntity<ErrorResponse> handleUnauthorizedException(InvalidAuthenticationException e) {
+  public ResponseEntity<ErrorResponse> handleUnauthorizedException(
+      InvalidAuthenticationException e
+  ) {
     log.warn(e.getMessage(), e);
 
     ErrorResponse response = ErrorResponse.from(e);
