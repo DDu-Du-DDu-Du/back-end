@@ -4,7 +4,10 @@ import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
 import com.ddudu.common.BaseEntity;
+import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.todo.exception.TodoErrorCode;
+import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,6 +43,10 @@ public class Todo extends BaseEntity {
   @JoinColumn(name = "goal_id", nullable = false)
   private Goal goal;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
+
   @Column(name = "name", length = 50, nullable = false)
   private String name;
 
@@ -54,28 +61,40 @@ public class Todo extends BaseEntity {
   private LocalDateTime endAt;
 
   @Builder
-  public Todo(Goal goal, String name, LocalDateTime beginAt) {
-    validateGoal(goal);
-    validateTodo(name);
+  public Todo(Goal goal, User user, String name, LocalDateTime beginAt) {
+    validate(goal, user, name);
 
     this.goal = goal;
+    this.user = user;
     this.name = name;
     this.beginAt = isNull(beginAt) ? LocalDateTime.now() : beginAt;
   }
 
+  private void validate(Goal goal, User user, String name) {
+    validateGoal(goal);
+    validateUser(user);
+    validateTodo(name);
+  }
+
   private void validateGoal(Goal goal) {
     if (isNull(goal)) {
-      throw new IllegalArgumentException("목표는 필수값입니다.");
+      throw new InvalidParameterException(TodoErrorCode.NULL_GOAL_VALUE);
+    }
+  }
+
+  private void validateUser(User user) {
+    if (isNull(user)) {
+      throw new IllegalArgumentException("사용자는 필수값입니다.");
     }
   }
 
   private void validateTodo(String name) {
     if (isBlank(name)) {
-      throw new IllegalArgumentException("할 일은 필수값입니다.");
+      throw new InvalidParameterException(TodoErrorCode.BLANK_NAME);
     }
 
     if (name.length() > MAX_NAME_LENGTH) {
-      throw new IllegalArgumentException("할 일은 최대 " + MAX_NAME_LENGTH + "자 입니다.");
+      throw new InvalidParameterException(TodoErrorCode.EXCESSIVE_NAME_LENGTH);
     }
   }
 

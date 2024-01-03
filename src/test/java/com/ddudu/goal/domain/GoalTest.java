@@ -3,6 +3,8 @@ package com.ddudu.goal.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.user.domain.User;
 import java.util.List;
 import net.datafaker.Faker;
@@ -41,6 +43,11 @@ class GoalTest {
 
   @Nested
   class 목표_생성_테스트 {
+
+    private static List<String> provide51Letters() {
+      String longString = "a".repeat(51);
+      return List.of(longString);
+    }
 
     @Test
     void 목표를_생성할_수_있다() {
@@ -93,8 +100,8 @@ class GoalTest {
           .name(invalidName)
           .user(user)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("목표명은 필수값입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(GoalErrorCode.BLANK_NAME.getMessage());
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
@@ -105,8 +112,8 @@ class GoalTest {
           .name(longName)
           .user(user)
           .build())
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("목표명은 최대 50자 입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getMessage());
     }
 
     @ParameterizedTest
@@ -137,14 +144,9 @@ class GoalTest {
               .color(invalidColor)
               .build()
       )
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("올바르지 않은 색상 코드입니다. 색상 코드는 6자리 16진수입니다.");
+          .isInstanceOf(InvalidParameterException.class)
+          .hasMessage(GoalErrorCode.INVALID_COLOR_FORMAT.getMessage());
 
-    }
-
-    private static List<String> provide51Letters() {
-      String longString = "a".repeat(51);
-      return List.of(longString);
     }
 
   }

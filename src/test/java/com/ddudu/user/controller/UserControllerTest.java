@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.support.TestProperties;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.service.UserService;
@@ -25,7 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(UserController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class UserControllerTest {
 
@@ -46,7 +48,7 @@ class UserControllerTest {
     String email = faker.internet()
         .emailAddress();
     String password = faker.internet()
-        .password(8, 40, false, true, true);
+        .password(8, 40, true, true, true);
     String nickname = faker.funnyName()
         .name();
     SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);

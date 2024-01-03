@@ -3,10 +3,12 @@ package com.ddudu.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -33,15 +35,19 @@ import org.springframework.transaction.annotation.Transactional;
 class UserServiceTest {
 
   static final Faker faker = new Faker();
-  static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+
+  UserBuilder builderWithEncoder;
   String password;
   String nickname;
-  UserBuilder builderWithEncoder;
+
   @Autowired
   UserService userService;
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  PasswordEncoder passwordEncoder;
 
   @Nested
   class 회원가입_테스트 {
@@ -54,7 +60,7 @@ class UserServiceTest {
       String intro = faker.howIMetYourMother()
           .catchPhrase();
       String password = faker.internet()
-          .password(8, 40, false, true, true);
+          .password(8, 40, true, true, true);
       String nickname = faker.oscarMovie()
           .character();
 
@@ -69,9 +75,9 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
       builderWithEncoder = User.builder()
-          .passwordEncoder(PASSWORD_ENCODER);
+          .passwordEncoder(passwordEncoder);
       password = faker.internet()
-          .password(8, 40, false, true, true);
+          .password(8, 40, true, true, true);
       nickname = faker.oscarMovie()
           .character();
     }
@@ -95,8 +101,8 @@ class UserServiceTest {
       ThrowingCallable signUp = () -> userService.signUp(request);
 
       // then
-      assertThatExceptionOfType(DuplicateKeyException.class).isThrownBy(signUp)
-          .withMessage("이미 존재하는 이메일입니다.");
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(signUp)
+          .withMessage(UserErrorCode.DUPLICATE_EMAIL.getMessage());
     }
 
     @Test
@@ -123,8 +129,8 @@ class UserServiceTest {
       ThrowingCallable signUp = () -> userService.signUp(request);
 
       // then
-      assertThatExceptionOfType(DuplicateKeyException.class).isThrownBy(signUp)
-          .withMessage("이미 존재하는 아이디입니다.");
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(signUp)
+          .withMessage(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getMessage());
     }
 
     @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")
