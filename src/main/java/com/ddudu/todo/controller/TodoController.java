@@ -78,7 +78,8 @@ public class TodoController {
     DayOfWeek weekStart = DayOfWeek.MONDAY;
     date = (date == null) ? LocalDate.now()
         .with(weekStart) : date.with(weekStart);
-    List<TodoCompletionResponse> completionList = todoService.findWeeklyTodoCompletion(date);
+    List<TodoCompletionResponse> completionList = todoService.findWeeklyTodoCompletion(
+        userId, date);
 
     return ResponseEntity.ok(completionList);
   }
@@ -91,7 +92,8 @@ public class TodoController {
           YearMonth yearMonth
   ) {
     yearMonth = (yearMonth == null) ? YearMonth.now() : yearMonth;
-    List<TodoCompletionResponse> completionList = todoService.findMonthlyTodoCompletion(yearMonth);
+    List<TodoCompletionResponse> completionList = todoService.findMonthlyTodoCompletion(
+        userId, yearMonth);
 
     return ResponseEntity.ok(completionList);
   }
