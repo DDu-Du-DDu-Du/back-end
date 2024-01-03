@@ -92,7 +92,7 @@ class UserControllerTest {
       String wrongEmail = faker.internet()
           .username();
       String shortPassword = faker.internet()
-          .password(1, 7, true, true, true);
+          .password(2, 7, true, true, true);
       String weakPassword = "password";
       String over50 = faker.howIMetYourMother()
           .quote()
@@ -192,8 +192,8 @@ class UserControllerTest {
     @Test
     void 선택_아이다가_존재하면_400_Bad_Request를_반환한다() throws Exception {
       // given
-      String username = faker.science()
-          .scientist();
+      String username = faker.name()
+          .firstName();
       SignUpRequest request = new SignUpRequest(username, email, password, nickname, null);
 
       given(userService.signUp(any(SignUpRequest.class)))
