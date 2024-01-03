@@ -76,7 +76,7 @@ public class User extends BaseEntity {
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
-    this.authority = Objects.nonNull(authority) ? authority : Authority.NORMAL;
+    this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     status = UserStatus.ACTIVE;
   }
