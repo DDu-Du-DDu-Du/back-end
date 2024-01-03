@@ -1,9 +1,13 @@
 package com.ddudu.todo.controller;
 
+import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
+import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
+import jakarta.validation.Valid;
+import java.net.URI;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -14,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +30,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class TodoController {
 
   private final TodoService todoService;
+
+  @PostMapping
+  public ResponseEntity<TodoInfo> create(
+      Long userId,
+      @RequestBody
+      @Valid
+      CreateTodoRequest request
+  ) {
+    TodoInfo response = todoService.create(userId, request);
+    URI uri = URI.create("/api/todos/" + response.id());
+
+    return ResponseEntity.created(uri)
+        .body(response);
+  }
 
   @GetMapping("/{id}")
   public ResponseEntity<TodoResponse> getTodo(
@@ -44,15 +64,6 @@ public class TodoController {
     date = (date == null) ? LocalDate.now() : date;
 
     List<TodoListResponse> response = todoService.findDailyTodoList(date);
-    return ResponseEntity.ok(response);
-  }
-
-  @PatchMapping("/{id}/status")
-  public ResponseEntity<TodoResponse> updateTodoStatus(
-      @PathVariable
-      Long id
-  ) {
-    TodoResponse response = todoService.updateStatus(id);
     return ResponseEntity.ok(response);
   }
 
@@ -80,6 +91,15 @@ public class TodoController {
 
     List<TodoCompletionResponse> completionList = todoService.findMonthlyTodoCompletion(yearMonth);
     return ResponseEntity.ok(completionList);
+  }
+
+  @PatchMapping("/{id}/status")
+  public ResponseEntity<TodoResponse> updateTodoStatus(
+      @PathVariable
+      Long id
+  ) {
+    TodoResponse response = todoService.updateStatus(id);
+    return ResponseEntity.ok(response);
   }
 
 }

@@ -4,12 +4,16 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
+import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.todo.repository.TodoRepository;
+import com.ddudu.user.domain.User;
+import com.ddudu.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,14 +26,34 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Validated
 public class TodoService {
 
   private final TodoRepository todoRepository;
   private final GoalRepository goalRepository;
+  private final UserRepository userRepository;
+
+  @Transactional
+  public TodoInfo create(Long userId, @Valid CreateTodoRequest request) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+    Goal goal = goalRepository.findById(request.goalId())
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
+
+    Todo todo = Todo.builder()
+        .name(request.name())
+        .goal(goal)
+        .user(user)
+        .beginAt(request.beginAt())
+        .build();
+
+    return TodoInfo.from(todoRepository.save(todo));
+  }
 
   public TodoResponse findById(Long id) {
     Todo todo = todoRepository.findById(id)

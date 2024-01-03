@@ -41,31 +41,6 @@ class GoalTest {
     privacyType = PrivacyType.PUBLIC;
   }
 
-  private User createUser() {
-    String email = faker.internet()
-        .emailAddress();
-    String password = faker.internet()
-        .password(8, 40, false, true, true);
-    String nickname = faker.oscarMovie()
-        .character();
-
-    return User.builder()
-        .passwordEncoder(new BCryptPasswordEncoder())
-        .email(email)
-        .password(password)
-        .nickname(nickname)
-        .build();
-  }
-
-  private Goal createGoal() {
-    return Goal.builder()
-        .name(name)
-        .user(user)
-        .color(color)
-        .privacyType(PrivacyType.PRIVATE)
-        .build();
-  }
-
   @Nested
   class 목표_생성_테스트 {
 
@@ -196,6 +171,31 @@ class GoalTest {
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 
+  }
+
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, false, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
+
+    return User.builder()
+        .passwordEncoder(new BCryptPasswordEncoder())
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .build();
+  }
+
+  private Goal createGoal() {
+    return Goal.builder()
+        .name(name)
+        .user(user)
+        .color(color)
+        .privacyType(PrivacyType.PRIVATE)
+        .build();
   }
 
 }

@@ -1,6 +1,8 @@
 package com.ddudu.user.controller;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.auth.domain.authority.Authority;
-import com.ddudu.auth.jwt.JwtAuthToken;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
@@ -78,8 +79,14 @@ class UserControllerTest {
     @Test
     void 회원가입을_성공하면_OK를_반환한다() throws Exception {
       // given
+      long userId = faker.random()
+          .nextLong();
       SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);
-      SignUpResponse response = new SignUpResponse(1L, email, nickname);
+      SignUpResponse response = SignUpResponse.builder()
+          .id(userId)
+          .email(email)
+          .nickname(nickname)
+          .build();
 
       given(userService.signUp(any(SignUpRequest.class)))
           .willReturn(response);
@@ -90,9 +97,8 @@ class UserControllerTest {
           .content(objectMapper.writeValueAsString(request)));
 
       // then
-      actions.andDo(print())
-          .andExpect(status().isCreated())
-          .andExpect(header().exists("location"));
+      actions.andExpect(status().isCreated())
+          .andExpect(header().string("location", is("/api/users" + userId)));
     }
 
   }
@@ -120,15 +126,14 @@ class UserControllerTest {
           .nickname(nickname)
           .build();
 
-      given(userService.loadFromToken(any(JwtAuthToken.class))).willReturn(expected);
+      given(userService.findById(anyLong())).willReturn(expected);
 
       // when
       ResultActions actions = mockMvc.perform(get("/api/users/me").header("Authorization", token));
 
       // then
       actions.andExpect(status().isOk())
-          .andExpect(jsonPath("$.id").value(userId))
-          .andDo(print());
+          .andExpect(jsonPath("$.id").value(userId));
     }
 
   }
