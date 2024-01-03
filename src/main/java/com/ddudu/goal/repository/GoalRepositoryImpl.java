@@ -25,7 +25,7 @@ public class GoalRepositoryImpl implements GoalRepositoryCustom {
         .where(goal.user.eq(user))
         .orderBy(
             goal.status.desc(),
-            goal.createdAt.asc()
+            goal.id.desc()
         )
         .fetch();
   }
