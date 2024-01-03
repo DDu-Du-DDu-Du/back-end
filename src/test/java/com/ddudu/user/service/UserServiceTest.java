@@ -3,8 +3,6 @@ package com.ddudu.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.auth.domain.authority.Authority;
-import com.ddudu.auth.jwt.JwtAuthToken;
 import com.ddudu.auth.jwt.converter.JwtConverter;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.InvalidTokenException;
@@ -30,13 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -176,35 +168,24 @@ class UserServiceTest {
   }
 
   @Nested
-  class 로그인_테스트 {
-
-    static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
-        .build();
-    static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
-        .claim("auth", Authority.NORMAL);
+  class 사용자_단일_조회 {
 
     @Test
-    void JWT에_잘못된_유저_정보가_포함되면_로그인을_실패한다() {
+    void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
       // given
       long randomId = faker.random()
           .nextLong();
-      JwtClaimsSet claims = claimSet.claim("user", randomId)
-          .build();
-      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-      JwtAuthToken token = (JwtAuthToken) jwtConverter.convert(jwt);
 
       // when
-      ThrowingCallable login = () -> userService.loadFromToken(token);
+      ThrowingCallable login = () -> userService.findById(randomId);
 
       // then
-      assertThat(token).isNotNull();
-      assertThat(token.getUserId()).isEqualTo(randomId);
       assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(login)
           .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
     }
 
     @Test
-    void 로그인을_성공한다() {
+    void 사용자_단일_조회를_성공한다() {
       // given
       String email = faker.internet()
           .emailAddress();
@@ -214,13 +195,9 @@ class UserServiceTest {
           .nickname(nickname)
           .build();
       User expected = userRepository.save(user);
-      JwtClaimsSet claims = claimSet.claim("user", expected.getId())
-          .build();
-      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-      JwtAuthToken token = (JwtAuthToken) jwtConverter.convert(jwt);
 
       // when
-      UserResponse actual = userService.loadFromToken(token);
+      UserResponse actual = userService.findById(expected.getId());
 
       // then
       assertThat(actual.id()).isEqualTo(expected.getId());
