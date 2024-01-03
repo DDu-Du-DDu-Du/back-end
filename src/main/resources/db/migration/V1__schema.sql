@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS followings
     CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- FRIEND
+-- FOLLOWING
 CREATE TABLE IF NOT EXISTS followings
 (
     id          BIGINT AUTO_INCREMENT,
