@@ -3,6 +3,7 @@ package com.ddudu.auth.controller;
 import com.ddudu.auth.dto.request.LoginRequest;
 import com.ddudu.auth.dto.response.LoginResponse;
 import com.ddudu.auth.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,11 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/login")
-  public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+  public ResponseEntity<LoginResponse> login(
+      @RequestBody
+      @Valid
+      LoginRequest request
+  ) {
     LoginResponse response = authService.login(request);
 
     return ResponseEntity.ok(response);

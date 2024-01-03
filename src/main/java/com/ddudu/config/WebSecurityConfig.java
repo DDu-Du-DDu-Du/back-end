@@ -1,6 +1,7 @@
 package com.ddudu.config;
 
 import com.ddudu.auth.domain.authority.Authority;
+import com.ddudu.auth.jwt.converter.JwtConverter;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
   @Bean
-  public SecurityFilterChain restFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain restFilterChain(HttpSecurity http, JwtConverter jwtConverter)
+      throws Exception {
     return http
         .securityMatchers(matcher -> matcher
             .requestMatchers("/api/**"))
@@ -32,6 +34,9 @@ public class WebSecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .anonymous(anonymous -> anonymous
             .authorities(Collections.singletonList(Authority.GUEST)))
+        .oauth2ResourceServer(oauth2 -> oauth2
+            .jwt(jwt -> jwt
+                .jwtAuthenticationConverter(jwtConverter)))
         .build();
   }
 

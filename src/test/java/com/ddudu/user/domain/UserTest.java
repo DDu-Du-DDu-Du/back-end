@@ -200,7 +200,8 @@ class UserTest {
       User user = userBuilder.build();
 
       // then
-      assertThat(user.getPassword()).isNotEqualTo(validPassword);
+      Password password = user.getPassword();
+      assertThat(password.check(validPassword, PASSWORD_ENCODER)).isTrue();
     }
 
   }
