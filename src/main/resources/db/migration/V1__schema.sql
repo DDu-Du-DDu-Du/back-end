@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS todo
     CONSTRAINT fk_goal_id FOREIGN KEY (goal_id) REFERENCES goal (id)
 );
 
--- FRIEND
+-- FOLLOWING
 CREATE TABLE IF NOT EXISTS followings
 (
     id          BIGINT      AUTO_INCREMENT,
