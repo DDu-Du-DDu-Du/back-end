@@ -127,12 +127,12 @@ class UserControllerTest {
           Arguments.of(
               "비밀번호가 " + shortPassword,
               new SignUpRequest(username, email, shortPassword, nickname, intro),
-              "비밀번호는 8자리 이상이어야 합니다."
+              "비밀번호는 8자리 이상의 영문, 숫자, 특수문자로 구성되어야 합니다."
           ),
           Arguments.of(
               "비밀번호가 " + weakPassword,
               new SignUpRequest(username, email, weakPassword, nickname, intro),
-              "비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다."
+              "비밀번호는 8자리 이상의 영문, 숫자, 특수문자로 구성되어야 합니다."
           ),
           Arguments.of(
               "닉네임이 null", new SignUpRequest(username, email, password, null, intro),
@@ -249,10 +249,7 @@ class UserControllerTest {
       // given
       long userId = faker.random()
           .nextLong();
-      JwtClaimsSet claims = claimSet.claim("user", userId)
-          .build();
-      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-      String token = "Bearer " + jwt.getTokenValue();
+      String token = createBearerToken(userId);
       UserResponse expected = UserResponse.builder()
           .id(userId)
           .email(email)
@@ -262,11 +259,19 @@ class UserControllerTest {
       given(userService.findById(anyLong())).willReturn(expected);
 
       // when
-      ResultActions actions = mockMvc.perform(get("/api/users/me").header("Authorization", token));
+      ResultActions actions = mockMvc.perform(get("/api/users/me")
+          .header("Authorization", token));
 
       // then
       actions.andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(userId));
+    }
+
+    private String createBearerToken(long userId) {
+      JwtClaimsSet claims = claimSet.claim("user", userId)
+          .build();
+      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
+      return "Bearer " + jwt.getTokenValue();
     }
 
   }
