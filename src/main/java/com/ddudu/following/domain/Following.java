@@ -48,7 +48,7 @@ public class Following extends BaseEntity {
 
     this.follower = follower;
     this.followee = followee;
-    this.status = Objects.nonNull(status) ? status : FollowingStatus.FOLLOWING;
+    this.status = Objects.requireNonNullElse(status, FollowingStatus.FOLLOWING);
   }
 
   private void validate(User follower, User followee) {
