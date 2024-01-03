@@ -38,8 +38,8 @@ public class UserController {
 
   @GetMapping("/me")
   public ResponseEntity<UserResponse> validateToken(Authentication authentication) {
-    JwtAuthToken token = (JwtAuthToken) authentication;
-    UserResponse response = userService.loadFromToken(token);
+    long userId = ((JwtAuthToken) authentication).getUserId();
+    UserResponse response = userService.findById(userId);
 
     return ResponseEntity.ok(response);
   }
