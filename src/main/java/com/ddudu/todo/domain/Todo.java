@@ -37,7 +37,7 @@ public class Todo extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "goal_id")
+  @JoinColumn(name = "goal_id", nullable = false)
   private Goal goal;
 
   @Column(name = "name", length = 50, nullable = false)

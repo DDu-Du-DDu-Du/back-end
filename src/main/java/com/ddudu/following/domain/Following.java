@@ -31,11 +31,11 @@ public class Following extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "follower_id", referencedColumnName = "id")
+  @JoinColumn(name = "follower_id", referencedColumnName = "id", nullable = false)
   private User follower;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "followee_id", referencedColumnName = "id")
+  @JoinColumn(name = "followee_id", referencedColumnName = "id", nullable = false)
   private User followee;
 
   @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)

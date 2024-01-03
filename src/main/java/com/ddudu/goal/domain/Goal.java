@@ -50,7 +50,7 @@ public class Goal extends BaseEntity {
   private String name;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
   @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
