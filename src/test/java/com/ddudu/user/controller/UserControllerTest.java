@@ -92,7 +92,7 @@ class UserControllerTest {
       String wrongEmail = faker.internet()
           .username();
       String shortPassword = faker.internet()
-          .password(1, 7);
+          .password(1, 7, true, true, true);
       String weakPassword = "password";
       String over50 = faker.howIMetYourMother()
           .quote()
