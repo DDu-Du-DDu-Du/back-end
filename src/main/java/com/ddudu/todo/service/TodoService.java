@@ -135,7 +135,7 @@ public class TodoService {
 
   private User findUser(Long userId) {
     return userRepository.findById(userId)
-        .orElseThrow(() -> new EntityNotFoundException("사용자가 존재하지 않습니다."));
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
   }
 
 }

@@ -230,7 +230,7 @@ class TodoServiceTest {
       // when then
       assertThatThrownBy(() -> todoService.updateStatus(invalidId))
           .isInstanceOf(DataNotFoundException.class)
-          .hasMessage("할 일 아이디가 존재하지 않습니다.");
+          .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
   }
