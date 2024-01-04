@@ -64,7 +64,7 @@ public class TodoService {
 
   public List<TodoListResponse> findDailyTodoList(Long userId, LocalDate date) {
     User user = findUser(userId);
-    List<Goal> goals = goalRepository.findAll();
+    List<Goal> goals = goalRepository.findAllByUser(user);
     List<Todo> todos = todoRepository.findTodosByDate(
         date.atStartOfDay(), date.atTime(LocalTime.MAX), user
     );
