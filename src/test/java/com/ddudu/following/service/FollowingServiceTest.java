@@ -6,10 +6,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.following.domain.Following;
+import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.following.dto.request.FollowRequest;
 import com.ddudu.following.dto.response.FollowResponse;
 import com.ddudu.following.exception.FollowingErrorCode;
 import com.ddudu.following.repository.FollowingRepository;
+import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Optional;
@@ -45,24 +47,6 @@ class FollowingServiceTest {
 
   @Nested
   class 팔로잉_생성_테스트 {
-
-    private User createUser() {
-      String email = faker.internet()
-          .emailAddress();
-      String password = faker.internet()
-          .password(8, 40, true, true, true);
-      String nickname = faker.oscarMovie()
-          .character();
-
-      User user = User.builder()
-          .passwordEncoder(passwordEncoder)
-          .email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-
-      return userRepository.save(user);
-    }
 
     @Test
     void 팔로워가_존재하지_않으면_팔로잉_생성을_실패한다() {
@@ -139,8 +123,44 @@ class FollowingServiceTest {
 
       Following actual = found.get();
 
-      assertThat(actual).extracting("follower", "followee")
-          .containsExactly(follower, followee);
+      assertThat(actual).extracting("follower", "followee", "status")
+          .containsExactly(follower, followee, FollowingStatus.FOLLOWING);
+    }
+
+    @Test
+    void 팔로잉_대상이_허락_옵션을_켜놨으면_팔로우_신청이_요청으로_생성된다() {
+      //given
+      User follower = createUser();
+      User followee = createUser();
+      Options followeeOptions = followee.getOptions();
+
+      followeeOptions.toggleFollowsAfterApproval();
+
+      FollowRequest request = new FollowRequest(followee.getId());
+
+      // when
+      FollowResponse response = followingService.create(follower.getId(), request);
+
+      // then
+      assertThat(response.status()).isEqualTo(FollowingStatus.REQUESTED);
+    }
+
+    private User createUser() {
+      String email = faker.internet()
+          .emailAddress();
+      String password = faker.internet()
+          .password(8, 40, true, true, true);
+      String nickname = faker.oscarMovie()
+          .character();
+
+      User user = User.builder()
+          .passwordEncoder(passwordEncoder)
+          .email(email)
+          .password(password)
+          .nickname(nickname)
+          .build();
+
+      return userRepository.save(user);
     }
 
   }
