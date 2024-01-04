@@ -43,20 +43,20 @@ class UserTest {
   @Autowired
   TestEntityManager entityManager;
 
+  @BeforeEach
+  void setUp() {
+    builderWithEncoder = User.builder()
+        .passwordEncoder(PASSWORD_ENCODER);
+    validEmail = faker.internet()
+        .emailAddress();
+    validPassword = faker.internet()
+        .password(8, 40, true, true, true);
+    validNickname = faker.oscarMovie()
+        .character();
+  }
+
   @Nested
   class 유저_생성_테스트 {
-
-    @BeforeEach
-    void setUp() {
-      builderWithEncoder = User.builder()
-          .passwordEncoder(PASSWORD_ENCODER);
-      validEmail = faker.internet()
-          .emailAddress();
-      validPassword = faker.internet()
-          .password(8, 40, true, true, true);
-      validNickname = faker.oscarMovie()
-          .character();
-    }
 
     @Test
     void User_인스턴스를_생성한다() {
@@ -202,6 +202,32 @@ class UserTest {
       // then
       Password password = user.getPassword();
       assertThat(password.check(validPassword, PASSWORD_ENCODER)).isTrue();
+    }
+
+  }
+
+  @Nested
+  class 프로필_수정_테스트 {
+
+    @Test
+    void 사용자_프로필을_수정할_수_있다() {
+      // given
+      User user = builderWithEncoder
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
+      String newNickname = faker.oscarMovie()
+          .character();
+      String newIntroduction = faker.book()
+          .title();
+
+      // when
+      user.applyProfileUpdate(newNickname, newIntroduction);
+
+      // then
+      assertThat(user).extracting("nickname", "introduction")
+          .containsExactly(newNickname, newIntroduction);
     }
 
   }
