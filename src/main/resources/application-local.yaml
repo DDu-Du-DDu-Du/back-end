@@ -14,3 +14,16 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration, classpath:db/data
+jwt:
+  secret-key: NDaXzFcHzbqw+YWo3jIUViccHL9a3ImaeCTJvQSX7VDyjJK+nSdP/iHWGnusLrmpZyC11SwKiNe99X3WPqKYtw==
+  expired-after: 15
+logging:
+  threshold:
+    file: ERROR
+  file:
+    name: logs/ddudu.log
+  logback:
+    rollingpolicy:
+      file-name-pattern: logs/ddudu.%d{yyyy-MM-dd}.%i.log
+      max-file-size: 1MB
+      total-size-cap: 5MB

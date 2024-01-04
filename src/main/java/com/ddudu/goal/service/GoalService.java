@@ -1,11 +1,13 @@
 package com.ddudu.goal.service;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
+import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
@@ -33,7 +35,7 @@ public class GoalService {
       CreateGoalRequest request
   ) {
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
+        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
     Goal goal = Goal.builder()
         .name(request.name())
@@ -48,7 +50,7 @@ public class GoalService {
   @Transactional
   public GoalResponse update(Long id, @Valid UpdateGoalRequest request) {
     Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
+        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
     goal.applyGoalUpdates(
         request.name(), request.status(), request.color(), request.privacyType());
@@ -58,14 +60,14 @@ public class GoalService {
 
   public GoalResponse findById(Long id) {
     Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 목표가 존재하지 않습니다."));
+        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
     return GoalResponse.from(goal);
   }
 
   public List<GoalSummaryResponse> findAllByUser(Long userId) {
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 사용자가 존재하지 않습니다."));
+        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
     List<Goal> goals = goalRepository.findAllByUser(user);
 

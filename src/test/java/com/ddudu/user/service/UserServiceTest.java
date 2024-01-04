@@ -3,10 +3,15 @@ package com.ddudu.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.auth.jwt.converter.JwtConverter;
+import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -22,9 +27,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -33,15 +37,35 @@ import org.springframework.transaction.annotation.Transactional;
 class UserServiceTest {
 
   static final Faker faker = new Faker();
-  static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+
+  UserBuilder builderWithEncoder;
   String password;
   String nickname;
-  UserBuilder builderWithEncoder;
+
   @Autowired
   UserService userService;
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  PasswordEncoder passwordEncoder;
+
+  @Autowired
+  JwtEncoder jwtEncoder;
+
+  @Autowired
+  JwtConverter jwtConverter;
+
+  @BeforeEach
+  void setUp() {
+    builderWithEncoder = User.builder()
+        .passwordEncoder(passwordEncoder);
+    password = faker.internet()
+        .password(8, 40, true, true, true);
+    nickname = faker.oscarMovie()
+        .character();
+  }
 
   @Nested
   class 회원가입_테스트 {
@@ -54,7 +78,7 @@ class UserServiceTest {
       String intro = faker.howIMetYourMother()
           .catchPhrase();
       String password = faker.internet()
-          .password(8, 40, false, true, true);
+          .password(8, 40, true, true, true);
       String nickname = faker.oscarMovie()
           .character();
 
@@ -69,9 +93,9 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
       builderWithEncoder = User.builder()
-          .passwordEncoder(PASSWORD_ENCODER);
+          .passwordEncoder(passwordEncoder);
       password = faker.internet()
-          .password(8, 40, false, true, true);
+          .password(8, 40, true, true, true);
       nickname = faker.oscarMovie()
           .character();
     }
@@ -95,8 +119,8 @@ class UserServiceTest {
       ThrowingCallable signUp = () -> userService.signUp(request);
 
       // then
-      assertThatExceptionOfType(DuplicateKeyException.class).isThrownBy(signUp)
-          .withMessage("이미 존재하는 이메일입니다.");
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(signUp)
+          .withMessage(UserErrorCode.DUPLICATE_EMAIL.getMessage());
     }
 
     @Test
@@ -123,8 +147,8 @@ class UserServiceTest {
       ThrowingCallable signUp = () -> userService.signUp(request);
 
       // then
-      assertThatExceptionOfType(DuplicateKeyException.class).isThrownBy(signUp)
-          .withMessage("이미 존재하는 아이디입니다.");
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(signUp)
+          .withMessage(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getMessage());
     }
 
     @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")
@@ -139,6 +163,44 @@ class UserServiceTest {
       assertThat(actual).isNotEmpty();
       assertThat(actual.get()).extracting("id", "email", "nickname")
           .containsExactly(expected.id(), expected.email(), expected.nickname());
+    }
+
+  }
+
+  @Nested
+  class 사용자_단일_조회 {
+
+    @Test
+    void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
+      // given
+      long randomId = faker.random()
+          .nextLong();
+
+      // when
+      ThrowingCallable login = () -> userService.findById(randomId);
+
+      // then
+      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(login)
+          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+    }
+
+    @Test
+    void 사용자_단일_조회를_성공한다() {
+      // given
+      String email = faker.internet()
+          .emailAddress();
+      User user = builderWithEncoder
+          .email(email)
+          .password(password)
+          .nickname(nickname)
+          .build();
+      User expected = userRepository.save(user);
+
+      // when
+      UserResponse actual = userService.findById(expected.getId());
+
+      // then
+      assertThat(actual.id()).isEqualTo(expected.getId());
     }
 
   }

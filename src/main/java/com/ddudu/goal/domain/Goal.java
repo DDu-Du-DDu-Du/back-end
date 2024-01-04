@@ -4,6 +4,8 @@ import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
 import com.ddudu.common.BaseEntity;
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.user.domain.User;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -18,7 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -95,16 +96,16 @@ public class Goal extends BaseEntity {
 
   private void validateName(String name) {
     if (isBlank(name)) {
-      throw new IllegalArgumentException("목표명은 필수값입니다.");
+      throw new InvalidParameterException(GoalErrorCode.BLANK_NAME);
     }
 
     if (name.length() > MAX_NAME_LENGTH) {
-      throw new IllegalArgumentException("목표명은 최대 " + MAX_NAME_LENGTH + "자 입니다.");
+      throw new InvalidParameterException(GoalErrorCode.EXCESSIVE_NAME_LENGTH);
     }
   }
 
   private void validateUser(User user) {
-    if (Objects.isNull(user)) {
+    if (isNull(user)) {
       throw new IllegalArgumentException("사용자는 필수값입니다.");
     }
   }
