@@ -85,15 +85,6 @@ public class TodoService {
         .toList();
   }
 
-  @Transactional
-  public TodoResponse updateStatus(Long id) {
-    Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
-    todo.switchStatus();
-
-    return TodoResponse.from(todo);
-  }
-
   public List<TodoCompletionResponse> findWeeklyTodoCompletion(Long userId, LocalDate date) {
     User user = findUser(userId);
     LocalDateTime startDate = date.atStartOfDay();
