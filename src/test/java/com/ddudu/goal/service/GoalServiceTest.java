@@ -14,6 +14,7 @@ import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,9 @@ class GoalServiceTest {
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  EntityManager entityManager;
 
   User user;
   String validName;
@@ -196,6 +200,7 @@ class GoalServiceTest {
       // given
       Goal goal = createGoal(user, validName);
       goal.delete();
+      flushAndClearPersistence();
 
       // when
       ThrowingCallable getGoal = () -> goalService.findById(goal.getId());
@@ -308,6 +313,7 @@ class GoalServiceTest {
 
       // when
       goalService.delete(goal.getId());
+      flushAndClearPersistence();
 
       // then
       Optional<Goal> foundAfterDeleted = goalRepository.findById(goal.getId());
@@ -347,6 +353,11 @@ class GoalServiceTest {
         .build();
 
     return userRepository.save(user);
+  }
+
+  private void flushAndClearPersistence() {
+    entityManager.flush();
+    entityManager.clear();
   }
 
 }
