@@ -16,6 +16,7 @@ import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 import net.datafaker.Faker;
@@ -47,6 +48,9 @@ class GoalServiceTest {
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  EntityManager entityManager;
 
   User user;
   String validName;
@@ -170,7 +174,7 @@ class GoalServiceTest {
       Long id = expected.getId();
 
       // when
-      GoalResponse actual = goalService.getById(id);
+      GoalResponse actual = goalService.findById(id);
 
       // then
       GoalStatus expectedStatus = expected.getStatus();
@@ -182,12 +186,27 @@ class GoalServiceTest {
     }
 
     @Test
+    void 삭제된_목표의_ID인_경우_조회에_실패한다() {
+      // given
+      Goal goal = createGoal(user, validName);
+      goal.delete();
+      flushAndClearPersistence();
+
+      // when
+      ThrowingCallable getGoal = () -> goalService.findById(goal.getId());
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoal)
+          .withMessage(GoalErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+    @Test
     void 유효하지_않은_ID인_경우_조회에_실패한다() {
       // given
       Long invalidId = -1L;
 
       // when
-      ThrowingCallable getGoal = () -> goalService.getById(invalidId);
+      ThrowingCallable getGoal = () -> goalService.findById(invalidId);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoal)
@@ -205,7 +224,7 @@ class GoalServiceTest {
       List<Goal> expected = createGoals(user, List.of(validName));
 
       // when
-      List<GoalSummaryResponse> actual = goalService.getAllById(user.getId());
+      List<GoalSummaryResponse> actual = goalService.findAllByUser(user.getId());
 
       // then
       assertThat(actual).isNotEmpty();
@@ -226,7 +245,7 @@ class GoalServiceTest {
       Long invalidUserId = 1234567890L;
 
       // when
-      ThrowingCallable getGoals = () -> goalService.getAllById(invalidUserId);
+      ThrowingCallable getGoals = () -> goalService.findAllByUser(invalidUserId);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoals)
@@ -263,6 +282,27 @@ class GoalServiceTest {
 
   }
 
+  @Nested
+  class 목표_삭제_테스트 {
+
+    @Test
+    void 목표를_삭제_할_수_있다() {
+      // given
+      Goal goal = createGoal(user, validName);
+      Optional<Goal> found = goalRepository.findById(goal.getId());
+      assertThat(found).isNotEmpty();
+
+      // when
+      goalService.delete(goal.getId());
+      flushAndClearPersistence();
+
+      // then
+      Optional<Goal> foundAfterDeleted = goalRepository.findById(goal.getId());
+      assertThat(foundAfterDeleted).isEmpty();
+    }
+
+  }
+
   private List<Goal> createGoals(User user, List<String> names) {
     return names.stream()
         .map(name -> createGoal(user, name))
@@ -294,6 +334,11 @@ class GoalServiceTest {
         .build();
 
     return userRepository.save(user);
+  }
+
+  private void flushAndClearPersistence() {
+    entityManager.flush();
+    entityManager.clear();
   }
 
 }

@@ -127,7 +127,7 @@ class UserControllerTest {
           Arguments.of(
               "비밀번호가 " + shortPassword,
               new SignUpRequest(username, email, shortPassword, nickname, intro),
-              "비밀번호는 8자리 이상이어야 합니다."
+              "비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다."
           ),
           Arguments.of(
               "비밀번호가 " + weakPassword,
