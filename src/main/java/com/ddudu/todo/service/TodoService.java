@@ -124,6 +124,15 @@ public class TodoService {
     return completionList;
   }
 
+  @Transactional
+  public TodoResponse updateStatus(Long id) {
+    Todo todo = todoRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
+    todo.switchStatus();
+
+    return TodoResponse.from(todo);
+  }
+
   private User findUser(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
