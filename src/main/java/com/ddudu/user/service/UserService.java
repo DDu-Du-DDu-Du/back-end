@@ -1,12 +1,15 @@
 package com.ddudu.user.service;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
+import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
@@ -58,6 +61,16 @@ public class UserService {
         .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
 
     return UserResponse.from(user);
+  }
+
+  @Transactional
+  public UserProfileResponse updateProfile(Long id, UpdateProfileRequest request) {
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+    user.applyProfileUpdate(request.nickname(), request.introduction());
+
+    return UserProfileResponse.from(user);
   }
 
 }
