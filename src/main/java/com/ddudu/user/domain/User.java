@@ -87,12 +87,27 @@ public class User extends BaseEntity {
     return email.getAddress();
   }
 
+  public void applyProfileUpdate(String nickname, String introduction) {
+    validate(nickname, introduction);
+
+    this.nickname = nickname;
+    this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
+  }
+
   private void validate(String nickname, String optionalUsername, String introduction) {
     validateNickname(nickname);
 
     if (Objects.nonNull(optionalUsername)) {
       validateOptionalUsername(optionalUsername);
     }
+
+    if (Objects.nonNull(introduction)) {
+      validateIntroduction(introduction);
+    }
+  }
+
+  private void validate(String nickname, String introduction) {
+    validateNickname(nickname);
 
     if (Objects.nonNull(introduction)) {
       validateIntroduction(introduction);
