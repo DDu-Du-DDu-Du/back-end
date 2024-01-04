@@ -1,9 +1,11 @@
 package com.ddudu.user.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.user.domain.User.UserBuilder;
+import com.ddudu.user.exception.UserErrorCode;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +54,7 @@ class UserTest {
     validNickname = faker.oscarMovie()
         .character();
   }
+
   @Nested
   class 유저_생성_테스트 {
 
@@ -62,7 +65,7 @@ class UserTest {
       validEmail = faker.internet()
           .emailAddress();
       validPassword = faker.internet()
-          .password(8, 40, false, true, true);
+          .password(8, 40, true, true, true);
       validNickname = faker.oscarMovie()
           .character();
     }
@@ -122,7 +125,7 @@ class UserTest {
       ThrowingCallable construct = userBuilder::build;
 
       // then
-      assertThatIllegalArgumentException().isThrownBy(construct);
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(construct);
     }
 
     @ParameterizedTest(name = "유효하지 않은 비밀번호 : {0}")
@@ -139,7 +142,7 @@ class UserTest {
       ThrowingCallable construct = userBuilder::build;
 
       // then
-      assertThatIllegalArgumentException().isThrownBy(construct);
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(construct);
     }
 
     @ParameterizedTest(name = "유효하지 않은 닉네임 : {0}")
@@ -156,7 +159,7 @@ class UserTest {
       ThrowingCallable construct = userBuilder::build;
 
       // then
-      assertThatIllegalArgumentException().isThrownBy(construct);
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(construct);
     }
 
     @ParameterizedTest(name = "유효하지 않은 아이디 : {0}")
@@ -174,7 +177,7 @@ class UserTest {
       ThrowingCallable construct = userBuilder::build;
 
       // then
-      assertThatIllegalArgumentException().isThrownBy(construct);
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(construct);
     }
 
     @Test
@@ -193,7 +196,8 @@ class UserTest {
       ThrowingCallable construct = userBuilder::build;
 
       // then
-      assertThatIllegalArgumentException().isThrownBy(construct);
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(construct)
+          .withMessage(UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH.getMessage());
     }
 
     @Test
@@ -208,7 +212,8 @@ class UserTest {
       User user = userBuilder.build();
 
       // then
-      assertThat(user.getPassword()).isNotEqualTo(validPassword);
+      Password password = user.getPassword();
+      assertThat(password.check(validPassword, PASSWORD_ENCODER)).isTrue();
     }
 
   }

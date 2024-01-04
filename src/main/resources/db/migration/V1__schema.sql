@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS goal
     updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_goal_id PRIMARY KEY (id),
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_goal_user_id FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT ck_color CHECK ( CHAR_LENGTH(color) = 6 )
 );
 
@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS goal
 CREATE TABLE IF NOT EXISTS todo
 (
     id         BIGINT      AUTO_INCREMENT,
+    user_id    BIGINT      NOT NULL,
     goal_id    BIGINT      NOT NULL,
     name       VARCHAR(50) NOT NULL,
     status     VARCHAR(20) NOT NULL DEFAULT 'UNCOMPLETED',
@@ -48,7 +49,35 @@ CREATE TABLE IF NOT EXISTS todo
     updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_todo_id PRIMARY KEY (id),
-    CONSTRAINT fk_goal_id FOREIGN KEY (goal_id) REFERENCES goal (id)
+    CONSTRAINT fk_todo_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_todo_goal_id FOREIGN KEY (goal_id) REFERENCES goal (id)
+);
+
+-- FOLLOWING
+CREATE TABLE IF NOT EXISTS followings
+(
+    id          BIGINT      AUTO_INCREMENT,
+    follower_id BIGINT      NOT NULL,
+    followee_id BIGINT      NOT NULL,
+    status      VARCHAR(20) NOT NULL DEFAULT 'FOLLOWING',
+    created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
+    CONSTRAINT pk_friend_id PRIMARY KEY (id),
+    CONSTRAINT fk_follower_id FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+-- FOLLOWING
+CREATE TABLE IF NOT EXISTS followings
+(
+    id          BIGINT AUTO_INCREMENT,
+    follower_id BIGINT NOT NULL,
+    followee_id BIGINT NOT NULL,
+    status      VARCHAR(20) NOT NULL,
+    CONSTRAINT pk_friend_id PRIMARY KEY (id),
+    CONSTRAINT fk_follower_id FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 -- FRIEND

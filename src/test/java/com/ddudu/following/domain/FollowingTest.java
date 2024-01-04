@@ -1,8 +1,10 @@
 package com.ddudu.following.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.following.exception.FollowingErrorCode;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import java.util.Objects;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -74,8 +77,8 @@ class FollowingTest {
           .build();
 
       // then
-      assertThatNullPointerException().isThrownBy(construct)
-          .withMessage("Follower cannot be null");
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(construct)
+          .withMessage(FollowingErrorCode.NULL_FOLLOWER.getMessage());
     }
 
     @ParameterizedTest
@@ -96,8 +99,28 @@ class FollowingTest {
           .build();
 
       // then
-      assertThatNullPointerException().isThrownBy(construct)
-          .withMessage("Followee cannot be null");
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(construct)
+          .withMessage(FollowingErrorCode.NULL_FOLLOWEE.getMessage());
+    }
+
+    @Test
+    void 본인을_팔로우하는_팔로잉_생성을_실패한다() {
+      // given
+      User follower = builderWithEncoder
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
+
+      // when
+      ThrowingCallable construct = () -> Following.builder()
+          .follower(follower)
+          .followee(follower)
+          .build();
+
+      // then
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(construct)
+          .withMessage(FollowingErrorCode.SELF_FOLLOWING_UNAVAILABLE.getMessage());
     }
 
     @ParameterizedTest(name = "생성 시 상태: {0}")

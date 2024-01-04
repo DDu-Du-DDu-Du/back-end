@@ -3,6 +3,7 @@ package com.ddudu.goal.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
@@ -11,10 +12,10 @@ import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
+import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import net.datafaker.Faker;
@@ -59,39 +60,6 @@ class GoalServiceTest {
     validColor = faker.color()
         .hex()
         .substring(1);
-  }
-
-  private List<Goal> createGoals(User user, List<String> names) {
-    return names.stream()
-        .map(name -> createGoal(user, name))
-        .toList();
-  }
-
-  private Goal createGoal(User user, String name) {
-    Goal goal = Goal.builder()
-        .name(name)
-        .user(user)
-        .build();
-
-    return goalRepository.save(goal);
-  }
-
-  private User createUser() {
-    String email = faker.internet()
-        .emailAddress();
-    String password = faker.internet()
-        .password(8, 40, false, true, true);
-    String nickname = faker.oscarMovie()
-        .character();
-
-    User user = User.builder()
-        .passwordEncoder(new BCryptPasswordEncoder())
-        .email(email)
-        .password(password)
-        .nickname(nickname)
-        .build();
-
-    return userRepository.save(user);
   }
 
   @Nested
@@ -186,8 +154,8 @@ class GoalServiceTest {
       ThrowingCallable create = () -> goalService.create(invalidUserId, request);
 
       // then
-      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(create)
-          .withMessage("해당 아이디를 가진 사용자가 존재하지 않습니다.");
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
+          .withMessage(GoalErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
@@ -208,20 +176,9 @@ class GoalServiceTest {
       GoalStatus expectedStatus = expected.getStatus();
       PrivacyType expectedPrivacyType = expected.getPrivacyType();
 
-      assertThat(actual).extracting(
-              "id",
-              "name",
-              "status",
-              "color",
-              "privacyType"
-          )
+      assertThat(actual).extracting("id", "name", "status", "color", "privacyType")
           .containsExactly(
-              id,
-              expected.getName(),
-              expectedStatus,
-              expected.getColor(),
-              expectedPrivacyType
-          );
+              id, expected.getName(), expectedStatus, expected.getColor(), expectedPrivacyType);
     }
 
     @Test
@@ -233,8 +190,8 @@ class GoalServiceTest {
       ThrowingCallable getGoal = () -> goalService.getById(invalidId);
 
       // then
-      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(getGoal)
-          .withMessage("해당 아이디를 가진 목표가 존재하지 않습니다.");
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoal)
+          .withMessage(GoalErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
   }
@@ -253,23 +210,14 @@ class GoalServiceTest {
       // then
       assertThat(actual).isNotEmpty();
       assertThat(actual.size()).isEqualTo(expected.size());
-      assertThat(actual.get(0)).extracting(
-              "id",
-              "name",
-              "status",
-              "color"
-          )
-          .containsExactly(
-              expected.get(0)
-                  .getId(),
-              expected.get(0)
-                  .getName(),
-              expected.get(0)
-                  .getStatus()
-                  .name(),
-              expected.get(0)
-                  .getColor()
-          );
+      assertThat(actual.get(0))
+          .extracting("id", "name", "status", "color")
+          .containsExactly(expected.get(0)
+              .getId(), expected.get(0)
+              .getName(), expected.get(0)
+              .getStatus()
+              .name(), expected.get(0)
+              .getColor());
     }
 
     @Test
@@ -281,8 +229,8 @@ class GoalServiceTest {
       ThrowingCallable getGoals = () -> goalService.getAllById(invalidUserId);
 
       // then
-      assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(getGoals)
-          .withMessage("해당 아이디를 가진 사용자가 존재하지 않습니다.");
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoals)
+          .withMessage(GoalErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
@@ -313,6 +261,39 @@ class GoalServiceTest {
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 
+  }
+
+  private List<Goal> createGoals(User user, List<String> names) {
+    return names.stream()
+        .map(name -> createGoal(user, name))
+        .toList();
+  }
+
+  private Goal createGoal(User user, String name) {
+    Goal goal = Goal.builder()
+        .name(name)
+        .user(user)
+        .build();
+
+    return goalRepository.save(goal);
+  }
+
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, true, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
+
+    User user = User.builder()
+        .passwordEncoder(new BCryptPasswordEncoder())
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .build();
+
+    return userRepository.save(user);
   }
 
 }

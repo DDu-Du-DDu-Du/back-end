@@ -1,6 +1,8 @@
 package com.ddudu.following.domain;
 
 import com.ddudu.common.BaseEntity;
+import com.ddudu.common.exception.InvalidParameterException;
+import com.ddudu.following.exception.FollowingErrorCode;
 import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,11 +33,11 @@ public class Following extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "follower_id", referencedColumnName = "id")
+  @JoinColumn(name = "follower_id", referencedColumnName = "id", nullable = false)
   private User follower;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "followee_id", referencedColumnName = "id")
+  @JoinColumn(name = "followee_id", referencedColumnName = "id", nullable = false)
   private User followee;
 
   @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
@@ -48,12 +50,21 @@ public class Following extends BaseEntity {
 
     this.follower = follower;
     this.followee = followee;
-    this.status = Objects.nonNull(status) ? status : FollowingStatus.FOLLOWING;
+    this.status = Objects.requireNonNullElse(status, FollowingStatus.FOLLOWING);
   }
 
   private void validate(User follower, User followee) {
-    Objects.requireNonNull(follower, "Follower cannot be null");
-    Objects.requireNonNull(followee, "Followee cannot be null");
+    if (Objects.isNull(follower)) {
+      throw new InvalidParameterException(FollowingErrorCode.NULL_FOLLOWER);
+    }
+
+    if (Objects.isNull(followee)) {
+      throw new InvalidParameterException(FollowingErrorCode.NULL_FOLLOWEE);
+    }
+
+    if (follower.equals(followee)) {
+      throw new InvalidParameterException(FollowingErrorCode.SELF_FOLLOWING_UNAVAILABLE);
+    }
   }
 
 }

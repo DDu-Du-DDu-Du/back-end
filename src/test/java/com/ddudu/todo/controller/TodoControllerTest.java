@@ -1,18 +1,22 @@
 package com.ddudu.todo.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
 import com.ddudu.todo.domain.TodoStatus;
+import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.response.GoalInfo;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
@@ -20,13 +24,15 @@ import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
+import net.datafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -45,6 +51,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class TodoControllerTest {
 
+  static final Faker faker = new Faker();
+
   @MockBean
   TodoService todoService;
 
@@ -54,44 +62,46 @@ class TodoControllerTest {
   @Autowired
   ObjectMapper objectMapper;
 
-  private GoalInfo createGoalInfo() {
-    return GoalInfo.builder()
-        .id(1L)
-        .name("dev course")
-        .build();
-  }
+  @Nested
+  class POST_할_일_생성_API_테스트 {
 
-  private TodoInfo createTodoInfo() {
-    return TodoInfo.builder()
-        .id(1L)
-        .name("할 일 조회 기능 구현")
-        .status(TodoStatus.UNCOMPLETED)
-        .build();
-  }
+    String name;
+    LocalDateTime beginAt;
 
-  private TodoResponse createTodoResponse() {
-    return TodoResponse.builder()
-        .goalInfo(createGoalInfo())
-        .todoInfo(createTodoInfo())
-        .build();
-  }
+    @BeforeEach
+    void setUp() {
+      name = faker.lorem()
+          .word();
+      beginAt = faker.date()
+          .birthday()
+          .toLocalDateTime();
+    }
 
-  private List<TodoListResponse> createTodoListResponse() {
-    TodoListResponse todolist = TodoListResponse.builder()
-        .goalInfo(createGoalInfo())
-        .todolist(Collections.singletonList(createTodoInfo()))
-        .build();
+    @Test
+    void 할_일_생성을_성공한다() throws Exception {
+      // given
+      Long goalId = 1L;
+      CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
+      TodoInfo response = createTodoInfo();
 
-    return Collections.singletonList(todolist);
-  }
+      given(todoService.create(anyLong(), any(CreateTodoRequest.class)))
+          .willReturn(response);
 
-  private List<TodoCompletionResponse> createEmptyTodoCompletionResponseList(
-      LocalDate startDate, int numDays
-  ) {
-    return IntStream.range(0, numDays)
-        .mapToObj(startDate::plusDays)
-        .map(TodoCompletionResponse::createEmptyResponse)
-        .toList();
+      // when then
+      mockMvc.perform(
+              post("/api/todos")
+                  .param("userId", "1")
+                  .content(objectMapper.writeValueAsString(request))
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isCreated())
+          .andExpect(header().exists("location"))
+          .andExpect(jsonPath("$.id").value(response.id()))
+          .andExpect(jsonPath("$.name").value(response.name()))
+          .andExpect(jsonPath("$.status").value(response.status()
+              .name()));
+    }
+
   }
 
   @Nested
@@ -127,7 +137,7 @@ class TodoControllerTest {
         Exception {
       // given
       Long invalidId = 999L;
-      given(todoService.findById(anyLong())).willThrow(EntityNotFoundException.class);
+      given(todoService.findById(anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
       mockMvc.perform(get("/api/todos/{id}", invalidId))
@@ -211,7 +221,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
     }
 
     @ParameterizedTest
@@ -221,50 +231,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
-    }
-
-  }
-
-  @Nested
-  class PATCH_할_일_상태_변경_테스트 {
-
-    @Test
-    void 할_일_상태_변경을_성공한다() throws Exception {
-      // given
-      TodoResponse response = createTodoResponse();
-      given(todoService.updateStatus(anyLong())).willReturn(response);
-
-      // when then
-      mockMvc.perform(patch(
-              "/api/todos/{id}/status", response.todoInfo()
-                  .id())
-              .contentType(MediaType.APPLICATION_JSON))
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$.goalInfo.id").value(response.goalInfo()
-              .id()))
-          .andExpect(jsonPath("$.goalInfo.name").value(response.goalInfo()
-              .name()))
-          .andExpect(jsonPath("$.todoInfo.id").value(response.todoInfo()
-              .id()))
-          .andExpect(jsonPath("$.todoInfo.name").value(response.todoInfo()
-              .name()))
-          .andExpect(jsonPath("$.todoInfo.status").value(response.todoInfo()
-              .status()
-              .name()));
-    }
-
-    @Test
-    void 아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
-        Exception {
-      // given
-      Long invalidId = 999L;
-      given(todoService.updateStatus(anyLong())).willThrow(EntityNotFoundException.class);
-
-      // when then
-      mockMvc.perform(patch("/api/todos/{id}/status", invalidId)
-              .contentType(MediaType.APPLICATION_JSON))
-          .andExpect(status().isNotFound());
+          .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
     }
 
   }
@@ -316,7 +283,7 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos/weekly")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message", containsString("형식이 유효하지 않습니다")));
     }
 
     @Test
@@ -366,9 +333,92 @@ class TodoControllerTest {
       mockMvc.perform(get("/api/todos/monthly")
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
-          .andExpect(content().string("유효하지 않은 날짜입니다."));
+          .andExpect(jsonPath("$.message", containsString("형식이 유효하지 않습니다")));
     }
 
+  }
+
+  @Nested
+  class PATCH_할_일_상태_변경_테스트 {
+
+    @Test
+    void 할_일_상태_변경을_성공한다() throws Exception {
+      // given
+      TodoResponse response = createTodoResponse();
+      given(todoService.updateStatus(anyLong())).willReturn(response);
+
+      // when then
+      mockMvc.perform(patch(
+              "/api/todos/{id}/status", response.todoInfo()
+                  .id())
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.goalInfo.id").value(response.goalInfo()
+              .id()))
+          .andExpect(jsonPath("$.goalInfo.name").value(response.goalInfo()
+              .name()))
+          .andExpect(jsonPath("$.todoInfo.id").value(response.todoInfo()
+              .id()))
+          .andExpect(jsonPath("$.todoInfo.name").value(response.todoInfo()
+              .name()))
+          .andExpect(jsonPath("$.todoInfo.status").value(response.todoInfo()
+              .status()
+              .name()));
+    }
+
+    @Test
+    void 아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
+        Exception {
+      // given
+      Long invalidId = 999L;
+      given(todoService.updateStatus(anyLong())).willThrow(DataNotFoundException.class);
+
+      // when then
+      mockMvc.perform(patch("/api/todos/{id}/status", invalidId)
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNotFound());
+    }
+
+  }
+
+  private GoalInfo createGoalInfo() {
+    return GoalInfo.builder()
+        .id(1L)
+        .name("dev course")
+        .build();
+  }
+
+  private TodoInfo createTodoInfo() {
+    return TodoInfo.builder()
+        .id(1L)
+        .name("할 일 조회 기능 구현")
+        .status(TodoStatus.UNCOMPLETED)
+        .build();
+  }
+
+  private TodoResponse createTodoResponse() {
+    return TodoResponse.builder()
+        .goalInfo(createGoalInfo())
+        .todoInfo(createTodoInfo())
+        .build();
+  }
+
+  private List<TodoListResponse> createTodoListResponse() {
+    TodoListResponse todolist = TodoListResponse.builder()
+        .goalInfo(createGoalInfo())
+        .todolist(Collections.singletonList(createTodoInfo()))
+        .build();
+
+    return Collections.singletonList(todolist);
+  }
+
+  private List<TodoCompletionResponse> createEmptyTodoCompletionResponseList(
+      LocalDate startDate, int numDays
+  ) {
+    return IntStream.range(0, numDays)
+        .mapToObj(startDate::plusDays)
+        .map(TodoCompletionResponse::createEmptyResponse)
+        .toList();
   }
 
 }

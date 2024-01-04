@@ -3,6 +3,7 @@ SET foreign_key_checks = 0;
 TRUNCATE TABLE users;
 TRUNCATE TABLE goal;
 TRUNCATE TABLE todo;
+TRUNCATE TABLE followings;
 SET foreign_key_checks = 1;
 
 -- USER
@@ -25,8 +26,20 @@ INSERT INTO goal(id, user_id, name, color, privacy) VALUES (4, 8, 'etc', 'C7D567
 INSERT INTO goal(id, user_id, name, privacy, status) VALUES (5, 8, 'college', 'PUBLIC', 'DONE');
 
 -- TO DO
-insert into todo(id, name, goal_id, status) values (1, '10시 30분 마르코 팀미팅', 1, 'UNCOMPLETED');
-insert into todo(id, name, goal_id, status, end_at) values (2, '9시 QR 출셕', 1, 'COMPLETE', NOW());
-insert into todo(id, name, goal_id, status) values (3, '1시 RBF', 1, 'UNCOMPLETED');
-insert into todo(id, name, goal_id, status) values (4, '2시 말코리즘 간단 리뷰', 1, 'UNCOMPLETED');
-insert into todo(id, name, goal_id, status, end_at) values (5, '9시 뚜두뚜두 스크럼', 1, 'COMPLETE', NOW());
+insert into todo(id, name, goal_id, user_id, status) values (1, '10시 30분 마르코 팀미팅', 1, 1, 'UNCOMPLETED');
+insert into todo(id, name, goal_id, user_id, status, end_at) values (2, '9시 QR 출셕', 1, 1, 'COMPLETE', NOW());
+insert into todo(id, name, goal_id, user_id, status) values (3, '1시 RBF', 1, 1, 'UNCOMPLETED');
+insert into todo(id, name, goal_id, user_id, status) values (4, '2시 말코리즘 간단 리뷰', 1, 1, 'UNCOMPLETED');
+insert into todo(id, name, goal_id, user_id, status, end_at) values (5, '9시 뚜두뚜두 스크럼', 1, 1, 'COMPLETE', NOW());
+
+-- FOLLOWING
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (1, 1, 2, 'FOLLOWING');
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (2, 2, 1, 'FOLLOWING');
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (3, 1, 10, 'FOLLOWING');
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (4, 2, 10, 'FOLLOWING');
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (5, 3, 10, 'FOLLOWING');
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (6, 4, 10, 'FOLLOWING');
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (7, 5, 10, 'FOLLOWING');
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (8, 6, 10, 'FOLLOWING');
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (9, 10, 6, 'FOLLOWING');
+INSERT INTO followings(id, follower_id, followee_id, status) VALUES (10, 10, 7, 'FOLLOWING');
