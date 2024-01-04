@@ -16,7 +16,8 @@ public enum UserErrorCode implements ErrorCode {
   INVALID_PASSWORD_FORMAT(1010, "비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다."),
   DUPLICATE_EMAIL(1011, "이미 존재하는 이메일입니다."),
   DUPLICATE_OPTIONAL_USERNAME(1012, "이미 존재하는 아이디입니다."),
-  INVALID_AUTHENTICATION(1013, "토큰과 사용자의 정보가 일치하지 않습니다.");
+  INVALID_AUTHENTICATION(1013, "토큰과 사용자의 정보가 일치하지 않습니다."),
+  ID_NOT_EXISTING(1014, "해당 아이디를 가진 사용자가 존재하지 않습니다.");
 
   private final int code;
   private final String message;
