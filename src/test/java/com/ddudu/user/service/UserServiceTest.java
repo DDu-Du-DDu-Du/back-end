@@ -9,6 +9,7 @@ import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
+import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
@@ -201,6 +202,40 @@ class UserServiceTest {
 
       // then
       assertThat(actual.id()).isEqualTo(expected.getId());
+    }
+
+  }
+
+  @Nested
+  class 프로필_수정 {
+
+    @Test
+    void 사용자_프로필_수정을_성공한다() {
+      // given
+      String email = faker.internet()
+          .emailAddress();
+      User user = builderWithEncoder
+          .email(email)
+          .password(password)
+          .nickname(nickname)
+          .build();
+
+      userRepository.save(user);
+
+      String newNickname = faker.oscarMovie()
+          .character();
+      String newIntroduction = faker.book()
+          .title();
+      UpdateProfileRequest request = new UpdateProfileRequest(newNickname, newIntroduction);
+
+      // when
+      userService.updateProfile(user.getId(), request);
+
+      // then
+      User actual = userRepository.findById(user.getId())
+          .get();
+      assertThat(actual).extracting("nickname", "introduction")
+          .containsExactly(newNickname, newIntroduction);
     }
 
   }
