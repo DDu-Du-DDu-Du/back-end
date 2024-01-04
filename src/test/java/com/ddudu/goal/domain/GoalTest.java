@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ddudu.user.domain.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
@@ -184,6 +185,21 @@ class GoalTest {
 
       // then
       assertThat(goal.isDeleted()).isEqualTo(true);
+    }
+
+    @Test
+    void 이미_삭제된_목표를_재삭제_하면_업데이트_시간이_변경되지_않는다() {
+      // given
+      Goal goal = createGoal();
+      goal.delete();
+      LocalDateTime beforeReDelete = goal.getUpdatedAt();
+
+      // when
+      goal.delete();
+
+      // then
+      assertThat(goal.isDeleted()).isEqualTo(true);
+      assertThat(goal.getUpdatedAt()).isEqualTo(beforeReDelete);
     }
 
   }
