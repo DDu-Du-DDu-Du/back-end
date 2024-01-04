@@ -46,7 +46,7 @@ public class TodoController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<TodoResponse> get(
+  public ResponseEntity<TodoResponse> getById(
       @PathVariable
           Long id
   ) {
@@ -99,7 +99,7 @@ public class TodoController {
   }
 
   @PatchMapping("/{id}/status")
-  public ResponseEntity<TodoResponse> updateTodoStatus(
+  public ResponseEntity<TodoResponse> updateStatus(
       @PathVariable
           Long id
   ) {
