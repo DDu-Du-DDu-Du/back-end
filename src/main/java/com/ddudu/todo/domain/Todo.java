@@ -28,6 +28,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "todo")
+@SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SQLRestriction("is_deleted = 0")
@@ -42,7 +43,7 @@ public class Todo extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "goal_id")
+  @JoinColumn(name = "goal_id", nullable = false)
   private Goal goal;
 
   @ManyToOne(fetch = FetchType.LAZY)

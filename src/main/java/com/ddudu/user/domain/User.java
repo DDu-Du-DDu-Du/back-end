@@ -20,10 +20,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "users")
+@SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User extends BaseEntity {
@@ -34,6 +36,7 @@ public class User extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
   private Long id;
 
   @Column(name = "optional_username", length = 20, unique = true)
@@ -70,11 +73,12 @@ public class User extends BaseEntity {
       String nickname, String introduction, Authority authority
   ) {
     validate(nickname, optionalUsername, introduction);
+
     this.optionalUsername = optionalUsername;
     this.email = new Email(email);
     this.password = new Password(password, passwordEncoder);
     this.nickname = nickname;
-    this.authority = Objects.nonNull(authority) ? authority : Authority.NORMAL;
+    this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     status = UserStatus.ACTIVE;
   }

@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -76,7 +77,7 @@ class GoalControllerTest {
   class POST_목표_생성_API_테스트 {
 
     @Test
-    void 목표를_생성할_수_있다() throws Exception {
+    void 목표_생성을_성공한다() throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
       CreateGoalResponse response = new CreateGoalResponse(1L, validName, validColor);
@@ -198,11 +199,11 @@ class GoalControllerTest {
   class GET_단일_목표_조회_API_테스트 {
 
     @Test
-    void 목표를_조회할_수_있다() throws Exception {
+    void 목표_조회를_성공한다() throws Exception {
       // given
       GoalResponse response = createGoalResponse();
 
-      given(goalService.getById(anyLong())).willReturn(response);
+      given(goalService.findById(anyLong())).willReturn(response);
 
       // when then
       mockMvc.perform(
@@ -220,10 +221,68 @@ class GoalControllerTest {
     }
 
     @Test
+    void 유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+      // given
+      String invalidRequestJson = """
+          {
+              "name": "dev course",
+              "status": "INVALID TYPE",
+              "color": "191919",
+              "privacyType": "PUBLIC"
+          }
+          """;
+
+      GoalResponse response = GoalResponse.builder()
+          .build();
+
+      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
+          .willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              put("/api/goals/{id}", 1L)
+                  .content(invalidRequestJson)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("GoalStatus는 [IN_PROGRESS, DONE] 중 하나여야 합니다.")));
+    }
+
+    @Test
+    void 유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+      // given
+      String invalidRequestJson = """
+          {
+              "name": "dev course",
+              "status": "IN_PROGRESS",
+              "color": "191919",
+              "privacyType": "INVALID TYPE"
+          }
+          """;
+
+      GoalResponse response = GoalResponse.builder()
+          .build();
+
+      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
+          .willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              put("/api/goals/{id}", 1L)
+                  .content(invalidRequestJson)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("PrivacyType는 [PRIVATE, FOLLOWER, PUBLIC] 중 하나여야 합니다.")));
+    }
+
+    @Test
     void ID가_유효하지_않으면_Not_Found_응답을_반환한다() throws Exception {
       // given
       Long invalidId = -1L;
-      given(goalService.getById(anyLong()))
+      given(goalService.findById(anyLong()))
           .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
       // when then
@@ -233,7 +292,7 @@ class GoalControllerTest {
           )
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message")
-              .value(containsString(GoalErrorCode.ID_NOT_EXISTING.getMessage())));
+              .value(GoalErrorCode.ID_NOT_EXISTING.getMessage()));
     }
 
     private static GoalResponse createGoalResponse() {
@@ -257,7 +316,7 @@ class GoalControllerTest {
       List<GoalSummaryResponse> response = createGoalSummaryDTO();
       GoalSummaryResponse firstElement = response.get(0);
 
-      given(goalService.getAllById(anyLong())).willReturn(response);
+      given(goalService.findAllByUser(anyLong())).willReturn(response);
 
       // when then
       mockMvc.perform(
@@ -277,7 +336,7 @@ class GoalControllerTest {
     void 사용자가_존재하지_않은_경우_404_Not_Found_응답을_반환한다() throws Exception {
       // given
       String invalidUserId = "-1";
-      given(goalService.getAllById(anyLong())).willThrow(
+      given(goalService.findAllByUser(anyLong())).willThrow(
           new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
       // when then
@@ -394,6 +453,21 @@ class GoalControllerTest {
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
               .value(containsString("GoalStatus는 [IN_PROGRESS, DONE] 중 하나여야 합니다.")));
+    }
+
+  }
+
+  @Nested
+  class DELETE_목표_삭제_API_테스트 {
+
+    @Test
+    void 목표_삭제를_성공한다() throws Exception {
+      // when then
+      mockMvc.perform(
+              delete("/api/goals/{id}", 1L)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isNoContent());
     }
 
   }
