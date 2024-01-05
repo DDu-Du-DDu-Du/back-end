@@ -62,7 +62,7 @@ public class TodoService {
     return TodoResponse.from(todo);
   }
 
-  public List<TodoListResponse> findDailyTodoList(Long userId, LocalDate date) {
+  public List<TodoListResponse> findAllByDate(Long userId, LocalDate date) {
     User user = findUser(userId);
     List<Goal> goals = goalRepository.findAllByUser(user);
     List<Todo> todos = todoRepository.findTodosByDate(
@@ -85,7 +85,7 @@ public class TodoService {
         .toList();
   }
 
-  public List<TodoCompletionResponse> findWeeklyTodoCompletion(Long userId, LocalDate date) {
+  public List<TodoCompletionResponse> findWeeklyCompletions(Long userId, LocalDate date) {
     User user = findUser(userId);
     LocalDateTime startDate = date.atStartOfDay();
     LocalDateTime endDate = startDate.plusDays(7);
@@ -93,7 +93,7 @@ public class TodoService {
     return generateCompletions(startDate, endDate, user);
   }
 
-  public List<TodoCompletionResponse> findMonthlyTodoCompletion(Long userId, YearMonth yearMonth) {
+  public List<TodoCompletionResponse> findMonthlyCompletions(Long userId, YearMonth yearMonth) {
     User user = findUser(userId);
     LocalDateTime startDate = yearMonth.atDay(1)
         .atStartOfDay();
