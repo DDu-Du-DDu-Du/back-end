@@ -1,6 +1,7 @@
 package com.ddudu.todo.repository;
 
-import com.ddudu.todo.domain.QTodo;
+import static com.ddudu.todo.domain.QTodo.todo;
+
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
@@ -26,8 +27,6 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
 
   @Override
   public List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, User user) {
-    QTodo todo = QTodo.todo;
-
     return jpaQueryFactory
         .selectFrom(todo)
         .join(todo.goal)
@@ -44,8 +43,6 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
   public List<TodoCompletionResponse> findTodosCompletion(
       LocalDateTime startDate, LocalDateTime endDate, User user
   ) {
-    QTodo todo = QTodo.todo;
-
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
         LocalDate.class, "{0}", todo.beginAt);
 
