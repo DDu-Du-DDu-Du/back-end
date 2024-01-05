@@ -155,7 +155,7 @@ class TodoControllerTest {
       LocalDate date = LocalDate.now();
       List<TodoListResponse> responses = createTodoListResponse();
 
-      given(todoService.findDailyTodoList(anyLong(), any(LocalDate.class))).willReturn(responses);
+      given(todoService.findAllByDate(anyLong(), any(LocalDate.class))).willReturn(responses);
 
       // when then
       mockMvc.perform(get("/api/todos")
@@ -188,7 +188,7 @@ class TodoControllerTest {
     void 날짜를_전달받지_않으면_현재_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
       // given
       List<TodoListResponse> responses = createTodoListResponse();
-      given(todoService.findDailyTodoList(anyLong(), any())).willReturn(responses);
+      given(todoService.findAllByDate(anyLong(), any())).willReturn(responses);
 
       // when then
       mockMvc.perform(get("/api/todos")
@@ -238,7 +238,7 @@ class TodoControllerTest {
       // given
       LocalDate date = LocalDate.of(2024, 1, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(date, 7);
-      given(todoService.findWeeklyTodoCompletion(anyLong(), any(LocalDate.class))).willReturn(
+      given(todoService.findWeeklyCompletions(anyLong(), any(LocalDate.class))).willReturn(
           responses);
 
       // when then
@@ -259,7 +259,7 @@ class TodoControllerTest {
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(mondayDate, 7);
-      given(todoService.findWeeklyTodoCompletion(anyLong(), any(LocalDate.class))).willReturn(
+      given(todoService.findWeeklyCompletions(anyLong(), any(LocalDate.class))).willReturn(
           responses);
 
       // when then
@@ -291,7 +291,7 @@ class TodoControllerTest {
       YearMonth yearMonth = YearMonth.of(2024, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
           yearMonth.atDay(1), 31);
-      given(todoService.findMonthlyTodoCompletion(anyLong(), any(YearMonth.class))).willReturn(
+      given(todoService.findMonthlyCompletions(anyLong(), any(YearMonth.class))).willReturn(
           responses);
 
       // when then
@@ -313,7 +313,7 @@ class TodoControllerTest {
       int daysInMonth = yearMonth.lengthOfMonth();
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
           yearMonth.atDay(1), daysInMonth);
-      given(todoService.findMonthlyTodoCompletion(anyLong(), any(YearMonth.class))).willReturn(
+      given(todoService.findMonthlyCompletions(anyLong(), any(YearMonth.class))).willReturn(
           responses);
 
       // when then

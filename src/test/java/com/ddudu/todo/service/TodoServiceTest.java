@@ -169,7 +169,7 @@ class TodoServiceTest {
       LocalDate date = LocalDate.now();
 
       // when
-      List<TodoListResponse> responses = todoService.findDailyTodoList(user.getId(), date);
+      List<TodoListResponse> responses = todoService.findAllByDate(user.getId(), date);
 
       // then
       assertThat(responses).hasSize(2);
@@ -194,7 +194,7 @@ class TodoServiceTest {
       LocalDate date = LocalDate.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findDailyTodoList(invalidUserId, date))
+      assertThatThrownBy(() -> todoService.findAllByDate(invalidUserId, date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
@@ -252,7 +252,7 @@ class TodoServiceTest {
       int dayIndex = dayOfWeek.getValue() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findWeeklyTodoCompletion(
+      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
           user.getId(), mondayDate);
 
       // then
@@ -268,7 +268,7 @@ class TodoServiceTest {
       LocalDate date = LocalDate.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findWeeklyTodoCompletion(invalidUserId, date))
+      assertThatThrownBy(() -> todoService.findWeeklyCompletions(invalidUserId, date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
@@ -287,7 +287,7 @@ class TodoServiceTest {
       int dayOfMonthIndex = date.getDayOfMonth() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findMonthlyTodoCompletion(
+      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
           user.getId(), yearMonth);
 
       // then
@@ -305,7 +305,7 @@ class TodoServiceTest {
       YearMonth yearMonth = YearMonth.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findMonthlyTodoCompletion(invalidUserId, yearMonth))
+      assertThatThrownBy(() -> todoService.findMonthlyCompletions(invalidUserId, yearMonth))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
