@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
+import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
@@ -18,11 +20,13 @@ import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.todo.repository.TodoRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +37,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -53,6 +61,12 @@ class TodoServiceTest {
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  EntityManager entityManager;
+
+  @Autowired
+  JwtEncoder jwtEncoder;
 
   @Nested
   class 할_일_생성_테스트 {
@@ -274,6 +288,66 @@ class TodoServiceTest {
 
   }
 
+  @Nested
+  class 할_일_삭제_테스트 {
+
+    static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
+        .build();
+    static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
+        .claim("auth", Authority.NORMAL);
+
+    String validName;
+    String validGoalName;
+
+    @BeforeEach
+    void setUp() {
+      validName = faker.lorem()
+          .word();
+      validGoalName = faker.lorem()
+          .word();
+    }
+
+    @Test
+    void 할_일을_삭제_할_수_있다() {
+      // given
+      User user = createUser();
+      Goal goal = createGoal(validGoalName, user);
+      Todo todo = createTodo(validName, goal, user);
+
+      Optional<Todo> found = todoRepository.findById(todo.getId());
+      assertThat(found).isNotEmpty();
+
+      // when
+      todoService.delete(user.getId(), todo.getId());
+      flushAndClearPersistence();
+
+      // then
+      Optional<Todo> foundAfterDeleted = todoRepository.findById(todo.getId());
+      assertThat(foundAfterDeleted).isEmpty();
+    }
+
+    @Test
+    void 로그인_사용자_아이디와_삭제할_할_일_사용자_아이디가_다르면_삭제할_수_없다() {
+      // given
+      Long randomId = faker.random()
+          .nextLong();
+      User user = createUser();
+      Goal goal = createGoal(validGoalName, user);
+      Todo todo = createTodo(validName, goal, user);
+
+      Optional<Todo> found = todoRepository.findById(todo.getId());
+      assertThat(found).isNotEmpty();
+
+      // when
+      ThrowingCallable delete = () -> todoService.delete(randomId, todo.getId());
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(delete)
+          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+    }
+
+  }
+
   private Goal createGoal(String name, User user) {
     Goal goal = Goal.builder()
         .name(name)
@@ -309,6 +383,11 @@ class TodoServiceTest {
         .build();
 
     return userRepository.save(user);
+  }
+
+  private void flushAndClearPersistence() {
+    entityManager.flush();
+    entityManager.clear();
   }
 
 }
