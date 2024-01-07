@@ -4,8 +4,11 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,6 +19,8 @@ import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
 import com.ddudu.user.dto.request.SignUpRequest;
+import com.ddudu.user.dto.request.UpdateEmailRequest;
+import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
@@ -190,7 +195,7 @@ class UserControllerTest {
     }
 
     @Test
-    void 선택_아이다가_존재하면_400_Bad_Request를_반환한다() throws Exception {
+    void 선택_아이디가_존재하면_400_Bad_Request를_반환한다() throws Exception {
       // given
       String username = faker.name()
           .firstName();
@@ -267,6 +272,151 @@ class UserControllerTest {
       // then
       actions.andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(userId));
+    }
+
+  }
+
+  @Nested
+  class PUT_이메일_변경_API_테스트 {
+
+    static Stream<Arguments> provideUpdateEmailRequestAndStrings() {
+      String wrongEmail = faker.internet()
+          .username();
+
+      return Stream.of(
+          Arguments.of(
+              "이메일이 null", new UpdateEmailRequest(null),
+              "이메일이 입력되지 않았습니다."
+          ),
+          Arguments.of(
+              "이메일이 공백", new UpdateEmailRequest(""),
+              "이메일이 입력되지 않았습니다."
+          ),
+          Arguments.of(
+              "이메일이 " + wrongEmail,
+              new UpdateEmailRequest(wrongEmail),
+              "올바른 이메일 형식이 아닙니다."
+          )
+      );
+    }
+
+    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
+    @MethodSource("provideUpdateEmailRequestAndStrings")
+    void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(
+        String cause, UpdateEmailRequest request, String message
+    )
+        throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong();
+
+      // when
+      ResultActions actions = mockMvc.perform(put("/api/users/{id}/email", userId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.[0].code", is(1)))
+          .andExpect(jsonPath("$.[0].message", is(message)));
+    }
+
+    @Test
+    void 이메일_변경_성공하면_OK를_반환한다() throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong();
+      String newEmail = faker.internet()
+          .emailAddress();
+      UpdateEmailRequest request = new UpdateEmailRequest(newEmail);
+      UserResponse response = UserResponse.builder()
+          .id(userId)
+          .email(request.email())
+          .nickname(nickname)
+          .build();
+
+      given(userService.updateEmail(anyLong(), any(UpdateEmailRequest.class)))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(put("/api/users/{id}/email", userId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.email").value(request.email()));
+    }
+
+  }
+
+  @Nested
+  class 비밀번호_변경_API_테스트 {
+
+    static Stream<Arguments> provideUpdatePasswordRequestAndStrings() {
+      String shortPassword = faker.internet()
+          .password(2, 7, true, true, true);
+      String weakPassword = "password";
+
+      return Stream.of(
+          Arguments.of(
+              "비밀번호가 null", new UpdatePasswordRequest(null),
+              "비밀번호가 입력되지 않았습니다."
+          ),
+          Arguments.of(
+              "비밀번호가 " + shortPassword,
+              new UpdatePasswordRequest(shortPassword),
+              "비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다."
+          ),
+          Arguments.of(
+              "비밀번호가 " + weakPassword,
+              new UpdatePasswordRequest(weakPassword),
+              "비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다."
+          )
+      );
+    }
+
+    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
+    @MethodSource("provideUpdatePasswordRequestAndStrings")
+    void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(
+        String cause, UpdatePasswordRequest request, String message
+    )
+        throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong();
+
+      // when
+      ResultActions actions = mockMvc.perform(put("/api/users/{id}/password", userId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.[0].code", is(1)))
+          .andExpect(jsonPath("$.[0].message", is(message)));
+    }
+
+    @Test
+    void 비밀번호_변경_성공하면_OK를_반환한다() throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong();
+      String newPassword = faker.internet()
+          .password(8, 40, true, true, true);
+      UpdatePasswordRequest request = new UpdatePasswordRequest(newPassword);
+
+      willDoNothing().given(userService)
+          .updatePassword(anyLong(), any(UpdatePasswordRequest.class));
+
+      // when
+      ResultActions actions = mockMvc.perform(put("/api/users/{id}/password", userId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(content().string("비밀번호가 성공적으로 변경되었습니다."));
     }
 
   }
