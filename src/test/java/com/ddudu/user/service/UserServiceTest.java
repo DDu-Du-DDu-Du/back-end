@@ -9,10 +9,13 @@ import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
+import com.ddudu.user.dto.request.UpdateEmailRequest;
+import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
@@ -201,6 +204,167 @@ class UserServiceTest {
 
       // then
       assertThat(actual.id()).isEqualTo(expected.getId());
+    }
+
+  }
+
+  @Nested
+  class 이메일_변경_테스트 {
+
+    @Test
+    void 존재하지_않는_사용자_아이디_이메일_변경을_실패한다() {
+      // given
+      long randomId = faker.random()
+          .nextLong();
+      String newEmail = faker.internet()
+          .emailAddress();
+
+      // when
+      ThrowingCallable updateEmail = () -> userService.updateEmail(
+          randomId, new UpdateEmailRequest(newEmail));
+
+      // then
+      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updateEmail)
+          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+    }
+
+    @Test
+    void 변경할_이메일이_기존_이메일과_동일한_경우_이메일_변경을_실패한다() {
+      // given
+      String email = faker.internet()
+          .emailAddress();
+      User user = builderWithEncoder.email(email)
+          .password(password)
+          .nickname(nickname)
+          .build();
+      userRepository.save(user);
+      UpdateEmailRequest request = new UpdateEmailRequest(email);
+
+      // when
+      ThrowingCallable updateEmail = () -> userService.updateEmail(user.getId(), request);
+
+      // then
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updateEmail)
+          .withMessage(UserErrorCode.DUPLICATE_EXISTING_PASSWORD.getMessage());
+    }
+
+    @Test
+    void 이미_존재하는_이메일로_변경하면_이메일_변경을_실패한다() {
+      // given
+      String email1 = faker.internet()
+          .emailAddress();
+      String email2 = faker.internet()
+          .emailAddress();
+      User user1 = builderWithEncoder.email(email1)
+          .password(password)
+          .nickname(nickname)
+          .build();
+      User user2 = builderWithEncoder.email(email2)
+          .password(password)
+          .nickname(nickname)
+          .build();
+      userRepository.saveAll(List.of(user1, user2));
+      UpdateEmailRequest request = new UpdateEmailRequest(email2);
+
+      // when
+      ThrowingCallable updateEmail = () -> userService.updateEmail(user1.getId(), request);
+
+      // then
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updateEmail)
+          .withMessage(UserErrorCode.DUPLICATE_EMAIL.getMessage());
+    }
+
+    @Test
+    void 이메일_변경에_성공한다() {
+      // given
+      String email = faker.internet()
+          .emailAddress();
+      User user = builderWithEncoder.email(email)
+          .password(password)
+          .nickname(nickname)
+          .build();
+      User savedUser = userRepository.save(user);
+
+      String newEmail = faker.internet()
+          .emailAddress();
+      UpdateEmailRequest updateEmailRequest = new UpdateEmailRequest(newEmail);
+
+      // when
+      userService.updateEmail(savedUser.getId(), updateEmailRequest);
+
+      // then
+      User updatedUser = userRepository.findById(savedUser.getId())
+          .get();
+      assertThat(updatedUser.getEmail()).isEqualTo(newEmail);
+    }
+
+  }
+
+  @Nested
+  class 비밀번호_변경_테스트 {
+
+    @Test
+    void 존재하지_않는_사용자_아이디_비밀번호_변경을_실패한다() {
+      // given
+      long randomId = faker.random()
+          .nextLong();
+      String newPassword = faker.internet()
+          .password(8, 40, true, true, true);
+
+      // when
+      ThrowingCallable updatePassword = () -> userService.updatePassword(
+          randomId, new UpdatePasswordRequest(newPassword));
+
+      // then
+      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updatePassword)
+          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+    }
+
+    @Test
+    void 변경할_이메일이_기존_이메일과_동일한_경우_이메일_변경을_실패한다() {
+      // given
+      String email = faker.internet()
+          .emailAddress();
+      User user = builderWithEncoder.email(email)
+          .password(password)
+          .nickname(nickname)
+          .build();
+      userRepository.save(user);
+      UpdatePasswordRequest request = new UpdatePasswordRequest(password);
+
+      // when
+      ThrowingCallable updatePassword = () -> userService.updatePassword(user.getId(), request);
+
+      // then
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updatePassword)
+          .withMessage(UserErrorCode.DUPLICATE_EXISTING_PASSWORD.getMessage());
+    }
+
+    @Test
+    void 비밀번호_변경을_성공한다() {
+      // given
+      String email = faker.internet()
+          .emailAddress();
+      String oldPassword = faker.internet()
+          .password(8, 40, true, true, true);
+      String newPassword = faker.internet()
+          .password(8, 40, true, true, true);
+
+      User user = builderWithEncoder.email(email)
+          .password(oldPassword)
+          .nickname(nickname)
+          .build();
+      User savedUser = userRepository.save(user);
+      UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest(newPassword);
+
+      // when
+      userService.updatePassword(savedUser.getId(), updatePasswordRequest);
+
+      // then
+      User updatedUser = userRepository.findById(savedUser.getId())
+          .get();
+      assertThat(updatedUser.getPassword()
+          .check(newPassword, passwordEncoder)).isTrue();
     }
 
   }
