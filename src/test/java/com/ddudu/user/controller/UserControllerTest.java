@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
@@ -277,6 +278,22 @@ class UserControllerTest {
   @Nested
   class PUT_프로필_수정_API_테스트 {
 
+    static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
+        .build();
+    static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
+        .claim("auth", Authority.NORMAL);
+
+    String introduction;
+    Long userId;
+
+    @BeforeEach
+    void setUp() {
+      introduction = faker.book()
+          .title();
+      userId = faker.random()
+          .nextLong();
+    }
+
     static Stream<Arguments> provideUpdateProfileRequestAndStrings() {
       String nickname = faker.funnyName()
           .name();
@@ -308,13 +325,13 @@ class UserControllerTest {
 
     @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
     @MethodSource("provideUpdateProfileRequestAndStrings")
-    void provideUpdateProfileRequestAndStrings(
+    void 유효하지_않은_요청이면_Bad_Request를_반환한다(
         String cause, UpdateProfileRequest request, String message
-    )
-        throws Exception {
+    ) throws Exception {
       // when
       ResultActions actions = mockMvc.perform(
-          put("/api/users/{id}/profile", 1L)
+          put("/api/users/{id}/profile", userId)
+              .header("Authorization", getToken(userId))
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)));
 
@@ -325,12 +342,31 @@ class UserControllerTest {
     }
 
     @Test
+    void 프로필_수정_권한이_없으면_Forbidden을_반환한다() throws Exception {
+      // given
+      long invalidId = faker.random()
+          .nextLong();
+      UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
+
+      given(userService.updateProfile(anyLong(), anyLong(), any(UpdateProfileRequest.class)))
+          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
+
+      // when
+      ResultActions actions = mockMvc.perform(
+          put("/api/users/{id}/profile", userId)
+              .header("Authorization", getToken(invalidId))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(UserErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(UserErrorCode.INVALID_AUTHORITY.getMessage())));
+    }
+
+    @Test
     void 프로필_수정을_성공하면_OK를_반환한다() throws Exception {
       // given
-      long userId = faker.random()
-          .nextLong();
-      String introduction = faker.book()
-          .title();
       UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
       UserProfileResponse response = UserProfileResponse.builder()
           .id(userId)
@@ -338,12 +374,13 @@ class UserControllerTest {
           .introduction(introduction)
           .build();
 
-      given(userService.updateProfile(anyLong(), any(UpdateProfileRequest.class)))
+      given(userService.updateProfile(anyLong(), anyLong(), any(UpdateProfileRequest.class)))
           .willReturn(response);
 
       // when
       ResultActions actions = mockMvc.perform(
-          put("/api/users/{id}/profile", 1L)
+          put("/api/users/{id}/profile", userId)
+              .header("Authorization", getToken(userId))
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)));
 
@@ -352,6 +389,14 @@ class UserControllerTest {
           .andExpect(jsonPath("$.id").value(response.id()))
           .andExpect(jsonPath("$.nickname").value(response.nickname()))
           .andExpect(jsonPath("$.introduction").value(response.introduction()));
+    }
+
+    private String getToken(Long userId) {
+      JwtClaimsSet claims = claimSet.claim("user", userId)
+          .build();
+      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
+
+      return "Bearer " + jwt.getTokenValue();
     }
 
   }
