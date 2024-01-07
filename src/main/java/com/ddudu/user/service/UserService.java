@@ -3,9 +3,12 @@ package com.ddudu.user.service;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Email;
+import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
+import com.ddudu.user.dto.request.UpdateEmailRequest;
+import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
@@ -58,6 +61,40 @@ public class UserService {
         .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
 
     return UserResponse.from(user);
+  }
+
+  @Transactional
+  public UserResponse updateEmail(Long userId, UpdateEmailRequest request) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
+    Email newEmail = new Email(request.email());
+
+    if (user.getEmail()
+        .equals(newEmail.getAddress())) {
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_PASSWORD);
+    }
+
+    if (userRepository.existsByEmail(newEmail)) {
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
+    }
+
+    user.applyEmailUpdate(newEmail);
+
+    return UserResponse.from(user);
+  }
+
+  @Transactional
+  public void updatePassword(Long userId, UpdatePasswordRequest request) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
+    Password password = user.getPassword();
+    Password newPassword = new Password(request.password(), passwordEncoder);
+
+    if (password.check(request.password(), passwordEncoder)) {
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_PASSWORD);
+    }
+
+    user.applyPasswordUpdate(newPassword);
   }
 
 }
