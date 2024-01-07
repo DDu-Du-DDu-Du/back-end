@@ -1,11 +1,13 @@
 package com.ddudu.goal.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -20,6 +22,7 @@ import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
+import com.ddudu.goal.dto.requset.UpdatePrivacyRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
@@ -468,6 +471,85 @@ class GoalControllerTest {
                   .contentType(MediaType.APPLICATION_JSON)
           )
           .andExpect(status().isNoContent());
+    }
+
+  }
+
+  @Nested
+  class PATCH_목표_공개_설정_변경_API_테스트 {
+
+    @Test
+    void 목표_공개_설정_변경을_성공한다(
+    ) throws Exception {
+      // given
+      long goalId = faker.random()
+          .nextLong();
+      PrivacyType newPrivacy = PrivacyType.PUBLIC;
+      UpdatePrivacyRequest request = new UpdatePrivacyRequest(newPrivacy);
+      GoalResponse response = GoalResponse.builder()
+          .id(goalId)
+          .privacyType(newPrivacy)
+          .build();
+
+      given(goalService.updatePrivacy(anyLong(), any(UpdatePrivacyRequest.class))).willReturn(
+          response);
+
+      // when then
+      mockMvc.perform(
+              patch("/api/goals/{id}/privacy", goalId)
+                  .content(objectMapper.writeValueAsString(request))
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(response.id()))
+          .andExpect(jsonPath("$.privacyType").value(response.privacyType()
+              .name()));
+    }
+
+    @Test
+    void 공개_설정에_null이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+      // given
+      long goalId = faker.random()
+          .nextLong();
+      UpdatePrivacyRequest request = new UpdatePrivacyRequest(null);
+
+      // when then
+      mockMvc.perform(
+              patch("/api/goals/{id}/privacy", goalId)
+                  .content(objectMapper.writeValueAsString(request))
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$[0].message", is("공개 설정이 입력되지 않았습니다.")));
+    }
+
+    @ParameterizedTest(name = "유효하지 않은 공개 설정: {0}")
+    @ValueSource(strings = {"", " ", "INVALID_TYPE", "public"})
+    void 유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다(String invalidPrivacyType) throws Exception {
+      // given
+      long goalId = faker.random()
+          .nextLong();
+      String invalidRequestJson = String.format("""
+          {
+              "privacyType": "%s"
+          }
+          """, invalidPrivacyType);
+
+      GoalResponse response = GoalResponse.builder()
+          .build();
+
+      given(goalService.updatePrivacy(anyLong(), any(UpdatePrivacyRequest.class)))
+          .willReturn(response);
+
+      // when then
+      mockMvc.perform(
+              patch("/api/goals/{id}/privacy", goalId)
+                  .content(invalidRequestJson)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("PrivacyType는 [PRIVATE, FOLLOWER, PUBLIC] 중 하나여야 합니다.")));
     }
 
   }
