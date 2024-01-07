@@ -50,13 +50,15 @@ public class UserController {
 
   @PutMapping("/{id}/profile")
   public ResponseEntity<UserProfileResponse> updateProfile(
+      Authentication authentication,
       @PathVariable
       Long id,
       @RequestBody
       @Valid
       UpdateProfileRequest request
   ) {
-    UserProfileResponse response = userService.updateProfile(id, request);
+    Long loginId = ((JwtAuthToken) authentication).getUserId();
+    UserProfileResponse response = userService.updateProfile(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }

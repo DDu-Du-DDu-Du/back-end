@@ -2,6 +2,7 @@ package com.ddudu.user.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.User;
@@ -64,7 +65,11 @@ public class UserService {
   }
 
   @Transactional
-  public UserProfileResponse updateProfile(Long id, UpdateProfileRequest request) {
+  public UserProfileResponse updateProfile(Long loginId, Long id, UpdateProfileRequest request) {
+    if (loginId != id) {
+      throw new ForbiddenException(UserErrorCode.INVALID_AUTHORITY);
+    }
+
     User user = userRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
