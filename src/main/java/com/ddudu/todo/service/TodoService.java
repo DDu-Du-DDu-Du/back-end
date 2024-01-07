@@ -1,6 +1,7 @@
 package com.ddudu.todo.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -106,6 +108,25 @@ public class TodoService {
     LocalDateTime endDate = startDate.plusMonths(1);
 
     return generateCompletions(startDate, endDate);
+  }
+
+  @Transactional
+  public void delete(Long loginId, Long id) {
+    Optional<Todo> optionalTodo = todoRepository.findById(id);
+
+    if (optionalTodo.isEmpty()) {
+      return;
+    }
+
+    Todo todo = optionalTodo.get();
+    Long userId = todo.getUser()
+        .getId();
+
+    if (!userId.equals(loginId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
+
+    todo.delete();
   }
 
   private List<TodoCompletionResponse> generateCompletions(
