@@ -88,7 +88,7 @@ public class User extends BaseEntity {
   }
 
   public void applyProfileUpdate(String nickname, String introduction) {
-    validate(nickname, introduction);
+    validate(nickname, null, introduction);
 
     this.nickname = nickname;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
@@ -100,14 +100,6 @@ public class User extends BaseEntity {
     if (Objects.nonNull(optionalUsername)) {
       validateOptionalUsername(optionalUsername);
     }
-
-    if (Objects.nonNull(introduction)) {
-      validateIntroduction(introduction);
-    }
-  }
-
-  private void validate(String nickname, String introduction) {
-    validateNickname(nickname);
 
     if (Objects.nonNull(introduction)) {
       validateIntroduction(introduction);
