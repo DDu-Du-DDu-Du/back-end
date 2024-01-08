@@ -103,8 +103,8 @@ class FollowingServiceTest {
       User followee = createUser();
 
       Following following = Following.builder()
-          .followee(follower)
-          .follower(followee)
+          .followee(followee)
+          .follower(follower)
           .build();
 
       followingRepository.save(following);
