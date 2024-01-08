@@ -10,10 +10,12 @@ import lombok.Getter;
 @Getter
 public class Options {
 
+  private static final boolean DEFAULT_OFF = false;
+
   private boolean allowingFollowsAfterApproval;
 
   protected Options() {
-    allowingFollowsAfterApproval = false;
+    allowingFollowsAfterApproval = DEFAULT_OFF;
   }
 
   public void toggleFollowsAfterApproval() {
