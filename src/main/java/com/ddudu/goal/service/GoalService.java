@@ -58,14 +58,14 @@ public class GoalService {
     return GoalResponse.from(goal);
   }
 
-  public GoalResponse getById(Long id) {
+  public GoalResponse findById(Long id) {
     Goal goal = goalRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
     return GoalResponse.from(goal);
   }
 
-  public List<GoalSummaryResponse> getAllById(Long userId) {
+  public List<GoalSummaryResponse> findAllByUser(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
@@ -74,6 +74,12 @@ public class GoalService {
     return goals.stream()
         .map(GoalSummaryResponse::from)
         .toList();
+  }
+
+  @Transactional
+  public void delete(Long id) {
+    goalRepository.findById(id)
+        .ifPresent(Goal::delete);
   }
 
 }
