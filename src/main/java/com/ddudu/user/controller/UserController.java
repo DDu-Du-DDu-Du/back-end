@@ -1,6 +1,6 @@
 package com.ddudu.user.controller;
 
-import com.ddudu.auth.jwt.JwtAuthToken;
+import com.ddudu.common.annotation.Login;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UserResponse;
@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,9 +36,11 @@ public class UserController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<UserResponse> validateToken(Authentication authentication) {
-    long userId = ((JwtAuthToken) authentication).getUserId();
-    UserResponse response = userService.findById(userId);
+  public ResponseEntity<UserResponse> validateToken(
+      @Login
+      Long loginId
+  ) {
+    UserResponse response = userService.findById(loginId);
 
     return ResponseEntity.ok(response);
   }

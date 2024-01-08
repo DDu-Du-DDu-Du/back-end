@@ -1,9 +1,12 @@
 package com.ddudu.todo.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -11,7 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
@@ -22,6 +27,7 @@ import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
+import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.DayOfWeek;
@@ -44,6 +50,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = TodoController.class)
@@ -61,6 +73,9 @@ class TodoControllerTest {
 
   @Autowired
   ObjectMapper objectMapper;
+
+  @Autowired
+  JwtEncoder jwtEncoder;
 
   @Nested
   class POST_할_일_생성_API_테스트 {
@@ -381,6 +396,68 @@ class TodoControllerTest {
       mockMvc.perform(patch("/api/todos/{id}/status", invalidId)
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNotFound());
+    }
+
+  }
+
+  @Nested
+  class DELETE_할_일_삭제_테스트 {
+
+    static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
+        .build();
+    static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
+        .claim("auth", Authority.NORMAL);
+
+    Long userId;
+
+    @BeforeEach
+    void setup() {
+      userId = faker.random()
+          .nextLong();
+    }
+
+    @Test
+    void 할_일_삭제에_성공한다() throws Exception {
+      // given
+      String token = createBearerToken(userId);
+
+      // when then
+      mockMvc.perform(
+              delete("/api/todos/{id}", userId)
+                  .header("Authorization", token)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    void 할_일_삭제_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(userId);
+
+      willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
+          .given(todoService)
+          .delete(anyLong(), anyLong());
+
+      // when then
+      mockMvc.perform(
+              delete("/api/todos/{id}", userId)
+                  .header("Authorization", token)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isForbidden())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
+    }
+
+    private String createBearerToken(long userId) {
+      JwtClaimsSet claims = claimSet.claim("user", userId)
+          .build();
+      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
+      return "Bearer " + jwt.getTokenValue();
     }
 
   }
