@@ -115,7 +115,7 @@ class FollowingControllerTest {
     }
 
     @Test
-    void 팔로잉_신청을_성공한고_OK를_반환한다() throws Exception {
+    void 팔로잉_신청을_성공하고_OK를_반환한다() throws Exception {
       // given
       String token = createBearerToken(followerId);
       FollowRequest request = new FollowRequest(followeeId);
