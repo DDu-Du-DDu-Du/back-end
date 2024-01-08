@@ -35,7 +35,8 @@ public class TodoController {
 
   @PostMapping
   public ResponseEntity<TodoInfo> create(
-      Long userId,
+      @Login
+          Long userId,
       @RequestBody
       @Valid
           CreateTodoRequest request
@@ -49,17 +50,20 @@ public class TodoController {
 
   @GetMapping("/{id}")
   public ResponseEntity<TodoResponse> getById(
+      @Login
+          Long userId,
       @PathVariable
           Long id
   ) {
-    TodoResponse response = todoService.findById(id);
+    TodoResponse response = todoService.findById(userId, id);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping
   public ResponseEntity<List<TodoListResponse>> getDaily(
-      Long userId,
+      @Login
+          Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
@@ -72,7 +76,8 @@ public class TodoController {
 
   @GetMapping("/weekly")
   public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
-      Long userId,
+      @Login
+          Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
@@ -88,7 +93,8 @@ public class TodoController {
 
   @GetMapping("/monthly")
   public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
-      Long userId,
+      @Login
+          Long userId,
       @RequestParam(value = "date", required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
           YearMonth yearMonth
@@ -102,20 +108,22 @@ public class TodoController {
 
   @PatchMapping("/{id}/status")
   public ResponseEntity<TodoResponse> updateStatus(
+      @Login
+          Long userId,
       @PathVariable
           Long id
   ) {
-    TodoResponse response = todoService.updateStatus(id);
+    TodoResponse response = todoService.updateStatus(userId, id);
 
     return ResponseEntity.ok(response);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity delete(
+  public ResponseEntity<Void> delete(
       @Login
-      Long userId,
+          Long userId,
       @PathVariable
-      Long id
+          Long id
   ) {
     todoService.delete(userId, id);
 
