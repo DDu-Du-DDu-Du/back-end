@@ -31,7 +31,6 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLRestriction("is_deleted = 0")
 public class Todo extends BaseEntity {
 
   private static final TodoStatus DEFAULT_STATUS = TodoStatus.UNCOMPLETED;
