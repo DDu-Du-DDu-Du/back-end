@@ -1,5 +1,6 @@
 package com.ddudu.user.service;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Email;
@@ -10,6 +11,7 @@ import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
@@ -23,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService {
+
+  private static final String PASSWORD_UPDATE_SUCCESS = "비밀번호가 성공적으로 변경되었습니다.";
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
@@ -64,14 +68,18 @@ public class UserService {
   }
 
   @Transactional
-  public UserResponse updateEmail(Long userId, UpdateEmailRequest request) {
+  public UserResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
+    if (!loginId.equals(userId)) {
+      throw new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION);
+    }
+
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
     Email newEmail = new Email(request.email());
 
     if (user.getEmail()
         .equals(newEmail.getAddress())) {
-      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_PASSWORD);
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_EMAIL);
     }
 
     if (userRepository.existsByEmail(newEmail)) {
@@ -84,9 +92,15 @@ public class UserService {
   }
 
   @Transactional
-  public void updatePassword(Long userId, UpdatePasswordRequest request) {
+  public UpdatePasswordResponse updatePassword(
+      Long loginId, Long userId, UpdatePasswordRequest request
+  ) {
+    if (!loginId.equals(userId)) {
+      throw new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION);
+    }
+
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
     Password password = user.getPassword();
     Password newPassword = new Password(request.password(), passwordEncoder);
 
@@ -95,6 +109,8 @@ public class UserService {
     }
 
     user.applyPasswordUpdate(newPassword);
+
+    return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
   }
 
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.auth.jwt.converter.JwtConverter;
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.User;
@@ -91,16 +92,6 @@ class UserServiceTest {
           Arguments.of(new SignUpRequest(username, email, password, nickname, null), "자기소개만 미입력"),
           Arguments.of(new SignUpRequest(null, email, password, nickname, null), "선택 아이디와 자기소개 미입력")
       );
-    }
-
-    @BeforeEach
-    void setUp() {
-      builderWithEncoder = User.builder()
-          .passwordEncoder(passwordEncoder);
-      password = faker.internet()
-          .password(8, 40, true, true, true);
-      nickname = faker.oscarMovie()
-          .character();
     }
 
     @Test
@@ -212,6 +203,25 @@ class UserServiceTest {
   class 이메일_변경_테스트 {
 
     @Test
+    void 로그인한_사용자와_이메일_변경할_사용자가_다르면_변경을_실패한다() {
+      // given
+      long loginRandomId = faker.random()
+          .nextLong();
+      long randomId = faker.random()
+          .nextLong();
+      String newEmail = faker.internet()
+          .emailAddress();
+
+      // when
+      ThrowingCallable updateEmail = () -> userService.updateEmail(
+          loginRandomId, randomId, new UpdateEmailRequest(newEmail));
+
+      // then
+      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updateEmail)
+          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+    }
+
+    @Test
     void 존재하지_않는_사용자_아이디_이메일_변경을_실패한다() {
       // given
       long randomId = faker.random()
@@ -221,11 +231,11 @@ class UserServiceTest {
 
       // when
       ThrowingCallable updateEmail = () -> userService.updateEmail(
-          randomId, new UpdateEmailRequest(newEmail));
+          randomId, randomId, new UpdateEmailRequest(newEmail));
 
       // then
-      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updateEmail)
-          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateEmail)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -241,11 +251,12 @@ class UserServiceTest {
       UpdateEmailRequest request = new UpdateEmailRequest(email);
 
       // when
-      ThrowingCallable updateEmail = () -> userService.updateEmail(user.getId(), request);
+      ThrowingCallable updateEmail = () -> userService.updateEmail(
+          user.getId(), user.getId(), request);
 
       // then
       assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updateEmail)
-          .withMessage(UserErrorCode.DUPLICATE_EXISTING_PASSWORD.getMessage());
+          .withMessage(UserErrorCode.DUPLICATE_EXISTING_EMAIL.getMessage());
     }
 
     @Test
@@ -267,7 +278,8 @@ class UserServiceTest {
       UpdateEmailRequest request = new UpdateEmailRequest(email2);
 
       // when
-      ThrowingCallable updateEmail = () -> userService.updateEmail(user1.getId(), request);
+      ThrowingCallable updateEmail = () -> userService.updateEmail(
+          user1.getId(), user1.getId(), request);
 
       // then
       assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updateEmail)
@@ -284,13 +296,14 @@ class UserServiceTest {
           .nickname(nickname)
           .build();
       User savedUser = userRepository.save(user);
+      Long userId = user.getId();
 
       String newEmail = faker.internet()
           .emailAddress();
       UpdateEmailRequest updateEmailRequest = new UpdateEmailRequest(newEmail);
 
       // when
-      userService.updateEmail(savedUser.getId(), updateEmailRequest);
+      userService.updateEmail(userId, userId, updateEmailRequest);
 
       // then
       User updatedUser = userRepository.findById(savedUser.getId())
@@ -304,6 +317,25 @@ class UserServiceTest {
   class 비밀번호_변경_테스트 {
 
     @Test
+    void 로그인한_사용자와_비밀번호_변경할_사용자가_다르면_변경을_실패한다() {
+      // given
+      long loginRandomId = faker.random()
+          .nextLong();
+      long randomId = faker.random()
+          .nextLong();
+      String newPassword = faker.internet()
+          .password(8, 40, true, true, true);
+
+      // when
+      ThrowingCallable updatePassword = () -> userService.updatePassword(
+          loginRandomId, randomId, new UpdatePasswordRequest(newPassword));
+
+      // then
+      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updatePassword)
+          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+    }
+
+    @Test
     void 존재하지_않는_사용자_아이디_비밀번호_변경을_실패한다() {
       // given
       long randomId = faker.random()
@@ -313,15 +345,15 @@ class UserServiceTest {
 
       // when
       ThrowingCallable updatePassword = () -> userService.updatePassword(
-          randomId, new UpdatePasswordRequest(newPassword));
+          randomId, randomId, new UpdatePasswordRequest(newPassword));
 
       // then
-      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updatePassword)
-          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updatePassword)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
-    void 변경할_이메일이_기존_이메일과_동일한_경우_이메일_변경을_실패한다() {
+    void 변경할_비밀번호가_기존_비밀번호와_동일한_경우_비밀번호_변경을_실패한다() {
       // given
       String email = faker.internet()
           .emailAddress();
@@ -329,11 +361,12 @@ class UserServiceTest {
           .password(password)
           .nickname(nickname)
           .build();
-      userRepository.save(user);
+      User savedUser = userRepository.save(user);
+      Long userId = savedUser.getId();
       UpdatePasswordRequest request = new UpdatePasswordRequest(password);
 
       // when
-      ThrowingCallable updatePassword = () -> userService.updatePassword(user.getId(), request);
+      ThrowingCallable updatePassword = () -> userService.updatePassword(userId, userId, request);
 
       // then
       assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updatePassword)
@@ -355,10 +388,11 @@ class UserServiceTest {
           .nickname(nickname)
           .build();
       User savedUser = userRepository.save(user);
+      Long userId = savedUser.getId();
       UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest(newPassword);
 
       // when
-      userService.updatePassword(savedUser.getId(), updatePasswordRequest);
+      userService.updatePassword(userId, userId, updatePasswordRequest);
 
       // then
       User updatedUser = userRepository.findById(savedUser.getId())
