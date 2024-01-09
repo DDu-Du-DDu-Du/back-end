@@ -1,5 +1,5 @@
 jwt:
-  secret-key: NDaXzFcHzbqw+YWo3jIUViccHL9a3ImaeCTJvQSX7VDyjJK+nSdP/iHWGnusLrmpZyC11SwKiNe99X3WPqKYtw==
+  secret-key: 7KCA7Z2sLe2MgC3snZjsp4TsnbTripQt7J6g7J20LeunjuyKteuLiOuLpC3sgqzsi6Qt7KCA64+ELeq3uOuemOyalAo=
   expired-after: 15
 spring:
   profiles:
