@@ -1,6 +1,5 @@
 package com.ddudu.following.controller;
 
-import com.ddudu.auth.jwt.JwtAuthToken;
 import com.ddudu.common.annotation.Login;
 import com.ddudu.following.dto.request.FollowRequest;
 import com.ddudu.following.dto.response.FollowResponse;
@@ -9,7 +8,8 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +35,17 @@ public class FollowingController {
 
     return ResponseEntity.created(uri)
         .body(response);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(
+      @PathVariable
+      Long id
+  ) {
+    followingService.delete(id);
+
+    return ResponseEntity.noContent()
+        .build();
   }
 
 }

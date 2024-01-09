@@ -44,4 +44,8 @@ public class FollowingService {
     return FollowResponse.from(saved);
   }
 
+  public void delete(Long id) {
+    followingRepository.deleteById(id);
+  }
+
 }
