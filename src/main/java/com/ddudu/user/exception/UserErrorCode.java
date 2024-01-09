@@ -20,8 +20,7 @@ public enum UserErrorCode implements ErrorCode {
   ID_NOT_EXISTING(1014, "해당 아이디를 가진 사용자가 존재하지 않습니다."),
   DUPLICATE_EXISTING_EMAIL(1016, "기존 이메일과 동일한 이메일입니다."),
   DUPLICATE_EXISTING_PASSWORD(1017, "기존 비밀번호와 동일한 비밀번호입니다.");
-
-
+  
   private final int code;
   private final String message;
 
