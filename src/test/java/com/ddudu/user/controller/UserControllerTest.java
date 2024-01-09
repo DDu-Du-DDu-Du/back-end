@@ -369,12 +369,12 @@ class UserControllerTest {
           Arguments.of(
               "비밀번호가 " + shortPassword,
               new UpdatePasswordRequest(shortPassword),
-              "비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다."
+              "비밀번호는 8자리 이상의 영문, 숫자, 특수문자로 구성되어야 합니다."
           ),
           Arguments.of(
               "비밀번호가 " + weakPassword,
               new UpdatePasswordRequest(weakPassword),
-              "비밀번호는 영문, 숫자, 특수문자로 구성되어야 합니다."
+              "비밀번호는 8자리 이상의 영문, 숫자, 특수문자로 구성되어야 합니다."
           )
       );
     }
@@ -408,7 +408,7 @@ class UserControllerTest {
       long userId = faker.random()
           .nextLong();
       String token = createBearerToken(userId);
-      
+
       String newPassword = faker.internet()
           .password(8, 40, true, true, true);
       UpdatePasswordRequest request = new UpdatePasswordRequest(newPassword);
