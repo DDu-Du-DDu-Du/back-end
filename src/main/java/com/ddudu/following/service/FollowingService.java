@@ -2,9 +2,10 @@ package com.ddudu.following.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
-import com.ddudu.common.exception.InvalidAuthenticationException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.following.domain.Following;
+import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.following.dto.request.FollowRequest;
 import com.ddudu.following.dto.request.UpdateFollowingRequest;
 import com.ddudu.following.dto.response.FollowingResponse;
@@ -53,15 +54,16 @@ public class FollowingService {
         .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
 
     if (!following.isOwnedBy(followerId)) {
-      throw new InvalidAuthenticationException(FollowingErrorCode.WRONG_OWNER);
+      throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
     }
 
-    if (!request.status()
-        .isModifiable()) {
+    FollowingStatus requestedStatus = request.status();
+
+    if (!requestedStatus.isModifiable()) {
       throw new InvalidParameterException(FollowingErrorCode.REQUEST_UNAVAILABLE);
     }
 
-    following.updateStatus(request.status());
+    following.updateStatus(requestedStatus);
 
     return FollowingResponse.from(following);
   }
