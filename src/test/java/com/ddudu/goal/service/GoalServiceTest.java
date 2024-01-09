@@ -172,9 +172,10 @@ class GoalServiceTest {
       // given
       Goal expected = createGoal(user, validName);
       Long id = expected.getId();
+      Long loginId = user.getId();
 
       // when
-      GoalResponse actual = goalService.findById(id);
+      GoalResponse actual = goalService.findById(loginId, id);
 
       // then
       GoalStatus expectedStatus = expected.getStatus();
@@ -188,12 +189,14 @@ class GoalServiceTest {
     @Test
     void 삭제된_목표의_ID인_경우_조회에_실패한다() {
       // given
+      Long loginId = user.getId();
       Goal goal = createGoal(user, validName);
+
       goal.delete();
       flushAndClearPersistence();
 
       // when
-      ThrowingCallable getGoal = () -> goalService.findById(goal.getId());
+      ThrowingCallable getGoal = () -> goalService.findById(loginId, goal.getId());
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoal)
@@ -204,9 +207,10 @@ class GoalServiceTest {
     void 유효하지_않은_ID인_경우_조회에_실패한다() {
       // given
       Long invalidId = -1L;
+      Long loginId = user.getId();
 
       // when
-      ThrowingCallable getGoal = () -> goalService.findById(invalidId);
+      ThrowingCallable getGoal = () -> goalService.findById(loginId, invalidId);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoal)
@@ -222,9 +226,10 @@ class GoalServiceTest {
     void 사용자의_전체_목표를_조회_할_수_있다() {
       // given
       List<Goal> expected = createGoals(user, List.of(validName));
+      Long loginId = user.getId();
 
       // when
-      List<GoalSummaryResponse> actual = goalService.findAllByUser(user.getId());
+      List<GoalSummaryResponse> actual = goalService.findAllByUser(loginId, user.getId());
 
       // then
       assertThat(actual).isNotEmpty();
@@ -239,19 +244,6 @@ class GoalServiceTest {
               .getColor());
     }
 
-    @Test
-    void 유효하지_않은_사용자_ID인_경우_조회에_실패한다() {
-      // given
-      Long invalidUserId = 1234567890L;
-
-      // when
-      ThrowingCallable getGoals = () -> goalService.findAllByUser(invalidUserId);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoals)
-          .withMessage(GoalErrorCode.USER_NOT_EXISTING.getMessage());
-    }
-
   }
 
   @Nested
@@ -261,17 +253,17 @@ class GoalServiceTest {
     void 목표를_수정_할_수_있다() {
       // given
       Goal goal = createGoal(user, validName);
-
       String changedName = "데브 코스";
       String changedColor = "999999";
       GoalStatus changedStatus = GoalStatus.DONE;
       PrivacyType changedPrivacyType = PrivacyType.PUBLIC;
+      Long loginId = user.getId();
 
       UpdateGoalRequest request = new UpdateGoalRequest(
           changedName, changedStatus, changedColor, changedPrivacyType);
 
       // when
-      goalService.update(goal.getId(), request);
+      goalService.update(loginId, goal.getId(), request);
 
       // then
       Goal actual = goalRepository.findById(goal.getId())
@@ -288,12 +280,13 @@ class GoalServiceTest {
     @Test
     void 목표를_삭제_할_수_있다() {
       // given
+      Long loginId = user.getId();
       Goal goal = createGoal(user, validName);
       Optional<Goal> found = goalRepository.findById(goal.getId());
       assertThat(found).isNotEmpty();
 
       // when
-      goalService.delete(goal.getId());
+      goalService.delete(loginId, goal.getId());
       flushAndClearPersistence();
 
       // then

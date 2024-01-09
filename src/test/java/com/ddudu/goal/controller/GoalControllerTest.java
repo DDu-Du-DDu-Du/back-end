@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.config.JwtConfig;
@@ -43,6 +44,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = GoalController.class)
@@ -51,6 +58,10 @@ import org.springframework.test.web.servlet.MockMvc;
 class GoalControllerTest {
 
   static final Faker faker = new Faker();
+  static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
+      .build();
+  static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
+      .claim("auth", Authority.NORMAL);
 
   @Autowired
   private MockMvc mockMvc;
@@ -58,11 +69,15 @@ class GoalControllerTest {
   @Autowired
   private ObjectMapper objectMapper;
 
+  @Autowired
+  private JwtEncoder jwtEncoder;
+
   @MockBean
   private GoalService goalService;
 
   String validName;
   String validColor;
+  Long userId;
 
   @BeforeEach
   void setUp() {
@@ -71,6 +86,8 @@ class GoalControllerTest {
     validColor = faker.color()
         .hex()
         .substring(1);
+    userId = faker.random()
+        .nextLong();
   }
 
   @Nested
@@ -88,7 +105,7 @@ class GoalControllerTest {
       // when then
       mockMvc.perform(
               post("/api/goals")
-                  .param("userId", "1")
+                  .header("Authorization", getToken(userId))
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -113,7 +130,7 @@ class GoalControllerTest {
       // when then
       mockMvc.perform(
               post("/api/goals")
-                  .param("userId", "1")
+                  .header("Authorization", getToken(userId))
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -135,7 +152,7 @@ class GoalControllerTest {
       // when then
       mockMvc.perform(
               post("/api/goals")
-                  .param("userId", "1")
+                  .header("Authorization", getToken(userId))
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -157,7 +174,7 @@ class GoalControllerTest {
       // when then
       mockMvc.perform(
               post("/api/goals")
-                  .param("userId", "1")
+                  .header("Authorization", getToken(userId))
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -179,7 +196,7 @@ class GoalControllerTest {
       // when then
       mockMvc.perform(
               post("/api/goals")
-                  .param("userId", "1")
+                  .header("Authorization", getToken(userId))
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -203,11 +220,12 @@ class GoalControllerTest {
       // given
       GoalResponse response = createGoalResponse();
 
-      given(goalService.findById(anyLong())).willReturn(response);
+      given(goalService.findById(anyLong(), anyLong())).willReturn(response);
 
       // when then
       mockMvc.perform(
               get("/api/goals/{id}", response.id())
+                  .header("Authorization", getToken(userId))
                   .contentType(MediaType.APPLICATION_JSON)
           )
           .andExpect(status().isOk())
@@ -235,12 +253,13 @@ class GoalControllerTest {
       GoalResponse response = GoalResponse.builder()
           .build();
 
-      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willReturn(response);
 
       // when then
       mockMvc.perform(
               put("/api/goals/{id}", 1L)
+                  .header("Authorization", getToken(userId))
                   .content(invalidRequestJson)
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -264,12 +283,13 @@ class GoalControllerTest {
       GoalResponse response = GoalResponse.builder()
           .build();
 
-      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willReturn(response);
 
       // when then
       mockMvc.perform(
               put("/api/goals/{id}", 1L)
+                  .header("Authorization", getToken(userId))
                   .content(invalidRequestJson)
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -282,12 +302,13 @@ class GoalControllerTest {
     void ID가_유효하지_않으면_Not_Found_응답을_반환한다() throws Exception {
       // given
       Long invalidId = -1L;
-      given(goalService.findById(anyLong()))
+      given(goalService.findById(anyLong(), anyLong()))
           .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
       // when then
       mockMvc.perform(
               get("/api/goals/{id}", invalidId)
+                  .header("Authorization", getToken(userId))
                   .contentType(MediaType.APPLICATION_JSON)
           )
           .andExpect(status().isNotFound())
@@ -316,11 +337,12 @@ class GoalControllerTest {
       List<GoalSummaryResponse> response = createGoalSummaryDTO();
       GoalSummaryResponse firstElement = response.get(0);
 
-      given(goalService.findAllByUser(anyLong())).willReturn(response);
+      given(goalService.findAllByUser(anyLong(), anyLong())).willReturn(response);
 
       // when then
       mockMvc.perform(
               get("/api/goals")
+                  .header("Authorization", getToken(userId))
                   .param("userId", "1")
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -336,12 +358,13 @@ class GoalControllerTest {
     void 사용자가_존재하지_않은_경우_404_Not_Found_응답을_반환한다() throws Exception {
       // given
       String invalidUserId = "-1";
-      given(goalService.findAllByUser(anyLong())).willThrow(
+      given(goalService.findAllByUser(anyLong(), anyLong())).willThrow(
           new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
       // when then
       mockMvc.perform(
               get("/api/goals")
+                  .header("Authorization", getToken(userId))
                   .queryParam("userId", invalidUserId)
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -375,12 +398,13 @@ class GoalControllerTest {
       GoalResponse response = new GoalResponse(
           1L, validName, GoalStatus.IN_PROGRESS, validColor, PrivacyType.PUBLIC);
 
-      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willReturn(response);
 
       // when then
       mockMvc.perform(
               put("/api/goals/{id}", 1L)
+                  .header("Authorization", getToken(userId))
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -409,12 +433,13 @@ class GoalControllerTest {
       GoalResponse response = GoalResponse.builder()
           .build();
 
-      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willReturn(response);
 
       // when then
       mockMvc.perform(
               put("/api/goals/{id}", 1L)
+                  .header("Authorization", getToken(userId))
                   .content(invalidRequestJson)
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -441,12 +466,13 @@ class GoalControllerTest {
       GoalResponse response = GoalResponse.builder()
           .build();
 
-      given(goalService.update(anyLong(), any(UpdateGoalRequest.class)))
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willReturn(response);
 
       // when then
       mockMvc.perform(
               put("/api/goals/{id}", 1L)
+                  .header("Authorization", getToken(userId))
                   .content(invalidRequestJson)
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -465,11 +491,20 @@ class GoalControllerTest {
       // when then
       mockMvc.perform(
               delete("/api/goals/{id}", 1L)
+                  .header("Authorization", getToken(userId))
                   .contentType(MediaType.APPLICATION_JSON)
           )
           .andExpect(status().isNoContent());
     }
 
+  }
+
+  private String getToken(Long userId) {
+    JwtClaimsSet claims = claimSet.claim("user", userId)
+        .build();
+    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
+
+    return "Bearer " + jwt.getTokenValue();
   }
 
 }
