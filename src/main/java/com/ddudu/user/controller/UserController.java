@@ -59,7 +59,6 @@ public class UserController {
       @RequestBody
       @Valid
           UpdateEmailRequest request
-
   ) {
     UserResponse response = userService.updateEmail(loginId, id, request);
 
