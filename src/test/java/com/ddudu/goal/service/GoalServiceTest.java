@@ -9,7 +9,6 @@ import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.goal.dto.requset.UpdatePrivacyRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
@@ -281,6 +280,29 @@ class GoalServiceTest {
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 
+    @Test
+    void 유효하지_않은_ID인_경우_목표_수정에_실패한다() {
+      // given
+      long invalidId = faker.random()
+          .nextLong();
+      Goal goal = createGoal(user, validName);
+
+      String changedName = "데브 코스";
+      String changedColor = "999999";
+      GoalStatus changedStatus = GoalStatus.DONE;
+      PrivacyType changedPrivacyType = PrivacyType.PUBLIC;
+
+      UpdateGoalRequest request = new UpdateGoalRequest(
+          changedName, changedStatus, changedColor, changedPrivacyType);
+
+      // when
+      ThrowingCallable update = () -> goalService.update(invalidId, request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
+          .withMessage(GoalErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
   }
 
   @Nested
@@ -300,45 +322,6 @@ class GoalServiceTest {
       // then
       Optional<Goal> foundAfterDeleted = goalRepository.findById(goal.getId());
       assertThat(foundAfterDeleted).isEmpty();
-    }
-
-  }
-
-  @Nested
-  class 목표_공개_설정_변경_테스트 {
-
-    @Test
-    void 목표_공개_설정_변경을_성공한다() {
-      // given
-      Goal expected = createGoal(user, validName);
-      PrivacyType newPrivacy = PrivacyType.PUBLIC;
-
-      UpdatePrivacyRequest request = new UpdatePrivacyRequest(newPrivacy);
-
-      // when
-      GoalResponse actual = goalService.updatePrivacy(expected.getId(), request);
-
-      // then
-      assertThat(actual.privacyType()).isEqualTo(newPrivacy);
-      assertThat(actual).extracting("id", "name", "status", "color")
-          .containsExactly(
-              expected.getId(), expected.getName(), expected.getStatus(), expected.getColor());
-
-    }
-
-    @Test
-    void 유효하지_않은_ID인_경우_조회에_실패한다() {
-      // given
-      long invalidId = faker.random()
-          .nextLong();
-      UpdatePrivacyRequest request = new UpdatePrivacyRequest(PrivacyType.PUBLIC);
-
-      // when
-      ThrowingCallable getGoal = () -> goalService.updatePrivacy(invalidId, request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoal)
-          .withMessage(GoalErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
   }
