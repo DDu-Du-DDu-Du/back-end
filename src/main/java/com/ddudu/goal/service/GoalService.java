@@ -4,7 +4,6 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.goal.dto.requset.UpdatePrivacyRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
@@ -80,16 +79,6 @@ public class GoalService {
   public void delete(Long id) {
     goalRepository.findById(id)
         .ifPresent(Goal::delete);
-  }
-
-  @Transactional
-  public GoalResponse updatePrivacy(Long id, @Valid UpdatePrivacyRequest request) {
-    Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
-
-    goal.applyPrivacyUpdate(request.privacyType());
-
-    return GoalResponse.from(goal);
   }
 
 }

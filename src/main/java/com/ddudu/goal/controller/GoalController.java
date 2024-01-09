@@ -2,7 +2,6 @@ package com.ddudu.goal.controller;
 
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.goal.dto.requset.UpdatePrivacyRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -88,19 +86,6 @@ public class GoalController {
 
     return ResponseEntity.noContent()
         .build();
-  }
-
-  @PatchMapping("/{id}/privacy")
-  public ResponseEntity<GoalResponse> updatePrivacy(
-      @PathVariable
-          Long id,
-      @RequestBody
-      @Valid
-          UpdatePrivacyRequest request
-  ) {
-    GoalResponse response = goalService.updatePrivacy(id, request);
-
-    return ResponseEntity.ok(response);
   }
 
 }

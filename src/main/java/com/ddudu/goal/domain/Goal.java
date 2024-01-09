@@ -89,14 +89,6 @@ public class Goal extends BaseEntity {
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
 
-  public void applyPrivacyUpdate(PrivacyType privacyType) {
-    validatePrivacy(privacyType);
-
-    if (this.privacyType != privacyType) {
-      this.privacyType = privacyType;
-    }
-  }
-
   private void validate(String name, User user) {
     validateName(name);
     validateUser(user);
@@ -109,12 +101,6 @@ public class Goal extends BaseEntity {
 
     if (name.length() > MAX_NAME_LENGTH) {
       throw new InvalidParameterException(GoalErrorCode.EXCESSIVE_NAME_LENGTH);
-    }
-  }
-
-  private void validatePrivacy(PrivacyType privacyType) {
-    if (isNull(privacyType)) {
-      throw new InvalidParameterException(GoalErrorCode.NULL_PRIVACY_TYPE);
     }
   }
 
