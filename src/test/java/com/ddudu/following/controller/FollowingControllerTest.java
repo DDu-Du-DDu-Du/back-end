@@ -5,16 +5,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.auth.domain.authority.Authority;
+import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
+import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.following.dto.request.FollowRequest;
-import com.ddudu.following.dto.response.FollowResponse;
+import com.ddudu.following.dto.request.UpdateFollowingRequest;
+import com.ddudu.following.dto.response.FollowingResponse;
 import com.ddudu.following.exception.FollowingErrorCode;
 import com.ddudu.following.service.FollowingService;
 import com.ddudu.support.TestProperties;
@@ -25,6 +29,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -119,7 +125,7 @@ class FollowingControllerTest {
       // given
       String token = createBearerToken(followerId);
       FollowRequest request = new FollowRequest(followeeId);
-      FollowResponse response = FollowResponse.builder()
+      FollowingResponse response = FollowingResponse.builder()
           .id(1L)
           .followerId(followerId)
           .followeeId(followeeId)
@@ -144,6 +150,77 @@ class FollowingControllerTest {
           .build();
       Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
       return "Bearer " + jwt.getTokenValue();
+    }
+
+  }
+
+  @Nested
+  class PUT_팔로잉_수정_API_테스트 {
+
+    long randomId;
+
+    @BeforeEach
+    void setUp() {
+      randomId = faker.random()
+          .nextLong();
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void 요청시_팔로잉_상태가_누락되면_400_Bad_Request를_반환한다(FollowingStatus status) throws Exception {
+      // given
+      UpdateFollowingRequest request = new UpdateFollowingRequest(status);
+
+      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+          .willReturn(new FollowingResponse(randomId, null, null, null));
+
+      // when
+      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.[0].code", is(1)))
+          .andExpect(jsonPath("$.[0].message", is("요청할 팔로잉 상태는 필수값입니다.")));
+    }
+
+    @Test
+    void 존재하지_않는_팔로잉_아이디면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+
+      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+          .willThrow(new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.ID_NOT_EXISTING.getCode())))
+          .andExpect(jsonPath("$.message", is(FollowingErrorCode.ID_NOT_EXISTING.getMessage())));
+    }
+
+    @Test
+    void 요청_상태로_수정_시도_시_400_Bad_Request를_반환한다() throws Exception {
+      // given
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
+
+      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+          .willThrow(new BadRequestException(FollowingErrorCode.REQUEST_UNAVAILABLE));
+
+      // when
+      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.REQUEST_UNAVAILABLE.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage())));
     }
 
   }
