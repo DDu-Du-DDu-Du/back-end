@@ -6,6 +6,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.following.domain.Following;
 import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.following.dto.request.FollowRequest;
@@ -191,6 +192,25 @@ class FollowingServiceTest {
       // then
       assertThatExceptionOfType(BadRequestException.class).isThrownBy(updateStatus)
           .withMessage(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage());
+    }
+
+    @Test
+    void 로그인한_사용자와_팔로잉의_주인이_다를_경우_수정을_실패한다() {
+      // given
+      User follower = createUser();
+      User followee = createUser();
+      Following following = createFollowing(follower, followee, FollowingStatus.REQUESTED);
+      long randomId = faker.random()
+          .nextLong();
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.IGNORED);
+
+      // when
+      ThrowingCallable updateStatus = () -> followingService.updateStatus(
+          following.getId(), randomId, request);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateStatus)
+          .withMessage(FollowingErrorCode.WRONG_OWNER.getMessage());
     }
 
     @Test

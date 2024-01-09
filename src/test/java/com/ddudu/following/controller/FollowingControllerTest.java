@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.following.domain.FollowingStatus;
@@ -29,8 +30,6 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -165,12 +164,11 @@ class FollowingControllerTest {
           .nextLong();
     }
 
-    @ParameterizedTest
-    @NullSource
-    void 요청시_팔로잉_상태가_누락되면_400_Bad_Request를_반환한다(FollowingStatus status) throws Exception {
+    @Test
+    void 요청시_팔로잉_상태가_누락되면_400_Bad_Request를_반환한다() throws Exception {
       // given
       String token = createBearerToken(randomId);
-      UpdateFollowingRequest request = new UpdateFollowingRequest(status);
+      UpdateFollowingRequest request = new UpdateFollowingRequest(null);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willReturn(new FollowingResponse(randomId, null, null, null));
@@ -227,6 +225,54 @@ class FollowingControllerTest {
           .andExpect(jsonPath("$.code", is(FollowingErrorCode.REQUEST_UNAVAILABLE.getCode())))
           .andExpect(
               jsonPath("$.message", is(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage())));
+    }
+
+    @Test
+    void 로그인한_사용자와_팔로잉의_주인이_다르면_403_Forbidden을_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(randomId);
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
+          .willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER));
+
+      // when
+      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.WRONG_OWNER.getCode())))
+          .andExpect(jsonPath("$.message", is(FollowingErrorCode.WRONG_OWNER.getMessage())));
+    }
+
+    @Test
+    void 팔로잉_상태_변경을_성공하고_OK를_반환한다() throws Exception {
+      // given
+      long followerId = faker.random()
+          .nextLong();
+      long followeeId = faker.random()
+          .nextLong();
+      String token = createBearerToken(followerId);
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+      FollowingResponse response = new FollowingResponse(
+          randomId, followerId, followeeId, FollowingStatus.FOLLOWING);
+
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.id", is(randomId)))
+          .andExpect(jsonPath("$.status", is(FollowingStatus.FOLLOWING.name())));
     }
 
   }
