@@ -2,6 +2,7 @@ package com.ddudu.todo.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
+import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -34,11 +36,13 @@ import org.springframework.validation.annotation.Validated;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Validated
+@Slf4j
 public class TodoService {
 
   private final TodoRepository todoRepository;
   private final GoalRepository goalRepository;
   private final UserRepository userRepository;
+  private final FollowingRepository followingRepository;
 
   @Transactional
   public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
@@ -67,9 +71,25 @@ public class TodoService {
     return TodoResponse.from(todo);
   }
 
-  public List<TodoListResponse> findAllByDate(Long loginId, LocalDate date) {
-    User user = findUser(loginId);
-    List<Goal> goals = goalRepository.findAllByUser(user);
+  public List<TodoListResponse> findAllByDate(Long loginId, Long userId, LocalDate date) {
+    User loginUser = findUser(loginId);
+    User user = findUser(userId);
+    List<Goal> goals;
+
+    log.info("loginId: {}, userId: {}", loginId, userId);
+
+    if (loginUser.equals(user)) {
+      log.info("본인 조회");
+      goals = goalRepository.findAllByUserAndPrivacyType(user, "ME");
+    } else if (followingRepository.existsByFollowerAndFollowee(loginUser, user)
+        || followingRepository.existsByFollowerAndFollowee(user, loginUser)) {
+      log.info("팔로워 조회");
+      goals = goalRepository.findAllByUserAndPrivacyType(user, "FOLLOWER");
+    } else {
+      log.info("다른 사용자 조회");
+      goals = goalRepository.findAllByUserAndPrivacyType(user, "PUBLIC");
+    }
+
     List<Todo> todos = todoRepository.findTodosByDate(
         date.atStartOfDay(), date.atTime(LocalTime.MAX), user
     );
