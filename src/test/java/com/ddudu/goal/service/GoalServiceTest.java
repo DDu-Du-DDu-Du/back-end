@@ -55,6 +55,7 @@ class GoalServiceTest {
   private User user;
   private String validName;
   private String validColor;
+  private PrivacyType validPrivacyType;
 
   @BeforeEach
   void setUp() {
@@ -64,52 +65,48 @@ class GoalServiceTest {
     validColor = faker.color()
         .hex()
         .substring(1);
+    validPrivacyType = provideRandomPrivacy();
   }
 
   @Nested
   class 목표_생성_테스트 {
 
     @Test
-    void 목표를_생성할_수_있다() {
-      // given
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
-
+    void 목표명_색상_공개_설정을_입력해_목표_생성에_성공한다() {
       // when
+      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacyType);
       CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual).isNotEmpty();
-      assertThat(actual.get()).extracting("name", "color")
-          .containsExactly(validName, validColor);
+      assertThat(actual.get()).extracting("name", "color", "privacyType")
+          .containsExactly(expected.name(), expected.color(), validPrivacyType);
     }
 
     @Test
     void 목표_생성_시_ID가_자동_생성된다() {
       // given
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
+      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacyType);
 
       // when
       CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual).isNotEmpty();
       assertThat(actual.get()
           .getId()).isNotNull();
     }
 
     @Test
-    void 목표_생성_시_IN_PROGRESS_상태가_된다() {
+    void 목표_생성_시_목표_상태는_IN_PROGRESS가_된다() {
       // given
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
+      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacyType);
 
       // when
       CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual).isNotEmpty();
       assertThat(actual.get()
           .getStatus()).isEqualTo(GoalStatus.IN_PROGRESS);
     }
@@ -121,14 +118,13 @@ class GoalServiceTest {
       String defaultColor = "191919";
 
       CreateGoalRequest request = new CreateGoalRequest(
-          validName, invalidColor, PrivacyType.PUBLIC);
+          validName, invalidColor, validPrivacyType);
 
       // when
       CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual).isNotEmpty();
       assertThat(actual.get()
           .getColor()).isEqualTo(defaultColor);
     }
@@ -136,6 +132,7 @@ class GoalServiceTest {
     @Test
     void 보기_설정을_설정하지_않으면_PRIVATE이_적용된다() {
       // given
+      PrivacyType defaultPrivacyType = PrivacyType.PRIVATE;
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, null);
 
       // when
@@ -143,16 +140,16 @@ class GoalServiceTest {
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual).isNotEmpty();
       assertThat(actual.get()
-          .getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
+          .getPrivacyType()).isEqualTo(defaultPrivacyType);
     }
 
     @Test
     void 사용자ID가_유효하지_않으면_예외가_발생한다() {
       // given
-      Long invalidUserId = 1234567890L;
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, null);
+      Long invalidUserId = faker.random()
+          .nextLong();
+      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacyType);
 
       // when
       ThrowingCallable create = () -> goalService.create(invalidUserId, request);
@@ -178,12 +175,11 @@ class GoalServiceTest {
       GoalResponse actual = goalService.findById(loginId, id);
 
       // then
-      GoalStatus expectedStatus = expected.getStatus();
-      PrivacyType expectedPrivacyType = expected.getPrivacyType();
-
       assertThat(actual).extracting("id", "name", "status", "color", "privacyType")
           .containsExactly(
-              id, expected.getName(), expectedStatus, expected.getColor(), expectedPrivacyType);
+              id, expected.getName(), expected.getStatus(), expected.getColor(),
+              expected.getPrivacyType()
+          );
     }
 
     @Test
@@ -196,24 +192,25 @@ class GoalServiceTest {
       flushAndClearPersistence();
 
       // when
-      ThrowingCallable getGoal = () -> goalService.findById(loginId, goal.getId());
+      ThrowingCallable findById = () -> goalService.findById(loginId, goal.getId());
 
       // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoal)
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findById)
           .withMessage(GoalErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
     void 유효하지_않은_ID인_경우_조회에_실패한다() {
       // given
-      Long invalidId = -1L;
+      Long invalidId = faker.random()
+          .nextLong();
       Long loginId = user.getId();
 
       // when
-      ThrowingCallable getGoal = () -> goalService.findById(loginId, invalidId);
+      ThrowingCallable findById = () -> goalService.findById(loginId, invalidId);
 
       // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(getGoal)
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findById)
           .withMessage(GoalErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
@@ -232,7 +229,6 @@ class GoalServiceTest {
       List<GoalSummaryResponse> actual = goalService.findAllByUser(loginId, user.getId());
 
       // then
-      assertThat(actual).isNotEmpty();
       assertThat(actual.size()).isEqualTo(expected.size());
       assertThat(actual.get(0))
           .extracting("id", "name", "status", "color")
@@ -249,16 +245,27 @@ class GoalServiceTest {
   @Nested
   class 목표_수정_테스트 {
 
+    String changedName;
+    String changedColor;
+    GoalStatus changedStatus;
+    PrivacyType changedPrivacyType;
+
+    @BeforeEach
+    void setUp() {
+      changedName = faker.lorem()
+          .word();
+      changedColor = faker.color()
+          .hex()
+          .substring(1);
+      changedStatus = provideRandomStatus();
+      changedPrivacyType = provideRandomPrivacy();
+    }
+
     @Test
     void 목표를_수정_할_수_있다() {
       // given
       Goal goal = createGoal(user, validName);
-      String changedName = "데브 코스";
-      String changedColor = "999999";
-      GoalStatus changedStatus = GoalStatus.DONE;
-      PrivacyType changedPrivacyType = PrivacyType.PUBLIC;
       Long loginId = user.getId();
-
       UpdateGoalRequest request = new UpdateGoalRequest(
           changedName, changedStatus, changedColor, changedPrivacyType);
 
@@ -332,6 +339,12 @@ class GoalServiceTest {
   private void flushAndClearPersistence() {
     entityManager.flush();
     entityManager.clear();
+  }
+
+  private static PrivacyType provideRandomPrivacy() {
+    PrivacyType[] privacyTypes = {PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC};
+    return privacyTypes[faker.random()
+        .nextInt(privacyTypes.length)];
   }
 
 }
