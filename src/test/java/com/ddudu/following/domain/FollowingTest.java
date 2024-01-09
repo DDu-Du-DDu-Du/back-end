@@ -162,4 +162,107 @@ class FollowingTest {
 
   }
 
+  @Nested
+  class 팔로잉_상태_수정_테스트 {
+
+    User follower;
+    User followee;
+
+    @BeforeEach
+    void setUp() {
+      User preFollowee = builderWithEncoder
+          .email(validEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
+      String followerEmail = faker.internet()
+          .emailAddress();
+      User preFollower = builderWithEncoder
+          .email(followerEmail)
+          .password(validPassword)
+          .nickname(validNickname)
+          .build();
+
+      follower = entityManager.persistFlushFind(preFollower);
+      followee = entityManager.persistFlushFind(preFollowee);
+    }
+
+    @Test
+    void 수정할_상태가_Null이면_수정을_실패한다() {
+      // given
+      Following preFollowing = Following.builder()
+          .follower(follower)
+          .followee(followee)
+          .build();
+      Following following = entityManager.persistFlushFind(preFollowing);
+      FollowingStatus status = null;
+
+      // when
+      ThrowingCallable updateStatus = () -> following.updateStatus(status);
+
+      // then
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(updateStatus)
+          .withMessage(FollowingErrorCode.NULL_STATUS_REQUESTED.getMessage());
+    }
+
+    @Test
+    void 수정할_상태가_REQUESTED이면_수정을_실패한다() {
+      // given
+      Following preFollowing = Following.builder()
+          .follower(follower)
+          .followee(followee)
+          .build();
+      Following following = entityManager.persistFlushFind(preFollowing);
+      FollowingStatus status = FollowingStatus.REQUESTED;
+
+      // when
+      ThrowingCallable updateStatus = () -> following.updateStatus(status);
+
+      // then
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(updateStatus)
+          .withMessage(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage());
+    }
+
+    @Test
+    void 팔로잉_요청을_수락한다() {
+      // given
+      Following preFollowing = Following.builder()
+          .follower(follower)
+          .followee(followee)
+          .status(FollowingStatus.REQUESTED)
+          .build();
+      Following following = entityManager.persistFlushFind(preFollowing);
+      FollowingStatus status = FollowingStatus.FOLLOWING;
+
+      // when
+      following.updateStatus(status);
+
+      // then
+      Following actual = entityManager.persistFlushFind(following);
+
+      assertThat(actual.getStatus()).isEqualTo(FollowingStatus.FOLLOWING);
+    }
+
+    @Test
+    void 팔로잉_요청을_무시한다() {
+      // given
+      Following preFollowing = Following.builder()
+          .follower(follower)
+          .followee(followee)
+          .status(FollowingStatus.REQUESTED)
+          .build();
+      Following following = entityManager.persistFlushFind(preFollowing);
+      FollowingStatus status = FollowingStatus.IGNORED;
+
+      // when
+      following.updateStatus(status);
+
+      // then
+      Following actual = entityManager.persistFlushFind(following);
+
+      assertThat(actual.getStatus()).isEqualTo(FollowingStatus.IGNORED);
+    }
+
+  }
+
 }
