@@ -53,6 +53,18 @@ public class Following extends BaseEntity {
     this.status = Objects.requireNonNullElse(status, FollowingStatus.FOLLOWING);
   }
 
+  public void updateStatus(FollowingStatus status) {
+    if (Objects.isNull(status)) {
+      throw new InvalidParameterException(FollowingErrorCode.NULL_STATUS_REQUESTED);
+    }
+
+    if (!status.isModifiable()) {
+      throw new InvalidParameterException(FollowingErrorCode.REQUEST_UNAVAILABLE);
+    }
+
+    this.status = status;
+  }
+
   private void validate(User follower, User followee) {
     if (Objects.isNull(follower)) {
       throw new InvalidParameterException(FollowingErrorCode.NULL_FOLLOWER);
