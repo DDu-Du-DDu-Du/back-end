@@ -125,4 +125,12 @@ public class User extends BaseEntity {
     }
   }
 
+  public void applyEmailUpdate(Email newEmail) {
+    this.email = newEmail;
+  }
+
+  public void applyPasswordUpdate(Password newPassword) {
+    this.password = newPassword;
+  }
+
 }
