@@ -10,6 +10,7 @@ import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
@@ -23,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService {
+
+  private static final String PASSWORD_UPDATE_SUCCESS = "비밀번호가 성공적으로 변경되었습니다.";
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
@@ -84,7 +87,7 @@ public class UserService {
   }
 
   @Transactional
-  public void updatePassword(Long userId, UpdatePasswordRequest request) {
+  public UpdatePasswordResponse updatePassword(Long userId, UpdatePasswordRequest request) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new InvalidTokenException(UserErrorCode.ID_NOT_EXISTING));
     Password password = user.getPassword();
@@ -95,6 +98,8 @@ public class UserService {
     }
 
     user.applyPasswordUpdate(newPassword);
+
+    return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
   }
 
 }

@@ -5,6 +5,7 @@ import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.service.UserService;
 import jakarta.validation.Valid;
@@ -23,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-
-  private static final String PASSWORD_UPDATE_SUCCESS = "비밀번호가 성공적으로 변경되었습니다.";
 
   private final UserService userService;
 
@@ -66,16 +65,16 @@ public class UserController {
   }
 
   @PatchMapping("/{id}/password")
-  public ResponseEntity<String> updatePassword(
+  public ResponseEntity<UpdatePasswordResponse> updatePassword(
       @PathVariable
           Long id,
       @RequestBody
       @Valid
           UpdatePasswordRequest request
   ) {
-    userService.updatePassword(id, request);
+    UpdatePasswordResponse response = userService.updatePassword(id, request);
 
-    return ResponseEntity.ok(PASSWORD_UPDATE_SUCCESS);
+    return ResponseEntity.ok(response);
   }
 
 }
