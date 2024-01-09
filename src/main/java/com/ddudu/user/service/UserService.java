@@ -1,5 +1,6 @@
 package com.ddudu.user.service;
 
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Email;
@@ -67,14 +68,18 @@ public class UserService {
   }
 
   @Transactional
-  public UserResponse updateEmail(Long userId, UpdateEmailRequest request) {
+  public UserResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
+    if (!loginId.equals(userId)) {
+      throw new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION);
+    }
+
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.ID_NOT_EXISTING));
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
     Email newEmail = new Email(request.email());
 
     if (user.getEmail()
         .equals(newEmail.getAddress())) {
-      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_PASSWORD);
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_EMAIL);
     }
 
     if (userRepository.existsByEmail(newEmail)) {
@@ -87,9 +92,15 @@ public class UserService {
   }
 
   @Transactional
-  public UpdatePasswordResponse updatePassword(Long userId, UpdatePasswordRequest request) {
+  public UpdatePasswordResponse updatePassword(
+      Long loginId, Long userId, UpdatePasswordRequest request
+  ) {
+    if (!loginId.equals(userId)) {
+      throw new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION);
+    }
+
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.ID_NOT_EXISTING));
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
     Password password = user.getPassword();
     Password newPassword = new Password(request.password(), passwordEncoder);
 

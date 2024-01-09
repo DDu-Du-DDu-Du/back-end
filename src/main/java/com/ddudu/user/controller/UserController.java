@@ -52,6 +52,8 @@ public class UserController {
 
   @PatchMapping("/{id}/email")
   public ResponseEntity<UserResponse> updateEmail(
+      @Login
+          Long loginId,
       @PathVariable
           Long id,
       @RequestBody
@@ -59,20 +61,22 @@ public class UserController {
           UpdateEmailRequest request
 
   ) {
-    UserResponse response = userService.updateEmail(id, request);
+    UserResponse response = userService.updateEmail(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }
 
   @PatchMapping("/{id}/password")
   public ResponseEntity<UpdatePasswordResponse> updatePassword(
+      @Login
+          Long loginId,
       @PathVariable
           Long id,
       @RequestBody
       @Valid
           UpdatePasswordRequest request
   ) {
-    UpdatePasswordResponse response = userService.updatePassword(id, request);
+    UpdatePasswordResponse response = userService.updatePassword(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }
