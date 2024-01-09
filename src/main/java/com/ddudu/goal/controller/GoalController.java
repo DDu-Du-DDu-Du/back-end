@@ -86,7 +86,7 @@ public class GoalController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity delete(
+  public ResponseEntity<Void> delete(
       @Login
       Long loginId,
       @PathVariable
