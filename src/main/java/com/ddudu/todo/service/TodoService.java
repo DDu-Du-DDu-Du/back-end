@@ -1,6 +1,7 @@
 package com.ddudu.todo.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,9 +41,8 @@ public class TodoService {
   private final UserRepository userRepository;
 
   @Transactional
-  public TodoInfo create(Long userId, @Valid CreateTodoRequest request) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+  public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
+    User user = findUser(loginId);
     Goal goal = goalRepository.findById(request.goalId())
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
 
@@ -55,17 +56,22 @@ public class TodoService {
     return TodoInfo.from(todoRepository.save(todo));
   }
 
-  public TodoResponse findById(Long id) {
+  public TodoResponse findById(Long loginId, Long id) {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
+
+    if (!todo.isCreatedByUser(loginId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
 
     return TodoResponse.from(todo);
   }
 
-  public List<TodoListResponse> findDailyTodoList(LocalDate date) {
-    List<Goal> goals = goalRepository.findAll();
+  public List<TodoListResponse> findAllByDate(Long loginId, LocalDate date) {
+    User user = findUser(loginId);
+    List<Goal> goals = goalRepository.findAllByUser(user);
     List<Todo> todos = todoRepository.findTodosByDate(
-        date.atStartOfDay(), date.atTime(LocalTime.MAX)
+        date.atStartOfDay(), date.atTime(LocalTime.MAX), user
     );
 
     Map<Long, List<Todo>> todosByGoal = todos.stream()
@@ -84,35 +90,59 @@ public class TodoService {
         .toList();
   }
 
+  public List<TodoCompletionResponse> findWeeklyCompletions(Long loginId, LocalDate date) {
+    User user = findUser(loginId);
+    LocalDateTime startDate = date.atStartOfDay();
+    LocalDateTime endDate = startDate.plusDays(7);
+
+    return generateCompletions(startDate, endDate, user);
+  }
+
+  public List<TodoCompletionResponse> findMonthlyCompletions(Long loginId, YearMonth yearMonth) {
+    User user = findUser(loginId);
+    LocalDateTime startDate = yearMonth.atDay(1)
+        .atStartOfDay();
+    LocalDateTime endDate = startDate.plusMonths(1);
+
+    return generateCompletions(startDate, endDate, user);
+  }
+
   @Transactional
-  public TodoResponse updateStatus(Long id) {
+  public void delete(Long loginId, Long id) {
+    Optional<Todo> optionalTodo = todoRepository.findById(id);
+
+    if (optionalTodo.isEmpty()) {
+      return;
+    }
+
+    Todo todo = optionalTodo.get();
+
+    if (!todo.isCreatedByUser(loginId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
+
+    todo.delete();
+  }
+
+  @Transactional
+  public TodoResponse updateStatus(Long loginId, Long id) {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
+
+    if (!todo.isCreatedByUser(loginId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
+
     todo.switchStatus();
 
     return TodoResponse.from(todo);
   }
 
-  public List<TodoCompletionResponse> findWeeklyTodoCompletion(LocalDate date) {
-    LocalDateTime startDate = date.atStartOfDay();
-    LocalDateTime endDate = startDate.plusDays(7);
-
-    return generateCompletions(startDate, endDate);
-  }
-
-  public List<TodoCompletionResponse> findMonthlyTodoCompletion(YearMonth yearMonth) {
-    LocalDateTime startDate = yearMonth.atDay(1)
-        .atStartOfDay();
-    LocalDateTime endDate = startDate.plusMonths(1);
-
-    return generateCompletions(startDate, endDate);
-  }
-
   private List<TodoCompletionResponse> generateCompletions(
-      LocalDateTime startDate, LocalDateTime endDate
+      LocalDateTime startDate, LocalDateTime endDate, User user
   ) {
     Map<LocalDate, TodoCompletionResponse> completionByDate = todoRepository.findTodosCompletion(
-            startDate, endDate)
+            startDate, endDate, user)
         .stream()
         .collect(
             Collectors.toMap(TodoCompletionResponse::date, response -> response));
@@ -128,6 +158,11 @@ public class TodoService {
     }
 
     return completionList;
+  }
+
+  private User findUser(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
   }
 
 }

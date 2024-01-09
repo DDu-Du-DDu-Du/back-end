@@ -1,5 +1,6 @@
 package com.ddudu.todo.controller;
 
+import com.ddudu.common.annotation.Login;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
@@ -15,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,10 +35,11 @@ public class TodoController {
 
   @PostMapping
   public ResponseEntity<TodoInfo> create(
-      Long userId,
+      @Login
+          Long userId,
       @RequestBody
       @Valid
-      CreateTodoRequest request
+          CreateTodoRequest request
   ) {
     TodoInfo response = todoService.create(userId, request);
     URI uri = URI.create("/api/todos/" + response.id());
@@ -46,60 +49,86 @@ public class TodoController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<TodoResponse> getTodo(
+  public ResponseEntity<TodoResponse> getById(
+      @Login
+          Long userId,
       @PathVariable
-      Long id
+          Long id
   ) {
-    TodoResponse response = todoService.findById(id);
+    TodoResponse response = todoService.findById(userId, id);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping
-  public ResponseEntity<List<TodoListResponse>> getDailyTodoList(
+  public ResponseEntity<List<TodoListResponse>> getDaily(
+      @Login
+          Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+          LocalDate date
   ) {
     date = (date == null) ? LocalDate.now() : date;
+    List<TodoListResponse> response = todoService.findAllByDate(userId, date);
 
-    List<TodoListResponse> response = todoService.findDailyTodoList(date);
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/weekly")
-  public ResponseEntity<List<TodoCompletionResponse>> getWeeklyTodoCompletion(
+  public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
+      @Login
+          Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+          LocalDate date
   ) {
     DayOfWeek weekStart = DayOfWeek.MONDAY;
     date = (date == null) ? LocalDate.now()
         .with(weekStart) : date.with(weekStart);
+    List<TodoCompletionResponse> completionList = todoService.findWeeklyCompletions(
+        userId, date);
 
-    List<TodoCompletionResponse> completionList = todoService.findWeeklyTodoCompletion(date);
     return ResponseEntity.ok(completionList);
   }
 
   @GetMapping("/monthly")
-  public ResponseEntity<List<TodoCompletionResponse>> getMonthlyTodoCompletion(
+  public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
+      @Login
+          Long userId,
       @RequestParam(value = "date", required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
-      YearMonth yearMonth
+          YearMonth yearMonth
   ) {
     yearMonth = (yearMonth == null) ? YearMonth.now() : yearMonth;
+    List<TodoCompletionResponse> completionList = todoService.findMonthlyCompletions(
+        userId, yearMonth);
 
-    List<TodoCompletionResponse> completionList = todoService.findMonthlyTodoCompletion(yearMonth);
     return ResponseEntity.ok(completionList);
   }
 
   @PatchMapping("/{id}/status")
-  public ResponseEntity<TodoResponse> updateTodoStatus(
+  public ResponseEntity<TodoResponse> updateStatus(
+      @Login
+          Long userId,
       @PathVariable
-      Long id
+          Long id
   ) {
-    TodoResponse response = todoService.updateStatus(id);
+    TodoResponse response = todoService.updateStatus(userId, id);
+
     return ResponseEntity.ok(response);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(
+      @Login
+          Long userId,
+      @PathVariable
+          Long id
+  ) {
+    todoService.delete(userId, id);
+
+    return ResponseEntity.noContent()
+        .build();
   }
 
 }
