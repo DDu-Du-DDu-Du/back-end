@@ -12,9 +12,9 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,14 +44,14 @@ public class UserController {
   @GetMapping("/me")
   public ResponseEntity<UserResponse> validateToken(
       @Login
-      Long loginId
+          Long loginId
   ) {
     UserResponse response = userService.findById(loginId);
 
     return ResponseEntity.ok(response);
   }
 
-  @PutMapping("/{id}/email")
+  @PatchMapping("/{id}/email")
   public ResponseEntity<UserResponse> updateEmail(
       @PathVariable
           Long id,
@@ -65,7 +65,7 @@ public class UserController {
     return ResponseEntity.ok(response);
   }
 
-  @PutMapping("/{id}/password")
+  @PatchMapping("/{id}/password")
   public ResponseEntity<String> updatePassword(
       @PathVariable
           Long id,
