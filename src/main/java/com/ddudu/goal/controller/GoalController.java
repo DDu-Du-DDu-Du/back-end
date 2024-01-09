@@ -35,7 +35,7 @@ public class GoalController {
       Long userId,
       @RequestBody
       @Valid
-      CreateGoalRequest request
+          CreateGoalRequest request
   ) {
     CreateGoalResponse response = goalService.create(userId, request);
     URI uri = URI.create("/api/goals/" + response.id());
@@ -47,10 +47,10 @@ public class GoalController {
   @PutMapping("/{id}")
   public ResponseEntity<GoalResponse> update(
       @PathVariable
-      Long id,
+          Long id,
       @RequestBody
       @Valid
-      UpdateGoalRequest request
+          UpdateGoalRequest request
   ) {
     GoalResponse response = goalService.update(id, request);
 
@@ -60,7 +60,7 @@ public class GoalController {
   @GetMapping("/{id}")
   public ResponseEntity<GoalResponse> getById(
       @PathVariable
-      Long id
+          Long id
   ) {
     GoalResponse response = goalService.findById(id);
 
@@ -70,7 +70,7 @@ public class GoalController {
   @GetMapping
   public ResponseEntity<List<GoalSummaryResponse>> getAllByUser(
       @RequestParam
-      Long userId
+          Long userId
   ) {
     List<GoalSummaryResponse> response = goalService.findAllByUser(userId);
 
@@ -80,7 +80,7 @@ public class GoalController {
   @DeleteMapping("/{id}")
   public ResponseEntity delete(
       @PathVariable
-      Long id
+          Long id
   ) {
     goalService.delete(id);
 
