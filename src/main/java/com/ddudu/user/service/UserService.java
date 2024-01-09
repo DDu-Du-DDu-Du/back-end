@@ -66,7 +66,7 @@ public class UserService {
   @Transactional
   public UserResponse updateEmail(Long userId, UpdateEmailRequest request) {
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
+        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.ID_NOT_EXISTING));
     Email newEmail = new Email(request.email());
 
     if (user.getEmail()
@@ -86,7 +86,7 @@ public class UserService {
   @Transactional
   public void updatePassword(Long userId, UpdatePasswordRequest request) {
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
+        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.ID_NOT_EXISTING));
     Password password = user.getPassword();
     Password newPassword = new Password(request.password(), passwordEncoder);
 
