@@ -24,9 +24,11 @@ INSERT INTO goal(id, user_id, name, color, privacy) VALUES (4, 8, 'etc', 'C7D567
 INSERT INTO goal(id, user_id, name, privacy, status) VALUES (5, 8, 'college', 'PUBLIC', 'DONE');
 
 -- TO DO
+SET foreign_key_checks = 0;
 TRUNCATE TABLE todo;
-insert into todo(id, name, goal_id, user_id, status) values (1, '10시 30분 마르코 팀미팅', 1, 1, 'UNCOMPLETED');
-insert into todo(id, name, goal_id, user_id, status, end_at) values (2, '9시 QR 출셕', 1, 1, 'COMPLETE', NOW());
-insert into todo(id, name, goal_id, user_id, status) values (3, '1시 RBF', 1, 1, 'UNCOMPLETED');
-insert into todo(id, name, goal_id, user_id, status) values (4, '2시 말코리즘 간단 리뷰', 1, 1, 'UNCOMPLETED');
-insert into todo(id, name, goal_id, user_id, status, end_at) values (5, '9시 뚜두뚜두 스크럼', 1, 1, 'COMPLETE', NOW());
+SET foreign_key_checks = 1;
+insert into todo(id, name, user_id, goal_id, status) values (1, '10시 30분 마르코 팀미팅', 8, 1, 'UNCOMPLETED');
+insert into todo(id, name, user_id, goal_id, status, end_at) values (2, '9시 QR 출셕', 8, 1, 'COMPLETE', NOW());
+insert into todo(id, name, user_id, goal_id, status) values (3, '1시 RBF', 8, 1, 'UNCOMPLETED');
+insert into todo(id, name, user_id, goal_id, status) values (4, '2시 말코리즘 간단 리뷰', 8, 1, 'UNCOMPLETED');
+insert into todo(id, name, user_id, goal_id, status, end_at, is_deleted) values (5, '9시 뚜두뚜두 스크럼', 8, 1, 'COMPLETE', NOW(), 1);
