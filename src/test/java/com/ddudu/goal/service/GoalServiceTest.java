@@ -41,20 +41,20 @@ class GoalServiceTest {
   static final Faker faker = new Faker();
 
   @Autowired
-  GoalService goalService;
+  private GoalService goalService;
 
   @Autowired
-  GoalRepository goalRepository;
+  private GoalRepository goalRepository;
 
   @Autowired
-  UserRepository userRepository;
+  private UserRepository userRepository;
 
   @Autowired
-  EntityManager entityManager;
+  private EntityManager entityManager;
 
-  User user;
-  String validName;
-  String validColor;
+  private User user;
+  private String validName;
+  private String validColor;
 
   @BeforeEach
   void setUp() {
