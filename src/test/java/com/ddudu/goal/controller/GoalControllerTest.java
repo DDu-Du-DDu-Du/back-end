@@ -94,7 +94,7 @@ class GoalControllerTest {
   class POST_목표_생성_API_테스트 {
 
     @Test
-    void 목표_생성을_성공한다() throws Exception {
+    void 목표_생성에_성공하면_201_Created_응답을_반환한다() throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, PrivacyType.PUBLIC);
       CreateGoalResponse response = new CreateGoalResponse(1L, validName, validColor);
@@ -184,7 +184,7 @@ class GoalControllerTest {
     }
 
     @Test
-    void 색상이_16진수_포맷이_아닌_경우_Bad_Request_응답을_반환한다() throws Exception {
+    void 색상이_16진수_포맷이_아니면_400_Bad_Request를_반환한다() throws Exception {
       // given
       String invalidColor = "Z123!";
       CreateGoalRequest request = new CreateGoalRequest(
@@ -216,7 +216,7 @@ class GoalControllerTest {
   class GET_단일_목표_조회_API_테스트 {
 
     @Test
-    void 목표_조회를_성공한다() throws Exception {
+    void 목표_조회에_성공하면_200_OK를_반환하다() throws Exception {
       // given
       GoalResponse response = createGoalResponse();
 
@@ -239,7 +239,7 @@ class GoalControllerTest {
     }
 
     @Test
-    void 유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+    void ID가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
       String invalidRequestJson = """
           {
@@ -332,7 +332,7 @@ class GoalControllerTest {
   class GET_전체_목표_조회_API_테스트 {
 
     @Test
-    void 사용자의_전체_목표를_조회할_수_있다() throws Exception {
+    void 사용자의_전체_목표_조회에_성공하면_200_OK를_반환한다() throws Exception {
       // given
       List<GoalSummaryResponse> response = createGoalSummaryDTO();
       GoalSummaryResponse firstElement = response.get(0);
@@ -355,7 +355,7 @@ class GoalControllerTest {
     }
 
     @Test
-    void 사용자가_존재하지_않은_경우_404_Not_Found_응답을_반환한다() throws Exception {
+    void 사용자가_존재하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
       String invalidUserId = "-1";
       given(goalService.findAllByUser(anyLong(), anyLong())).willThrow(
@@ -390,7 +390,7 @@ class GoalControllerTest {
   class PUT_목표_수정_API_테스트 {
 
     @Test
-    void 목표_수정을_성공한다() throws Exception {
+    void 목표_수정에_성공하면_200_OK를_반환한다() throws Exception {
       // given
       UpdateGoalRequest request = new UpdateGoalRequest(
           validName, GoalStatus.IN_PROGRESS, validColor, PrivacyType.PUBLIC);
@@ -419,7 +419,7 @@ class GoalControllerTest {
     }
 
     @Test
-    void 유효하지_않은_목표_상태가_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+    void 유효하지_않은_목표_상태가_입력되면_400_Bad_Request를_반환한다() throws Exception {
       // given
       String invalidRequestJson = """
           {
@@ -487,7 +487,7 @@ class GoalControllerTest {
   class DELETE_목표_삭제_API_테스트 {
 
     @Test
-    void 목표_삭제를_성공한다() throws Exception {
+    void 목표_삭제에_성공하면_204_No_Content를_반환한다() throws Exception {
       // when then
       mockMvc.perform(
               delete("/api/goals/{id}", 1L)
