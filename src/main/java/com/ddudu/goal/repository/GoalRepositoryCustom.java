@@ -8,4 +8,6 @@ public interface GoalRepositoryCustom {
 
   List<Goal> findAllByUser(User user);
 
+  List<Goal> findAllByUserAndPrivacyType(User user, String privacy);
+
 }
