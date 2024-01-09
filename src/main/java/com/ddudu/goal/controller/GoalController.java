@@ -1,5 +1,6 @@
 package com.ddudu.goal.controller;
 
+import com.ddudu.common.annotation.Login;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
@@ -32,6 +33,7 @@ public class GoalController {
 
   @PostMapping
   public ResponseEntity<CreateGoalResponse> create(
+      @Login
       Long userId,
       @RequestBody
       @Valid
@@ -46,43 +48,51 @@ public class GoalController {
 
   @PutMapping("/{id}")
   public ResponseEntity<GoalResponse> update(
+      @Login
+      Long loginId,
       @PathVariable
       Long id,
       @RequestBody
       @Valid
       UpdateGoalRequest request
   ) {
-    GoalResponse response = goalService.update(id, request);
+    GoalResponse response = goalService.update(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<GoalResponse> getById(
+      @Login
+      Long loginId,
       @PathVariable
       Long id
   ) {
-    GoalResponse response = goalService.findById(id);
+    GoalResponse response = goalService.findById(loginId, id);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping
   public ResponseEntity<List<GoalSummaryResponse>> getAllByUser(
+      @Login
+      Long loginId,
       @RequestParam
       Long userId
   ) {
-    List<GoalSummaryResponse> response = goalService.findAllByUser(userId);
+    List<GoalSummaryResponse> response = goalService.findAllByUser(loginId, userId);
 
     return ResponseEntity.ok(response);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity delete(
+      @Login
+      Long loginId,
       @PathVariable
       Long id
   ) {
-    goalService.delete(id);
+    goalService.delete(loginId, id);
 
     return ResponseEntity.noContent()
         .build();
