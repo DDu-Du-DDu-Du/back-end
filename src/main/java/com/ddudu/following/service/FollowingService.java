@@ -1,8 +1,9 @@
 package com.ddudu.following.service;
 
-import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.InvalidAuthenticationException;
+import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.following.domain.Following;
 import com.ddudu.following.dto.request.FollowRequest;
 import com.ddudu.following.dto.request.UpdateFollowingRequest;
@@ -47,12 +48,17 @@ public class FollowingService {
   }
 
   @Transactional
-  public FollowingResponse updateStatus(Long id, UpdateFollowingRequest request) {
+  public FollowingResponse updateStatus(Long id, Long followerId, UpdateFollowingRequest request) {
     Following following = followingRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
 
-    if (!request.status().isModifiable()) {
-      throw new BadRequestException(FollowingErrorCode.REQUEST_UNAVAILABLE);
+    if (!following.isOwnedBy(followerId)) {
+      throw new InvalidAuthenticationException(FollowingErrorCode.WRONG_OWNER);
+    }
+
+    if (!request.status()
+        .isModifiable()) {
+      throw new InvalidParameterException(FollowingErrorCode.REQUEST_UNAVAILABLE);
     }
 
     following.updateStatus(request.status());

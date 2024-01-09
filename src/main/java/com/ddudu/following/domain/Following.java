@@ -53,6 +53,13 @@ public class Following extends BaseEntity {
     this.status = Objects.requireNonNullElse(status, FollowingStatus.FOLLOWING);
   }
 
+  public boolean isOwnedBy(Long followerId) {
+    Long ownerId = this.follower
+        .getId();
+
+    return Objects.deepEquals(followerId, ownerId);
+  }
+
   public void updateStatus(FollowingStatus status) {
     if (Objects.isNull(status)) {
       throw new InvalidParameterException(FollowingErrorCode.NULL_STATUS_REQUESTED);

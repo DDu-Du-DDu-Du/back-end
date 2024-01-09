@@ -52,6 +52,10 @@ import org.springframework.test.web.servlet.ResultActions;
 class FollowingControllerTest {
 
   static final Faker faker = new Faker();
+  static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
+      .build();
+  static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
+      .claim("auth", Authority.NORMAL);
 
   @MockBean
   FollowingService followingService;
@@ -65,13 +69,16 @@ class FollowingControllerTest {
   @Autowired
   JwtEncoder jwtEncoder;
 
+  private String createBearerToken(long userId) {
+    JwtClaimsSet claims = claimSet.claim("user", userId)
+        .build();
+    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
+    return "Bearer " + jwt.getTokenValue();
+  }
+
   @Nested
   class POST_팔로잉_신청_API_테스트 {
 
-    static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
-        .build();
-    static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
-        .claim("auth", Authority.NORMAL);
     Long followerId;
     Long followeeId;
 
@@ -145,13 +152,6 @@ class FollowingControllerTest {
           .andExpect(header().string("location", is("/api/followings/1")));
     }
 
-    private String createBearerToken(long userId) {
-      JwtClaimsSet claims = claimSet.claim("user", userId)
-          .build();
-      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-      return "Bearer " + jwt.getTokenValue();
-    }
-
   }
 
   @Nested
@@ -169,13 +169,15 @@ class FollowingControllerTest {
     @NullSource
     void 요청시_팔로잉_상태가_누락되면_400_Bad_Request를_반환한다(FollowingStatus status) throws Exception {
       // given
+      String token = createBearerToken(randomId);
       UpdateFollowingRequest request = new UpdateFollowingRequest(status);
 
-      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willReturn(new FollowingResponse(randomId, null, null, null));
 
       // when
       ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
+          .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -188,13 +190,15 @@ class FollowingControllerTest {
     @Test
     void 존재하지_않는_팔로잉_아이디면_404_Not_Found를_반환한다() throws Exception {
       // given
+      String token = createBearerToken(randomId);
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
-      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willThrow(new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
+          .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -207,13 +211,15 @@ class FollowingControllerTest {
     @Test
     void 요청_상태로_수정_시도_시_400_Bad_Request를_반환한다() throws Exception {
       // given
+      String token = createBearerToken(randomId);
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
 
-      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willThrow(new BadRequestException(FollowingErrorCode.REQUEST_UNAVAILABLE));
 
       // when
       ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
+          .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 

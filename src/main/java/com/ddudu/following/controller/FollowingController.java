@@ -42,11 +42,13 @@ public class FollowingController {
   public ResponseEntity<FollowingResponse> updateStatus(
       @PathVariable
       Long id,
+      @Login
+      Long followerId,
       @RequestBody
       @Valid
       UpdateFollowingRequest request
   ) {
-    FollowingResponse response = followingService.updateStatus(id, request);
+    FollowingResponse response = followingService.updateStatus(id, followerId, request);
 
     return ResponseEntity.ok(response);
   }

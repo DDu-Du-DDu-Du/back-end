@@ -168,7 +168,8 @@ class FollowingServiceTest {
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
       // when
-      ThrowingCallable updateStatus = () -> followingService.updateStatus(randomId, request);
+      ThrowingCallable updateStatus = () -> followingService.updateStatus(
+          randomId, randomId, request);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateStatus)
@@ -185,7 +186,7 @@ class FollowingServiceTest {
 
       // when
       ThrowingCallable updateStatus = () -> followingService.updateStatus(
-          following.getId(), request);
+          following.getId(), follower.getId(), request);
 
       // then
       assertThatExceptionOfType(BadRequestException.class).isThrownBy(updateStatus)
@@ -202,7 +203,7 @@ class FollowingServiceTest {
 
       // when
       FollowingResponse response = followingService.updateStatus(
-          following.getId(), request);
+          following.getId(), follower.getId(), request);
 
       // then
       assertThat(response).extracting("id", "followerId", "followeeId", "status")
@@ -220,7 +221,7 @@ class FollowingServiceTest {
 
       // when
       FollowingResponse response = followingService.updateStatus(
-          following.getId(), request);
+          following.getId(), follower.getId(), request);
 
       // then
       assertThat(response).extracting("id", "followerId", "followeeId", "status")
