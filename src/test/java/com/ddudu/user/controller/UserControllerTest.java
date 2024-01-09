@@ -4,11 +4,9 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +20,7 @@ import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.service.UserService;
@@ -405,9 +404,11 @@ class UserControllerTest {
       String newPassword = faker.internet()
           .password(8, 40, true, true, true);
       UpdatePasswordRequest request = new UpdatePasswordRequest(newPassword);
+      String successMessage = "비밀번호가 성공적으로 변경되었습니다.";
+      UpdatePasswordResponse response = new UpdatePasswordResponse(successMessage);
 
-      willDoNothing().given(userService)
-          .updatePassword(anyLong(), any(UpdatePasswordRequest.class));
+      given(userService.updatePassword(anyLong(), any(UpdatePasswordRequest.class)))
+          .willReturn(response);
 
       // when
       ResultActions actions = mockMvc.perform(patch("/api/users/{id}/password", userId)
@@ -416,7 +417,7 @@ class UserControllerTest {
 
       // then
       actions.andExpect(status().isOk())
-          .andExpect(content().string("비밀번호가 성공적으로 변경되었습니다."));
+          .andExpect(jsonPath("$.message").value(successMessage));
     }
 
   }
