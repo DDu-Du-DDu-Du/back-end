@@ -1,10 +1,12 @@
 package com.ddudu.following.service;
 
+import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.following.domain.Following;
 import com.ddudu.following.dto.request.FollowRequest;
-import com.ddudu.following.dto.response.FollowResponse;
+import com.ddudu.following.dto.request.UpdateFollowingRequest;
+import com.ddudu.following.dto.response.FollowingResponse;
 import com.ddudu.following.exception.FollowingErrorCode;
 import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.user.domain.User;
@@ -25,7 +27,7 @@ public class FollowingService {
 
   @Transactional
   @Validated
-  public FollowResponse create(Long followerId, @Valid FollowRequest request) {
+  public FollowingResponse create(Long followerId, @Valid FollowRequest request) {
     User follower = userRepository.findById(followerId)
         .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.FOLLOWER_NOT_EXISTING));
     User followee = userRepository.findById(request.followeeId())
@@ -41,7 +43,21 @@ public class FollowingService {
         .build();
     Following saved = followingRepository.save(following);
 
-    return FollowResponse.from(saved);
+    return FollowingResponse.from(saved);
+  }
+
+  @Transactional
+  public FollowingResponse updateStatus(Long id, UpdateFollowingRequest request) {
+    Following following = followingRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
+
+    if (!request.status().isModifiable()) {
+      throw new BadRequestException(FollowingErrorCode.REQUEST_UNAVAILABLE);
+    }
+
+    following.updateStatus(request.status());
+
+    return FollowingResponse.from(following);
   }
 
 }
