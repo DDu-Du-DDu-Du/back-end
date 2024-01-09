@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
@@ -214,6 +215,21 @@ class GoalServiceTest {
           .withMessage(GoalErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
+    @Test
+    void 로그인_사용자가_권한이_없는_경우_조회에_실패한다() {
+      // given
+      Goal goal = createGoal(user, validName);
+      Long invalidLoginId = faker.random()
+          .nextLong();
+
+      // when
+      ThrowingCallable findById = () -> goalService.findById(invalidLoginId, goal.getId());
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findById)
+          .withMessage(GoalErrorCode.INVALID_AUTHORITY.getMessage());
+    }
+
   }
 
   @Nested
@@ -238,6 +254,23 @@ class GoalServiceTest {
               .getStatus()
               .name(), expected.get(0)
               .getColor());
+    }
+
+    @Test
+    void 로그인_사용자가_권한이_없는_경우_조회에_실패한다() {
+      // given
+      Long invalidLoginId = faker.random()
+          .nextLong();
+
+      createGoals(user, List.of(validName));
+
+      // when
+      ThrowingCallable findAllByUser = () -> goalService.findAllByUser(
+          invalidLoginId, user.getId());
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findAllByUser)
+          .withMessage(GoalErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
@@ -279,6 +312,47 @@ class GoalServiceTest {
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 
+    @Test
+    void 유효하지_않은_ID인_경우_수정에_실패한다() {
+      // given
+      createGoal(user, validName);
+
+      Long invalidId = faker.random()
+          .nextLong();
+      UpdateGoalRequest request = new UpdateGoalRequest(
+          changedName, changedStatus, changedColor, changedPrivacyType);
+
+      // when
+      ThrowingCallable update = () -> goalService.update(user.getId(), invalidId, request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
+          .withMessage(GoalErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
+      // given
+      Goal goal = createGoal(user, validName);
+      Long invalidLoginId = faker.random()
+          .nextLong();
+      UpdateGoalRequest request = new UpdateGoalRequest(
+          changedName, changedStatus, changedColor, changedPrivacyType);
+
+      // when
+      ThrowingCallable update = () -> goalService.update(invalidLoginId, goal.getId(), request);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
+          .withMessage(GoalErrorCode.INVALID_AUTHORITY.getMessage());
+    }
+
+    private static GoalStatus provideRandomStatus() {
+      GoalStatus[] goalStatuses = {GoalStatus.IN_PROGRESS, GoalStatus.DONE};
+      return goalStatuses[faker.random()
+          .nextInt(goalStatuses.length)];
+    }
+
   }
 
   @Nested
@@ -299,6 +373,21 @@ class GoalServiceTest {
       // then
       Optional<Goal> foundAfterDeleted = goalRepository.findById(goal.getId());
       assertThat(foundAfterDeleted).isEmpty();
+    }
+
+    @Test
+    void 로그인_사용자가_권한이_없는_경우_삭제에_실패한다() {
+      // given
+      Goal goal = createGoal(user, validName);
+      Long invalidLoginId = faker.random()
+          .nextLong();
+
+      // when
+      ThrowingCallable delete = () -> goalService.delete(invalidLoginId, goal.getId());
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(delete)
+          .withMessage(GoalErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
