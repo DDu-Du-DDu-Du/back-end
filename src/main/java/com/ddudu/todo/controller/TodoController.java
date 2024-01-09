@@ -65,11 +65,14 @@ public class TodoController {
       @Login
           Long loginId,
       @RequestParam(required = false)
+          Long userId,
+      @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
   ) {
+    userId = (userId == null) ? loginId : userId;
     date = (date == null) ? LocalDate.now() : date;
-    List<TodoListResponse> response = todoService.findAllByDate(loginId, date);
+    List<TodoListResponse> response = todoService.findAllByDate(loginId, userId, date);
 
     return ResponseEntity.ok(response);
   }
