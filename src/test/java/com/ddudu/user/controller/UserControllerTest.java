@@ -55,6 +55,10 @@ import org.springframework.test.web.servlet.ResultActions;
 class UserControllerTest {
 
   static final Faker faker = new Faker();
+  static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
+      .build();
+  static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
+      .claim("auth", Authority.NORMAL);
 
   @MockBean
   UserService userService;
@@ -243,11 +247,6 @@ class UserControllerTest {
   @Nested
   class GET_JWT_본인_확인_API_테스트 {
 
-    static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
-        .build();
-    static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
-        .claim("auth", Authority.NORMAL);
-
     @Test
     void 토큰_검증을_성공하고_OK를_반환한다() throws Exception {
       // given
@@ -308,9 +307,11 @@ class UserControllerTest {
       // given
       long userId = faker.random()
           .nextLong();
+      String token = createBearerToken(userId);
 
       // when
       ResultActions actions = mockMvc.perform(patch("/api/users/{id}/email", userId)
+          .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -325,6 +326,8 @@ class UserControllerTest {
       // given
       long userId = faker.random()
           .nextLong();
+      String token = createBearerToken(userId);
+
       String newEmail = faker.internet()
           .emailAddress();
       UpdateEmailRequest request = new UpdateEmailRequest(newEmail);
@@ -334,11 +337,12 @@ class UserControllerTest {
           .nickname(nickname)
           .build();
 
-      given(userService.updateEmail(anyLong(), any(UpdateEmailRequest.class)))
+      given(userService.updateEmail(anyLong(), anyLong(), any(UpdateEmailRequest.class)))
           .willReturn(response);
 
       // when
       ResultActions actions = mockMvc.perform(patch("/api/users/{id}/email", userId)
+          .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -384,9 +388,11 @@ class UserControllerTest {
       // given
       long userId = faker.random()
           .nextLong();
+      String token = createBearerToken(userId);
 
       // when
       ResultActions actions = mockMvc.perform(patch("/api/users/{id}/password", userId)
+          .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -401,17 +407,20 @@ class UserControllerTest {
       // given
       long userId = faker.random()
           .nextLong();
+      String token = createBearerToken(userId);
+      
       String newPassword = faker.internet()
           .password(8, 40, true, true, true);
       UpdatePasswordRequest request = new UpdatePasswordRequest(newPassword);
       String successMessage = "비밀번호가 성공적으로 변경되었습니다.";
       UpdatePasswordResponse response = new UpdatePasswordResponse(successMessage);
 
-      given(userService.updatePassword(anyLong(), any(UpdatePasswordRequest.class)))
+      given(userService.updatePassword(anyLong(), anyLong(), any(UpdatePasswordRequest.class)))
           .willReturn(response);
 
       // when
       ResultActions actions = mockMvc.perform(patch("/api/users/{id}/password", userId)
+          .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -420,6 +429,13 @@ class UserControllerTest {
           .andExpect(jsonPath("$.message").value(successMessage));
     }
 
+  }
+
+  private String createBearerToken(long userId) {
+    JwtClaimsSet claims = claimSet.claim("user", userId)
+        .build();
+    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
+    return "Bearer " + jwt.getTokenValue();
   }
 
 }
