@@ -225,7 +225,7 @@ class UserServiceTest {
 
       // then
       assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updateEmail)
-          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -317,7 +317,7 @@ class UserServiceTest {
 
       // then
       assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updatePassword)
-          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
