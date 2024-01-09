@@ -67,6 +67,13 @@ public class User extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private UserStatus status;
 
+  @Embedded
+  @AttributeOverride(
+      name = "allowingFollowsAfterApproval",
+      column = @Column(name = "follows_after_approval", nullable = false)
+  )
+  private Options options;
+
   @Builder
   public User(
       String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
@@ -80,6 +87,7 @@ public class User extends BaseEntity {
     this.nickname = nickname;
     this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
+    options = new Options();
     status = UserStatus.ACTIVE;
   }
 

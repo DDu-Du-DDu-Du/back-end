@@ -14,6 +14,7 @@ public record FollowResponse(Long id, Long followerId, Long followeeId, Followin
             .getId())
         .followeeId(following.getFollowee()
             .getId())
+        .status(following.getStatus())
         .build();
   }
 
