@@ -34,11 +34,12 @@ jobs:
       - name: Configure application.yaml under test directory
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/test/resources/application.yaml
+          files: ./src/**/resources/application.yaml
         env:
           spring.datasource.url: jdbc:mysql://localhost:3306/${{ secrets.TEST_DB }}
           spring.datasource.username: ${{ secrets.TEST_DB_USER }}
           spring.datasource.password: ${{ secrets.TEST_DB_PASSWORD }}
+          jwt.secret-key: ${{ secrets.JWT_SECRET }}
 
       - name: Cache Gradle
         uses: actions/cache@v3

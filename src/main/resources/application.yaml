@@ -1,3 +1,6 @@
+jwt:
+  secret-key: NDaXzFcHzbqw+YWo3jIUViccHL9a3ImaeCTJvQSX7VDyjJK+nSdP/iHWGnusLrmpZyC11SwKiNe99X3WPqKYtw==
+  expired-after: 15
 spring:
   profiles:
     active: local
