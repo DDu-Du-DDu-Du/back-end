@@ -24,9 +24,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "todo")
+@SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Todo extends BaseEntity {
@@ -106,6 +108,15 @@ public class Todo extends BaseEntity {
       this.status = TodoStatus.UNCOMPLETED;
       this.endAt = null;
     }
+  }
+
+  public boolean isCreatedByUser(Long userId) {
+    if (userId == null || this.user == null) {
+      return false;
+    }
+
+    return this.user.getId()
+        .equals(userId);
   }
 
 }

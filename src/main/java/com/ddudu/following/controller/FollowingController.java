@@ -1,6 +1,7 @@
 package com.ddudu.following.controller;
 
 import com.ddudu.auth.jwt.JwtAuthToken;
+import com.ddudu.common.annotation.Login;
 import com.ddudu.following.dto.request.FollowRequest;
 import com.ddudu.following.dto.response.FollowResponse;
 import com.ddudu.following.service.FollowingService;
@@ -23,12 +24,12 @@ public class FollowingController {
 
   @PostMapping
   public ResponseEntity<FollowResponse> create(
-      Authentication authentication,
+      @Login
+      Long followerId,
       @RequestBody
       @Valid
       FollowRequest request
   ) {
-    long followerId = ((JwtAuthToken) authentication).getUserId();
     FollowResponse response = followingService.create(followerId, request);
     URI uri = URI.create("/api/followings/" + response.id());
 

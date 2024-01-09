@@ -9,7 +9,8 @@ public enum TodoErrorCode implements ErrorCode {
   EXCESSIVE_NAME_LENGTH(2003, "할 일 내용이 최대 글자수를 초과했습니다."),
   ID_NOT_EXISTING(2004, "할 일 아이디가 존재하지 않습니다."),
   GOAL_NOT_EXISTING(2005, "목표 아이디가 존재하지 않습니다."),
-  USER_NOT_EXISTING(2006, "사용자 아이디가 존재하지 않습니다.");
+  USER_NOT_EXISTING(2006, "사용자 아이디가 존재하지 않습니다."),
+  INVALID_AUTHORITY(2007, "해당 기능에 대한 사용자 권한이 없습니다.");
 
   private final int code;
   private final String message;

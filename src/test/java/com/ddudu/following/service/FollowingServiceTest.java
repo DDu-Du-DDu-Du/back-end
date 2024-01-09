@@ -49,7 +49,7 @@ class FollowingServiceTest {
   class 팔로잉_생성_테스트 {
 
     @Test
-    void 팔로워가_존재하지_않으면_팔로잉_생성을_실패한다() {
+    void 사용자가_존재하지_않으면_팔로잉_생성을_실패한다() {
       // given
       long randomId = faker.random()
           .nextLong();
@@ -86,12 +86,9 @@ class FollowingServiceTest {
       User follower = createUser();
       User followee = createUser();
 
-      User actualFollower = userRepository.save(follower);
-      User actualFollowee = userRepository.save(followee);
-
       Following following = Following.builder()
-          .followee(actualFollowee)
-          .follower(actualFollower)
+          .followee(followee)
+          .follower(follower)
           .build();
 
       followingRepository.save(following);
