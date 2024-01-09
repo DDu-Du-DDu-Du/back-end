@@ -6,8 +6,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -277,7 +277,7 @@ class UserControllerTest {
   }
 
   @Nested
-  class PUT_이메일_변경_API_테스트 {
+  class PATCH_이메일_변경_API_테스트 {
 
     static Stream<Arguments> provideUpdateEmailRequestAndStrings() {
       String wrongEmail = faker.internet()
@@ -311,7 +311,7 @@ class UserControllerTest {
           .nextLong();
 
       // when
-      ResultActions actions = mockMvc.perform(put("/api/users/{id}/email", userId)
+      ResultActions actions = mockMvc.perform(patch("/api/users/{id}/email", userId)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -339,7 +339,7 @@ class UserControllerTest {
           .willReturn(response);
 
       // when
-      ResultActions actions = mockMvc.perform(put("/api/users/{id}/email", userId)
+      ResultActions actions = mockMvc.perform(patch("/api/users/{id}/email", userId)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -351,7 +351,7 @@ class UserControllerTest {
   }
 
   @Nested
-  class 비밀번호_변경_API_테스트 {
+  class PATCH_비밀번호_변경_API_테스트 {
 
     static Stream<Arguments> provideUpdatePasswordRequestAndStrings() {
       String shortPassword = faker.internet()
@@ -387,7 +387,7 @@ class UserControllerTest {
           .nextLong();
 
       // when
-      ResultActions actions = mockMvc.perform(put("/api/users/{id}/password", userId)
+      ResultActions actions = mockMvc.perform(patch("/api/users/{id}/password", userId)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -410,7 +410,7 @@ class UserControllerTest {
           .updatePassword(anyLong(), any(UpdatePasswordRequest.class));
 
       // when
-      ResultActions actions = mockMvc.perform(put("/api/users/{id}/password", userId)
+      ResultActions actions = mockMvc.perform(patch("/api/users/{id}/password", userId)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
