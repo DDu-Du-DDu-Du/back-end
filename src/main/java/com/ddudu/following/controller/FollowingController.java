@@ -57,9 +57,11 @@ public class FollowingController {
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(
       @PathVariable
-      Long id
+      Long id,
+      @Login
+      Long loginId
   ) {
-    followingService.delete(id);
+    followingService.delete(id, loginId);
 
     return ResponseEntity.noContent()
         .build();
