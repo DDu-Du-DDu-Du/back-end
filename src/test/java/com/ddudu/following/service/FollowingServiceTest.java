@@ -169,7 +169,7 @@ class FollowingServiceTest {
       FollowRequest request = new FollowRequest(followee.getId());
 
       // when
-      FollowResponse response = followingService.create(follower.getId(), request);
+      FollowingResponse response = followingService.create(follower.getId(), request);
 
       // then
       assertThat(response.status()).isEqualTo(FollowingStatus.REQUESTED);
