@@ -106,4 +106,11 @@ public class UserService {
     return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
   }
 
+  public UserResponse findById(Long userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+    return UserResponse.from(user);
+  }
+
 }

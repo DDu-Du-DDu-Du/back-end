@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,16 @@ public class UserController {
 
     return ResponseEntity.created(uri)
         .body(response);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<UserResponse> getById(
+      @PathVariable
+      Long id
+  ) {
+    UserResponse response = userService.findById(id);
+
+    return ResponseEntity.ok(response);
   }
 
   @PatchMapping("/{id}/email")

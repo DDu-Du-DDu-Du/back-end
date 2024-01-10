@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.auth.domain.authority.Authority;
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
@@ -246,6 +248,52 @@ class UserControllerTest {
       // then
       actions.andExpect(status().isCreated())
           .andExpect(header().string("location", is("/api/users/" + userId)));
+    }
+
+  }
+
+  @Nested
+  class GET_사용자_단일_조회_API_테스트 {
+
+    @Test
+    void 단일_조회를_성공하고_200_OK를_반환한다() throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong();
+      String token = createBearerToken(userId);
+      UserResponse expected = UserResponse.builder()
+          .id(userId)
+          .email(email)
+          .nickname(nickname)
+          .build();
+
+      given(userService.findById(anyLong())).willReturn(expected);
+
+      // when
+      ResultActions actions = mockMvc.perform(get("/api/users/{id}", userId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(userId));
+    }
+
+    @Test
+    void 사용자가_없으면_단일_조회를_실패하고_404_Not_Found를_반환한다() throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong();
+
+      given(userService.findById(anyLong())).willThrow(
+          new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(get("/api/users/{id}", userId));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code").value(UserErrorCode.ID_NOT_EXISTING.getCode()))
+          .andExpect(jsonPath("$.message").value(UserErrorCode.ID_NOT_EXISTING.getMessage()));
     }
 
   }
