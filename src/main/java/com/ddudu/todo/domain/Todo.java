@@ -72,6 +72,14 @@ public class Todo extends BaseEntity {
     this.beginAt = isNull(beginAt) ? LocalDateTime.now() : beginAt;
   }
 
+  public void applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
+    validate(goal, user, name);
+
+    this.goal = goal;
+    this.name = name;
+    this.beginAt = beginAt;
+  }
+
   private void validate(Goal goal, User user, String name) {
     validateGoal(goal);
     validateUser(user);
