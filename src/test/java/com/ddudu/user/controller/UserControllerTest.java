@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -84,6 +83,13 @@ class UserControllerTest {
         .password(8, 40, true, true, true);
     nickname = faker.funnyName()
         .name();
+  }
+
+  private String createBearerToken(long userId) {
+    JwtClaimsSet claims = claimSet.claim("user", userId)
+        .build();
+    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
+    return "Bearer " + jwt.getTokenValue();
   }
 
   @Nested
@@ -245,41 +251,6 @@ class UserControllerTest {
   }
 
   @Nested
-  class GET_JWT_본인_확인_API_테스트 {
-
-    @Test
-    void 토큰_검증을_성공하고_OK를_반환한다() throws Exception {
-      // given
-      long userId = faker.random()
-          .nextLong();
-      String token = createBearerToken(userId);
-      UserResponse expected = UserResponse.builder()
-          .id(userId)
-          .email(email)
-          .nickname(nickname)
-          .build();
-
-      given(userService.findById(anyLong())).willReturn(expected);
-
-      // when
-      ResultActions actions = mockMvc.perform(get("/api/users/me")
-          .header("Authorization", token));
-
-      // then
-      actions.andExpect(status().isOk())
-          .andExpect(jsonPath("$.id").value(userId));
-    }
-
-    private String createBearerToken(long userId) {
-      JwtClaimsSet claims = claimSet.claim("user", userId)
-          .build();
-      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-      return "Bearer " + jwt.getTokenValue();
-    }
-
-  }
-
-  @Nested
   class PATCH_이메일_변경_API_테스트 {
 
     static Stream<Arguments> provideUpdateEmailRequestAndStrings() {
@@ -434,13 +405,6 @@ class UserControllerTest {
           .andExpect(jsonPath("$.message").value(successMessage));
     }
 
-  }
-
-  private String createBearerToken(long userId) {
-    JwtClaimsSet claims = claimSet.claim("user", userId)
-        .build();
-    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-    return "Bearer " + jwt.getTokenValue();
   }
 
 }

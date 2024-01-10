@@ -60,13 +60,6 @@ public class UserService {
     return SignUpResponse.from(userRepository.save(userBuilder.build()));
   }
 
-  public UserResponse findById(Long userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
-
-    return UserResponse.from(user);
-  }
-
   @Transactional
   public UserResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
     if (!loginId.equals(userId)) {

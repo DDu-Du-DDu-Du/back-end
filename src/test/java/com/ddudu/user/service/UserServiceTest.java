@@ -13,7 +13,6 @@ import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
-import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.List;
@@ -157,44 +156,6 @@ class UserServiceTest {
       assertThat(actual).isNotEmpty();
       assertThat(actual.get()).extracting("id", "email", "nickname")
           .containsExactly(expected.id(), expected.email(), expected.nickname());
-    }
-
-  }
-
-  @Nested
-  class 사용자_단일_조회 {
-
-    @Test
-    void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
-      // given
-      long randomId = faker.random()
-          .nextLong();
-
-      // when
-      ThrowingCallable login = () -> userService.findById(randomId);
-
-      // then
-      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(login)
-          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
-    }
-
-    @Test
-    void 사용자_단일_조회를_성공한다() {
-      // given
-      String email = faker.internet()
-          .emailAddress();
-      User user = builderWithEncoder
-          .email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-      User expected = userRepository.save(user);
-
-      // when
-      UserResponse actual = userService.findById(expected.getId());
-
-      // then
-      assertThat(actual.id()).isEqualTo(expected.getId());
     }
 
   }

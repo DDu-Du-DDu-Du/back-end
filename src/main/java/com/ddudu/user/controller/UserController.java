@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +30,7 @@ public class UserController {
   public ResponseEntity<SignUpResponse> signUp(
       @RequestBody
       @Valid
-          SignUpRequest request
+      SignUpRequest request
   ) {
     SignUpResponse response = userService.signUp(request);
     URI uri = URI.create("/api/users/" + response.id());
@@ -40,25 +39,15 @@ public class UserController {
         .body(response);
   }
 
-  @GetMapping("/me")
-  public ResponseEntity<UserResponse> validateToken(
-      @Login
-          Long loginId
-  ) {
-    UserResponse response = userService.findById(loginId);
-
-    return ResponseEntity.ok(response);
-  }
-
   @PatchMapping("/{id}/email")
   public ResponseEntity<UserResponse> updateEmail(
       @Login
-          Long loginId,
+      Long loginId,
       @PathVariable
-          Long id,
+      Long id,
       @RequestBody
       @Valid
-          UpdateEmailRequest request
+      UpdateEmailRequest request
   ) {
     UserResponse response = userService.updateEmail(loginId, id, request);
 
@@ -68,12 +57,12 @@ public class UserController {
   @PatchMapping("/{id}/password")
   public ResponseEntity<UpdatePasswordResponse> updatePassword(
       @Login
-          Long loginId,
+      Long loginId,
       @PathVariable
-          Long id,
+      Long id,
       @RequestBody
       @Valid
-          UpdatePasswordRequest request
+      UpdatePasswordRequest request
   ) {
     UpdatePasswordResponse response = userService.updatePassword(loginId, id, request);
 
