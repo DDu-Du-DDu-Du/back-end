@@ -256,12 +256,12 @@ class TodoServiceTest {
     @Test
     void 로그인_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
       // given
-      Long invaldiLoginId = faker.random()
+      Long invalidLoginId = faker.random()
           .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findAllByDate(invaldiLoginId, user.getId(), date))
+      assertThatThrownBy(() -> todoService.findAllByDate(invalidLoginId, user.getId(), date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
