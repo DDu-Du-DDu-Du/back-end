@@ -71,7 +71,7 @@ public class TodoService {
   }
 
   public List<TodoListResponse> findAllByDate(Long loginId, Long userId, LocalDate date) {
-    User loginUser = findUser(loginId);
+    User loginUser = findLoginUser(loginId);
     User user = findUser(userId);
     List<Goal> goals;
 
@@ -176,6 +176,11 @@ public class TodoService {
   private User findUser(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+  }
+
+  private User findLoginUser(Long loginId) {
+    return userRepository.findById(loginId)
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.LOGIN_USER_NOT_EXISTING));
   }
 
 }
