@@ -19,18 +19,18 @@ INSERT INTO users(id, optional_username, email, password, nickname) VALUES (9,'d
 INSERT INTO users(id, optional_username, email, password, nickname) VALUES (10,'dingmon', 'coding@mon.co.kr', '$2a$10$k3/gS0YD9tAr69nRZRBjQOmf.MiqXa29hdCSa.Kg0i5U4/gISOsDG', '코딩몬');
 
 -- GOAL
-INSERT INTO goal(id, user_id, name, color, privacy) VALUES (1, 8, 'dev course', '75D7E4', 'PUBLIC');
-INSERT INTO goal(id, user_id, name, color, privacy) VALUES (2, 8, 'study', 'F3D056', 'PUBLIC');
-INSERT INTO goal(id, user_id, name, color, privacy) VALUES (3, 8, 'event', 'F1B5CA', 'PRIVATE');
-INSERT INTO goal(id, user_id, name, color, privacy) VALUES (4, 8, 'etc', 'C7D567', 'PUBLIC');
-INSERT INTO goal(id, user_id, name, privacy, status) VALUES (5, 8, 'college', 'PUBLIC', 'DONE');
+INSERT INTO goal(id, user_id, name, color, privacy) VALUES (1, 1, 'dev course', '75D7E4', 'FOLLOWER');
+INSERT INTO goal(id, user_id, name, color, privacy) VALUES (2, 1, 'study', 'F3D056', 'PUBLIC');
+INSERT INTO goal(id, user_id, name, color, privacy) VALUES (3, 1, 'event', 'F1B5CA', 'PRIVATE');
+INSERT INTO goal(id, user_id, name, color, privacy) VALUES (4, 1, 'etc', 'C7D567', 'PUBLIC');
+INSERT INTO goal(id, user_id, name, privacy, status) VALUES (5, 1, 'college', 'PUBLIC', 'DONE');
 
 -- TO DO
-insert into todo(id, name, user_id, goal_id, status) values (1, '10시 30분 마르코 팀미팅', 8, 1, 'UNCOMPLETED');
-insert into todo(id, name, user_id, goal_id, status, end_at) values (2, '9시 QR 출셕', 8, 1, 'COMPLETE', NOW());
-insert into todo(id, name, user_id, goal_id, status) values (3, '1시 RBF', 8, 1, 'UNCOMPLETED');
-insert into todo(id, name, user_id, goal_id, status) values (4, '2시 말코리즘 간단 리뷰', 8, 1, 'UNCOMPLETED');
-insert into todo(id, name, user_id, goal_id, status, end_at, is_deleted) values (5, '9시 뚜두뚜두 스크럼', 8, 1, 'COMPLETE', NOW(), 1);
+insert into todo(id, name, user_id, goal_id, status) values (1, '10시 30분 마르코 팀미팅', 1, 1, 'UNCOMPLETED');
+insert into todo(id, name, user_id, goal_id, status, end_at) values (2, '9시 QR 출셕', 1, 1, 'COMPLETE', NOW());
+insert into todo(id, name, user_id, goal_id, status) values (3, '1시 RBF', 1, 1, 'UNCOMPLETED');
+insert into todo(id, name, user_id, goal_id, status) values (4, '2시 말코리즘 간단 리뷰', 1, 1, 'UNCOMPLETED');
+insert into todo(id, name, user_id, goal_id, status, end_at, is_deleted) values (5, '9시 뚜두뚜두 스크럼', 1, 1, 'COMPLETE', NOW(), 1);
 
 -- FOLLOWING
 INSERT INTO followings(id, follower_id, followee_id, status) VALUES (1, 1, 2, 'FOLLOWING');
