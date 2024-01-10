@@ -82,14 +82,17 @@ public class TodoController {
       @Login
           Long loginId,
       @RequestParam(required = false)
+          Long userId,
+      @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
           LocalDate date
   ) {
+    userId = (userId == null) ? loginId : userId;
     DayOfWeek weekStart = DayOfWeek.MONDAY;
     date = (date == null) ? LocalDate.now()
         .with(weekStart) : date.with(weekStart);
     List<TodoCompletionResponse> completionList = todoService.findWeeklyCompletions(
-        loginId, date);
+        loginId, userId, date);
 
     return ResponseEntity.ok(completionList);
   }
@@ -98,13 +101,16 @@ public class TodoController {
   public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
       @Login
           Long loginId,
+      @RequestParam(required = false)
+          Long userId,
       @RequestParam(value = "date", required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
           YearMonth yearMonth
   ) {
+    userId = (userId == null) ? loginId : userId;
     yearMonth = (yearMonth == null) ? YearMonth.now() : yearMonth;
     List<TodoCompletionResponse> completionList = todoService.findMonthlyCompletions(
-        loginId, yearMonth);
+        loginId, userId, yearMonth);
 
     return ResponseEntity.ok(completionList);
   }
