@@ -6,6 +6,7 @@ import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
+import com.ddudu.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -108,20 +108,20 @@ public class TodoService {
   }
 
   @Transactional
-  public void delete(Long loginId, Long id) {
-    Optional<Todo> optionalTodo = todoRepository.findById(id);
+  public TodoInfo update(Long loginId, Long id, UpdateTodoRequest request) {
+    Todo todo = todoRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
-    if (optionalTodo.isEmpty()) {
-      return;
-    }
+    checkPermission(loginId, todo);
 
-    Todo todo = optionalTodo.get();
+    Goal goal = goalRepository.findById(request.goalId())
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
 
-    if (!todo.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
-    }
+    checkGoalPermission(loginId, goal);
 
-    todo.delete();
+    todo.applyTodoUpdates(goal, request.name(), request.beginAt());
+
+    return TodoInfo.from(todo);
   }
 
   @Transactional
@@ -172,6 +172,18 @@ public class TodoService {
   private User findUser(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+  }
+
+  private void checkPermission(Long userId, Todo todo) {
+    if (!todo.isCreatedByUser(userId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
+  }
+
+  private void checkGoalPermission(Long userId, Goal goal) {
+    if (!goal.isCreatedByUser(userId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
   }
 
 }

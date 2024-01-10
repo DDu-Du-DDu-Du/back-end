@@ -89,6 +89,15 @@ public class Goal extends BaseEntity {
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
 
+  public boolean isCreatedByUser(Long userId) {
+    if (userId == null || this.user == null) {
+      return false;
+    }
+
+    return this.user.getId()
+        .equals(userId);
+  }
+
   private void validate(String name, User user) {
     validateName(name);
     validateUser(user);
