@@ -4,8 +4,10 @@ import com.ddudu.common.annotation.Login;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
+import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
+import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.service.UserService;
 import jakarta.validation.Valid;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -76,6 +79,21 @@ public class UserController {
       UpdatePasswordRequest request
   ) {
     UpdatePasswordResponse response = userService.updatePassword(loginId, id, request);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @PutMapping("/{id}/profile")
+  public ResponseEntity<UserProfileResponse> updateProfile(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      @Valid
+      UpdateProfileRequest request
+  ) {
+    UserProfileResponse response = userService.updateProfile(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }

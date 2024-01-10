@@ -6,12 +6,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.ddudu.auth.jwt.converter.JwtConverter;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
+import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
@@ -195,6 +197,70 @@ class UserServiceTest {
 
       // then
       assertThat(actual.id()).isEqualTo(expected.getId());
+    }
+
+  }
+
+  @Nested
+  class 프로필_수정 {
+
+    String introduction;
+
+    @BeforeEach
+    void setUp() {
+      introduction = faker.book()
+          .title();
+    }
+
+    @Test
+    void 사용자_프로필_수정을_성공한다() {
+      // given
+      User user = createUser();
+
+      String newNickname = faker.oscarMovie()
+          .character();
+      String newIntroduction = faker.book()
+          .title();
+      UpdateProfileRequest request = new UpdateProfileRequest(newNickname, newIntroduction);
+
+      // when
+      userService.updateProfile(user.getId(), user.getId(), request);
+
+      // then
+      User actual = userRepository.findById(user.getId())
+          .get();
+      assertThat(actual).extracting("nickname", "introduction")
+          .containsExactly(newNickname, newIntroduction);
+    }
+
+    @Test
+    void 로그인_사용자와_변경하고자_하는_프로필의_사용자가_다를_경우_프로필_수정에_실패한다() {
+      // given
+      Long invalidLoginId = faker.random()
+          .nextLong();
+      User user = createUser();
+      UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
+
+      // when
+      ThrowingCallable updateProfile = () -> userService.updateProfile(
+          invalidLoginId, user.getId(), request);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateProfile)
+          .withMessage(UserErrorCode.INVALID_AUTHORITY.getMessage());
+    }
+
+    private User createUser() {
+      String email = faker.internet()
+          .emailAddress();
+
+      User user = builderWithEncoder
+          .email(email)
+          .password(password)
+          .nickname(nickname)
+          .build();
+
+      return userRepository.save(user);
     }
 
   }
@@ -399,6 +465,7 @@ class UserServiceTest {
           .get();
       assertThat(updatedUser.getPassword()
           .check(newPassword, passwordEncoder)).isTrue();
+
     }
 
   }
