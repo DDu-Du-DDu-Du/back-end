@@ -232,15 +232,15 @@ class FollowingTest {
           .status(FollowingStatus.REQUESTED)
           .build();
       Following following = entityManager.persistFlushFind(preFollowing);
-      FollowingStatus status = FollowingStatus.FOLLOWING;
+      FollowingStatus expected = FollowingStatus.FOLLOWING;
 
       // when
-      following.updateStatus(status);
+      following.updateStatus(expected);
 
       // then
       Following actual = entityManager.persistFlushFind(following);
 
-      assertThat(actual.getStatus()).isEqualTo(FollowingStatus.FOLLOWING);
+      assertThat(actual.getStatus()).isEqualTo(expected);
     }
 
     @Test
@@ -252,15 +252,15 @@ class FollowingTest {
           .status(FollowingStatus.REQUESTED)
           .build();
       Following following = entityManager.persistFlushFind(preFollowing);
-      FollowingStatus status = FollowingStatus.IGNORED;
+      FollowingStatus expected = FollowingStatus.IGNORED;
 
       // when
-      following.updateStatus(status);
+      following.updateStatus(expected);
 
       // then
       Following actual = entityManager.persistFlushFind(following);
 
-      assertThat(actual.getStatus()).isEqualTo(FollowingStatus.IGNORED);
+      assertThat(actual.getStatus()).isEqualTo(expected);
     }
 
   }
