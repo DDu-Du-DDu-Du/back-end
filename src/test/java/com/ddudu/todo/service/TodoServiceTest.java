@@ -6,7 +6,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
+import com.ddudu.following.dto.request.FollowRequest;
+import com.ddudu.following.service.FollowingService;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
@@ -59,11 +62,15 @@ class TodoServiceTest {
   UserRepository userRepository;
 
   @Autowired
+  FollowingService followingService;
+
+  @Autowired
   EntityManager entityManager;
 
   @Autowired
   JwtEncoder jwtEncoder;
 
+  User loginUser;
   User user;
   LocalDateTime beginAt;
   String name;
@@ -71,6 +78,7 @@ class TodoServiceTest {
 
   @BeforeEach
   void setUp() {
+    loginUser = createUser();
     user = createUser();
     beginAt = LocalDateTime.now();
     name = faker.lorem()
@@ -193,7 +201,8 @@ class TodoServiceTest {
       LocalDate date = LocalDate.now();
 
       // when
-      List<TodoListResponse> responses = todoService.findAllByDate(user.getId(), date);
+      List<TodoListResponse> responses = todoService.findAllByDate(
+          user.getId(), user.getId(), date);
 
       // then
       assertThat(responses).hasSize(1);
@@ -208,14 +217,64 @@ class TodoServiceTest {
     }
 
     @Test
-    void 사용자_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
+    void 주어진_날짜에_팔로워의_할_일_리스트_조회를_성공한다() {
       // given
-      Long userId = faker.random()
+      Goal goal = createGoal(goalName, user);
+      Todo todo = createTodo(name, goal, user);
+
+      LocalDate date = LocalDate.now();
+
+      FollowRequest request = new FollowRequest(user.getId());
+      followingService.create(loginUser.getId(), request);
+
+      // when
+      List<TodoListResponse> responses = todoService.findAllByDate(
+          loginUser.getId(), user.getId(), date);
+
+      // then
+      assertThat(responses).hasSize(0);
+      assertThat(goal.getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
+    }
+
+    @Test
+    void 주어진_날짜에_다른_사용자의_할_일_리스트_조회를_성공한다() {
+      // given
+      Goal goal = createGoal(goalName, user);
+      Todo todo = createTodo(name, goal, user);
+
+      LocalDate date = LocalDate.now();
+
+      // when
+      List<TodoListResponse> responses = todoService.findAllByDate(
+          loginUser.getId(), user.getId(), date);
+
+      // then
+      assertThat(responses).hasSize(0);
+      assertThat(goal.getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
+    }
+
+    @Test
+    void 로그인_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
+      // given
+      Long invaldiLoginId = faker.random()
           .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findAllByDate(userId, date))
+      assertThatThrownBy(() -> todoService.findAllByDate(invaldiLoginId, user.getId(), date))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
+      // given
+      Long invalidUserId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      LocalDate date = LocalDate.now();
+
+      // when then
+      assertThatThrownBy(() -> todoService.findAllByDate(loginUser.getId(), invalidUserId, date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
