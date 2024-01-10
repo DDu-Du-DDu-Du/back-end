@@ -63,9 +63,7 @@ public class TodoService {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
-    if (!todo.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
-    }
+    checkPermission(loginId, todo);
 
     return TodoResponse.from(todo);
   }
@@ -130,9 +128,7 @@ public class TodoService {
 
     Todo todo = optionalTodo.get();
 
-    if (!todo.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
-    }
+    checkPermission(loginId, todo);
 
     todo.delete();
   }
@@ -142,9 +138,7 @@ public class TodoService {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
-    if (!todo.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
-    }
+    checkPermission(loginId, todo);
 
     todo.switchStatus();
 
@@ -181,6 +175,12 @@ public class TodoService {
   private User findLoginUser(Long loginId) {
     return userRepository.findById(loginId)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.LOGIN_USER_NOT_EXISTING));
+  }
+
+  private void checkPermission(Long loginId, Todo todo) {
+    if (!todo.isCreatedByUser(loginId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
   }
 
 }
