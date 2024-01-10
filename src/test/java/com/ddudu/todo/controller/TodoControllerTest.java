@@ -204,7 +204,8 @@ class TodoControllerTest {
       LocalDate date = LocalDate.now();
       List<TodoListResponse> responses = createTodoListResponse();
 
-      given(todoService.findAllByDate(anyLong(), any(LocalDate.class))).willReturn(responses);
+      given(todoService.findAllByDate(anyLong(), anyLong(), any(LocalDate.class))).willReturn(
+          responses);
 
       // when then
       mockMvc.perform(get("/api/todos")
@@ -237,7 +238,7 @@ class TodoControllerTest {
     void 날짜를_전달받지_않으면_현재_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
       // given
       List<TodoListResponse> responses = createTodoListResponse();
-      given(todoService.findAllByDate(anyLong(), any())).willReturn(responses);
+      given(todoService.findAllByDate(anyLong(), anyLong(), any())).willReturn(responses);
 
       // when then
       mockMvc.perform(get("/api/todos")
