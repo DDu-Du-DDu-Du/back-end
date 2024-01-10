@@ -336,7 +336,7 @@ class TodoServiceTest {
   class 할_일_달성률_조회_테스트 {
 
     @Test
-    void 주간_할_일_달성률_조회를_성공한다() {
+    void 자신의_주간_할_일_달성률_조회를_성공한다() {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
@@ -350,7 +350,7 @@ class TodoServiceTest {
 
       // when
       List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
-          user.getId(), mondayDate);
+          user.getId(), user.getId(), mondayDate);
 
       // then
       assertThat(responses).hasSize(7);
@@ -359,20 +359,84 @@ class TodoServiceTest {
     }
 
     @Test
-    void 사용자_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+    void 팔로워의_주간_할_일_달성률_조회를_성공한다() {
       // given
-      Long userId = faker.random()
+      Goal goal1 = createGoal(goalName, user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo(name, goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+
+      LocalDate date = LocalDate.now();
+      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
+      DayOfWeek dayOfWeek = date.getDayOfWeek();
+      int dayIndex = dayOfWeek.getValue() - 1;
+
+      FollowRequest request = new FollowRequest(user.getId());
+      followingService.create(loginUser.getId(), request);
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
+          loginUser.getId(), user.getId(), mondayDate);
+
+      // then
+      assertThat(responses).hasSize(7);
+      assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date, 0, 0);
+    }
+
+    @Test
+    void 다른_사용자의_주간_할_일_달성률_조회를_성공한다() {
+      // given
+      Goal goal1 = createGoal(goalName, user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo(name, goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+
+      LocalDate date = LocalDate.now();
+      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
+      DayOfWeek dayOfWeek = date.getDayOfWeek();
+      int dayIndex = dayOfWeek.getValue() - 1;
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
+          loginUser.getId(), user.getId(), mondayDate);
+
+      // then
+      assertThat(responses).hasSize(7);
+      assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date, 0, 0);
+    }
+
+    @Test
+    void 로그인_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidLoginId = faker.random()
           .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findWeeklyCompletions(userId, date))
+      assertThatThrownBy(
+          () -> todoService.findWeeklyCompletions(invalidLoginId, user.getId(), date))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidUserId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      LocalDate date = LocalDate.now();
+
+      // when then
+      assertThatThrownBy(
+          () -> todoService.findWeeklyCompletions(loginUser.getId(), invalidUserId, date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
     @Test
-    void 월간_할_일_달성률_조회를_성공한다() {
+    void 자신의_월간_할_일_달성률_조회를_성공한다() {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
@@ -386,25 +450,90 @@ class TodoServiceTest {
 
       // when
       List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
-          user.getId(), yearMonth);
+          user.getId(), user.getId(), yearMonth);
 
       // then
       assertThat(responses).hasSize(daysInMonth);
-
       assertThat(responses.get(dayOfMonthIndex)).extracting(
               "date", "totalTodos", "uncompletedTodos")
           .containsExactly(date, 2, 2);
     }
 
     @Test
-    void 사용자_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+    void 팔로워의_월간_할_일_달성률_조회를_성공한다() {
       // given
-      Long userId = faker.random()
+      Goal goal1 = createGoal(goalName, user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo(name, goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+
+      LocalDate date = LocalDate.now();
+      YearMonth yearMonth = YearMonth.now();
+      int daysInMonth = yearMonth.lengthOfMonth();
+      int dayOfMonthIndex = date.getDayOfMonth() - 1;
+
+      FollowRequest request = new FollowRequest(user.getId());
+      followingService.create(loginUser.getId(), request);
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
+          loginUser.getId(), user.getId(), yearMonth);
+
+      // then
+      assertThat(responses).hasSize(daysInMonth);
+      assertThat(responses.get(dayOfMonthIndex)).extracting(
+              "date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date, 0, 0);
+    }
+
+    @Test
+    void 다른_사용자의_월간_할_일_달성률_조회를_성공한다() {
+      // given
+      Goal goal1 = createGoal(goalName, user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo(name, goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+
+      LocalDate date = LocalDate.now();
+      YearMonth yearMonth = YearMonth.now();
+      int daysInMonth = yearMonth.lengthOfMonth();
+      int dayOfMonthIndex = date.getDayOfMonth() - 1;
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
+          loginUser.getId(), user.getId(), yearMonth);
+
+      // then
+      assertThat(responses).hasSize(daysInMonth);
+      assertThat(responses.get(dayOfMonthIndex)).extracting(
+              "date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date, 0, 0);
+    }
+
+    @Test
+    void 로그인_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidLoginId = faker.random()
           .nextLong(Long.MAX_VALUE);
       YearMonth yearMonth = YearMonth.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findMonthlyCompletions(userId, yearMonth))
+      assertThatThrownBy(
+          () -> todoService.findMonthlyCompletions(invalidLoginId, user.getId(), yearMonth))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidUserId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      YearMonth yearMonth = YearMonth.now();
+
+      // when then
+      assertThatThrownBy(
+          () -> todoService.findMonthlyCompletions(loginUser.getId(), invalidUserId, yearMonth))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
