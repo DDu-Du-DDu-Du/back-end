@@ -101,13 +101,13 @@ class TodoServiceTest {
     @Test
     void 사용자ID가_유효하지_않으면_예외가_발생한다() {
       // give
-      Long userRandomId = faker.random()
-          .nextLong();
+      Long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
       CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
 
       // when
-      ThrowingCallable create = () -> todoService.create(userRandomId, request);
+      ThrowingCallable create = () -> todoService.create(userId, request);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
@@ -117,9 +117,9 @@ class TodoServiceTest {
     @Test
     void 목표ID가_유효하지_않으면_예외가_발생한다() {
       // given
-      Long goalRandomId = faker.random()
-          .nextLong();
-      CreateTodoRequest request = new CreateTodoRequest(goalRandomId, name, beginAt);
+      Long goalId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
 
       // when
       ThrowingCallable create = () -> todoService.create(user.getId(), request);
@@ -153,11 +153,11 @@ class TodoServiceTest {
     @Test
     void 아이디가_존재하지_않아_할_일_조회를_실패한다() {
       // given
-      Long randomId = faker.random()
-          .nextLong();
+      Long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
 
       // when then
-      assertThatThrownBy(() -> todoService.findById(user.getId(), randomId))
+      assertThatThrownBy(() -> todoService.findById(user.getId(), id))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
     }
@@ -165,13 +165,13 @@ class TodoServiceTest {
     @Test
     void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_조회할_수_없다() {
       // given
-      Long loginRandomId = faker.random()
-          .nextLong();
+      Long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
       Todo todo = createTodo(name, goal, user);
 
       // when
-      ThrowingCallable findById = () -> todoService.findById(loginRandomId, todo.getId());
+      ThrowingCallable findById = () -> todoService.findById(loginId, todo.getId());
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findById)
@@ -210,12 +210,12 @@ class TodoServiceTest {
     @Test
     void 사용자_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
       // given
-      Long userRandomId = faker.random()
-          .nextLong();
+      Long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findAllByDate(userRandomId, date))
+      assertThatThrownBy(() -> todoService.findAllByDate(userId, date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
@@ -246,11 +246,11 @@ class TodoServiceTest {
     @Test
     void 아이디가_존재하지_않아_할_일_상태_업데이트를_실패한다() {
       // given
-      Long randomId = faker.random()
-          .nextLong();
+      Long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
 
       // when then
-      assertThatThrownBy(() -> todoService.updateStatus(user.getId(), randomId))
+      assertThatThrownBy(() -> todoService.updateStatus(user.getId(), id))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
     }
@@ -258,13 +258,13 @@ class TodoServiceTest {
     @Test
     void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_상태_업데이트를_할_수_없다() {
       // given
-      Long loginRandomId = faker.random()
-          .nextLong();
+      Long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
       Todo todo = createTodo(name, goal, user);
 
       // when
-      ThrowingCallable updateStatus = () -> todoService.updateStatus(loginRandomId, todo.getId());
+      ThrowingCallable updateStatus = () -> todoService.updateStatus(loginId, todo.getId());
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateStatus)
@@ -302,12 +302,12 @@ class TodoServiceTest {
     @Test
     void 사용자_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
       // given
-      Long userRandomId = faker.random()
-          .nextLong();
+      Long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findWeeklyCompletions(userRandomId, date))
+      assertThatThrownBy(() -> todoService.findWeeklyCompletions(userId, date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
@@ -340,12 +340,12 @@ class TodoServiceTest {
     @Test
     void 사용자_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
       // given
-      Long userRandomId = faker.random()
-          .nextLong();
+      Long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       YearMonth yearMonth = YearMonth.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findMonthlyCompletions(userRandomId, yearMonth))
+      assertThatThrownBy(() -> todoService.findMonthlyCompletions(userId, yearMonth))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
@@ -376,8 +376,8 @@ class TodoServiceTest {
     @Test
     void 로그인_사용자_아이디와_삭제할_할_일_사용자_아이디가_다르면_삭제할_수_없다() {
       // given
-      Long randomId = faker.random()
-          .nextLong();
+      Long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
       Todo todo = createTodo(name, goal, user);
 
@@ -385,7 +385,7 @@ class TodoServiceTest {
       assertThat(found).isNotEmpty();
 
       // when
-      ThrowingCallable delete = () -> todoService.delete(randomId, todo.getId());
+      ThrowingCallable delete = () -> todoService.delete(userId, todo.getId());
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(delete)

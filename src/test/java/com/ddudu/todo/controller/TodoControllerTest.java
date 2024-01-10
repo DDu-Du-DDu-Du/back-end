@@ -89,7 +89,7 @@ class TodoControllerTest {
   @BeforeEach
   void setup() {
     userId = faker.random()
-        .nextLong();
+        .nextLong(Long.MAX_VALUE);
     name = faker.lorem()
         .word();
     beginAt = faker.date()
@@ -104,7 +104,9 @@ class TodoControllerTest {
     @Test
     void 할_일_생성을_성공한다() throws Exception {
       // given
-      Long goalId = 1L;
+      Long goalId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      ;
       CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
       TodoInfo response = createTodoInfo();
 
@@ -161,12 +163,12 @@ class TodoControllerTest {
     void 아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
         Exception {
       // given
-      Long randomId = faker.random()
-          .nextLong();
+      Long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
       given(todoService.findById(anyLong(), anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
-      mockMvc.perform(get("/api/todos/{id}", randomId)
+      mockMvc.perform(get("/api/todos/{id}", id)
               .header("Authorization", token))
           .andExpect(status().isNotFound());
     }
@@ -174,15 +176,15 @@ class TodoControllerTest {
     @Test
     void 할_일_조회_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
       // given
-      Long randomId = faker.random()
-          .nextLong();
+      Long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
 
       willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
           .given(todoService)
           .findById(anyLong(), anyLong());
 
       // when then
-      mockMvc.perform(get("/api/todos/{id}", randomId)
+      mockMvc.perform(get("/api/todos/{id}", id)
               .header("Authorization", token))
           .andExpect(status().isForbidden())
           .andExpect(
@@ -422,7 +424,8 @@ class TodoControllerTest {
     void 아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
         Exception {
       // given
-      Long invalidId = 999L;
+      Long invalidId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       given(todoService.updateStatus(anyLong(), anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
@@ -435,15 +438,15 @@ class TodoControllerTest {
     @Test
     void 할_일_상태_변경_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
       // given
-      Long randomId = faker.random()
-          .nextLong();
+      Long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
 
       willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
           .given(todoService)
           .updateStatus(anyLong(), anyLong());
 
       // when then
-      mockMvc.perform(patch("/api/todos/{id}/status", randomId)
+      mockMvc.perform(patch("/api/todos/{id}/status", id)
               .header("Authorization", token)
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isForbidden())
