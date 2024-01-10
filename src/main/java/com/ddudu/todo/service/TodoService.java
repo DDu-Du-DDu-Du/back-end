@@ -4,6 +4,7 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
@@ -27,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -36,7 +36,6 @@ import org.springframework.validation.annotation.Validated;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Validated
-@Slf4j
 public class TodoService {
 
   private final TodoRepository todoRepository;
@@ -76,18 +75,12 @@ public class TodoService {
     User user = findUser(userId);
     List<Goal> goals;
 
-    log.info("loginId: {}, userId: {}", loginId, userId);
-
     if (loginUser.equals(user)) {
-      log.info("본인 조회");
-      goals = goalRepository.findAllByUserAndPrivacyType(user, "ME");
-    } else if (followingRepository.existsByFollowerAndFollowee(loginUser, user)
-        || followingRepository.existsByFollowerAndFollowee(user, loginUser)) {
-      log.info("팔로워 조회");
-      goals = goalRepository.findAllByUserAndPrivacyType(user, "FOLLOWER");
+      goals = goalRepository.findAllByUserAndPrivacyType(user, PrivacyType.PRIVATE);
+    } else if (followingRepository.existsByFollowerAndFollowee(loginUser, user)) {
+      goals = goalRepository.findAllByUserAndPrivacyType(user, PrivacyType.FOLLOWER);
     } else {
-      log.info("다른 사용자 조회");
-      goals = goalRepository.findAllByUserAndPrivacyType(user, "PUBLIC");
+      goals = goalRepository.findAllByUserAndPrivacyType(user, PrivacyType.PUBLIC);
     }
 
     List<Todo> todos = todoRepository.findTodosByDate(
