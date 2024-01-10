@@ -56,10 +56,10 @@ public class FollowingController {
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(
-      @PathVariable
-      Long id,
       @Login
-      Long loginId
+      Long loginId,
+      @PathVariable
+      Long id
   ) {
     followingService.delete(id, loginId);
 

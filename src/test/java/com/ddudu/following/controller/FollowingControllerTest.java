@@ -292,7 +292,7 @@ class FollowingControllerTest {
     }
 
     @Test
-    void 팔로잉_삭제를_성공하고_No_Content를_반환한다() throws Exception {
+    void 팔로잉_삭제를_성공하고_204_No_Content를_반환한다() throws Exception {
       // given
       long followingId = faker.random()
           .nextLong(Long.MAX_VALUE);
