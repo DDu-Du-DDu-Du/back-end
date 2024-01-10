@@ -1,9 +1,11 @@
 package com.ddudu.todo.repository;
 
-import com.ddudu.todo.domain.QTodo;
+import static com.ddudu.todo.domain.QTodo.todo;
+
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
+import com.ddudu.user.domain.User;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
@@ -24,16 +26,14 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
   }
 
   @Override
-  public List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate) {
-    QTodo todo = QTodo.todo;
-
+  public List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, User user) {
     return jpaQueryFactory
         .selectFrom(todo)
         .join(todo.goal)
         .fetchJoin()
         .where(
             todo.beginAt.between(startDate, endDate),
-            todo.isDeleted.eq(false)
+            todo.user.eq(user)
         )
         .orderBy(todo.status.desc(), todo.endAt.asc())
         .fetch();
@@ -41,10 +41,8 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
 
   @Override
   public List<TodoCompletionResponse> findTodosCompletion(
-      LocalDateTime startDate, LocalDateTime endDate
+      LocalDateTime startDate, LocalDateTime endDate, User user
   ) {
-    QTodo todo = QTodo.todo;
-
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
         LocalDate.class, "{0}", todo.beginAt);
 
@@ -74,7 +72,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
         .where(
             todo.beginAt.goe(startDate),
             todo.beginAt.lt(endDate),
-            todo.isDeleted.eq(false)
+            todo.user.eq(user)
         )
         .groupBy(dateTemplate)
         .fetch()

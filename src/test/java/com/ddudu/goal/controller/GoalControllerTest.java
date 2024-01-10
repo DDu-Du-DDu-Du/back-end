@@ -1,6 +1,7 @@
 package com.ddudu.goal.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -424,19 +425,33 @@ class GoalControllerTest {
     }
 
     @Test
-    void 유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
+    void 공개_설정에_null이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
       // given
-      String invalidRequestJson = """
+      UpdateGoalRequest request = new UpdateGoalRequest(
+          validName, GoalStatus.IN_PROGRESS, validColor, null);
+
+      // when then
+      mockMvc.perform(
+              put("/api/goals/{id}", 1L)
+                  .content(objectMapper.writeValueAsString(request))
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$[0].message", is("공개 설정이 입력되지 않았습니다.")));
+    }
+
+    @ParameterizedTest(name = "유효하지 않은 공개 설정: {0}")
+    @ValueSource(strings = {"", " ", "INVALID_TYPE", "public"})
+    void 유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다(String invalidPrivacyType) throws Exception {
+      // given
+      String invalidRequestJson = String.format("""
           {
               "name": "dev course",
-              "status": "INVALID TYPE",
-              "color": "191919",
-              "privacyType": "PUBLIC"
               "status": "IN_PROGRESS",
               "color": "191919",
-              "privacyType": "INVALID TYPE"
+              "privacyType": "%s"
           }
-          """;
+          """, invalidPrivacyType);
 
       GoalResponse response = GoalResponse.builder()
           .build();
@@ -452,7 +467,7 @@ class GoalControllerTest {
           )
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
-              .value(containsString("GoalStatus는 [IN_PROGRESS, DONE] 중 하나여야 합니다.")));
+              .value(containsString("PrivacyType는 [PRIVATE, FOLLOWER, PUBLIC] 중 하나여야 합니다.")));
     }
 
   }

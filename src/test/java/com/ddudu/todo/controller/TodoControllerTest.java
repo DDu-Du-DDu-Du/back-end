@@ -1,9 +1,12 @@
 package com.ddudu.todo.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -11,7 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
@@ -22,6 +27,7 @@ import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
+import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.todo.service.TodoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.DayOfWeek;
@@ -44,6 +50,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = TodoController.class)
@@ -52,6 +64,10 @@ import org.springframework.test.web.servlet.MockMvc;
 class TodoControllerTest {
 
   static final Faker faker = new Faker();
+  static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
+      .build();
+  static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
+      .claim("auth", Authority.NORMAL);
 
   @MockBean
   TodoService todoService;
@@ -62,20 +78,28 @@ class TodoControllerTest {
   @Autowired
   ObjectMapper objectMapper;
 
+  @Autowired
+  JwtEncoder jwtEncoder;
+
+  Long userId;
+  String name;
+  LocalDateTime beginAt;
+  String token;
+
+  @BeforeEach
+  void setup() {
+    userId = faker.random()
+        .nextLong();
+    name = faker.lorem()
+        .word();
+    beginAt = faker.date()
+        .birthday()
+        .toLocalDateTime();
+    token = createBearerToken(userId);
+  }
+
   @Nested
   class POST_할_일_생성_API_테스트 {
-
-    String name;
-    LocalDateTime beginAt;
-
-    @BeforeEach
-    void setUp() {
-      name = faker.lorem()
-          .word();
-      beginAt = faker.date()
-          .birthday()
-          .toLocalDateTime();
-    }
 
     @Test
     void 할_일_생성을_성공한다() throws Exception {
@@ -90,7 +114,7 @@ class TodoControllerTest {
       // when then
       mockMvc.perform(
               post("/api/todos")
-                  .param("userId", "1")
+                  .header("Authorization", token)
                   .content(objectMapper.writeValueAsString(request))
                   .contentType(MediaType.APPLICATION_JSON)
           )
@@ -111,12 +135,13 @@ class TodoControllerTest {
     void 할_일_조회를_성공한다() throws Exception {
       // given
       TodoResponse response = createTodoResponse();
-      given(todoService.findById(anyLong())).willReturn(response);
+      given(todoService.findById(anyLong(), anyLong())).willReturn(response);
 
       // when then
       mockMvc.perform(get(
               "/api/todos/{id}", response.todoInfo()
                   .id())
+              .header("Authorization", token)
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.goalInfo.id").value(response.goalInfo()
@@ -136,12 +161,34 @@ class TodoControllerTest {
     void 아이디가_존재하지_않으면_404_Not_Found_응답을_반환한다() throws
         Exception {
       // given
-      Long invalidId = 999L;
-      given(todoService.findById(anyLong())).willThrow(DataNotFoundException.class);
+      Long randomId = faker.random()
+          .nextLong();
+      given(todoService.findById(anyLong(), anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
-      mockMvc.perform(get("/api/todos/{id}", invalidId))
+      mockMvc.perform(get("/api/todos/{id}", randomId)
+              .header("Authorization", token))
           .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void 할_일_조회_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
+      // given
+      Long randomId = faker.random()
+          .nextLong();
+
+      willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
+          .given(todoService)
+          .findById(anyLong(), anyLong());
+
+      // when then
+      mockMvc.perform(get("/api/todos/{id}", randomId)
+              .header("Authorization", token))
+          .andExpect(status().isForbidden())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
   }
@@ -155,10 +202,12 @@ class TodoControllerTest {
       LocalDate date = LocalDate.now();
       List<TodoListResponse> responses = createTodoListResponse();
 
-      given(todoService.findDailyTodoList(date)).willReturn(responses);
+      given(todoService.findAllByDate(anyLong(), any(LocalDate.class))).willReturn(responses);
 
       // when then
-      mockMvc.perform(get("/api/todos").param("date", date.toString()))
+      mockMvc.perform(get("/api/todos")
+              .header("Authorization", token)
+              .param("date", date.toString()))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
           .andExpect(jsonPath("$[0].goalInfo.id").value(responses.get(0)
@@ -186,10 +235,11 @@ class TodoControllerTest {
     void 날짜를_전달받지_않으면_현재_날짜로_할_일_리스트_조회를_성공한다() throws Exception {
       // given
       List<TodoListResponse> responses = createTodoListResponse();
-      given(todoService.findDailyTodoList(any())).willReturn(responses);
+      given(todoService.findAllByDate(anyLong(), any())).willReturn(responses);
 
       // when then
-      mockMvc.perform(get("/api/todos"))
+      mockMvc.perform(get("/api/todos")
+              .header("Authorization", token))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
           .andExpect(jsonPath("$[0].goalInfo.id").value(responses.get(0)
@@ -214,21 +264,12 @@ class TodoControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"invalid-date", "20231225"})
-    void 유효하지_않은_날짜_형식으로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
+    @ValueSource(strings = {"invalid-date", "20231225", "2023-15-01", "2023-12-33"})
+    void 유효하지_않은_날짜로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos")
-              .param("date", invalidDate))
-          .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"2023-15-01", "2023-12-33"})
-    void 유효하지_않은_날짜로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate) throws Exception {
-      // when then
-      mockMvc.perform(get("/api/todos")
+              .header("Authorization", token)
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
@@ -244,10 +285,12 @@ class TodoControllerTest {
       // given
       LocalDate date = LocalDate.of(2024, 1, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(date, 7);
-      given(todoService.findWeeklyTodoCompletion(date)).willReturn(responses);
+      given(todoService.findWeeklyCompletions(anyLong(), any(LocalDate.class))).willReturn(
+          responses);
 
       // when then
       mockMvc.perform(get("/api/todos/weekly")
+              .header("Authorization", token)
               .param("date", date.toString())
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
@@ -263,10 +306,12 @@ class TodoControllerTest {
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(mondayDate, 7);
-      given(todoService.findWeeklyTodoCompletion(mondayDate)).willReturn(responses);
+      given(todoService.findWeeklyCompletions(anyLong(), any(LocalDate.class))).willReturn(
+          responses);
 
       // when then
       mockMvc.perform(get("/api/todos/weekly")
+              .header("Authorization", token)
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(7))
@@ -281,6 +326,7 @@ class TodoControllerTest {
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos/weekly")
+              .header("Authorization", token)
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message", containsString("형식이 유효하지 않습니다")));
@@ -292,10 +338,12 @@ class TodoControllerTest {
       YearMonth yearMonth = YearMonth.of(2024, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
           yearMonth.atDay(1), 31);
-      given(todoService.findMonthlyTodoCompletion(yearMonth)).willReturn(responses);
+      given(todoService.findMonthlyCompletions(anyLong(), any(YearMonth.class))).willReturn(
+          responses);
 
       // when then
       mockMvc.perform(get("/api/todos/monthly")
+              .header("Authorization", token)
               .param("date", yearMonth.toString())
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
@@ -312,10 +360,12 @@ class TodoControllerTest {
       int daysInMonth = yearMonth.lengthOfMonth();
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
           yearMonth.atDay(1), daysInMonth);
-      given(todoService.findMonthlyTodoCompletion(yearMonth)).willReturn(responses);
+      given(todoService.findMonthlyCompletions(anyLong(), any(YearMonth.class))).willReturn(
+          responses);
 
       // when then
       mockMvc.perform(get("/api/todos/monthly")
+              .header("Authorization", token)
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(daysInMonth))
@@ -331,6 +381,7 @@ class TodoControllerTest {
         throws Exception {
       // when then
       mockMvc.perform(get("/api/todos/monthly")
+              .header("Authorization", token)
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message", containsString("형식이 유효하지 않습니다")));
@@ -345,12 +396,13 @@ class TodoControllerTest {
     void 할_일_상태_변경을_성공한다() throws Exception {
       // given
       TodoResponse response = createTodoResponse();
-      given(todoService.updateStatus(anyLong())).willReturn(response);
+      given(todoService.updateStatus(anyLong(), anyLong())).willReturn(response);
 
       // when then
       mockMvc.perform(patch(
               "/api/todos/{id}/status", response.todoInfo()
                   .id())
+              .header("Authorization", token)
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.goalInfo.id").value(response.goalInfo()
@@ -371,14 +423,85 @@ class TodoControllerTest {
         Exception {
       // given
       Long invalidId = 999L;
-      given(todoService.updateStatus(anyLong())).willThrow(DataNotFoundException.class);
+      given(todoService.updateStatus(anyLong(), anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
       mockMvc.perform(patch("/api/todos/{id}/status", invalidId)
+              .header("Authorization", token)
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNotFound());
     }
 
+    @Test
+    void 할_일_상태_변경_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
+      // given
+      Long randomId = faker.random()
+          .nextLong();
+
+      willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
+          .given(todoService)
+          .updateStatus(anyLong(), anyLong());
+
+      // when then
+      mockMvc.perform(patch("/api/todos/{id}/status", randomId)
+              .header("Authorization", token)
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isForbidden())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
+    }
+
+  }
+
+  @Nested
+  class DELETE_할_일_삭제_테스트 {
+
+    @Test
+    void 할_일_삭제에_성공한다() throws Exception {
+      // given
+      String token = createBearerToken(userId);
+
+      // when then
+      mockMvc.perform(
+              delete("/api/todos/{id}", userId)
+                  .header("Authorization", token)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    void 할_일_삭제_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(userId);
+
+      willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
+          .given(todoService)
+          .delete(anyLong(), anyLong());
+
+      // when then
+      mockMvc.perform(
+              delete("/api/todos/{id}", userId)
+                  .header("Authorization", token)
+                  .contentType(MediaType.APPLICATION_JSON)
+          )
+          .andExpect(status().isForbidden())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
+    }
+
+  }
+
+  private String createBearerToken(long userId) {
+    JwtClaimsSet claims = claimSet.claim("user", userId)
+        .build();
+    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
+    return "Bearer " + jwt.getTokenValue();
   }
 
   private GoalInfo createGoalInfo() {

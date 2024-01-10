@@ -81,6 +81,18 @@ public class GeneralExceptionHandler {
         .body(response);
   }
 
+  @ExceptionHandler(ForbiddenException.class)
+  public ResponseEntity<ErrorResponse> handleForbiddenException(
+      ForbiddenException e
+  ) {
+    log.warn(e.getMessage(), e);
+
+    ErrorResponse response = ErrorResponse.from(e);
+
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .body(response);
+  }
+
   @ExceptionHandler(DataNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFoundException e) {
     log.warn(e.getMessage(), e);
