@@ -7,20 +7,24 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
+import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
+import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.service.UserService;
@@ -432,6 +436,119 @@ class UserControllerTest {
       // then
       actions.andExpect(status().isOk())
           .andExpect(jsonPath("$.message").value(successMessage));
+    }
+
+  }
+
+  @Nested
+  class PUT_프로필_수정_API_테스트 {
+
+    String introduction;
+    Long userId;
+
+    @BeforeEach
+    void setUp() {
+      introduction = faker.book()
+          .title();
+      userId = faker.random()
+          .nextLong();
+    }
+
+    static Stream<Arguments> provideUpdateProfileRequestAndStrings() {
+      String nickname = faker.funnyName()
+          .name();
+      String introduction = faker.book()
+          .title();
+      String over20 = "s".repeat(21);
+      String over50 = faker.howIMetYourMother()
+          .quote()
+          .repeat(2);
+
+      return Stream.of(
+          Arguments.of(
+              "닉네임이 null", new UpdateProfileRequest(null, introduction),
+              "닉네임이 입력되지 않았습니다."
+          ),
+          Arguments.of(
+              "닉네임이 공백", new UpdateProfileRequest("", introduction), "닉네임이 입력되지 않았습니다."
+          ),
+          Arguments.of(
+              "닉네임이 " + over20, new UpdateProfileRequest(over20, introduction),
+              "닉네임은 최대 20자 입니다."
+          ),
+          Arguments.of(
+              "자기소개가 " + over50, new UpdateProfileRequest(nickname, over50),
+              "자기소개는 최대 50자 입니다."
+          )
+      );
+    }
+
+    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
+    @MethodSource("provideUpdateProfileRequestAndStrings")
+    void 유효하지_않은_요청이면_Bad_Request를_반환한다(
+        String cause, UpdateProfileRequest request, String message
+    ) throws Exception {
+      // when
+      ResultActions actions = mockMvc.perform(
+          put("/api/users/{id}/profile", userId)
+              .header("Authorization", createBearerToken(userId))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.[0].code", is(1)))
+          .andExpect(jsonPath("$.[0].message", is(message)));
+    }
+
+    @Test
+    void 프로필_수정_권한이_없으면_Forbidden을_반환한다() throws Exception {
+      // given
+      long invalidId = faker.random()
+          .nextLong();
+      UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
+
+      given(userService.updateProfile(anyLong(), anyLong(), any(UpdateProfileRequest.class)))
+          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
+
+      // when
+      ResultActions actions = mockMvc.perform(
+          put("/api/users/{id}/profile", userId)
+              .header("Authorization", createBearerToken(invalidId))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(UserErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(UserErrorCode.INVALID_AUTHORITY.getMessage())));
+    }
+
+    @Test
+    void 프로필_수정을_성공하면_OK를_반환한다() throws Exception {
+      // given
+      UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
+      UserProfileResponse response = UserProfileResponse.builder()
+          .id(userId)
+          .nickname(nickname)
+          .introduction(introduction)
+          .build();
+
+      given(userService.updateProfile(anyLong(), anyLong(), any(UpdateProfileRequest.class)))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(
+          put("/api/users/{id}/profile", userId)
+              .header("Authorization", createBearerToken(userId))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(response.id()))
+          .andExpect(jsonPath("$.nickname").value(response.nickname()))
+          .andExpect(jsonPath("$.introduction").value(response.introduction()));
     }
 
   }
