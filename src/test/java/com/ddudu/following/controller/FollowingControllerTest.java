@@ -4,6 +4,9 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -271,6 +274,58 @@ class FollowingControllerTest {
       actions.andExpect(status().isOk())
           .andExpect(jsonPath("$.id", is(followingId)))
           .andExpect(jsonPath("$.status", is(FollowingStatus.FOLLOWING.name())));
+    }
+
+  }
+
+  @Nested
+  class DELETE_팔로잉_삭제_API_테스트 {
+
+    long randomId;
+    String token;
+
+    @BeforeEach
+    void setUp() {
+      randomId = faker.random()
+          .nextLong();
+      token = createBearerToken(randomId);
+    }
+
+    @Test
+    void 팔로잉_삭제를_성공하고_No_Content를_반환한다() throws Exception {
+      // given
+      long followingId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      willDoNothing().given(followingService)
+          .delete(anyLong(), anyLong());
+
+      // when
+      ResultActions actions = mockMvc.perform(delete("/api/followings/{id}", followingId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isNoContent());
+    }
+
+    @Test
+    void 로그인한_사용자와_팔로워가_다를_경우_403_Forbidden을_반환한다() throws Exception {
+      // given
+      long followingId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER))
+          .given(followingService)
+          .delete(anyLong(), anyLong());
+
+      // when
+      ResultActions actions = mockMvc.perform(delete("/api/followings/{id}", followingId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.WRONG_OWNER.getCode())))
+          .andExpect(jsonPath("$.message", is(FollowingErrorCode.WRONG_OWNER.getMessage())));
     }
 
   }
