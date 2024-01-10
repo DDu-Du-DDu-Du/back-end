@@ -11,6 +11,7 @@ import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
+import com.ddudu.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -218,6 +219,110 @@ class TodoServiceTest {
       assertThatThrownBy(() -> todoService.findAllByDate(userRandomId, date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+    }
+
+  }
+
+  @Nested
+  class 할_일_수정_테스트 {
+
+    Todo todo;
+    Goal changedGoal;
+    String changedName;
+    LocalDateTime changedBeginAt;
+
+    @BeforeEach
+    void setUp() {
+      Goal goal = createGoal(goalName, user);
+      todo = createTodo(name, goal, user);
+
+      String newGoalName = faker.lorem()
+          .word();
+      changedGoal = createGoal(newGoalName, user);
+
+      changedName = faker.lorem()
+          .word();
+      changedBeginAt = LocalDateTime.now();
+    }
+
+    @Test
+    void 할_일_수정에_성공한다() {
+      // given
+      UpdateTodoRequest request = new UpdateTodoRequest(
+          changedGoal.getId(), changedName, changedBeginAt);
+
+      // when
+      TodoInfo response = todoService.update(user.getId(), todo.getId(), request);
+
+      // then
+      Optional<Todo> actual = todoRepository.findById(todo.getId());
+      assertThat(actual.get()).extracting(
+              "goal", "name", "status")
+          .containsExactly(changedGoal, response.name(), response.status());
+    }
+
+    @Test
+    void 유효하지_않은_ID인_경우_수정에_실패한다() {
+      // given
+      Long invalidId = faker.random()
+          .nextLong();
+      Long goalId = todo.getGoal()
+          .getId();
+      UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
+
+      // when
+      ThrowingCallable update = () -> todoService.update(user.getId(), invalidId, request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
+          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
+      // given
+      Long invalidUserId = faker.random()
+          .nextLong();
+      Long goalId = todo.getGoal()
+          .getId();
+      UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
+
+      // when
+      ThrowingCallable update = () -> todoService.update(invalidUserId, todo.getId(), request);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
+          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+    }
+
+    @Test
+    void 유효하지_않은_목표_ID인_경우_수정에_실패한다() {
+      // given
+      Long invalidGoalId = faker.random()
+          .nextLong();
+      UpdateTodoRequest request = new UpdateTodoRequest(invalidGoalId, name, beginAt);
+
+      // when
+      ThrowingCallable update = () -> todoService.update(user.getId(), todo.getId(), request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
+          .withMessage(TodoErrorCode.GOAL_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 로그인_사용자가_목표에_대한_권한이_없는_경우_수정에_실패한다() {
+      // given
+      User anotherUser = createUser();
+      Goal goalFromAnotherUser = createGoal(goalName, anotherUser);
+      UpdateTodoRequest request = new UpdateTodoRequest(goalFromAnotherUser.getId(), name, beginAt);
+
+      // when
+      ThrowingCallable update = () -> todoService.update(user.getId(), todo.getId(), request);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
+          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
