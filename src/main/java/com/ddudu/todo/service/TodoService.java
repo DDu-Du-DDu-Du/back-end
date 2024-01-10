@@ -46,6 +46,8 @@ public class TodoService {
     Goal goal = goalRepository.findById(request.goalId())
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
 
+    checkGoalPermission(loginId, goal);
+
     Todo todo = Todo.builder()
         .name(request.name())
         .goal(goal)
@@ -60,9 +62,7 @@ public class TodoService {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
-    if (!todo.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
-    }
+    checkPermission(loginId, todo);
 
     return TodoResponse.from(todo);
   }
@@ -129,9 +129,7 @@ public class TodoService {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
-    if (!todo.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
-    }
+    checkPermission(loginId, todo);
 
     todo.switchStatus();
 
