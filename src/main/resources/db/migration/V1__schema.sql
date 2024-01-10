@@ -1,5 +1,5 @@
 -- USER
-CREATE TABLE IF NOT EXISTS users
+create TABLE IF NOT EXISTS users
 (
     id                BIGINT       AUTO_INCREMENT,
     optional_username VARCHAR(20)  NULL,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users
     authority         VARCHAR(15)  NOT NULL DEFAULT 'NORMAL',
     status            VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
     created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON update CURRENT_TIMESTAMP,
     is_deleted        TINYINT(1)   NOT NULL DEFAULT 0,
     CONSTRAINT pk_user_id PRIMARY KEY (id),
     CONSTRAINT uk_user_optional_username UNIQUE (optional_username),
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users
 );
 
 -- GOAL
-CREATE TABLE IF NOT EXISTS goal
+create TABLE IF NOT EXISTS goal
 (
     id         BIGINT      AUTO_INCREMENT,
     user_id    BIGINT      NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS goal
     privacy    VARCHAR(20) NOT NULL DEFAULT 'PRIVATE',
     status     VARCHAR(20) NOT NULL DEFAULT 'IN_PROGRESS',
     created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON update CURRENT_TIMESTAMP,
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_goal_id PRIMARY KEY (id),
     CONSTRAINT fk_goal_user_id FOREIGN KEY (user_id) REFERENCES users (id),
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS goal
 );
 
 -- TO DO
-CREATE TABLE IF NOT EXISTS todo
+create TABLE IF NOT EXISTS todo
 (
     id         BIGINT      AUTO_INCREMENT,
     user_id    BIGINT      NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS todo
     begin_at   TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     end_at     TIMESTAMP   NULL,
     created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON update CURRENT_TIMESTAMP,
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_todo_id PRIMARY KEY (id),
     CONSTRAINT fk_todo_user_id FOREIGN KEY (user_id) REFERENCES users (id),
@@ -53,16 +53,31 @@ CREATE TABLE IF NOT EXISTS todo
 );
 
 -- FOLLOWING
-CREATE TABLE IF NOT EXISTS followings
+create TABLE IF NOT EXISTS followings
 (
     id          BIGINT      AUTO_INCREMENT,
     follower_id BIGINT      NOT NULL,
     followee_id BIGINT      NOT NULL,
     status      VARCHAR(20) NOT NULL DEFAULT 'FOLLOWING',
     created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON update CURRENT_TIMESTAMP,
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_friend_id PRIMARY KEY (id),
-    CONSTRAINT fk_follower_id FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON DELETE CASCADE
+    CONSTRAINT fk_follower_id FOREIGN KEY (follower_id) REFERENCES users (id) ON delete CASCADE,
+    CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON delete CASCADE
 );
+
+-- Likes
+create TABLE IF NOT EXISTS likes
+(
+    id         BIGINT      AUTO_INCREMENT,
+    user_id    BIGINT      NOT NULL,
+    todo_id    BIGINT      NOT NULL,
+    created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON update CURRENT_TIMESTAMP,
+    is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
+    CONSTRAINT pk_like_id PRIMARY KEY (id),
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON delete CASCADE,
+    CONSTRAINT fk_todo_id FOREIGN KEY (todo_id) REFERENCES todo (id) ON delete CASCADE
+);
+
