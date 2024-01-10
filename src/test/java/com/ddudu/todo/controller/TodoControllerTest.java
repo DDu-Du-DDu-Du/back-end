@@ -174,7 +174,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void 할_일_조회_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
+    void 할_일_조회_권한이_없으면_403_Forbidden_응답을_반환한다() throws Exception {
       // given
       Long id = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -436,7 +436,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void 할_일_상태_변경_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
+    void 할_일_상태_변경_권한이_없으면_403_Forbidden_응답을_반환한다() throws Exception {
       // given
       Long id = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -477,7 +477,7 @@ class TodoControllerTest {
     }
 
     @Test
-    void 할_일_삭제_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
+    void 할_일_삭제_권한이_없으면_403_Forbidden_응답을_반환한다() throws Exception {
       // given
       String token = createBearerToken(userId);
 
