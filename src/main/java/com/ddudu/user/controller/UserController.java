@@ -1,9 +1,13 @@
 package com.ddudu.user.controller;
 
 import com.ddudu.auth.jwt.JwtAuthToken;
+import com.ddudu.common.annotation.Login;
 import com.ddudu.user.dto.request.SignUpRequest;
+import com.ddudu.user.dto.request.UpdateEmailRequest;
+import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.service.UserService;
@@ -13,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -41,9 +46,41 @@ public class UserController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<UserResponse> validateToken(Authentication authentication) {
-    long userId = ((JwtAuthToken) authentication).getUserId();
-    UserResponse response = userService.findById(userId);
+  public ResponseEntity<UserResponse> validateToken(
+      @Login
+      Long loginId
+  ) {
+    UserResponse response = userService.findById(loginId);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @PatchMapping("/{id}/email")
+  public ResponseEntity<UserResponse> updateEmail(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      @Valid
+      UpdateEmailRequest request
+  ) {
+    UserResponse response = userService.updateEmail(loginId, id, request);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @PatchMapping("/{id}/password")
+  public ResponseEntity<UpdatePasswordResponse> updatePassword(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      @Valid
+      UpdatePasswordRequest request
+  ) {
+    UpdatePasswordResponse response = userService.updatePassword(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }

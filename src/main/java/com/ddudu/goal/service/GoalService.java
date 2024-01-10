@@ -11,7 +11,6 @@ import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ public class GoalService {
   public CreateGoalResponse create(
       Long userId,
       @Valid
-      CreateGoalRequest request
+          CreateGoalRequest request
   ) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));

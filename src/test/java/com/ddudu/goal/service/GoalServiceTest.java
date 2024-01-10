@@ -280,6 +280,29 @@ class GoalServiceTest {
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 
+    @Test
+    void 유효하지_않은_ID인_경우_목표_수정에_실패한다() {
+      // given
+      long invalidId = faker.random()
+          .nextLong();
+      Goal goal = createGoal(user, validName);
+
+      String changedName = "데브 코스";
+      String changedColor = "999999";
+      GoalStatus changedStatus = GoalStatus.DONE;
+      PrivacyType changedPrivacyType = PrivacyType.PUBLIC;
+
+      UpdateGoalRequest request = new UpdateGoalRequest(
+          changedName, changedStatus, changedColor, changedPrivacyType);
+
+      // when
+      ThrowingCallable update = () -> goalService.update(invalidId, request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
+          .withMessage(GoalErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
   }
 
   @Nested
