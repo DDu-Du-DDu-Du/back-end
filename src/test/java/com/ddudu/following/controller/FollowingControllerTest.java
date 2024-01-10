@@ -157,17 +157,18 @@ class FollowingControllerTest {
   class PUT_팔로잉_수정_API_테스트 {
 
     long randomId;
+    String token;
 
     @BeforeEach
     void setUp() {
       randomId = faker.random()
           .nextLong();
+      token = createBearerToken(randomId);
     }
 
     @Test
     void 요청시_팔로잉_상태가_누락되면_400_Bad_Request를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(randomId);
       UpdateFollowingRequest request = new UpdateFollowingRequest(null);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
@@ -188,7 +189,6 @@ class FollowingControllerTest {
     @Test
     void 존재하지_않는_팔로잉_아이디면_404_Not_Found를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(randomId);
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
@@ -209,7 +209,6 @@ class FollowingControllerTest {
     @Test
     void 요청_상태로_수정_시도_시_400_Bad_Request를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(randomId);
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
@@ -221,6 +220,7 @@ class FollowingControllerTest {
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
+      // then
       actions.andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.code", is(FollowingErrorCode.REQUEST_UNAVAILABLE.getCode())))
           .andExpect(
@@ -230,7 +230,6 @@ class FollowingControllerTest {
     @Test
     void 로그인한_사용자와_팔로잉의_주인이_다르면_403_Forbidden을_반환한다() throws Exception {
       // given
-      String token = createBearerToken(randomId);
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
@@ -251,14 +250,13 @@ class FollowingControllerTest {
     @Test
     void 팔로잉_상태_변경을_성공하고_OK를_반환한다() throws Exception {
       // given
-      long followerId = faker.random()
+      long followingId = faker.random()
           .nextLong();
       long followeeId = faker.random()
           .nextLong();
-      String token = createBearerToken(followerId);
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
       FollowingResponse response = new FollowingResponse(
-          randomId, followerId, followeeId, FollowingStatus.FOLLOWING);
+          followingId, randomId, followeeId, FollowingStatus.FOLLOWING);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willReturn(response);
@@ -271,7 +269,7 @@ class FollowingControllerTest {
 
       // then
       actions.andExpect(status().isOk())
-          .andExpect(jsonPath("$.id", is(randomId)))
+          .andExpect(jsonPath("$.id", is(followingId)))
           .andExpect(jsonPath("$.status", is(FollowingStatus.FOLLOWING.name())));
     }
 
