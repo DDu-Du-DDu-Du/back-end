@@ -288,7 +288,8 @@ class TodoControllerTest {
       // given
       LocalDate date = LocalDate.of(2024, 1, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(date, 7);
-      given(todoService.findWeeklyCompletions(anyLong(), any(LocalDate.class))).willReturn(
+      given(
+          todoService.findWeeklyCompletions(anyLong(), anyLong(), any(LocalDate.class))).willReturn(
           responses);
 
       // when then
@@ -309,7 +310,8 @@ class TodoControllerTest {
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(mondayDate, 7);
-      given(todoService.findWeeklyCompletions(anyLong(), any(LocalDate.class))).willReturn(
+      given(
+          todoService.findWeeklyCompletions(anyLong(), anyLong(), any(LocalDate.class))).willReturn(
           responses);
 
       // when then
@@ -341,7 +343,9 @@ class TodoControllerTest {
       YearMonth yearMonth = YearMonth.of(2024, 1);
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
           yearMonth.atDay(1), 31);
-      given(todoService.findMonthlyCompletions(anyLong(), any(YearMonth.class))).willReturn(
+      given(todoService.findMonthlyCompletions(anyLong(), anyLong(),
+          any(YearMonth.class)
+      )).willReturn(
           responses);
 
       // when then
@@ -363,7 +367,9 @@ class TodoControllerTest {
       int daysInMonth = yearMonth.lengthOfMonth();
       List<TodoCompletionResponse> responses = createEmptyTodoCompletionResponseList(
           yearMonth.atDay(1), daysInMonth);
-      given(todoService.findMonthlyCompletions(anyLong(), any(YearMonth.class))).willReturn(
+      given(todoService.findMonthlyCompletions(anyLong(), anyLong(),
+          any(YearMonth.class)
+      )).willReturn(
           responses);
 
       // when then
