@@ -71,15 +71,8 @@ public class TodoService {
   public List<TodoListResponse> findAllByDate(Long loginId, Long userId, LocalDate date) {
     User loginUser = findLoginUser(loginId);
     User user = findUser(userId);
-    List<Goal> goals;
-
-    if (loginUser.equals(user)) {
-      goals = goalRepository.findAllByUserAndPrivacyType(user, PrivacyType.PRIVATE);
-    } else if (followingRepository.existsByFollowerAndFollowee(loginUser, user)) {
-      goals = goalRepository.findAllByUserAndPrivacyType(user, PrivacyType.FOLLOWER);
-    } else {
-      goals = goalRepository.findAllByUserAndPrivacyType(user, PrivacyType.PUBLIC);
-    }
+    List<Goal> goals = goalRepository.findAllByUserAndPrivacyType(
+        user, determinePrivacyType(loginUser, user));
 
     List<Todo> todos = todoRepository.findTodosByDate(
         date.atStartOfDay(), date.atTime(LocalTime.MAX), user
@@ -101,21 +94,27 @@ public class TodoService {
         .toList();
   }
 
-  public List<TodoCompletionResponse> findWeeklyCompletions(Long loginId, LocalDate date) {
-    User user = findUser(loginId);
+  public List<TodoCompletionResponse> findWeeklyCompletions(
+      Long loginId, Long userId, LocalDate date
+  ) {
+    User loginUser = findLoginUser(loginId);
+    User user = findUser(userId);
     LocalDateTime startDate = date.atStartOfDay();
     LocalDateTime endDate = startDate.plusDays(7);
 
-    return generateCompletions(startDate, endDate, user);
+    return generateCompletions(startDate, endDate, loginUser, user);
   }
 
-  public List<TodoCompletionResponse> findMonthlyCompletions(Long loginId, YearMonth yearMonth) {
-    User user = findUser(loginId);
+  public List<TodoCompletionResponse> findMonthlyCompletions(
+      Long loginId, Long userId, YearMonth yearMonth
+  ) {
+    User loginUser = findLoginUser(loginId);
+    User user = findUser(userId);
     LocalDateTime startDate = yearMonth.atDay(1)
         .atStartOfDay();
     LocalDateTime endDate = startDate.plusMonths(1);
 
-    return generateCompletions(startDate, endDate, user);
+    return generateCompletions(startDate, endDate, loginUser, user);
   }
 
   @Transactional
@@ -146,10 +145,12 @@ public class TodoService {
   }
 
   private List<TodoCompletionResponse> generateCompletions(
-      LocalDateTime startDate, LocalDateTime endDate, User user
+      LocalDateTime startDate, LocalDateTime endDate, User loginUser, User user
   ) {
+    PrivacyType privacyType = determinePrivacyType(loginUser, user);
+
     Map<LocalDate, TodoCompletionResponse> completionByDate = todoRepository.findTodosCompletion(
-            startDate, endDate, user)
+            startDate, endDate, user, privacyType)
         .stream()
         .collect(
             Collectors.toMap(TodoCompletionResponse::date, response -> response));
@@ -180,6 +181,16 @@ public class TodoService {
   private void checkPermission(Long loginId, Todo todo) {
     if (!todo.isCreatedByUser(loginId)) {
       throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
+  }
+
+  private PrivacyType determinePrivacyType(User loginUser, User user) {
+    if (loginUser.equals(user)) {
+      return PrivacyType.PRIVATE;
+    } else if (followingRepository.existsByFollowerAndFollowee(loginUser, user)) {
+      return PrivacyType.FOLLOWER;
+    } else {
+      return PrivacyType.PUBLIC;
     }
   }
 
