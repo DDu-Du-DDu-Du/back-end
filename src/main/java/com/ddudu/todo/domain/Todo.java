@@ -80,6 +80,25 @@ public class Todo extends BaseEntity {
     this.beginAt = beginAt;
   }
 
+  public void switchStatus() {
+    if (this.status == TodoStatus.UNCOMPLETED) {
+      this.status = TodoStatus.COMPLETE;
+      this.endAt = LocalDateTime.now();
+    } else {
+      this.status = TodoStatus.UNCOMPLETED;
+      this.endAt = null;
+    }
+  }
+
+  public boolean isCreatedByUser(Long userId) {
+    if (userId == null || this.user == null) {
+      return false;
+    }
+
+    return this.user.getId()
+        .equals(userId);
+  }
+
   private void validate(Goal goal, User user, String name) {
     validateGoal(goal);
     validateUser(user);
@@ -106,25 +125,6 @@ public class Todo extends BaseEntity {
     if (name.length() > MAX_NAME_LENGTH) {
       throw new InvalidParameterException(TodoErrorCode.EXCESSIVE_NAME_LENGTH);
     }
-  }
-
-  public void switchStatus() {
-    if (this.status == TodoStatus.UNCOMPLETED) {
-      this.status = TodoStatus.COMPLETE;
-      this.endAt = LocalDateTime.now();
-    } else {
-      this.status = TodoStatus.UNCOMPLETED;
-      this.endAt = null;
-    }
-  }
-
-  public boolean isCreatedByUser(Long userId) {
-    if (userId == null || this.user == null) {
-      return false;
-    }
-
-    return this.user.getId()
-        .equals(userId);
   }
 
 }
