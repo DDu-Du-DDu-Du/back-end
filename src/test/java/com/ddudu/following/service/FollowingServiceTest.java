@@ -68,7 +68,7 @@ class FollowingServiceTest {
     void 사용자가_존재하지_않으면_팔로잉_생성을_실패한다() {
       // given
       long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       User followee = createUser();
       FollowRequest request = new FollowRequest(followee.getId());
 
@@ -85,7 +85,7 @@ class FollowingServiceTest {
       // given
       User follower = createUser();
       long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       FollowRequest request = new FollowRequest(randomId);
 
       // when

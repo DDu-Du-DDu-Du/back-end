@@ -72,9 +72,9 @@ class FollowingControllerTest {
     @BeforeEach
     void setUp() {
       followerId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       followeeId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
     }
 
     @Test

@@ -284,7 +284,7 @@ class GoalServiceTest {
     void 유효하지_않은_ID인_경우_목표_수정에_실패한다() {
       // given
       long invalidId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(user, validName);
 
       String changedName = "데브 코스";
