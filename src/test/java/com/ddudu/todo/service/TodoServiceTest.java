@@ -99,7 +99,7 @@ class TodoServiceTest {
     }
 
     @Test
-    void 사용자ID가_유효하지_않으면_예외가_발생한다() {
+    void 사용자ID가_유효하지_않으면_할_일_생성을_실패한다() {
       // give
       Long userId = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -115,7 +115,7 @@ class TodoServiceTest {
     }
 
     @Test
-    void 목표ID가_유효하지_않으면_예외가_발생한다() {
+    void 목표ID가_유효하지_않으면_할_일_생성을_실패한다() {
       // given
       Long goalId = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -163,7 +163,7 @@ class TodoServiceTest {
     }
 
     @Test
-    void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_조회할_수_없다() {
+    void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_조회를_실패한다() {
       // given
       Long loginId = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -184,7 +184,7 @@ class TodoServiceTest {
   class 일별_할_일_조회_테스트 {
 
     @Test
-    void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
+    void 주어진_날짜에_자신의_할_일_리스트_조회를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
       Todo todo1 = createTodo(name, goal, user);
@@ -256,7 +256,7 @@ class TodoServiceTest {
     }
 
     @Test
-    void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_상태_업데이트를_할_수_없다() {
+    void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_상태_업데이트_실패한다() {
       // given
       Long loginId = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -356,7 +356,7 @@ class TodoServiceTest {
   class 할_일_삭제_테스트 {
 
     @Test
-    void 할_일을_삭제_할_수_있다() {
+    void 할_일을_삭제를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
       Todo todo = createTodo(name, goal, user);
@@ -374,7 +374,7 @@ class TodoServiceTest {
     }
 
     @Test
-    void 로그인_사용자_아이디와_삭제할_할_일_사용자_아이디가_다르면_삭제할_수_없다() {
+    void 로그인_사용자_아이디와_삭제할_할_일_사용자_아이디가_다르면_삭제를_실패한다() {
       // given
       Long userId = faker.random()
           .nextLong(Long.MAX_VALUE);
