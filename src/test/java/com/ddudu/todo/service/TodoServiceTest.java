@@ -118,7 +118,7 @@ class TodoServiceTest {
     void 목표ID가_유효하지_않으면_예외가_발생한다() {
       // given
       Long goalRandomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       CreateTodoRequest request = new CreateTodoRequest(goalRandomId, name, beginAt);
 
       // when
