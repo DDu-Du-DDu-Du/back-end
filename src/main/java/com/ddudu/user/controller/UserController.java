@@ -1,6 +1,5 @@
 package com.ddudu.user.controller;
 
-import com.ddudu.auth.jwt.JwtAuthToken;
 import com.ddudu.common.annotation.Login;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
@@ -15,7 +14,6 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -87,14 +85,14 @@ public class UserController {
 
   @PutMapping("/{id}/profile")
   public ResponseEntity<UserProfileResponse> updateProfile(
-      Authentication authentication,
+      @Login
+      Long loginId,
       @PathVariable
       Long id,
       @RequestBody
       @Valid
       UpdateProfileRequest request
   ) {
-    Long loginId = ((JwtAuthToken) authentication).getUserId();
     UserProfileResponse response = userService.updateProfile(loginId, id, request);
 
     return ResponseEntity.ok(response);
