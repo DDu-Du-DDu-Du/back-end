@@ -138,6 +138,15 @@ public class TodoService {
     return TodoResponse.from(todo);
   }
 
+  @Transactional
+  public void delete(Long loginId, Long id) {
+    todoRepository.findById(id)
+        .ifPresent(todo -> {
+          checkPermission(loginId, todo);
+          todo.delete();
+        });
+  }
+
   private List<TodoCompletionResponse> generateCompletions(
       LocalDateTime startDate, LocalDateTime endDate, User user
   ) {
