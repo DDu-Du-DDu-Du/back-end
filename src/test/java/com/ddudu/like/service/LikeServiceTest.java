@@ -279,7 +279,6 @@ class LikeServiceTest {
   private void flushAndClearPersistence() {
     entityManager.flush();
     entityManager.clear();
-    ;
   }
 
 }
