@@ -202,6 +202,22 @@ class GoalControllerTest {
     }
 
     @Test
+    void 로그인_사용자_정보가_없으면_401_Unauthorized를_반환한다() throws Exception {
+      // given
+      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacy);
+
+      // when
+      ResultActions action = mockMvc.perform(
+          post("/api/goals")
+              .content(objectMapper.writeValueAsString(request))
+              .contentType(MediaType.APPLICATION_JSON)
+      );
+
+      // then
+      action.andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void 로그인_사용자_정보가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacy);
