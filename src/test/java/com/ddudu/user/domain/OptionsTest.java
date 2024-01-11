@@ -15,7 +15,7 @@ class OptionsTest {
     Options options = new Options();
 
     // when
-    options.toggleOptions();
+    options.switchOptions();
 
     // then
     assertThat(options.isAllowingFollowsAfterApproval()).isTrue();
@@ -27,7 +27,7 @@ class OptionsTest {
     Options options = new Options(true);
 
     // when
-    options.toggleOptions();
+    options.switchOptions();
 
     // then
     assertThat(options.isAllowingFollowsAfterApproval()).isFalse();

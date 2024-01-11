@@ -581,7 +581,7 @@ class UserControllerTest {
       String token = createBearerToken(userId);
       ToggleOptionResponse response = new ToggleOptionResponse(userId, true);
 
-      given(userService.toggleOption(anyLong(), anyLong()))
+      given(userService.switchOption(anyLong(), anyLong()))
           .willReturn(response);
 
       // when
@@ -602,7 +602,7 @@ class UserControllerTest {
           .nextLong(Long.MAX_VALUE);
       String token = createBearerToken(randomId);
 
-      given(userService.toggleOption(anyLong(), anyLong()))
+      given(userService.switchOption(anyLong(), anyLong()))
           .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHENTICATION));
 
       // when
@@ -621,7 +621,7 @@ class UserControllerTest {
       // given
       String token = createBearerToken(userId);
 
-      given(userService.toggleOption(anyLong(), anyLong()))
+      given(userService.switchOption(anyLong(), anyLong()))
           .willThrow(new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
       // when

@@ -411,7 +411,7 @@ class UserServiceTest {
       User user = createUser(null, null, null);
 
       // when
-      ToggleOptionResponse response = userService.toggleOption(
+      ToggleOptionResponse response = userService.switchOption(
           user.getId(), user.getId());
 
       // then
@@ -424,10 +424,10 @@ class UserServiceTest {
       User user = createUser(null, null, null);
       Options options = user.getOptions();
 
-      options.toggleOptions();
+      options.switchOptions();
 
       // when
-      ToggleOptionResponse response = userService.toggleOption(user.getId(), user.getId());
+      ToggleOptionResponse response = userService.switchOption(user.getId(), user.getId());
 
       // then
       assertThat(response.allowFollowsAfterApproval()).isFalse();
@@ -442,7 +442,7 @@ class UserServiceTest {
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable toggleOption = () -> userService.toggleOption(loginId, id);
+      ThrowingCallable toggleOption = () -> userService.switchOption(loginId, id);
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(toggleOption)
@@ -456,7 +456,7 @@ class UserServiceTest {
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable toggleOption = () -> userService.toggleOption(userId, userId);
+      ThrowingCallable toggleOption = () -> userService.switchOption(userId, userId);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(toggleOption)

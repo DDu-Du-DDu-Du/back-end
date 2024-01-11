@@ -132,7 +132,7 @@ public class UserService {
   }
 
   @Transactional
-  public ToggleOptionResponse toggleOption(Long loginId, Long id) {
+  public ToggleOptionResponse switchOption(Long loginId, Long id) {
     if (!loginId.equals(id)) {
       throw new ForbiddenException(UserErrorCode.INVALID_AUTHENTICATION);
     }
@@ -141,7 +141,7 @@ public class UserService {
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
     Options options = user.getOptions();
 
-    options.toggleOptions();
+    options.switchOptions();
 
     return ToggleOptionResponse.from(user);
   }

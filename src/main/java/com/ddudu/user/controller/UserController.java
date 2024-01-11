@@ -100,13 +100,13 @@ public class UserController {
   }
 
   @PatchMapping("/{id}/options")
-  public ResponseEntity<ToggleOptionResponse> toggleOption(
+  public ResponseEntity<ToggleOptionResponse> switchOption(
       @Login
       Long login,
       @PathVariable
       Long id
   ) {
-    ToggleOptionResponse response = userService.toggleOption(login, id);
+    ToggleOptionResponse response = userService.switchOption(login, id);
 
     return ResponseEntity.ok(response);
   }
