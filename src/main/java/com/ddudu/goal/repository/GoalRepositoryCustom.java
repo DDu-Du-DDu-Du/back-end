@@ -9,6 +9,6 @@ public interface GoalRepositoryCustom {
 
   List<Goal> findAllByUser(User user);
 
-  List<Goal> findAllByUserAndPrivacyType(User user, PrivacyType privacyType);
+  List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes);
 
 }

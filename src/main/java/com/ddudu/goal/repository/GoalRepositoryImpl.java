@@ -34,17 +34,11 @@ public class GoalRepositoryImpl implements GoalRepositoryCustom {
   }
 
   @Override
-  public List<Goal> findAllByUserAndPrivacyType(User user, PrivacyType privacyType) {
+  public List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes) {
     BooleanBuilder whereClause = new BooleanBuilder();
     whereClause.and(goal.user.eq(user));
     whereClause.and(goal.status.eq(GoalStatus.IN_PROGRESS));
-
-    switch (privacyType) {
-      case PUBLIC -> whereClause.and(goal.privacyType.eq(PrivacyType.PUBLIC));
-      case FOLLOWER -> whereClause.and(goal.privacyType.ne(PrivacyType.PRIVATE));
-      default -> {
-      }
-    }
+    whereClause.and(goal.privacyType.in(privacyTypes));
 
     return jpaQueryFactory
         .selectFrom(goal)
