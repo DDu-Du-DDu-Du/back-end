@@ -4,6 +4,7 @@ import com.ddudu.common.BaseEntity;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.like.exception.LikeErrorCode;
 import com.ddudu.todo.domain.Todo;
+import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,6 +61,11 @@ public class Like extends BaseEntity {
 
     if (user.equals(todo.getUser())) {
       throw new InvalidParameterException(LikeErrorCode.SELF_LIKE_UNAVAILABLE);
+    }
+
+    if (todo.getStatus()
+        .equals(TodoStatus.UNCOMPLETED)) {
+      throw new InvalidParameterException(LikeErrorCode.UNAVAILABLE_UNCOMPLETED_TODO);
     }
   }
 
