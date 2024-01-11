@@ -49,6 +49,16 @@ public class LikeService {
     return LikeResponse.from(likeRepository.save(like));
   }
 
+  @Transactional
+  public void delete(Long loginId, Long id) {
+    likeRepository.findById(id)
+        .ifPresent(like -> {
+          checkPermission(loginId, like.getUser()
+              .getId());
+          like.delete();
+        });
+  }
+
   private void checkPermission(Long loginId, Long userId) {
     if (!loginId.equals(userId)) {
       throw new ForbiddenException(LikeErrorCode.INVALID_AUTHORITY);
