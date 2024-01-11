@@ -20,6 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -91,12 +92,7 @@ public class Todo extends BaseEntity {
   }
 
   public boolean isCreatedByUser(Long userId) {
-    if (userId == null || this.user == null) {
-      return false;
-    }
-
-    return this.user.getId()
-        .equals(userId);
+    return Objects.deepEquals(this.user.getId(), userId);
   }
 
   private void validate(Goal goal, User user, String name) {
