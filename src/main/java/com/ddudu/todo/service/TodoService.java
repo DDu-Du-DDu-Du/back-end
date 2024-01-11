@@ -74,8 +74,8 @@ public class TodoService {
     User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
     User user = determineUser(loginId, userId, loginUser);
 
-    List<Goal> goals = goalRepository.findAllByUserAndPrivacyType(
-        user, determinePrivacyType(loginUser, user));
+    List<Goal> goals = goalRepository.findAllByUserAndPrivacyTypes(
+        user, determinePrivacyTypes(loginUser, user));
 
     List<Todo> todos = todoRepository.findTodosByDate(
         date.atStartOfDay(), date.atTime(LocalTime.MAX), user
@@ -152,10 +152,10 @@ public class TodoService {
   private List<TodoCompletionResponse> generateCompletions(
       LocalDateTime startDate, LocalDateTime endDate, User loginUser, User user
   ) {
-    PrivacyType privacyType = determinePrivacyType(loginUser, user);
+    List<PrivacyType> privacyTypes = determinePrivacyTypes(loginUser, user);
 
     Map<LocalDate, TodoCompletionResponse> completionByDate = todoRepository.findTodosCompletion(
-            startDate, endDate, user, privacyType)
+            startDate, endDate, user, privacyTypes)
         .stream()
         .collect(
             Collectors.toMap(TodoCompletionResponse::date, response -> response));
@@ -192,16 +192,16 @@ public class TodoService {
     }
   }
 
-  private PrivacyType determinePrivacyType(User loginUser, User user) {
+  private List<PrivacyType> determinePrivacyTypes(User loginUser, User user) {
     if (loginUser.equals(user)) {
-      return PrivacyType.PRIVATE;
+      return List.of(PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC);
     }
 
     if (followingRepository.existsByFollowerAndFollowee(loginUser, user)) {
-      return PrivacyType.FOLLOWER;
+      return List.of(PrivacyType.FOLLOWER, PrivacyType.PUBLIC);
     }
 
-    return PrivacyType.PUBLIC;
+    return List.of(PrivacyType.PUBLIC);
   }
 
 }
