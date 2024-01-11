@@ -77,7 +77,7 @@ create TABLE IF NOT EXISTS likes
     updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON update CURRENT_TIMESTAMP,
     is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
     CONSTRAINT pk_like_id PRIMARY KEY (id),
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON delete CASCADE,
-    CONSTRAINT fk_todo_id FOREIGN KEY (todo_id) REFERENCES todo (id) ON delete CASCADE
+    CONSTRAINT fk_like_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON delete CASCADE,
+    CONSTRAINT fk_like_todo_id FOREIGN KEY (todo_id) REFERENCES todo (id) ON delete CASCADE
 );
 
