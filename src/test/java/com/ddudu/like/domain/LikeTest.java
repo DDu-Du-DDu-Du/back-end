@@ -74,9 +74,26 @@ class LikeTest {
     }
 
     @Test
+    void 사용자는_미완료된_할_일에_좋아요를_할_수_없다() {
+      // given
+      User other = createUser();
+
+      // when
+      ThrowingCallable construct = () -> Like.builder()
+          .user(other)
+          .todo(todo)
+          .build();
+
+      // then
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(construct)
+          .withMessage(LikeErrorCode.UNAVAILABLE_UNCOMPLETED_TODO.getMessage());
+    }
+
+    @Test
     void 좋아요_생성을_성공한다() {
       // given
       User other = createUser();
+      todo.switchStatus();
 
       // when
       Like like = Like.builder()
