@@ -22,11 +22,13 @@ import java.util.List;
 import java.util.Optional;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -371,6 +373,38 @@ class GoalServiceTest {
       flushAndClearPersistence();
 
       // then
+      Optional<Goal> foundAfterDeleted = goalRepository.findById(goal.getId());
+      assertThat(foundAfterDeleted).isEmpty();
+    }
+
+    @Test
+    void 목표가_존재하지_않는_경우_예외를_발생시키지_않는다() {
+      // given
+      Long loginId = user.getId();
+      Long invalidId = faker.random()
+          .nextLong();
+
+      // when
+      Executable delete = () -> goalService.delete(loginId, invalidId);
+
+      // then
+      Assertions.assertDoesNotThrow(delete);
+    }
+
+    @Test
+    void 목표가_이미_삭제된_경우_예외를_발생시키지_않는다() {
+      // given
+      Long loginId = user.getId();
+      Goal goal = createGoal(user, validName);
+
+      goalService.delete(loginId, goal.getId());
+      flushAndClearPersistence();
+
+      // when
+      Executable delete = () -> goalService.delete(loginId, goal.getId());
+
+      // then
+      Assertions.assertDoesNotThrow(delete);
       Optional<Goal> foundAfterDeleted = goalRepository.findById(goal.getId());
       assertThat(foundAfterDeleted).isEmpty();
     }
