@@ -2,6 +2,7 @@ package com.ddudu.like.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
@@ -18,6 +19,7 @@ import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.repository.TodoRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -52,6 +54,9 @@ class LikeServiceTest {
 
   @Autowired
   TodoRepository todoRepository;
+
+  @Autowired
+  EntityManager entityManager;
 
   User user;
   Goal goal;
@@ -152,6 +157,72 @@ class LikeServiceTest {
 
   }
 
+  @Nested
+  class 좋아요_취소_테스트 {
+
+    @Test
+    void 로그인한_사용자가_좋아요_취소할_사용자와_다르면_좋아요_취소를_실패한다() {
+      // given
+      Long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      User other = createUser();
+      Like like = createLike(other, todo);
+
+      // when
+      ThrowingCallable delete = () -> likeService.delete(loginId, like.getId());
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(delete)
+          .withMessage(LikeErrorCode.INVALID_AUTHORITY.getMessage());
+    }
+
+    @Test
+    void 좋아요가_존재하지_않을_때_예외를_발생시키지_않는다() {
+      // given
+      User other = createUser();
+      Long invalidLikeId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable delete = () -> likeService.delete(other.getId(), invalidLikeId);
+
+      // then
+      assertThatNoException().isThrownBy(delete);
+    }
+
+    @Test
+    void 이미_취소된_좋아요라면_예외를_발생새키지_않는다() {
+      // given
+      User other = createUser();
+      Like like = createLike(other, todo);
+
+      likeService.delete(other.getId(), like.getId());
+      flushAndClearPersistence();
+
+      // when
+      ThrowingCallable delete = () -> likeService.delete(other.getId(), like.getId());
+
+      // then
+      assertThatNoException().isThrownBy(delete);
+    }
+
+    @Test
+    void 좋아요_취소를_성공한다() {
+      // given
+      User other = createUser();
+      Like like = createLike(other, todo);
+
+      // when
+      likeService.delete(other.getId(), like.getId());
+      flushAndClearPersistence();
+
+      // then
+      Optional<Like> actual = likeRepository.findById(like.getId());
+      assertThat(actual).isEmpty();
+    }
+
+  }
+
   private User createUser() {
     String email = faker.internet()
         .emailAddress();
@@ -194,6 +265,21 @@ class LikeServiceTest {
         .build();
 
     return todoRepository.save(todo);
+  }
+
+  private Like createLike(User user, Todo todo) {
+    Like like = Like.builder()
+        .user(user)
+        .todo(todo)
+        .build();
+
+    return likeRepository.save(like);
+  }
+
+  private void flushAndClearPersistence() {
+    entityManager.flush();
+    entityManager.clear();
+    ;
   }
 
 }
