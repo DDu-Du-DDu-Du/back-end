@@ -187,11 +187,13 @@ public class TodoService {
   private PrivacyType determinePrivacyType(User loginUser, User user) {
     if (loginUser.equals(user)) {
       return PrivacyType.PRIVATE;
-    } else if (followingRepository.existsByFollowerAndFollowee(loginUser, user)) {
-      return PrivacyType.FOLLOWER;
-    } else {
-      return PrivacyType.PUBLIC;
     }
+
+    if (followingRepository.existsByFollowerAndFollowee(loginUser, user)) {
+      return PrivacyType.FOLLOWER;
+    }
+
+    return PrivacyType.PUBLIC;
   }
 
 }
