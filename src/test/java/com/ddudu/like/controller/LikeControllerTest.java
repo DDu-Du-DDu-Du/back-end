@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -114,21 +116,6 @@ class LikeControllerTest {
           .andExpect(jsonPath("$.[0].message", is(message)));
     }
 
-//    @Test
-//    void 로그인한_사용자가_없으면_401_Unauthorized를_반환한다() throws Exception {
-//      // given
-//      LikeRequest request = new LikeRequest(userId, todoId);
-//
-//      // when
-//      ResultActions actions = mockMvc.perform(post("/api/likes")
-//          .content(objectMapper.writeValueAsString(request))
-//          .contentType(MediaType.APPLICATION_JSON));
-//
-//      // then
-//      actions.andExpect(status().isUnauthorized())
-//          .andExpect(header().string(HttpHeaders.WWW_AUTHENTICATE, "Bearer"));
-//    }
-
     @Test
     void 좋아요하고_201_Created를_반환한다() throws Exception {
       // given
@@ -146,7 +133,30 @@ class LikeControllerTest {
 
       // then
       actions.andExpect(status().isCreated())
-          .andExpect(header().exists("location"));
+          .andExpect(header().string("location", is("/api/likes/" + response.id())));
+    }
+
+  }
+
+  @Nested
+  class DELETE_좋아요_취소_API_테스트 {
+
+    @Test
+    void 좋아요_취소를_성공하면_204_No_Content를_반환한다() throws Exception {
+      // given
+      Long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      willDoNothing().given(likeService)
+          .delete(anyLong(), anyLong());
+
+      // when
+      ResultActions actions = mockMvc.perform(delete("/api/likes/{id}", id)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isNoContent());
     }
 
   }
