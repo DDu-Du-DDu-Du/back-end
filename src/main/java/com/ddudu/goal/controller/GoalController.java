@@ -37,7 +37,7 @@ public class GoalController {
       Long userId,
       @RequestBody
       @Valid
-      CreateGoalRequest request
+          CreateGoalRequest request
   ) {
     CreateGoalResponse response = goalService.create(userId, request);
     URI uri = URI.create("/api/goals/" + response.id());
@@ -51,10 +51,10 @@ public class GoalController {
       @Login
       Long loginId,
       @PathVariable
-      Long id,
+          Long id,
       @RequestBody
       @Valid
-      UpdateGoalRequest request
+          UpdateGoalRequest request
   ) {
     GoalResponse response = goalService.update(loginId, id, request);
 
@@ -66,7 +66,7 @@ public class GoalController {
       @Login
       Long loginId,
       @PathVariable
-      Long id
+          Long id
   ) {
     GoalResponse response = goalService.findById(loginId, id);
 
@@ -78,7 +78,7 @@ public class GoalController {
       @Login
       Long loginId,
       @RequestParam
-      Long userId
+          Long userId
   ) {
     List<GoalSummaryResponse> response = goalService.findAllByUser(loginId, userId);
 
@@ -90,7 +90,7 @@ public class GoalController {
       @Login
       Long loginId,
       @PathVariable
-      Long id
+          Long id
   ) {
     goalService.delete(loginId, id);
 

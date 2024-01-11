@@ -43,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -539,17 +540,18 @@ class GoalControllerTest {
               .value(containsString("GoalStatus는 [IN_PROGRESS, DONE] 중 하나여야 합니다.")));
     }
 
-    @Test
-    void 유효하지_않은_공개_설정이_입력되면_400_Bad_Request를_반환한다() throws Exception {
+    @ParameterizedTest(name = "유효하지 않은 공개 설정: {0}")
+    @ValueSource(strings = {"", " ", "INVALID_TYPE", "public"})
+    void 유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다(String invalidPrivacyType) throws Exception {
       // given
-      String invalidRequestJson = """
+      String invalidRequestJson = String.format("""
           {
               "name": "dev course",
               "status": "IN_PROGRESS",
               "color": "191919",
-              "privacyType": "INVALID TYPE"
+              "privacyType": "%s"
           }
-          """;
+          """, invalidPrivacyType);
 
       // when
       ResultActions action = mockMvc.perform(

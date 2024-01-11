@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - main
+      - 'feat/**'
+      - 'refactor/**'
 
 permissions:
   contents: read
@@ -34,21 +36,12 @@ jobs:
       - name: Configure application.yaml under test directory
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/test/resources/application.yaml
+          files: ./src/**/resources/application.yaml
         env:
           spring.datasource.url: jdbc:mysql://localhost:3306/${{ secrets.TEST_DB }}
           spring.datasource.username: ${{ secrets.TEST_DB_USER }}
           spring.datasource.password: ${{ secrets.TEST_DB_PASSWORD }}
-
-      - name: Cache Gradle
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          jwt.secret-key: ${{ secrets.JWT_SECRET }}
 
       - name: Grant permission to run gradlew
         run: chmod +x gradlew
@@ -58,6 +51,7 @@ jobs:
 
       - name: Flush Jacoco test report on the pull request
         uses: madrapps/jacoco-report@v1.5
+        if: always()
         with:
           title: 📊 Jacoco Test Coverage
           paths: ${{ github.workspace }}/**/build/jacocoReports/jacoco.xml

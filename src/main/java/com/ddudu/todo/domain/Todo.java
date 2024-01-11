@@ -110,4 +110,13 @@ public class Todo extends BaseEntity {
     }
   }
 
+  public boolean isCreatedByUser(Long userId) {
+    if (userId == null || this.user == null) {
+      return false;
+    }
+
+    return this.user.getId()
+        .equals(userId);
+  }
+
 }
