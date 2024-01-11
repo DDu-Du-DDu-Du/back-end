@@ -95,6 +95,14 @@ public class User extends BaseEntity {
     return email.getAddress();
   }
 
+  public void applyEmailUpdate(Email newEmail) {
+    this.email = newEmail;
+  }
+
+  public void applyPasswordUpdate(Password newPassword) {
+    this.password = newPassword;
+  }
+
   public void applyProfileUpdate(String nickname, String introduction) {
     validate(nickname, null, introduction);
 
@@ -138,14 +146,6 @@ public class User extends BaseEntity {
     if (introduction.length() > MAX_INTRODUCTION_LENGTH) {
       throw new InvalidParameterException(UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH);
     }
-  }
-
-  public void applyEmailUpdate(Email newEmail) {
-    this.email = newEmail;
-  }
-
-  public void applyPasswordUpdate(Password newPassword) {
-    this.password = newPassword;
   }
 
 }

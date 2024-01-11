@@ -1,6 +1,7 @@
 package com.ddudu.user.domain;
 
 import jakarta.persistence.Embeddable;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,7 @@ public class Options {
     allowingFollowsAfterApproval = DEFAULT_OFF;
   }
 
-  public void toggleFollowsAfterApproval() {
+  public void toggleOptions() {
     allowingFollowsAfterApproval = !allowingFollowsAfterApproval;
   }
 
