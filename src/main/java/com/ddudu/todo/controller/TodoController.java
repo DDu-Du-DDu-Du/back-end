@@ -60,7 +60,7 @@ public class TodoController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping
+  @GetMapping("/daily")
   public ResponseEntity<List<TodoListResponse>> getDaily(
       @Login
           Long loginId,
