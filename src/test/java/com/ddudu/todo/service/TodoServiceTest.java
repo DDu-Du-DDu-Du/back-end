@@ -107,7 +107,7 @@ class TodoServiceTest {
     }
 
     @Test
-    void 사용자ID가_유효하지_않으면_할_일_생성을_실패한다() {
+    void 사용자ID가_유효하지_않으면_예외가_발생한다() {
       // give
       Long userId = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -123,7 +123,7 @@ class TodoServiceTest {
     }
 
     @Test
-    void 목표ID가_유효하지_않으면_할_일_생성을_실패한다() {
+    void 목표ID가_유효하지_않으면_예외가_발생한다() {
       // given
       Long goalId = faker.random()
           .nextLong(Long.MAX_VALUE);
