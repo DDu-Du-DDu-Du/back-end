@@ -47,6 +47,7 @@ public class TodoService {
   @Transactional
   public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
     User user = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+
     Goal goal = goalRepository.findById(request.goalId())
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
 
@@ -72,6 +73,7 @@ public class TodoService {
   public List<TodoListResponse> findAllByDate(Long loginId, Long userId, LocalDate date) {
     User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
     User user = findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
+
     List<Goal> goals = goalRepository.findAllByUserAndPrivacyType(
         user, determinePrivacyType(loginUser, user));
 
@@ -100,6 +102,7 @@ public class TodoService {
   ) {
     User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
     User user = findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
+
     LocalDateTime startDate = date.atStartOfDay();
     LocalDateTime endDate = startDate.plusDays(7);
 
@@ -111,6 +114,7 @@ public class TodoService {
   ) {
     User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
     User user = findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
+
     LocalDateTime startDate = yearMonth.atDay(1)
         .atStartOfDay();
     LocalDateTime endDate = startDate.plusMonths(1);
