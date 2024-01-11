@@ -119,7 +119,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
