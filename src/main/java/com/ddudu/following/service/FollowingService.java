@@ -3,10 +3,13 @@ package com.ddudu.following.service;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.following.domain.Following;
+import com.ddudu.following.domain.Following.FollowingBuilder;
+import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.following.dto.request.FollowRequest;
 import com.ddudu.following.dto.response.FollowResponse;
 import com.ddudu.following.exception.FollowingErrorCode;
 import com.ddudu.following.repository.FollowingRepository;
+import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -35,11 +38,17 @@ public class FollowingService {
       throw new DuplicateResourceException(FollowingErrorCode.ALREADY_FOLLOWING);
     }
 
-    Following following = Following.builder()
+    FollowingBuilder followingBuilder = Following.builder()
         .follower(follower)
-        .followee(followee)
-        .build();
-    Following saved = followingRepository.save(following);
+        .followee(followee);
+
+    Options followeeOptions = followee.getOptions();
+
+    if (followeeOptions.isAllowingFollowsAfterApproval()) {
+      followingBuilder.status(FollowingStatus.REQUESTED);
+    }
+
+    Following saved = followingRepository.save(followingBuilder.build());
 
     return FollowResponse.from(saved);
   }

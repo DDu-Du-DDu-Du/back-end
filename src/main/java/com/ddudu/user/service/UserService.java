@@ -2,6 +2,7 @@ package com.ddudu.user.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.Password;
@@ -10,8 +11,10 @@ import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
+import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
+import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
@@ -68,6 +71,19 @@ public class UserService {
   }
 
   @Transactional
+  public UserProfileResponse updateProfile(Long loginId, Long id, UpdateProfileRequest request) {
+    if (loginId != id) {
+      throw new ForbiddenException(UserErrorCode.INVALID_AUTHORITY);
+    }
+
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+    user.applyProfileUpdate(request.nickname(), request.introduction());
+
+    return UserProfileResponse.from(user);
+  }
+
   public UserResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
     if (!loginId.equals(userId)) {
       throw new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION);
