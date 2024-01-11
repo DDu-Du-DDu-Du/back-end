@@ -7,7 +7,6 @@ import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.user.domain.User;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
@@ -43,7 +42,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
 
   @Override
   public List<TodoCompletionResponse> findTodosCompletion(
-      LocalDateTime startDate, LocalDateTime endDate, User user, PrivacyType privacyType
+      LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
   ) {
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
         LocalDate.class, "{0}", todo.beginAt);
@@ -75,7 +74,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
             todo.beginAt.goe(startDate),
             todo.beginAt.lt(endDate),
             todo.user.eq(user),
-            applyPrivacyTypeCondition(privacyType)
+            todo.goal.privacyType.in(privacyTypes)
         )
         .groupBy(dateTemplate)
         .fetch()
@@ -89,14 +88,6 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
                 .intValue())
             .build())
         .toList();
-  }
-
-  private BooleanExpression applyPrivacyTypeCondition(PrivacyType privacyType) {
-    return switch (privacyType) {
-      case PUBLIC -> todo.goal.privacyType.eq(PrivacyType.PUBLIC);
-      case FOLLOWER -> todo.goal.privacyType.ne(PrivacyType.PRIVATE);
-      default -> null;
-    };
   }
 
 }

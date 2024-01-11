@@ -12,7 +12,7 @@ public interface TodoRepositoryCustom {
   List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, User user);
 
   List<TodoCompletionResponse> findTodosCompletion(
-      LocalDateTime startDate, LocalDateTime endDate, User user, PrivacyType privacyType
+      LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
   );
 
 }
