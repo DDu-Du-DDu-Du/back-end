@@ -72,7 +72,7 @@ public class TodoService {
 
   public List<TodoListResponse> findAllByDate(Long loginId, Long userId, LocalDate date) {
     User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
-    User user = findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
+    User user = determineUser(loginId, userId, loginUser);
 
     List<Goal> goals = goalRepository.findAllByUserAndPrivacyType(
         user, determinePrivacyType(loginUser, user));
@@ -101,7 +101,7 @@ public class TodoService {
       Long loginId, Long userId, LocalDate date
   ) {
     User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
-    User user = findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
+    User user = determineUser(loginId, userId, loginUser);
 
     LocalDateTime startDate = date.atStartOfDay();
     LocalDateTime endDate = startDate.plusDays(7);
@@ -113,7 +113,7 @@ public class TodoService {
       Long loginId, Long userId, YearMonth yearMonth
   ) {
     User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
-    User user = findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
+    User user = determineUser(loginId, userId, loginUser);
 
     LocalDateTime startDate = yearMonth.atDay(1)
         .atStartOfDay();
@@ -171,6 +171,14 @@ public class TodoService {
     }
 
     return completionList;
+  }
+
+  private User determineUser(Long loginId, Long userId, User loginUser) {
+    if (loginId.equals(userId)) {
+      return loginUser;
+    }
+
+    return findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
   }
 
   private User findUser(Long userId, ErrorCode errorCode) {
