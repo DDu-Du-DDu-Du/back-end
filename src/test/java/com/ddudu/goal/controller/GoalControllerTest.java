@@ -214,7 +214,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           post("/api/goals")
-              .header("Authorization", token)
+              .header("Authorization", createBearerToken(invalidId))
               .content(objectMapper.writeValueAsString(request))
               .contentType(MediaType.APPLICATION_JSON)
       );
