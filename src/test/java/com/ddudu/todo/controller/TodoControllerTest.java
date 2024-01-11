@@ -208,7 +208,7 @@ class TodoControllerTest {
           responses);
 
       // when then
-      mockMvc.perform(get("/api/todos")
+      mockMvc.perform(get("/api/todos/daily")
               .header("Authorization", token)
               .param("date", date.toString()))
           .andExpect(status().isOk())
@@ -241,7 +241,7 @@ class TodoControllerTest {
       given(todoService.findAllByDate(anyLong(), anyLong(), any())).willReturn(responses);
 
       // when then
-      mockMvc.perform(get("/api/todos")
+      mockMvc.perform(get("/api/todos/daily")
               .header("Authorization", token))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
@@ -271,7 +271,7 @@ class TodoControllerTest {
     void 유효하지_않은_날짜로_할_일_리스트를_조회하면_400_Bad_Request_응답을_반환한다(String invalidDate)
         throws Exception {
       // when then
-      mockMvc.perform(get("/api/todos")
+      mockMvc.perform(get("/api/todos/daily")
               .header("Authorization", token)
               .param("date", invalidDate))
           .andExpect(status().isBadRequest())
