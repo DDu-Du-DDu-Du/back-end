@@ -1,6 +1,7 @@
 package com.ddudu.todo.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.goal.domain.Goal;
@@ -45,7 +46,7 @@ public class TodoService {
 
   @Transactional
   public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
-    User user = findUser(loginId);
+    User user = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
     Goal goal = goalRepository.findById(request.goalId())
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
 
@@ -69,8 +70,8 @@ public class TodoService {
   }
 
   public List<TodoListResponse> findAllByDate(Long loginId, Long userId, LocalDate date) {
-    User loginUser = findLoginUser(loginId);
-    User user = findUser(userId);
+    User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+    User user = findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
     List<Goal> goals = goalRepository.findAllByUserAndPrivacyType(
         user, determinePrivacyType(loginUser, user));
 
@@ -97,8 +98,8 @@ public class TodoService {
   public List<TodoCompletionResponse> findWeeklyCompletions(
       Long loginId, Long userId, LocalDate date
   ) {
-    User loginUser = findLoginUser(loginId);
-    User user = findUser(userId);
+    User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+    User user = findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
     LocalDateTime startDate = date.atStartOfDay();
     LocalDateTime endDate = startDate.plusDays(7);
 
@@ -108,8 +109,8 @@ public class TodoService {
   public List<TodoCompletionResponse> findMonthlyCompletions(
       Long loginId, Long userId, YearMonth yearMonth
   ) {
-    User loginUser = findLoginUser(loginId);
-    User user = findUser(userId);
+    User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+    User user = findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
     LocalDateTime startDate = yearMonth.atDay(1)
         .atStartOfDay();
     LocalDateTime endDate = startDate.plusMonths(1);
@@ -168,14 +169,9 @@ public class TodoService {
     return completionList;
   }
 
-  private User findUser(Long userId) {
+  private User findUser(Long userId, ErrorCode errorCode) {
     return userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
-  }
-
-  private User findLoginUser(Long loginId) {
-    return userRepository.findById(loginId)
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.LOGIN_USER_NOT_EXISTING));
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
   }
 
   private void checkPermission(Long loginId, Todo todo) {
