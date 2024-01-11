@@ -113,7 +113,7 @@ class GoalControllerTest {
       // when
       ResultActions actions = mockMvc.perform(
           post("/api/goals")
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .content(objectMapper.writeValueAsString(request))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -133,7 +133,7 @@ class GoalControllerTest {
       // when
       ResultActions actions = mockMvc.perform(
           post("/api/goals")
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .content(objectMapper.writeValueAsString(request))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -158,7 +158,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           post("/api/goals")
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .content(invalidRequestJson)
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -184,7 +184,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           post("/api/goals")
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .content(objectMapper.writeValueAsString(request))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -211,7 +211,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           post("/api/goals")
-              .header("Authorization", getToken(invalidId))
+              .header("Authorization", createBearerToken(invalidId))
               .content(objectMapper.writeValueAsString(request))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -270,7 +270,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           get("/api/goals/{id}", response.id())
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .contentType(MediaType.APPLICATION_JSON)
       );
 
@@ -297,7 +297,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           get("/api/goals/{id}", invalidId)
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .contentType(MediaType.APPLICATION_JSON)
       );
 
@@ -323,7 +323,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           get("/api/goals/{id}", id)
-              .header("Authorization", getToken(invalidUserId))
+              .header("Authorization", createBearerToken(invalidUserId))
               .contentType(MediaType.APPLICATION_JSON)
       );
 
@@ -364,7 +364,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           get("/api/goals")
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .param("userId", "1")
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -390,7 +390,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           get("/api/goals")
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .queryParam("userId", String.valueOf(invalidUserId))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -416,7 +416,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           get("/api/goals")
-              .header("Authorization", getToken(invalidLoginId))
+              .header("Authorization", createBearerToken(invalidLoginId))
               .queryParam("userId", String.valueOf(validUserId))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -471,7 +471,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           put("/api/goals/{id}", goalId)
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .content(objectMapper.writeValueAsString(request))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -498,7 +498,7 @@ class GoalControllerTest {
       // when
       ResultActions actions = mockMvc.perform(
           put("/api/goals/{id}", goalId)
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .content(objectMapper.writeValueAsString(request))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -524,7 +524,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           put("/api/goals/{id}", 1L)
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .content(invalidRequestJson)
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -552,7 +552,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           put("/api/goals/{id}", 1L)
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .content(invalidRequestJson)
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -579,7 +579,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           put("/api/goals/{id}", invalidId)
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .content(objectMapper.writeValueAsString(request))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -609,7 +609,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           put("/api/goals/{id}", goalId)
-              .header("Authorization", getToken(invalidUserId))
+              .header("Authorization", createBearerToken(invalidUserId))
               .content(objectMapper.writeValueAsString(request))
               .contentType(MediaType.APPLICATION_JSON)
       );
@@ -691,7 +691,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           delete("/api/goals/{id}", goalId)
-              .header("Authorization", getToken(validUserId))
+              .header("Authorization", createBearerToken(validUserId))
               .contentType(MediaType.APPLICATION_JSON)
       );
 
@@ -713,7 +713,7 @@ class GoalControllerTest {
       // when
       ResultActions action = mockMvc.perform(
           delete("/api/goals/{id}", goalId)
-              .header("Authorization", getToken(invalidUserId))
+              .header("Authorization", createBearerToken(invalidUserId))
               .contentType(MediaType.APPLICATION_JSON)
       );
 
@@ -728,7 +728,7 @@ class GoalControllerTest {
 
   }
 
-  private String getToken(Long userId) {
+  private String createBearerToken(Long userId) {
     JwtClaimsSet claims = claimSet.claim("user", userId)
         .build();
     Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
