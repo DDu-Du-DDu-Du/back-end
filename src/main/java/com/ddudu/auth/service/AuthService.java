@@ -2,14 +2,17 @@ package com.ddudu.auth.service;
 
 import com.ddudu.auth.dto.request.LoginRequest;
 import com.ddudu.auth.dto.response.LoginResponse;
+import com.ddudu.auth.dto.response.MeResponse;
 import com.ddudu.auth.exception.AuthErrorCode;
 import com.ddudu.auth.jwt.JwtIssuer;
 import com.ddudu.common.exception.BadCredentialsException;
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.config.properties.JwtProperties;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.repository.UserRepository;
 import java.time.Duration;
 import java.util.HashMap;
@@ -18,10 +21,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthService {
 
   private final UserRepository userRepository;
@@ -48,6 +53,13 @@ public class AuthService {
     String jwt = jwtIssuer.issue(claims, Duration.ofMinutes(jwtProperties.getExpiredAfter()));
 
     return new LoginResponse(jwt);
+  }
+
+  public MeResponse loadUser(Long loginId) {
+    User user = userRepository.findById(loginId)
+        .orElseThrow(() -> new InvalidTokenException(AuthErrorCode.INVALID_AUTHENTICATION));
+
+    return MeResponse.from(user);
   }
 
 }

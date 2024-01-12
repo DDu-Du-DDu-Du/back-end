@@ -164,7 +164,7 @@ class UserServiceTest {
   }
 
   @Nested
-  class 사용자_단일_조회 {
+  class 사용자_단일_조회_테스트 {
 
     @Test
     void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
@@ -176,8 +176,8 @@ class UserServiceTest {
       ThrowingCallable login = () -> userService.findById(randomId);
 
       // then
-      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(login)
-          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
