@@ -6,9 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.auth.dto.request.LoginRequest;
 import com.ddudu.auth.dto.response.LoginResponse;
+import com.ddudu.auth.dto.response.MeResponse;
 import com.ddudu.auth.exception.AuthErrorCode;
 import com.ddudu.common.exception.BadCredentialsException;
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Map;
@@ -47,17 +49,20 @@ class AuthServiceTest {
 
   String email;
   String password;
+  String nickname;
+
+  @BeforeEach
+  void setUp() {
+    email = faker.internet()
+        .emailAddress();
+    password = faker.internet()
+        .password(8, 40, true, true, true);
+    nickname = faker.funnyName()
+        .name();
+  }
 
   @Nested
   class 로그인_테스트 {
-
-    @BeforeEach
-    void setUp() {
-      email = faker.internet()
-          .emailAddress();
-      password = faker.internet()
-          .password(8, 40, false, true, true);
-    }
 
     @Test
     void 존재하지_않는_이메일_로그인을_실패한다() {
@@ -124,5 +129,46 @@ class AuthServiceTest {
       assertThat(actualId).isEqualTo(expected.getId());
       assertThat(actualAuthority).isEqualTo(expected.getAuthority());
     }
+
   }
+
+  @Nested
+  class 사용자_로딩_테스트 {
+
+    @Test
+    void 존재하지_않는_사용자_아이디_로딩을_실패한다() {
+      // given
+      long randomId = faker.random()
+          .nextLong();
+
+      // when
+      ThrowingCallable login = () -> authService.loadUser(randomId);
+
+      // then
+      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(login)
+          .withMessage(AuthErrorCode.INVALID_AUTHENTICATION.getMessage());
+    }
+
+    @Test
+    void 사용자_로딩을_성공한다() {
+      // given
+      String email = faker.internet()
+          .emailAddress();
+      User user = User.builder()
+          .passwordEncoder(passwordEncoder)
+          .email(email)
+          .password(password)
+          .nickname(nickname)
+          .build();
+      User expected = userRepository.save(user);
+
+      // when
+      MeResponse actual = authService.loadUser(expected.getId());
+
+      // then
+      assertThat(actual.id()).isEqualTo(expected.getId());
+    }
+
+  }
+
 }

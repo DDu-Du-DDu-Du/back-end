@@ -2,11 +2,14 @@ package com.ddudu.following.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.ForbiddenException;
+import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.following.domain.Following;
 import com.ddudu.following.domain.Following.FollowingBuilder;
 import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.following.dto.request.FollowRequest;
-import com.ddudu.following.dto.response.FollowResponse;
+import com.ddudu.following.dto.request.UpdateFollowingRequest;
+import com.ddudu.following.dto.response.FollowingResponse;
 import com.ddudu.following.exception.FollowingErrorCode;
 import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.user.domain.Options;
@@ -26,9 +29,15 @@ public class FollowingService {
   private final UserRepository userRepository;
   private final FollowingRepository followingRepository;
 
+  private static void checkPermission(Long loginId, Following following) {
+    if (!following.isOwnedBy(loginId)) {
+      throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
+    }
+  }
+
   @Transactional
   @Validated
-  public FollowResponse create(Long followerId, @Valid FollowRequest request) {
+  public FollowingResponse create(Long followerId, @Valid FollowRequest request) {
     User follower = userRepository.findById(followerId)
         .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.FOLLOWER_NOT_EXISTING));
     User followee = userRepository.findById(request.followeeId())
@@ -50,7 +59,36 @@ public class FollowingService {
 
     Following saved = followingRepository.save(followingBuilder.build());
 
-    return FollowResponse.from(saved);
+    return FollowingResponse.from(saved);
+  }
+
+  @Transactional
+  public FollowingResponse updateStatus(Long id, Long followerId, UpdateFollowingRequest request) {
+    Following following = followingRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
+
+    if (!following.isOwnedBy(followerId)) {
+      throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
+    }
+
+    FollowingStatus requestedStatus = request.status();
+
+    if (!requestedStatus.isModifiable()) {
+      throw new InvalidParameterException(FollowingErrorCode.REQUEST_UNAVAILABLE);
+    }
+
+    following.updateStatus(requestedStatus);
+
+    return FollowingResponse.from(following);
+  }
+
+  @Transactional
+  public void delete(Long id, Long loginId) {
+    followingRepository.findById(id)
+        .ifPresent(following -> {
+          checkPermission(loginId, following);
+          followingRepository.delete(following);
+        });
   }
 
 }
