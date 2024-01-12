@@ -7,9 +7,12 @@ import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
+import com.ddudu.like.domain.Like;
+import com.ddudu.like.repository.LikeRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.request.UpdateTodoRequest;
+import com.ddudu.todo.dto.response.LikeInfo;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -43,6 +46,7 @@ public class TodoService {
   private final GoalRepository goalRepository;
   private final UserRepository userRepository;
   private final FollowingRepository followingRepository;
+  private final LikeRepository likeRepository;
 
   @Transactional
   public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
@@ -86,11 +90,23 @@ public class TodoService {
         .collect(Collectors.groupingBy(todo -> todo.getGoal()
             .getId()));
 
+    Map<Long, List<Like>> likesByTodo = likeRepository.findByTodos(todos)
+        .stream()
+        .collect(Collectors.groupingBy(like -> like.getTodo()
+            .getId()));
+
     return goals.stream()
         .map(goal -> {
           List<TodoInfo> todoInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
               .stream()
-              .map(TodoInfo::from)
+              .map(todo -> {
+                List<Like> likes = likesByTodo.getOrDefault(todo.getId(), Collections.emptyList());
+                List<Long> likedUsers = likes.stream()
+                    .map(like -> like.getUser()
+                        .getId())
+                    .collect(Collectors.toList());
+                return TodoInfo.from(todo, LikeInfo.from(likedUsers));
+              })
               .toList();
 
           return TodoListResponse.from(goal, todoInfos);
