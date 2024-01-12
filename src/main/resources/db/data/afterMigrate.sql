@@ -30,7 +30,7 @@ insert into goal(id, user_id, name, privacy, status) values (5, 1, 'college', 'P
 insert into todo(id, name, user_id, goal_id, status) values (1, '10시 30분 마르코 팀미팅', 1, 1, 'UNCOMPLETED');
 insert into todo(id, name, user_id, goal_id, status, end_at) values (2, '9시 QR 출셕', 1, 1, 'COMPLETE', NOW());
 insert into todo(id, name, user_id, goal_id, status) values (3, '1시 RBF', 1, 1, 'UNCOMPLETED');
-insert into todo(id, name, user_id, goal_id, status) values (4, '2시 말코리즘 간단 리뷰', 1, 1, 'CONPLETE');
+insert into todo(id, name, user_id, goal_id, status) values (4, '2시 말코리즘 간단 리뷰', 1, 1, 'COMPLETE');
 insert into todo(id, name, user_id, goal_id, status, end_at, is_deleted) values (5, '9시 뚜두뚜두 스크럼', 1, 1, 'COMPLETE', NOW(), 1);
 
 -- FOLLOWING
@@ -47,8 +47,6 @@ insert into followings(id, follower_id, followee_id, status) values (10, 10, 7, 
 
 
 -- LIKE
-insert into likes(id, user_id, todo_id) values (1, 2, 1);
-insert into likes(id, user_id, todo_id) values (2, 2, 2);
-insert into likes(id, user_id, todo_id) values (3, 2, 3);
-insert into likes(id, user_id, todo_id) values (4, 2, 4);
-insert into likes(id, user_id, todo_id) values (5, 3, 1);
+insert into likes(id, user_id, todo_id) values (1, 2, 2);
+insert into likes(id, user_id, todo_id) values (2, 2, 4);
+insert into likes(id, user_id, todo_id) values (3, 3, 2);
