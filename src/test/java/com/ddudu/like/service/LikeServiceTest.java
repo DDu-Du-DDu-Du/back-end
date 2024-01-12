@@ -36,8 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 class LikeServiceTest {
 
   static final Faker faker = new Faker();
-  static final String SUCCESS = "좋아요";
-  static final String CANCEL = "좋아요 취소";
 
   @Autowired
   LikeService likeService;
@@ -82,10 +80,8 @@ class LikeServiceTest {
       // then
       Optional<Like> actual = likeRepository.findById(like.getId());
       assertThat(actual).isPresent();
-      assertThat(actual.get()
-          .isDeleted()).isTrue();
-      assertThat(expected).extracting("userId", "todoId", "message")
-          .containsExactly(other.getId(), todo.getId(), CANCEL);
+      assertThat(expected).extracting("userId", "todoId", "isDeleted")
+          .containsExactly(other.getId(), todo.getId(), true);
     }
 
     @Test
@@ -102,10 +98,8 @@ class LikeServiceTest {
       // then
       Optional<Like> actual = likeRepository.findById(like.getId());
       assertThat(actual).isPresent();
-      assertThat(actual.get()
-          .isDeleted()).isFalse();
-      assertThat(expected).extracting("userId", "todoId", "message")
-          .containsExactly(other.getId(), todo.getId(), SUCCESS);
+      assertThat(expected).extracting("userId", "todoId", "isDeleted")
+          .containsExactly(other.getId(), todo.getId(), false);
     }
 
     @Test
@@ -119,8 +113,8 @@ class LikeServiceTest {
       // then
       Optional<Like> actual = likeRepository.findById(expected.id());
       assertThat(actual).isPresent();
-      assertThat(expected).extracting("userId", "todoId", "message")
-          .containsExactly(other.getId(), todo.getId(), SUCCESS);
+      assertThat(expected).extracting("userId", "todoId", "isDeleted")
+          .containsExactly(other.getId(), todo.getId(), false);
     }
 
     @Test
