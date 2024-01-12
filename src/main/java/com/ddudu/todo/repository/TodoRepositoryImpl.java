@@ -2,6 +2,7 @@ package com.ddudu.todo.repository;
 
 import static com.ddudu.todo.domain.QTodo.todo;
 
+import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
@@ -41,7 +42,7 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
 
   @Override
   public List<TodoCompletionResponse> findTodosCompletion(
-      LocalDateTime startDate, LocalDateTime endDate, User user
+      LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
   ) {
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
         LocalDate.class, "{0}", todo.beginAt);
@@ -72,7 +73,8 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
         .where(
             todo.beginAt.goe(startDate),
             todo.beginAt.lt(endDate),
-            todo.user.eq(user)
+            todo.user.eq(user),
+            todo.goal.privacyType.in(privacyTypes)
         )
         .groupBy(dateTemplate)
         .fetch()

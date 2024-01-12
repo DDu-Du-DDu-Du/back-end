@@ -43,12 +43,12 @@ public class UserController {
         .body(response);
   }
 
-  @GetMapping("/me")
-  public ResponseEntity<UserResponse> validateToken(
-      @Login
-      Long loginId
+  @GetMapping("/{id}")
+  public ResponseEntity<UserResponse> getById(
+      @PathVariable
+      Long id
   ) {
-    UserResponse response = userService.findById(loginId);
+    UserResponse response = userService.findById(id);
 
     return ResponseEntity.ok(response);
   }
