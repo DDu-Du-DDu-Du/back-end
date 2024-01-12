@@ -9,9 +9,8 @@ public enum LikeErrorCode implements ErrorCode {
   USER_NOT_EXISTING(7004, "좋아요를 보내려는 사용자를 찾을 수 없습니다."),
   TODO_NOT_EXISTING(7005, "좋아요를 보내려는 할 일을 찾을 수 없습니다."),
   LIKE_NOT_EXISTING(7006, "좋아요를 찾을 수 없습니다."),
-  ALREADY_LIKED(7007, "이미 좋아요를 눌렀습니다."),
-  UNAVAILABLE_UNCOMPLETED_TODO(7008, "완료한 다음에 좋아요를 보낼 수 있습니다"),
-  INVALID_AUTHORITY(7009, "해당 기능에 대한 사용자 권한이 없습니다.");
+  UNAVAILABLE_UNCOMPLETED_TODO(7007, "완료한 다음에 좋아요를 보낼 수 있습니다"),
+  INVALID_AUTHORITY(7008, "해당 기능에 대한 사용자 권한이 없습니다.");
 
   private final int code;
   private final String message;
