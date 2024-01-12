@@ -173,7 +173,7 @@ class UserTest {
       // given
       String intro = faker.harryPotter()
           .quote()
-          .repeat(2);
+          .repeat(3);
       UserBuilder userBuilder = builderWithEncoder
           .email(validEmail)
           .password(validPassword)

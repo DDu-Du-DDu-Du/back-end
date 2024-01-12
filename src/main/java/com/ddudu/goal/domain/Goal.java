@@ -20,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -87,6 +88,10 @@ public class Goal extends BaseEntity {
     this.status = status;
     this.color = new Color(color);
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
+  }
+
+  public boolean isCreatedByUser(Long userId) {
+    return Objects.deepEquals(this.user.getId(), userId);
   }
 
   private void validate(String name, User user) {
