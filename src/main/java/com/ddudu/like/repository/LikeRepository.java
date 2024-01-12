@@ -5,7 +5,7 @@ import com.ddudu.todo.domain.Todo;
 import com.ddudu.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LikeRepository extends JpaRepository<Like, Long> {
+public interface LikeRepository extends JpaRepository<Like, Long>, LikeRepositoryCustom {
 
   Like findByUserAndTodo(User user, Todo todo);
 
