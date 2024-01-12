@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
-  boolean existsByUserAndTodo(User user, Todo todo);
+  Like findByUserAndTodo(User user, Todo todo);
 
 }
