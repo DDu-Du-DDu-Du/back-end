@@ -95,7 +95,7 @@ class TodoControllerTest {
   @BeforeEach
   void setup() {
     userId = faker.random()
-        .nextLong();
+        .nextLong(Long.MAX_VALUE);
     name = faker.lorem()
         .word();
     beginAt = faker.date()
@@ -168,7 +168,7 @@ class TodoControllerTest {
         Exception {
       // given
       Long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       given(todoService.findById(anyLong(), anyLong())).willThrow(DataNotFoundException.class);
 
       // when then
@@ -181,7 +181,7 @@ class TodoControllerTest {
     void 할_일_조회_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
       // given
       Long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
 
       willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
           .given(todoService)
@@ -589,7 +589,7 @@ class TodoControllerTest {
     void 할_일_상태_변경_권한이_없으면_Forbidden_응답을_반환한다() throws Exception {
       // given
       Long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
 
       willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
           .given(todoService)
