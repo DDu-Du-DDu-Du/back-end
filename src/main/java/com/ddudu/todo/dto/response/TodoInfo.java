@@ -8,7 +8,8 @@ import lombok.Builder;
 public record TodoInfo(
     Long id,
     String name,
-    TodoStatus status
+    TodoStatus status,
+    LikeInfo likeInfo
 ) {
 
   public static TodoInfo from(Todo todo) {
@@ -16,6 +17,15 @@ public record TodoInfo(
         .id(todo.getId())
         .name(todo.getName())
         .status(todo.getStatus())
+        .build();
+  }
+
+  public static TodoInfo from(Todo todo, LikeInfo likeInfo) {
+    return TodoInfo.builder()
+        .id(todo.getId())
+        .name(todo.getName())
+        .status(todo.getStatus())
+        .likeInfo(likeInfo)
         .build();
   }
 
