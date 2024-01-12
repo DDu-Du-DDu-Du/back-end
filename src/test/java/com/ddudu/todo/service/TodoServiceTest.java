@@ -6,11 +6,15 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
+import com.ddudu.following.dto.request.FollowRequest;
+import com.ddudu.following.service.FollowingService;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
+import com.ddudu.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -59,11 +63,15 @@ class TodoServiceTest {
   UserRepository userRepository;
 
   @Autowired
+  FollowingService followingService;
+
+  @Autowired
   EntityManager entityManager;
 
   @Autowired
   JwtEncoder jwtEncoder;
 
+  User loginUser;
   User user;
   LocalDateTime beginAt;
   String name;
@@ -71,6 +79,7 @@ class TodoServiceTest {
 
   @BeforeEach
   void setUp() {
+    loginUser = createUser();
     user = createUser();
     beginAt = LocalDateTime.now();
     name = faker.lorem()
@@ -101,25 +110,25 @@ class TodoServiceTest {
     @Test
     void 사용자ID가_유효하지_않으면_예외가_발생한다() {
       // give
-      Long userRandomId = faker.random()
-          .nextLong();
+      Long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
       CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
 
       // when
-      ThrowingCallable create = () -> todoService.create(userRandomId, request);
+      ThrowingCallable create = () -> todoService.create(userId, request);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
     void 목표ID가_유효하지_않으면_예외가_발생한다() {
       // given
-      Long goalRandomId = faker.random()
+      Long goalId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      CreateTodoRequest request = new CreateTodoRequest(goalRandomId, name, beginAt);
+      CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
 
       // when
       ThrowingCallable create = () -> todoService.create(user.getId(), request);
@@ -153,25 +162,25 @@ class TodoServiceTest {
     @Test
     void 아이디가_존재하지_않아_할_일_조회를_실패한다() {
       // given
-      Long randomId = faker.random()
-          .nextLong();
+      Long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
 
       // when then
-      assertThatThrownBy(() -> todoService.findById(user.getId(), randomId))
+      assertThatThrownBy(() -> todoService.findById(user.getId(), id))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
-    void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_조회할_수_없다() {
+    void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_조회를_실패한다() {
       // given
-      Long loginRandomId = faker.random()
-          .nextLong();
+      Long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
       Todo todo = createTodo(name, goal, user);
 
       // when
-      ThrowingCallable findById = () -> todoService.findById(loginRandomId, todo.getId());
+      ThrowingCallable findById = () -> todoService.findById(loginId, todo.getId());
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findById)
@@ -184,7 +193,7 @@ class TodoServiceTest {
   class 일별_할_일_조회_테스트 {
 
     @Test
-    void 주어진_날짜에_할_일_리스트_조회를_성공한다() {
+    void 주어진_날짜에_자신의_할_일_리스트_조회를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
       Todo todo1 = createTodo(name, goal, user);
@@ -193,7 +202,8 @@ class TodoServiceTest {
       LocalDate date = LocalDate.now();
 
       // when
-      List<TodoListResponse> responses = todoService.findAllByDate(user.getId(), date);
+      List<TodoListResponse> responses = todoService.findAllByDate(
+          user.getId(), user.getId(), date);
 
       // then
       assertThat(responses).hasSize(1);
@@ -208,16 +218,170 @@ class TodoServiceTest {
     }
 
     @Test
-    void 사용자_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
+    void 주어진_날짜에_팔로워의_할_일_리스트_조회를_성공한다() {
       // given
-      Long userRandomId = faker.random()
-          .nextLong();
+      Goal goal = createGoal(goalName, user);
+      Todo todo = createTodo(name, goal, user);
+
+      LocalDate date = LocalDate.now();
+
+      FollowRequest request = new FollowRequest(user.getId());
+      followingService.create(loginUser.getId(), request);
+
+      // when
+      List<TodoListResponse> responses = todoService.findAllByDate(
+          loginUser.getId(), user.getId(), date);
+
+      // then
+      assertThat(responses).hasSize(0);
+      assertThat(goal.getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
+    }
+
+    @Test
+    void 주어진_날짜에_다른_사용자의_할_일_리스트_조회를_성공한다() {
+      // given
+      Goal goal = createGoal(goalName, user);
+      Todo todo = createTodo(name, goal, user);
+
+      LocalDate date = LocalDate.now();
+
+      // when
+      List<TodoListResponse> responses = todoService.findAllByDate(
+          loginUser.getId(), user.getId(), date);
+
+      // then
+      assertThat(responses).hasSize(0);
+      assertThat(goal.getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
+    }
+
+    @Test
+    void 로그인_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
+      // given
+      Long invalidLoginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findAllByDate(userRandomId, date))
+      assertThatThrownBy(() -> todoService.findAllByDate(invalidLoginId, user.getId(), date))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
+      // given
+      Long invalidUserId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      LocalDate date = LocalDate.now();
+
+      // when then
+      assertThatThrownBy(() -> todoService.findAllByDate(loginUser.getId(), invalidUserId, date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+    }
+
+  }
+
+  @Nested
+  class 할_일_수정_테스트 {
+
+    Todo todo;
+    Goal changedGoal;
+    String changedName;
+    LocalDateTime changedBeginAt;
+
+    @BeforeEach
+    void setUp() {
+      Goal goal = createGoal(goalName, user);
+      todo = createTodo(name, goal, user);
+
+      String newGoalName = faker.lorem()
+          .word();
+      changedGoal = createGoal(newGoalName, user);
+
+      changedName = faker.lorem()
+          .word();
+      changedBeginAt = LocalDateTime.now();
+    }
+
+    @Test
+    void 할_일_수정에_성공한다() {
+      // given
+      UpdateTodoRequest request = new UpdateTodoRequest(
+          changedGoal.getId(), changedName, changedBeginAt);
+
+      // when
+      TodoInfo response = todoService.update(user.getId(), todo.getId(), request);
+
+      // then
+      Optional<Todo> actual = todoRepository.findById(todo.getId());
+      assertThat(actual.get()).extracting(
+              "goal", "name", "status")
+          .containsExactly(changedGoal, response.name(), response.status());
+    }
+
+    @Test
+    void 유효하지_않은_ID인_경우_수정에_실패한다() {
+      // given
+      Long invalidId = faker.random()
+          .nextLong();
+      Long goalId = todo.getGoal()
+          .getId();
+      UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
+
+      // when
+      ThrowingCallable update = () -> todoService.update(user.getId(), invalidId, request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
+          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
+      // given
+      Long invalidUserId = faker.random()
+          .nextLong();
+      Long goalId = todo.getGoal()
+          .getId();
+      UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
+
+      // when
+      ThrowingCallable update = () -> todoService.update(invalidUserId, todo.getId(), request);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
+          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+    }
+
+    @Test
+    void 유효하지_않은_목표_ID인_경우_수정에_실패한다() {
+      // given
+      Long invalidGoalId = faker.random()
+          .nextLong();
+      UpdateTodoRequest request = new UpdateTodoRequest(invalidGoalId, name, beginAt);
+
+      // when
+      ThrowingCallable update = () -> todoService.update(user.getId(), todo.getId(), request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
+          .withMessage(TodoErrorCode.GOAL_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 로그인_사용자가_목표에_대한_권한이_없는_경우_수정에_실패한다() {
+      // given
+      User anotherUser = createUser();
+      Goal goalFromAnotherUser = createGoal(goalName, anotherUser);
+      UpdateTodoRequest request = new UpdateTodoRequest(goalFromAnotherUser.getId(), name, beginAt);
+
+      // when
+      ThrowingCallable update = () -> todoService.update(user.getId(), todo.getId(), request);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
+          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
@@ -246,25 +410,25 @@ class TodoServiceTest {
     @Test
     void 아이디가_존재하지_않아_할_일_상태_업데이트를_실패한다() {
       // given
-      Long randomId = faker.random()
-          .nextLong();
+      Long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
 
       // when then
-      assertThatThrownBy(() -> todoService.updateStatus(user.getId(), randomId))
+      assertThatThrownBy(() -> todoService.updateStatus(user.getId(), id))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
-    void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_상태_업데이트를_할_수_없다() {
+    void 로그인_사용자_아이디와_할_일_사용자_아이디가_다르면_상태_업데이트_실패한다() {
       // given
-      Long loginRandomId = faker.random()
-          .nextLong();
+      Long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
       Todo todo = createTodo(name, goal, user);
 
       // when
-      ThrowingCallable updateStatus = () -> todoService.updateStatus(loginRandomId, todo.getId());
+      ThrowingCallable updateStatus = () -> todoService.updateStatus(loginId, todo.getId());
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateStatus)
@@ -277,7 +441,7 @@ class TodoServiceTest {
   class 할_일_달성률_조회_테스트 {
 
     @Test
-    void 주간_할_일_달성률_조회를_성공한다() {
+    void 자신의_주간_할_일_달성률_조회를_성공한다() {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
@@ -291,7 +455,7 @@ class TodoServiceTest {
 
       // when
       List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
-          user.getId(), mondayDate);
+          user.getId(), user.getId(), mondayDate);
 
       // then
       assertThat(responses).hasSize(7);
@@ -300,20 +464,84 @@ class TodoServiceTest {
     }
 
     @Test
-    void 사용자_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+    void 팔로워의_주간_할_일_달성률_조회를_성공한다() {
       // given
-      Long userRandomId = faker.random()
-          .nextLong();
+      Goal goal1 = createGoal(goalName, user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo(name, goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+
+      LocalDate date = LocalDate.now();
+      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
+      DayOfWeek dayOfWeek = date.getDayOfWeek();
+      int dayIndex = dayOfWeek.getValue() - 1;
+
+      FollowRequest request = new FollowRequest(user.getId());
+      followingService.create(loginUser.getId(), request);
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
+          loginUser.getId(), user.getId(), mondayDate);
+
+      // then
+      assertThat(responses).hasSize(7);
+      assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date, 0, 0);
+    }
+
+    @Test
+    void 다른_사용자의_주간_할_일_달성률_조회를_성공한다() {
+      // given
+      Goal goal1 = createGoal(goalName, user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo(name, goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+
+      LocalDate date = LocalDate.now();
+      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
+      DayOfWeek dayOfWeek = date.getDayOfWeek();
+      int dayIndex = dayOfWeek.getValue() - 1;
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
+          loginUser.getId(), user.getId(), mondayDate);
+
+      // then
+      assertThat(responses).hasSize(7);
+      assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date, 0, 0);
+    }
+
+    @Test
+    void 로그인_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidLoginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findWeeklyCompletions(userRandomId, date))
+      assertThatThrownBy(
+          () -> todoService.findWeeklyCompletions(invalidLoginId, user.getId(), date))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidUserId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      LocalDate date = LocalDate.now();
+
+      // when then
+      assertThatThrownBy(
+          () -> todoService.findWeeklyCompletions(loginUser.getId(), invalidUserId, date))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
     @Test
-    void 월간_할_일_달성률_조회를_성공한다() {
+    void 자신의_월간_할_일_달성률_조회를_성공한다() {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
@@ -327,25 +555,90 @@ class TodoServiceTest {
 
       // when
       List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
-          user.getId(), yearMonth);
+          user.getId(), user.getId(), yearMonth);
 
       // then
       assertThat(responses).hasSize(daysInMonth);
-
       assertThat(responses.get(dayOfMonthIndex)).extracting(
               "date", "totalTodos", "uncompletedTodos")
           .containsExactly(date, 2, 2);
     }
 
     @Test
-    void 사용자_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+    void 팔로워의_월간_할_일_달성률_조회를_성공한다() {
       // given
-      Long userRandomId = faker.random()
-          .nextLong();
+      Goal goal1 = createGoal(goalName, user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo(name, goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+
+      LocalDate date = LocalDate.now();
+      YearMonth yearMonth = YearMonth.now();
+      int daysInMonth = yearMonth.lengthOfMonth();
+      int dayOfMonthIndex = date.getDayOfMonth() - 1;
+
+      FollowRequest request = new FollowRequest(user.getId());
+      followingService.create(loginUser.getId(), request);
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
+          loginUser.getId(), user.getId(), yearMonth);
+
+      // then
+      assertThat(responses).hasSize(daysInMonth);
+      assertThat(responses.get(dayOfMonthIndex)).extracting(
+              "date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date, 0, 0);
+    }
+
+    @Test
+    void 다른_사용자의_월간_할_일_달성률_조회를_성공한다() {
+      // given
+      Goal goal1 = createGoal(goalName, user);
+      Goal goal2 = createGoal("book", user);
+      Todo todo1 = createTodo(name, goal1, user);
+      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+
+      LocalDate date = LocalDate.now();
+      YearMonth yearMonth = YearMonth.now();
+      int daysInMonth = yearMonth.lengthOfMonth();
+      int dayOfMonthIndex = date.getDayOfMonth() - 1;
+
+      // when
+      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
+          loginUser.getId(), user.getId(), yearMonth);
+
+      // then
+      assertThat(responses).hasSize(daysInMonth);
+      assertThat(responses.get(dayOfMonthIndex)).extracting(
+              "date", "totalTodos", "uncompletedTodos")
+          .containsExactly(date, 0, 0);
+    }
+
+    @Test
+    void 로그인_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidLoginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       YearMonth yearMonth = YearMonth.now();
 
       // when then
-      assertThatThrownBy(() -> todoService.findMonthlyCompletions(userRandomId, yearMonth))
+      assertThatThrownBy(
+          () -> todoService.findMonthlyCompletions(invalidLoginId, user.getId(), yearMonth))
+          .isInstanceOf(DataNotFoundException.class)
+          .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 사용자_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+      // given
+      Long invalidUserId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      YearMonth yearMonth = YearMonth.now();
+
+      // when then
+      assertThatThrownBy(
+          () -> todoService.findMonthlyCompletions(loginUser.getId(), invalidUserId, yearMonth))
           .isInstanceOf(DataNotFoundException.class)
           .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
@@ -356,7 +649,7 @@ class TodoServiceTest {
   class 할_일_삭제_테스트 {
 
     @Test
-    void 할_일을_삭제_할_수_있다() {
+    void 할_일을_삭제를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
       Todo todo = createTodo(name, goal, user);
@@ -374,10 +667,10 @@ class TodoServiceTest {
     }
 
     @Test
-    void 로그인_사용자_아이디와_삭제할_할_일_사용자_아이디가_다르면_삭제할_수_없다() {
+    void 로그인_사용자_아이디와_삭제할_할_일_사용자_아이디가_다르면_삭제를_실패한다() {
       // given
-      Long randomId = faker.random()
-          .nextLong();
+      Long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
       Todo todo = createTodo(name, goal, user);
 
@@ -385,7 +678,7 @@ class TodoServiceTest {
       assertThat(found).isNotEmpty();
 
       // when
-      ThrowingCallable delete = () -> todoService.delete(randomId, todo.getId());
+      ThrowingCallable delete = () -> todoService.delete(userId, todo.getId());
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(delete)

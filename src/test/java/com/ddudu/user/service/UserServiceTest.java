@@ -155,7 +155,7 @@ class UserServiceTest {
     void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
       // given
       long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
 
       // when
       ThrowingCallable login = () -> userService.findById(randomId);
@@ -237,9 +237,9 @@ class UserServiceTest {
     void 로그인한_사용자와_이메일_변경할_사용자가_다르면_변경을_실패한다() {
       // given
       long loginRandomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String newEmail = faker.internet()
           .emailAddress();
 
@@ -256,7 +256,7 @@ class UserServiceTest {
     void 존재하지_않는_사용자_아이디_이메일_변경을_실패한다() {
       // given
       long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String newEmail = faker.internet()
           .emailAddress();
 
@@ -332,9 +332,9 @@ class UserServiceTest {
     void 로그인한_사용자와_비밀번호_변경할_사용자가_다르면_변경을_실패한다() {
       // given
       long loginRandomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String newPassword = faker.internet()
           .password(8, 40, true, true, true);
 
@@ -351,7 +351,7 @@ class UserServiceTest {
     void 존재하지_않는_사용자_아이디_비밀번호_변경을_실패한다() {
       // given
       long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String newPassword = faker.internet()
           .password(8, 40, true, true, true);
 

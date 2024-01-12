@@ -106,7 +106,7 @@ class UserControllerTest {
       String wrongEmail = faker.internet()
           .username();
       String shortPassword = faker.internet()
-          .password(2, 7, true, true, true);
+          .password(3, 7, true, true, true);
       String weakPassword = "password";
       String over50 = faker.howIMetYourMother()
           .quote()
@@ -227,7 +227,7 @@ class UserControllerTest {
     void 회원가입을_성공하면_OK를_반환한다() throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);
       SignUpResponse response = SignUpResponse.builder()
           .id(userId)
@@ -257,7 +257,7 @@ class UserControllerTest {
     void 단일_조회를_성공하고_200_OK를_반환한다() throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       UserResponse expected = UserResponse.builder()
           .id(userId)
           .email(email)
@@ -326,7 +326,7 @@ class UserControllerTest {
         throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String token = createBearerToken(userId);
 
       // when
@@ -407,7 +407,7 @@ class UserControllerTest {
         throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String token = createBearerToken(userId);
 
       // when
@@ -426,7 +426,7 @@ class UserControllerTest {
     void 비밀번호_변경_성공하면_OK를_반환한다() throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String token = createBearerToken(userId);
 
       String newPassword = faker.internet()
