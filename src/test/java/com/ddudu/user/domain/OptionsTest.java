@@ -10,6 +10,13 @@ import org.junit.jupiter.api.Test;
 class OptionsTest {
 
   @Test
+  void 옵션은_기본으로_꺼져_있는_상태로_생성된다() {
+    Options options = new Options();
+
+    assertThat(options.isAllowingFollowsAfterApproval()).isFalse();
+  }
+
+  @Test
   void 팔로잉_허락_후_팔로잉_추가_기능을_활성화한다() {
     // given
     Options options = new Options();
