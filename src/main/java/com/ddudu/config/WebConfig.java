@@ -1,6 +1,6 @@
 package com.ddudu.config;
 
-import com.ddudu.common.annotation.LoginUserArgumentResolver;
+import com.ddudu.common.resolver.LoginUserArgumentResolver;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
