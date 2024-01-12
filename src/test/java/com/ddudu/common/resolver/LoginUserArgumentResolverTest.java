@@ -1,4 +1,4 @@
-package com.ddudu.common.annotation;
+package com.ddudu.common.resolver;
 
 import static com.ddudu.auth.exception.AuthErrorCode.INVALID_AUTHENTICATION;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.auth.jwt.JwtAuthToken;
+import com.ddudu.common.annotation.Login;
 import com.ddudu.common.exception.InvalidAuthenticationException;
 import java.time.Instant;
 import java.util.Collections;
