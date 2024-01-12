@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -51,6 +52,19 @@ public class FollowingController {
     FollowingResponse response = followingService.updateStatus(id, followerId, request);
 
     return ResponseEntity.ok(response);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id
+  ) {
+    followingService.delete(id, loginId);
+
+    return ResponseEntity.noContent()
+        .build();
   }
 
 }
