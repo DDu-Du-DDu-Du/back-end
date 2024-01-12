@@ -6,6 +6,7 @@ import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UserResponse;
@@ -94,6 +95,18 @@ public class UserController {
       UpdateProfileRequest request
   ) {
     UserProfileResponse response = userService.updateProfile(loginId, id, request);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @PatchMapping("/{id}/options")
+  public ResponseEntity<ToggleOptionResponse> switchOption(
+      @Login
+      Long login,
+      @PathVariable
+      Long id
+  ) {
+    ToggleOptionResponse response = userService.switchOption(login, id);
 
     return ResponseEntity.ok(response);
   }

@@ -18,7 +18,7 @@ public class Options {
     allowingFollowsAfterApproval = DEFAULT_OFF;
   }
 
-  public void toggleFollowsAfterApproval() {
+  public void switchOptions() {
     allowingFollowsAfterApproval = !allowingFollowsAfterApproval;
   }
 
