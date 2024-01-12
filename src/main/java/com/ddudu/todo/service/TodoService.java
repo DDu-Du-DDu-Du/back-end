@@ -96,21 +96,7 @@ public class TodoService {
             .getId()));
 
     return goals.stream()
-        .map(goal -> {
-          List<TodoInfo> todoInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
-              .stream()
-              .map(todo -> {
-                List<Like> likes = likesByTodo.getOrDefault(todo.getId(), Collections.emptyList());
-                List<Long> likedUsers = likes.stream()
-                    .map(like -> like.getUser()
-                        .getId())
-                    .collect(Collectors.toList());
-                return TodoInfo.from(todo, LikeInfo.from(likedUsers));
-              })
-              .toList();
-
-          return TodoListResponse.from(goal, todoInfos);
-        })
+        .map(goal -> mapGoalToTodoListResponse(goal, todosByGoal, likesByTodo))
         .toList();
   }
 
@@ -236,6 +222,27 @@ public class TodoService {
     }
 
     return List.of(PrivacyType.PUBLIC);
+  }
+
+  private TodoListResponse mapGoalToTodoListResponse(
+      Goal goal, Map<Long, List<Todo>> todosByGoal, Map<Long, List<Like>> likesByTodo
+  ) {
+    List<TodoInfo> todoInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
+        .stream()
+        .map(todo -> mapTodoToTodoInfoWithLikes(todo, likesByTodo))
+        .toList();
+
+    return TodoListResponse.from(goal, todoInfos);
+  }
+
+  private TodoInfo mapTodoToTodoInfoWithLikes(Todo todo, Map<Long, List<Like>> likesByTodo) {
+    List<Long> likedUsers = likesByTodo.getOrDefault(todo.getId(), Collections.emptyList())
+        .stream()
+        .map(like -> like.getUser()
+            .getId())
+        .toList();
+
+    return TodoInfo.from(todo, LikeInfo.from(likedUsers));
   }
 
 }
