@@ -57,7 +57,7 @@ public class Following extends BaseEntity {
     Long ownerId = this.follower
         .getId();
 
-    return Objects.deepEquals(followerId, ownerId);
+    return Objects.equals(followerId, ownerId);
   }
 
   public void updateStatus(FollowingStatus status) {
