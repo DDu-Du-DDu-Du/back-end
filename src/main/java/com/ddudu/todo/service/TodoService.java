@@ -9,6 +9,7 @@ import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
+import com.ddudu.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,9 +47,10 @@ public class TodoService {
   @Transactional
   public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
     User user = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
-
     Goal goal = goalRepository.findById(request.goalId())
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
+
+    checkGoalPermission(loginId, goal);
 
     Todo todo = Todo.builder()
         .name(request.name())
@@ -123,18 +124,20 @@ public class TodoService {
   }
 
   @Transactional
-  public void delete(Long loginId, Long id) {
-    Optional<Todo> optionalTodo = todoRepository.findById(id);
-
-    if (optionalTodo.isEmpty()) {
-      return;
-    }
-
-    Todo todo = optionalTodo.get();
+  public TodoInfo update(Long loginId, Long id, UpdateTodoRequest request) {
+    Todo todo = todoRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
     checkPermission(loginId, todo);
 
-    todo.delete();
+    Goal goal = goalRepository.findById(request.goalId())
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
+
+    checkGoalPermission(loginId, goal);
+
+    todo.applyTodoUpdates(goal, request.name(), request.beginAt());
+
+    return TodoInfo.from(todo);
   }
 
   @Transactional
@@ -147,6 +150,15 @@ public class TodoService {
     todo.switchStatus();
 
     return TodoResponse.from(todo);
+  }
+
+  @Transactional
+  public void delete(Long loginId, Long id) {
+    todoRepository.findById(id)
+        .ifPresent(todo -> {
+          checkPermission(loginId, todo);
+          todo.delete();
+        });
   }
 
   private List<TodoCompletionResponse> generateCompletions(
@@ -188,6 +200,12 @@ public class TodoService {
 
   private void checkPermission(Long loginId, Todo todo) {
     if (!todo.isCreatedByUser(loginId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
+  }
+
+  private void checkGoalPermission(Long userId, Goal goal) {
+    if (!goal.isCreatedByUser(userId)) {
       throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
     }
   }

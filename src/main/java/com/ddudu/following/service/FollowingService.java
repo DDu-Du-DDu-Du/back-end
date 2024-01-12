@@ -29,6 +29,12 @@ public class FollowingService {
   private final UserRepository userRepository;
   private final FollowingRepository followingRepository;
 
+  private static void checkPermission(Long loginId, Following following) {
+    if (!following.isOwnedBy(loginId)) {
+      throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
+    }
+  }
+
   @Transactional
   @Validated
   public FollowingResponse create(Long followerId, @Valid FollowRequest request) {
@@ -74,6 +80,15 @@ public class FollowingService {
     following.updateStatus(requestedStatus);
 
     return FollowingResponse.from(following);
+  }
+
+  @Transactional
+  public void delete(Long id, Long loginId) {
+    followingRepository.findById(id)
+        .ifPresent(following -> {
+          checkPermission(loginId, following);
+          followingRepository.delete(following);
+        });
   }
 
 }

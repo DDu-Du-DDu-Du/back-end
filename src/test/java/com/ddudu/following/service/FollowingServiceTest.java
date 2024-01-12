@@ -2,6 +2,7 @@ package com.ddudu.following.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 
 import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
@@ -85,7 +86,7 @@ class FollowingServiceTest {
     void 사용자가_존재하지_않으면_팔로잉_생성을_실패한다() {
       // given
       long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       User followee = createUser();
       FollowRequest request = new FollowRequest(followee.getId());
 
@@ -102,7 +103,7 @@ class FollowingServiceTest {
       // given
       User follower = createUser();
       long randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       FollowRequest request = new FollowRequest(randomId);
 
       // when
@@ -284,6 +285,58 @@ class FollowingServiceTest {
       assertThat(response).extracting("id", "followerId", "followeeId", "status")
           .containsExactly(
               following.getId(), follower.getId(), followee.getId(), FollowingStatus.IGNORED);
+    }
+
+  }
+
+  @Nested
+  class 팔로잉_삭제_테스트 {
+
+    @Test
+    void 존재하는_팔로잉_삭제를_성공한다() {
+      // given
+      User follower = createUser();
+      User followee = createUser();
+      Following following = createFollowing(follower, followee, null);
+
+      // when
+      followingService.delete(following.getId(), follower.getId());
+
+      //then
+      Optional<Following> actual = followingRepository.findById(following.getId());
+
+      assertThat(actual).isEmpty();
+    }
+
+    @Test
+    void 팔로잉이_존재하지_않을_때_예외를_발생시키지_않는다() {
+      // given
+      User follower = createUser();
+      long randomId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable delete = () -> followingService.delete(randomId, follower.getId());
+
+      // then
+      assertThatNoException().isThrownBy(delete);
+    }
+
+    @Test
+    void 로그인한_사용자와_팔로워의_아이디가_다르면_삭제를_실패한다() {
+      // given
+      User follower = createUser();
+      User followee = createUser();
+      Following following = createFollowing(follower, followee, null);
+      long randomId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable delete = () -> followingService.delete(following.getId(), randomId);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(delete)
+          .withMessage(FollowingErrorCode.WRONG_OWNER.getMessage());
     }
 
   }
