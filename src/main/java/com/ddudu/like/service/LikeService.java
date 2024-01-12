@@ -59,15 +59,6 @@ public class LikeService {
         });
   }
 
-  public LikeResponse findById(Long id) {
-    Like like = likeRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(LikeErrorCode.LIKE_NOT_EXISTING));
-
-    // TODO: 모든 사용자가 좋아요를 조회할 수 있어 checkPermission 필요 없음, 추후 loginId는 authority가 NORMAL인지 확인하는 용도로 사용
-
-    return LikeResponse.from(like);
-  }
-
   private void checkPermission(Long loginId, Long userId) {
     if (!loginId.equals(userId)) {
       throw new ForbiddenException(LikeErrorCode.INVALID_AUTHORITY);
