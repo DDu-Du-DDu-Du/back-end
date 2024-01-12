@@ -5,11 +5,8 @@ import com.ddudu.like.dto.request.LikeRequest;
 import com.ddudu.like.dto.response.LikeResponse;
 import com.ddudu.like.service.LikeService;
 import jakarta.validation.Valid;
-import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,31 +20,16 @@ public class LikeController {
   private final LikeService likeService;
 
   @PostMapping
-  public ResponseEntity<LikeResponse> create(
+  public ResponseEntity<LikeResponse> toggle(
       @Login
           Long loginId,
       @RequestBody
       @Valid
           LikeRequest request
   ) {
-    LikeResponse response = likeService.create(loginId, request);
-    URI uri = URI.create("/api/likes/" + response.id());
+    LikeResponse response = likeService.toggle(loginId, request);
 
-    return ResponseEntity.created(uri)
-        .body(response);
-  }
-
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(
-      @Login
-          Long loginId,
-      @PathVariable
-          Long id
-  ) {
-    likeService.delete(loginId, id);
-
-    return ResponseEntity.noContent()
-        .build();
+    return ResponseEntity.ok(response);
   }
 
 }
