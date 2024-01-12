@@ -20,9 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class LikeService {
 
-  private static final String SUCCESS = "좋아요";
-  private static final String CANCEL = "좋아요 취소";
-
   private final LikeRepository likeRepository;
   private final UserRepository userRepository;
   private final TodoRepository todoRepository;
@@ -39,7 +36,7 @@ public class LikeService {
     Like existingLike = likeRepository.findByUserAndTodo(user, todo);
 
     if (existingLike != null) {
-      return LikeResponse.from(existingLike, switchLikeStatus(existingLike));
+      return LikeResponse.from(switchLikeStatus(existingLike));
     }
 
     Like like = Like.builder()
@@ -47,7 +44,7 @@ public class LikeService {
         .todo(todo)
         .build();
 
-    return LikeResponse.from(likeRepository.save(like), SUCCESS);
+    return LikeResponse.from(likeRepository.save(like));
   }
 
   private void checkPermission(Long loginId, Long userId) {
@@ -56,14 +53,14 @@ public class LikeService {
     }
   }
 
-  private String switchLikeStatus(Like like) {
+  private Like switchLikeStatus(Like like) {
     if (!like.isDeleted()) {
       like.delete();
-      return CANCEL;
+      return like;
     }
 
     like.undelete();
-    return SUCCESS;
+    return like;
   }
 
 }
