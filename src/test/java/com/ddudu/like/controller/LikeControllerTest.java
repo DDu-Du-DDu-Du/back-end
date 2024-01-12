@@ -4,18 +4,18 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.auth.domain.authority.Authority;
+import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.like.dto.request.LikeRequest;
 import com.ddudu.like.dto.response.LikeResponse;
+import com.ddudu.like.exception.LikeErrorCode;
 import com.ddudu.like.service.LikeService;
 import com.ddudu.support.TestProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,7 +80,7 @@ class LikeControllerTest {
   }
 
   @Nested
-  class POST_좋아요_API_테스트 {
+  class POST_좋아요_토글_API_테스트 {
 
     static Stream<Arguments> provideLikeRequestAndStrings() {
       Long userId = faker.random()
@@ -100,6 +100,26 @@ class LikeControllerTest {
       );
     }
 
+    @Test
+    void 좋아요를_토글하고_200_OK를_반환한다() throws Exception {
+      // given
+      LikeRequest request = new LikeRequest(userId, todoId);
+      LikeResponse response = createLikeResponse(userId, todoId);
+
+      given(likeService.toggle(anyLong(), any(LikeRequest.class)))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(post("/api/likes")
+          .header("Authorization", token)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(response.id()));
+    }
+
     @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
     @MethodSource("provideLikeRequestAndStrings")
     void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(String cause, LikeRequest request, String message)
@@ -117,13 +137,12 @@ class LikeControllerTest {
     }
 
     @Test
-    void 좋아요하고_201_Created를_반환한다() throws Exception {
+    void 좋아요_권한이_없으면_403_Forbidden을_반환한다() throws Exception {
       // given
       LikeRequest request = new LikeRequest(userId, todoId);
-      LikeResponse response = createLikeResponse(userId, todoId);
 
-      given(likeService.create(anyLong(), any(LikeRequest.class)))
-          .willReturn(response);
+      given(likeService.toggle(anyLong(), any(LikeRequest.class)))
+          .willThrow(new ForbiddenException(LikeErrorCode.INVALID_AUTHORITY));
 
       // when
       ResultActions actions = mockMvc.perform(post("/api/likes")
@@ -132,31 +151,53 @@ class LikeControllerTest {
           .contentType(MediaType.APPLICATION_JSON));
 
       // then
-      actions.andExpect(status().isCreated())
-          .andExpect(header().string("location", is("/api/likes/" + response.id())));
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(LikeErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(LikeErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
-  }
-
-  @Nested
-  class DELETE_좋아요_취소_API_테스트 {
-
     @Test
-    void 좋아요_취소를_성공하면_204_No_Content를_반환한다() throws Exception {
+    void 좋아요를_보낼_사용자가_존재하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
-      Long id = faker.random()
+      Long invalidUserId = faker.random()
           .nextLong(Long.MAX_VALUE);
+      LikeRequest request = new LikeRequest(invalidUserId, todoId);
 
-      willDoNothing().given(likeService)
-          .delete(anyLong(), anyLong());
+      given(likeService.toggle(anyLong(), any(LikeRequest.class)))
+          .willThrow(new DataNotFoundException(LikeErrorCode.USER_NOT_EXISTING));
 
       // when
-      ResultActions actions = mockMvc.perform(delete("/api/likes/{id}", id)
+      ResultActions actions = mockMvc.perform(post("/api/likes")
           .header("Authorization", token)
+          .content(objectMapper.writeValueAsString(request))
           .contentType(MediaType.APPLICATION_JSON));
 
       // then
-      actions.andExpect(status().isNoContent());
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code", is(LikeErrorCode.USER_NOT_EXISTING.getCode())))
+          .andExpect(jsonPath("$.message", is(LikeErrorCode.USER_NOT_EXISTING.getMessage())));
+    }
+
+    @Test
+    void 좋아요_대상의_할_일이_존재하지_않으면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      Long invalidTodoId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      LikeRequest request = new LikeRequest(userId, invalidTodoId);
+
+      given(likeService.toggle(anyLong(), any(LikeRequest.class)))
+          .willThrow(new DataNotFoundException(LikeErrorCode.TODO_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(post("/api/likes")
+          .header("Authorization", token)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code", is(LikeErrorCode.TODO_NOT_EXISTING.getCode())))
+          .andExpect(jsonPath("$.message", is(LikeErrorCode.TODO_NOT_EXISTING.getMessage())));
     }
 
   }
