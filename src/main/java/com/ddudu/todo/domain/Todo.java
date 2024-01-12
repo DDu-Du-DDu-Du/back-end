@@ -20,6 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -72,6 +73,28 @@ public class Todo extends BaseEntity {
     this.beginAt = isNull(beginAt) ? LocalDateTime.now() : beginAt;
   }
 
+  public void applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
+    validate(goal, user, name);
+
+    this.goal = goal;
+    this.name = name;
+    this.beginAt = beginAt;
+  }
+
+  public void switchStatus() {
+    if (this.status == TodoStatus.UNCOMPLETED) {
+      this.status = TodoStatus.COMPLETE;
+      this.endAt = LocalDateTime.now();
+    } else {
+      this.status = TodoStatus.UNCOMPLETED;
+      this.endAt = null;
+    }
+  }
+
+  public boolean isCreatedByUser(Long userId) {
+    return Objects.deepEquals(this.user.getId(), userId);
+  }
+
   private void validate(Goal goal, User user, String name) {
     validateGoal(goal);
     validateUser(user);
@@ -98,25 +121,6 @@ public class Todo extends BaseEntity {
     if (name.length() > MAX_NAME_LENGTH) {
       throw new InvalidParameterException(TodoErrorCode.EXCESSIVE_NAME_LENGTH);
     }
-  }
-
-  public void switchStatus() {
-    if (this.status == TodoStatus.UNCOMPLETED) {
-      this.status = TodoStatus.COMPLETE;
-      this.endAt = LocalDateTime.now();
-    } else {
-      this.status = TodoStatus.UNCOMPLETED;
-      this.endAt = null;
-    }
-  }
-
-  public boolean isCreatedByUser(Long userId) {
-    if (userId == null || this.user == null) {
-      return false;
-    }
-
-    return this.user.getId()
-        .equals(userId);
   }
 
 }
