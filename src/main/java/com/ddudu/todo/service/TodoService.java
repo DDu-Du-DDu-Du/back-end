@@ -1,11 +1,15 @@
 package com.ddudu.todo.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
+import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
+import com.ddudu.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -23,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,12 +42,15 @@ public class TodoService {
   private final TodoRepository todoRepository;
   private final GoalRepository goalRepository;
   private final UserRepository userRepository;
+  private final FollowingRepository followingRepository;
 
   @Transactional
   public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
-    User user = findUser(loginId);
+    User user = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
     Goal goal = goalRepository.findById(request.goalId())
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
+
+    checkGoalPermission(loginId, goal);
 
     Todo todo = Todo.builder()
         .name(request.name())
@@ -60,16 +66,18 @@ public class TodoService {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
-    if (!todo.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
-    }
+    checkPermission(loginId, todo);
 
     return TodoResponse.from(todo);
   }
 
-  public List<TodoListResponse> findAllByDate(Long loginId, LocalDate date) {
-    User user = findUser(loginId);
-    List<Goal> goals = goalRepository.findAllByUser(user);
+  public List<TodoListResponse> findAllByDate(Long loginId, Long userId, LocalDate date) {
+    User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+    User user = determineUser(loginId, userId, loginUser);
+
+    List<Goal> goals = goalRepository.findAllByUserAndPrivacyTypes(
+        user, determinePrivacyTypes(loginUser, user));
+
     List<Todo> todos = todoRepository.findTodosByDate(
         date.atStartOfDay(), date.atTime(LocalTime.MAX), user
     );
@@ -90,38 +98,46 @@ public class TodoService {
         .toList();
   }
 
-  public List<TodoCompletionResponse> findWeeklyCompletions(Long loginId, LocalDate date) {
-    User user = findUser(loginId);
+  public List<TodoCompletionResponse> findWeeklyCompletions(
+      Long loginId, Long userId, LocalDate date
+  ) {
+    User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+    User user = determineUser(loginId, userId, loginUser);
+
     LocalDateTime startDate = date.atStartOfDay();
     LocalDateTime endDate = startDate.plusDays(7);
 
-    return generateCompletions(startDate, endDate, user);
+    return generateCompletions(startDate, endDate, loginUser, user);
   }
 
-  public List<TodoCompletionResponse> findMonthlyCompletions(Long loginId, YearMonth yearMonth) {
-    User user = findUser(loginId);
+  public List<TodoCompletionResponse> findMonthlyCompletions(
+      Long loginId, Long userId, YearMonth yearMonth
+  ) {
+    User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+    User user = determineUser(loginId, userId, loginUser);
+
     LocalDateTime startDate = yearMonth.atDay(1)
         .atStartOfDay();
     LocalDateTime endDate = startDate.plusMonths(1);
 
-    return generateCompletions(startDate, endDate, user);
+    return generateCompletions(startDate, endDate, loginUser, user);
   }
 
   @Transactional
-  public void delete(Long loginId, Long id) {
-    Optional<Todo> optionalTodo = todoRepository.findById(id);
+  public TodoInfo update(Long loginId, Long id, UpdateTodoRequest request) {
+    Todo todo = todoRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
-    if (optionalTodo.isEmpty()) {
-      return;
-    }
+    checkPermission(loginId, todo);
 
-    Todo todo = optionalTodo.get();
+    Goal goal = goalRepository.findById(request.goalId())
+        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
 
-    if (!todo.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
-    }
+    checkGoalPermission(loginId, goal);
 
-    todo.delete();
+    todo.applyTodoUpdates(goal, request.name(), request.beginAt());
+
+    return TodoInfo.from(todo);
   }
 
   @Transactional
@@ -129,20 +145,29 @@ public class TodoService {
     Todo todo = todoRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
 
-    if (!todo.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
-    }
+    checkPermission(loginId, todo);
 
     todo.switchStatus();
 
     return TodoResponse.from(todo);
   }
 
+  @Transactional
+  public void delete(Long loginId, Long id) {
+    todoRepository.findById(id)
+        .ifPresent(todo -> {
+          checkPermission(loginId, todo);
+          todo.delete();
+        });
+  }
+
   private List<TodoCompletionResponse> generateCompletions(
-      LocalDateTime startDate, LocalDateTime endDate, User user
+      LocalDateTime startDate, LocalDateTime endDate, User loginUser, User user
   ) {
+    List<PrivacyType> privacyTypes = determinePrivacyTypes(loginUser, user);
+
     Map<LocalDate, TodoCompletionResponse> completionByDate = todoRepository.findTodosCompletion(
-            startDate, endDate, user)
+            startDate, endDate, user, privacyTypes)
         .stream()
         .collect(
             Collectors.toMap(TodoCompletionResponse::date, response -> response));
@@ -160,9 +185,41 @@ public class TodoService {
     return completionList;
   }
 
-  private User findUser(Long userId) {
+  private User determineUser(Long loginId, Long userId, User loginUser) {
+    if (loginId.equals(userId)) {
+      return loginUser;
+    }
+
+    return findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
+  }
+
+  private User findUser(Long userId, ErrorCode errorCode) {
     return userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
+  }
+
+  private void checkPermission(Long loginId, Todo todo) {
+    if (!todo.isCreatedByUser(loginId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
+  }
+
+  private void checkGoalPermission(Long userId, Goal goal) {
+    if (!goal.isCreatedByUser(userId)) {
+      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+    }
+  }
+
+  private List<PrivacyType> determinePrivacyTypes(User loginUser, User user) {
+    if (loginUser.equals(user)) {
+      return List.of(PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC);
+    }
+
+    if (followingRepository.existsByFollowerAndFollowee(loginUser, user)) {
+      return List.of(PrivacyType.FOLLOWER, PrivacyType.PUBLIC);
+    }
+
+    return List.of(PrivacyType.PUBLIC);
   }
 
 }

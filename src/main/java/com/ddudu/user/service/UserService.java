@@ -63,13 +63,6 @@ public class UserService {
     return SignUpResponse.from(userRepository.save(userBuilder.build()));
   }
 
-  public UserResponse findById(Long userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION));
-
-    return UserResponse.from(user);
-  }
-
   @Transactional
   public UserProfileResponse updateProfile(Long loginId, Long id, UpdateProfileRequest request) {
     if (loginId != id) {
@@ -127,6 +120,13 @@ public class UserService {
     user.applyPasswordUpdate(newPassword);
 
     return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
+  }
+
+  public UserResponse findById(Long userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+    return UserResponse.from(user);
   }
 
 }

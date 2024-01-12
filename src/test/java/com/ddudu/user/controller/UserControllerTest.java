@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.auth.domain.authority.Authority;
+import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
@@ -104,7 +105,7 @@ class UserControllerTest {
       String wrongEmail = faker.internet()
           .username();
       String shortPassword = faker.internet()
-          .password(2, 7, true, true, true);
+          .password(3, 7, true, true, true);
       String weakPassword = "password";
       String over50 = faker.howIMetYourMother()
           .quote()
@@ -225,7 +226,7 @@ class UserControllerTest {
     void 회원가입을_성공하면_OK를_반환한다() throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);
       SignUpResponse response = SignUpResponse.builder()
           .id(userId)
@@ -249,14 +250,13 @@ class UserControllerTest {
   }
 
   @Nested
-  class GET_JWT_본인_확인_API_테스트 {
+  class GET_사용자_단일_조회_API_테스트 {
 
     @Test
-    void 토큰_검증을_성공하고_OK를_반환한다() throws Exception {
+    void 단일_조회를_성공하고_200_OK를_반환한다() throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
-      String token = createBearerToken(userId);
+          .nextLong(Long.MAX_VALUE);
       UserResponse expected = UserResponse.builder()
           .id(userId)
           .email(email)
@@ -266,19 +266,29 @@ class UserControllerTest {
       given(userService.findById(anyLong())).willReturn(expected);
 
       // when
-      ResultActions actions = mockMvc.perform(get("/api/users/me")
-          .header("Authorization", token));
+      ResultActions actions = mockMvc.perform(get("/api/users/{id}", userId));
 
       // then
       actions.andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(userId));
     }
 
-    private String createBearerToken(long userId) {
-      JwtClaimsSet claims = claimSet.claim("user", userId)
-          .build();
-      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-      return "Bearer " + jwt.getTokenValue();
+    @Test
+    void 사용자가_없으면_단일_조회를_실패하고_404_Not_Found를_반환한다() throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong();
+
+      given(userService.findById(anyLong())).willThrow(
+          new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(get("/api/users/{id}", userId));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code").value(UserErrorCode.ID_NOT_EXISTING.getCode()))
+          .andExpect(jsonPath("$.message").value(UserErrorCode.ID_NOT_EXISTING.getMessage()));
     }
 
   }
@@ -315,7 +325,7 @@ class UserControllerTest {
         throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String token = createBearerToken(userId);
 
       // when
@@ -396,7 +406,7 @@ class UserControllerTest {
         throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String token = createBearerToken(userId);
 
       // when
@@ -415,7 +425,7 @@ class UserControllerTest {
     void 비밀번호_변경_성공하면_OK를_반환한다() throws Exception {
       // given
       long userId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       String token = createBearerToken(userId);
 
       String newPassword = faker.internet()
