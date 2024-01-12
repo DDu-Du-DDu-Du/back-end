@@ -223,40 +223,6 @@ class LikeServiceTest {
 
   }
 
-  @Nested
-  class 좋아요_단일_조회_테스트 {
-
-    @Test
-    void 좋아요_아이디가_존재하지_않으면_단일_조회를_실패한다() {
-      // given
-      Long invalidId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-
-      // when
-      ThrowingCallable findById = () -> likeService.findById(invalidId);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findById)
-          .withMessage(LikeErrorCode.LIKE_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 좋아요_단일_조회를_성공한다() {
-      // given
-      User other = createUser();
-      Like like = createLike(other, todo);
-
-      // when
-      LikeResponse actual = likeService.findById(like.getId());
-
-      // then
-      assertThat(actual.id()).isEqualTo(like.getId());
-      assertThat(actual).extracting("userId", "todoId")
-          .containsExactly(other.getId(), todo.getId());
-    }
-
-  }
-
   private User createUser() {
     String email = faker.internet()
         .emailAddress();

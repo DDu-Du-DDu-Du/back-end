@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -158,29 +157,6 @@ class LikeControllerTest {
 
       // then
       actions.andExpect(status().isNoContent());
-    }
-
-  }
-
-  @Nested
-  class GET_좋아요_단일_조회_API_테스트 {
-
-    @Test
-    void 좋아요_단일_조회를_성공하면_200_OK를_반환한다() throws Exception {
-      // given
-      Long id = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      LikeResponse response = createLikeResponse(userId, todoId);
-
-      given(likeService.findById(anyLong())).willReturn(response);
-
-      // when
-      ResultActions actions = mockMvc.perform(get("/api/likes/{id}", id)
-          .contentType(MediaType.APPLICATION_JSON));
-
-      // then
-      actions.andExpect(status().isOk())
-          .andExpect(jsonPath("$.id").value(response.id()));
     }
 
   }
