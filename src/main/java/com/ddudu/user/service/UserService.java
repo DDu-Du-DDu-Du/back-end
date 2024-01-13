@@ -20,8 +20,11 @@ import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -144,6 +147,18 @@ public class UserService {
     options.switchOptions();
 
     return ToggleOptionResponse.from(user);
+  }
+
+  public List<UserProfileResponse> findAllByKeyword(String keyword) {
+    if (Strings.isBlank(keyword)) {
+      return Collections.emptyList();
+    }
+
+    List<User> users = userRepository.findAllByKeyword(keyword);
+
+    return users.stream()
+        .map(UserProfileResponse::from)
+        .toList();
   }
 
 }
