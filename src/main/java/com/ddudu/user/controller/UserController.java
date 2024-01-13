@@ -13,6 +13,7 @@ import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.service.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -50,6 +52,16 @@ public class UserController {
       Long id
   ) {
     UserResponse response = userService.findById(id);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping
+  public ResponseEntity<List<UserProfileResponse>> getAllByKeyword(
+      @RequestParam
+      String keyword
+  ) {
+    List<UserProfileResponse> response = userService.findAllByKeyword(keyword);
 
     return ResponseEntity.ok(response);
   }
