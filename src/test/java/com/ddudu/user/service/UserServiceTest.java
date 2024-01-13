@@ -17,11 +17,14 @@ import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.ToggleOptionResponse;
+import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -32,6 +35,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -180,6 +184,94 @@ class UserServiceTest {
   }
 
   @Nested
+  class 사용자_검색_테스트 {
+
+    String keyword;
+    String emailWithKeyword;
+    String nicknameWithKeyword;
+    String optionalUsernameWithKeyword;
+
+    @BeforeEach
+    void setUp() {
+      keyword = faker.lorem()
+          .word();
+      emailWithKeyword = faker.internet()
+          .emailAddress(keyword);
+      nicknameWithKeyword = createWordWithKeyword(keyword);
+      optionalUsernameWithKeyword = createWordWithKeyword(keyword);
+    }
+
+    @Test
+    void 사용자_검색에_성공한다() {
+      // given
+      User user1 = createUser(emailWithKeyword, null, null);
+      User user2 = createUser(null, nicknameWithKeyword, null);
+      User user3 = createUser(null, null, optionalUsernameWithKeyword);
+      createUser(null, null, null);
+
+      // when
+      List<UserProfileResponse> actual = userService.findAllByKeyword(keyword);
+
+      // then
+      UserProfileResponse profile1 = UserProfileResponse.from(user1);
+      UserProfileResponse profile2 = UserProfileResponse.from(user2);
+      UserProfileResponse profile3 = UserProfileResponse.from(user3);
+
+      assertThat(actual).hasSize(3);
+      assertThat(actual).contains(profile1, profile2, profile3);
+    }
+
+    @ParameterizedTest(name = "{0}일 때, 빈 리스트를 응답한다.")
+    @EmptySource
+    void 키워드가_공백이면_빈_리스트를_반환한다(String keyword) {
+      // given
+      String email = faker.internet()
+          .emailAddress();
+      createUser(email, null, null);
+
+      // when
+      List<UserProfileResponse> actual = userService.findAllByKeyword(keyword);
+
+      // then
+      assertThat(actual).isEmpty();
+    }
+
+    public static String createWordWithKeyword(String keyword) {
+      Faker faker = new Faker();
+      Random random = new Random();
+
+      String randomWord = faker.lorem()
+          .word();
+      int insertPosition = random.nextInt(randomWord.length() + 1);
+
+      return randomWord.substring(0, insertPosition) + keyword + randomWord.substring(
+          insertPosition);
+    }
+
+    private User createUser(String email, String nickname, String optionalUsername) {
+      if (Objects.isNull(email)) {
+        email = faker.internet()
+            .emailAddress();
+      }
+
+      if (Objects.isNull(nickname)) {
+        nickname = faker.funnyName()
+            .name();
+      }
+
+      User user = builderWithEncoder
+          .email(email)
+          .password(password)
+          .nickname(nickname)
+          .optionalUsername(optionalUsername)
+          .build();
+
+      return userRepository.save(user);
+    }
+
+  }
+
+  @Nested
   class 프로필_수정 {
 
     String introduction;
@@ -289,7 +381,7 @@ class UserServiceTest {
       // given
       User user = createUser(null, null, null);
       String differentEmail = faker.internet()
-              .emailAddress();
+          .emailAddress();
 
       createUser(differentEmail, null, null);
 
