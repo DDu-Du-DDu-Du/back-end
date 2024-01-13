@@ -15,7 +15,7 @@ import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
-import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.List;
@@ -193,7 +193,7 @@ class UserServiceTest {
       User expected = userRepository.save(user);
 
       // when
-      UserResponse actual = userService.findById(expected.getId());
+      UserProfileResponse actual = userService.findById(expected.getId());
 
       // then
       assertThat(actual.id()).isEqualTo(expected.getId());

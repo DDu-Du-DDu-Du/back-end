@@ -24,9 +24,9 @@ import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -257,9 +257,8 @@ class UserControllerTest {
       // given
       long userId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      UserResponse expected = UserResponse.builder()
+      UserProfileResponse expected = UserProfileResponse.builder()
           .id(userId)
-          .email(email)
           .nickname(nickname)
           .build();
 
@@ -350,11 +349,7 @@ class UserControllerTest {
       String newEmail = faker.internet()
           .emailAddress();
       UpdateEmailRequest request = new UpdateEmailRequest(newEmail);
-      UserResponse response = UserResponse.builder()
-          .id(userId)
-          .email(request.email())
-          .nickname(nickname)
-          .build();
+      UpdateEmailResponse response = new UpdateEmailResponse(newEmail);
 
       given(userService.updateEmail(anyLong(), anyLong(), any(UpdateEmailRequest.class)))
           .willReturn(response);

@@ -6,9 +6,9 @@ import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.service.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -44,17 +44,17 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> getById(
+  public ResponseEntity<UserProfileResponse> getById(
       @PathVariable
       Long id
   ) {
-    UserResponse response = userService.findById(id);
+    UserProfileResponse response = userService.findById(id);
 
     return ResponseEntity.ok(response);
   }
 
   @PatchMapping("/{id}/email")
-  public ResponseEntity<UserResponse> updateEmail(
+  public ResponseEntity<UpdateEmailResponse> updateEmail(
       @Login
       Long loginId,
       @PathVariable
@@ -63,7 +63,7 @@ public class UserController {
       @Valid
       UpdateEmailRequest request
   ) {
-    UserResponse response = userService.updateEmail(loginId, id, request);
+    UpdateEmailResponse response = userService.updateEmail(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }

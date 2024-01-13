@@ -13,9 +13,9 @@ import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Objects;
@@ -77,7 +77,7 @@ public class UserService {
     return UserProfileResponse.from(user);
   }
 
-  public UserResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
+  public UpdateEmailResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
     if (!loginId.equals(userId)) {
       throw new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION);
     }
@@ -97,7 +97,7 @@ public class UserService {
 
     user.applyEmailUpdate(newEmail);
 
-    return UserResponse.from(user);
+    return new UpdateEmailResponse(newEmail.getAddress());
   }
 
   @Transactional
@@ -122,11 +122,11 @@ public class UserService {
     return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
   }
 
-  public UserResponse findById(Long userId) {
+  public UserProfileResponse findById(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
-    return UserResponse.from(user);
+    return UserProfileResponse.from(user);
   }
 
 }
