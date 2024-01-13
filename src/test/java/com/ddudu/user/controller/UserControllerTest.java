@@ -3,6 +3,7 @@ package com.ddudu.user.controller;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -31,6 +32,7 @@ import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
@@ -290,6 +292,54 @@ class UserControllerTest {
       actions.andExpect(status().isNotFound())
           .andExpect(jsonPath("$.code").value(UserErrorCode.ID_NOT_EXISTING.getCode()))
           .andExpect(jsonPath("$.message").value(UserErrorCode.ID_NOT_EXISTING.getMessage()));
+    }
+
+  }
+
+  @Nested
+  class GET_사용자_검색_API_테스트 {
+
+    String introduction;
+    String keyword;
+
+    @BeforeEach
+    void setUp() {
+      introduction = faker.book()
+          .title();
+      keyword = faker.lorem()
+          .word();
+    }
+
+    @Test
+    void 사용자_검색을_성공하고_200_OK를_반환한다() throws Exception {
+      // given
+      String nickname = faker.funnyName()
+          .name();
+      UserProfileResponse profile = createUserProfile(nickname);
+      List<UserProfileResponse> expected = List.of(profile);
+
+      given(userService.findAllByKeyword(anyString())).willReturn(expected);
+
+      // when
+      ResultActions actions = mockMvc.perform(
+          get("/api/users")
+              .queryParam("keyword", keyword)
+              .contentType(MediaType.APPLICATION_JSON)
+      );
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(expected.size()))
+          .andExpect(jsonPath("$[0].id").value(profile.id()))
+          .andExpect(jsonPath("$[0].nickname").value(profile.nickname()))
+          .andExpect(jsonPath("$[0].introduction").value(profile.introduction()));
+    }
+
+    private UserProfileResponse createUserProfile(String nickname) {
+      Long id = faker.random()
+          .nextLong();
+
+      return new UserProfileResponse(id, nickname, introduction);
     }
 
   }
