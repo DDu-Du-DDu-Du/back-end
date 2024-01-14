@@ -13,6 +13,7 @@ import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
+import com.ddudu.user.dto.SimpleUserDto;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -20,10 +21,9 @@ import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -483,11 +483,12 @@ class UserServiceTest {
       createFollowing(user, followee);
 
       // when
-      List<UserResponse> actual = userService.findFollowees(user.getId(), user.getId());
+      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
 
       // then
-      UserResponse expected = UserResponse.from(followee);
-      assertThat(actual).containsOnly(expected);
+      SimpleUserDto expected = SimpleUserDto.from(followee);
+      assertThat(actual.counts()).isEqualTo(1);
+      assertThat(actual.users()).containsOnly(expected);
     }
 
     @Test

@@ -10,11 +10,10 @@ import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.service.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -114,13 +113,13 @@ public class UserController {
   }
 
   @GetMapping("/{id}/followees")
-  public ResponseEntity<List<UserResponse>> getFollowees(
+  public ResponseEntity<UsersResponse> getFollowees(
       @Login
       Long loginId,
       @PathVariable
       Long id
   ) {
-    List<UserResponse> responses = userService.findFollowees(loginId, id);
+    UsersResponse responses = userService.findFollowees(loginId, id);
 
     return ResponseEntity.ok(responses);
   }

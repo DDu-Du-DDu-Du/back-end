@@ -21,6 +21,7 @@ import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
+import com.ddudu.user.dto.SimpleUserDto;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -30,7 +31,7 @@ import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -658,19 +659,20 @@ class UserControllerTest {
           .nextLong(Long.MAX_VALUE);
       String anotherNickname = faker.funnyName()
           .name();
-      List<UserResponse> responses = List.of(
-          new UserResponse(followeeId, anotherNickname, null));
+      UsersResponse response = new UsersResponse(
+          1, List.of(new SimpleUserDto(followeeId, anotherNickname)));
 
       given(userService.findFollowees(anyLong(), anyLong()))
-          .willReturn(responses);
+          .willReturn(response);
 
       // when
       ResultActions actions = mockMvc.perform(requestBuilder.header("Authorization", token));
 
       // then
       actions.andExpect(status().isOk())
-          .andExpect(jsonPath("$").value(hasSize(1)))
-          .andExpect(jsonPath("$.[0]").value(hasValue(followeeId)));
+          .andExpect(jsonPath("$.counts").value(1))
+          .andExpect(jsonPath("$.users").value(hasSize(1)))
+          .andExpect(jsonPath("$.users.[0]").value(hasValue(followeeId)));
     }
 
     @Test
