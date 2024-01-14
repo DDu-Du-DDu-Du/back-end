@@ -16,8 +16,10 @@ import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
+import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -127,6 +129,21 @@ public class UserService {
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
     return UserProfileResponse.from(user);
+  }
+
+  public List<UserResponse> findFollowees(Long loginId, Long id) {
+    if (!loginId.equals(id)) {
+      throw new ForbiddenException(UserErrorCode.INVALID_AUTHORITY);
+    }
+
+    User user = userRepository.findById(loginId)
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+    List<User> followees = userRepository.findFolloweesOfUser(user);
+
+    return followees.stream()
+        .map(UserResponse::from)
+        .toList();
   }
 
 }

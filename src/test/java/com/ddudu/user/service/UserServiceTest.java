@@ -8,6 +8,8 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidTokenException;
+import com.ddudu.following.domain.Following;
+import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
@@ -16,6 +18,7 @@ import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
+import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.List;
@@ -53,6 +56,9 @@ class UserServiceTest {
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  FollowingRepository followingRepository;
 
   @Autowired
   PasswordEncoder passwordEncoder;
@@ -466,6 +472,78 @@ class UserServiceTest {
       assertThat(updatedUser.getPassword()
           .check(newPassword, passwordEncoder)).isTrue();
 
+    }
+
+  }
+
+  @Nested
+  class 팔로이_조회_테스트 {
+
+    @Test
+    void 팔로이_조회를_성공한다() {
+      // given
+      User user = createUser();
+      User followee = createUser();
+      createFollowing(user, followee);
+
+      // when
+      List<UserResponse> actual = userService.findFollowees(user.getId(), user.getId());
+
+      // then
+      UserResponse expected = UserResponse.from(followee);
+      assertThat(actual).containsOnly(expected);
+    }
+
+    @Test
+    void 로그인_사용자와_요청의_사용자가_다르면_조회_실패한다() {
+      // given
+      long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      long invalidId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, invalidId);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findFollowees)
+          .withMessage(UserErrorCode.INVALID_AUTHORITY.getMessage());
+    }
+
+    @Test
+    void 사용자가_존재하지_않으면_조회를_실패한다() {
+      // given
+      long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, loginId);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findFollowees)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+    private User createUser() {
+      String email = faker.internet()
+          .emailAddress();
+
+      User user = builderWithEncoder
+          .email(email)
+          .password(password)
+          .nickname(nickname)
+          .build();
+
+      return userRepository.save(user);
+    }
+
+    private Following createFollowing(User follower, User followee) {
+      Following following = Following.builder()
+          .follower(follower)
+          .followee(followee)
+          .build();
+
+      return followingRepository.save(following);
     }
 
   }
