@@ -1,6 +1,7 @@
 package com.ddudu.goal.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
@@ -29,9 +30,7 @@ public class GoalService {
 
   @Transactional
   public CreateGoalResponse create(
-      Long userId,
-      @Valid
-          CreateGoalRequest request
+      Long userId, @Valid CreateGoalRequest request
   ) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
@@ -47,9 +46,13 @@ public class GoalService {
   }
 
   @Transactional
-  public GoalResponse update(Long id, @Valid UpdateGoalRequest request) {
+  public GoalResponse update(
+      Long loginId, Long id, @Valid UpdateGoalRequest request
+  ) {
     Goal goal = goalRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
+
+    checkPermission(loginId, goal);
 
     goal.applyGoalUpdates(
         request.name(), request.status(), request.color(), request.privacyType());
@@ -57,14 +60,20 @@ public class GoalService {
     return GoalResponse.from(goal);
   }
 
-  public GoalResponse findById(Long id) {
+  public GoalResponse findById(Long loginId, Long id) {
     Goal goal = goalRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
+
+    checkPermission(loginId, goal);
 
     return GoalResponse.from(goal);
   }
 
-  public List<GoalSummaryResponse> findAllByUser(Long userId) {
+  public List<GoalSummaryResponse> findAllByUser(Long loginId, Long userId) {
+    if (!userId.equals(loginId)) {
+      throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
+    }
+
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
@@ -76,9 +85,18 @@ public class GoalService {
   }
 
   @Transactional
-  public void delete(Long id) {
+  public void delete(Long loginId, Long id) {
     goalRepository.findById(id)
-        .ifPresent(Goal::delete);
+        .ifPresent(goal -> {
+          checkPermission(loginId, goal);
+          goal.delete();
+        });
+  }
+
+  private static void checkPermission(Long loginId, Goal goal) {
+    if (!goal.isCreatedByUser(loginId)) {
+      throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
+    }
   }
 
 }

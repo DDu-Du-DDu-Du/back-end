@@ -26,6 +26,7 @@ import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
@@ -559,6 +560,78 @@ class UserControllerTest {
           .andExpect(jsonPath("$.id").value(response.id()))
           .andExpect(jsonPath("$.nickname").value(response.nickname()))
           .andExpect(jsonPath("$.introduction").value(response.introduction()));
+    }
+
+  }
+
+  @Nested
+  class PATCH_사용자_옵션_토글_API_테스트 {
+
+    long userId;
+
+    @BeforeEach
+    void setUp() {
+      userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+    }
+
+    @Test
+    void 수락한_사람만_팔로우_옵션을_토글하고_200_OK를_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(userId);
+      ToggleOptionResponse response = new ToggleOptionResponse(userId, true);
+
+      given(userService.switchOption(anyLong(), anyLong()))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(patch("/api/users/{id}/options", userId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(userId))
+          .andExpect(jsonPath("$.allowFollowsAfterApproval")
+              .value(response.allowFollowsAfterApproval()));
+    }
+
+    @Test
+    void 로그인한_사용자가_요청된_사용자와_다를_경우_403_Forbidden을_반환한다() throws Exception {
+      // given
+      long randomId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String token = createBearerToken(randomId);
+
+      given(userService.switchOption(anyLong(), anyLong()))
+          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHENTICATION));
+
+      // when
+      ResultActions actions = mockMvc.perform(patch("/api/users/{id}/options", userId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code").value(UserErrorCode.INVALID_AUTHENTICATION.getCode()))
+          .andExpect(
+              jsonPath("$.message").value(UserErrorCode.INVALID_AUTHENTICATION.getMessage()));
+    }
+
+    @Test
+    void 존재하지_않는_사용자에_대한_요청일_경우_404_Not_Found를_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(userId);
+
+      given(userService.switchOption(anyLong(), anyLong()))
+          .willThrow(new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(patch("/api/users/{id}/options", userId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code").value(UserErrorCode.ID_NOT_EXISTING.getCode()))
+          .andExpect(jsonPath("$.message").value(UserErrorCode.ID_NOT_EXISTING.getMessage()));
     }
 
   }

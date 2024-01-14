@@ -165,7 +165,7 @@ class FollowingServiceTest {
       User followee = createUser();
       Options followeeOptions = followee.getOptions();
 
-      followeeOptions.toggleFollowsAfterApproval();
+      followeeOptions.switchOptions();
 
       FollowRequest request = new FollowRequest(followee.getId());
 
