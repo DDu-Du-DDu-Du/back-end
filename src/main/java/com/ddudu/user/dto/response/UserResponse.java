@@ -4,7 +4,7 @@ import com.ddudu.user.domain.User;
 import lombok.Builder;
 
 @Builder
-public record UserResponse(Long id, String nickname, String introduction) {
+public record UserResponse(Long id, String nickname) {
 
   public static UserResponse from(User user) {
     return UserResponse.builder()
