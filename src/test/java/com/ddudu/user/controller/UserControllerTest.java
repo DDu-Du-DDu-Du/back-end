@@ -58,8 +58,8 @@ class UserControllerTest extends ControllerTestSupport {
         .emailAddress();
     password = faker.internet()
         .password(8, 40, true, true, true);
-    nickname = faker.funnyName()
-        .name();
+    nickname = faker.internet()
+        .username();
   }
 
   @Nested
