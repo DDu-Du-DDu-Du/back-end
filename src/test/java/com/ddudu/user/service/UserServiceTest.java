@@ -8,6 +8,7 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidTokenException;
+import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
@@ -15,10 +16,11 @@ import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
+import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
@@ -99,16 +101,7 @@ class UserServiceTest {
     @Test
     void 이메일이_이미_존재하면_회원가입을_실패한다() {
       // given
-      String email = faker.internet()
-          .emailAddress();
-      User user = builderWithEncoder
-          .email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-
-      userRepository.save(user);
-
+      User user = createUser(null, null, null);
       SignUpRequest request = new SignUpRequest(null, user.getEmail(), password, nickname, null);
 
       // when
@@ -122,18 +115,10 @@ class UserServiceTest {
     @Test
     void 선택_아이디가_이미_존재하면_회원가입을_실패한다() {
       // given
-      String email = faker.internet()
-          .emailAddress();
       String username = faker.internet()
           .username();
-      User user = builderWithEncoder
-          .email(email)
-          .password(password)
-          .nickname(nickname)
-          .optionalUsername(username)
-          .build();
 
-      userRepository.save(user);
+      createUser(null, username, null);
 
       String differentEmail = faker.internet()
           .emailAddress();
@@ -183,14 +168,7 @@ class UserServiceTest {
     @Test
     void 사용자_단일_조회를_성공한다() {
       // given
-      String email = faker.internet()
-          .emailAddress();
-      User user = builderWithEncoder
-          .email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-      User expected = userRepository.save(user);
+      User expected = createUser(null, null, null);
 
       // when
       UserResponse actual = userService.findById(expected.getId());
@@ -215,7 +193,7 @@ class UserServiceTest {
     @Test
     void 사용자_프로필_수정을_성공한다() {
       // given
-      User user = createUser();
+      User user = createUser(null, null, null);
 
       String newNickname = faker.oscarMovie()
           .character();
@@ -238,7 +216,7 @@ class UserServiceTest {
       // given
       Long invalidLoginId = faker.random()
           .nextLong();
-      User user = createUser();
+      User user = createUser(null, null, null);
       UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
 
       // when
@@ -248,19 +226,6 @@ class UserServiceTest {
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateProfile)
           .withMessage(UserErrorCode.INVALID_AUTHORITY.getMessage());
-    }
-
-    private User createUser() {
-      String email = faker.internet()
-          .emailAddress();
-
-      User user = builderWithEncoder
-          .email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-
-      return userRepository.save(user);
     }
 
   }
@@ -307,14 +272,8 @@ class UserServiceTest {
     @Test
     void 변경할_이메일이_기존_이메일과_동일한_경우_이메일_변경을_실패한다() {
       // given
-      String email = faker.internet()
-          .emailAddress();
-      User user = builderWithEncoder.email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-      userRepository.save(user);
-      UpdateEmailRequest request = new UpdateEmailRequest(email);
+      User user = createUser(null, null, null);
+      UpdateEmailRequest request = new UpdateEmailRequest(user.getEmail());
 
       // when
       ThrowingCallable updateEmail = () -> userService.updateEmail(
@@ -328,24 +287,17 @@ class UserServiceTest {
     @Test
     void 이미_존재하는_이메일로_변경하면_이메일_변경을_실패한다() {
       // given
-      String email1 = faker.internet()
-          .emailAddress();
-      String email2 = faker.internet()
-          .emailAddress();
-      User user1 = builderWithEncoder.email(email1)
-          .password(password)
-          .nickname(nickname)
-          .build();
-      User user2 = builderWithEncoder.email(email2)
-          .password(password)
-          .nickname(nickname)
-          .build();
-      userRepository.saveAll(List.of(user1, user2));
-      UpdateEmailRequest request = new UpdateEmailRequest(email2);
+      User user = createUser(null, null, null);
+      String differentEmail = faker.internet()
+              .emailAddress();
+
+      createUser(differentEmail, null, null);
+
+      UpdateEmailRequest request = new UpdateEmailRequest(differentEmail);
 
       // when
       ThrowingCallable updateEmail = () -> userService.updateEmail(
-          user1.getId(), user1.getId(), request);
+          user.getId(), user.getId(), request);
 
       // then
       assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updateEmail)
@@ -355,13 +307,7 @@ class UserServiceTest {
     @Test
     void 이메일_변경에_성공한다() {
       // given
-      String email = faker.internet()
-          .emailAddress();
-      User user = builderWithEncoder.email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-      User savedUser = userRepository.save(user);
+      User user = createUser(null, null, null);
       Long userId = user.getId();
 
       String newEmail = faker.internet()
@@ -372,7 +318,7 @@ class UserServiceTest {
       userService.updateEmail(userId, userId, updateEmailRequest);
 
       // then
-      User updatedUser = userRepository.findById(savedUser.getId())
+      User updatedUser = userRepository.findById(userId)
           .get();
       assertThat(updatedUser.getEmail()).isEqualTo(newEmail);
     }
@@ -421,14 +367,8 @@ class UserServiceTest {
     @Test
     void 변경할_비밀번호가_기존_비밀번호와_동일한_경우_비밀번호_변경을_실패한다() {
       // given
-      String email = faker.internet()
-          .emailAddress();
-      User user = builderWithEncoder.email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-      User savedUser = userRepository.save(user);
-      Long userId = savedUser.getId();
+      User user = createUser(null, null, null);
+      Long userId = user.getId();
       UpdatePasswordRequest request = new UpdatePasswordRequest(password);
 
       // when
@@ -442,32 +382,104 @@ class UserServiceTest {
     @Test
     void 비밀번호_변경을_성공한다() {
       // given
-      String email = faker.internet()
-          .emailAddress();
-      String oldPassword = faker.internet()
-          .password(8, 40, true, true, true);
       String newPassword = faker.internet()
           .password(8, 40, true, true, true);
 
-      User user = builderWithEncoder.email(email)
-          .password(oldPassword)
-          .nickname(nickname)
-          .build();
-      User savedUser = userRepository.save(user);
-      Long userId = savedUser.getId();
+      User user = createUser(null, null, null);
+      Long userId = user.getId();
+
       UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest(newPassword);
 
       // when
       userService.updatePassword(userId, userId, updatePasswordRequest);
 
       // then
-      User updatedUser = userRepository.findById(savedUser.getId())
+      User updatedUser = userRepository.findById(userId)
           .get();
       assertThat(updatedUser.getPassword()
           .check(newPassword, passwordEncoder)).isTrue();
-
     }
 
+  }
+
+  @Nested
+  class 옵션_토글_서비스_테스트 {
+
+    @Test
+    void 수락한_사람만_팔로우_받기_옵션을_킨다() {
+      // given
+      User user = createUser(null, null, null);
+
+      // when
+      ToggleOptionResponse response = userService.switchOption(
+          user.getId(), user.getId());
+
+      // then
+      assertThat(response.allowFollowsAfterApproval()).isTrue();
+    }
+
+    @Test
+    void 수락한_사람만_팔로우_받기_옵션을_끈다() {
+      // given
+      User user = createUser(null, null, null);
+      Options options = user.getOptions();
+
+      options.switchOptions();
+
+      // when
+      ToggleOptionResponse response = userService.switchOption(user.getId(), user.getId());
+
+      // then
+      assertThat(response.allowFollowsAfterApproval()).isFalse();
+    }
+
+    @Test
+    void 로그인한_사용자와_요청된_사용자가_다르면_옵션_변경을_실패한다() {
+      // given
+      long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable toggleOption = () -> userService.switchOption(loginId, id);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(toggleOption)
+          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+    }
+
+    @Test
+    void 존재하지_않는_사용자면_옵션_변경을_실패한다() {
+      // given
+      long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable toggleOption = () -> userService.switchOption(userId, userId);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(toggleOption)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+  }
+
+  private User createUser(String email, String optionalUsername, String introduction) {
+    if (Objects.isNull(email)) {
+      email = faker.internet()
+          .emailAddress();
+    }
+
+    User user = builderWithEncoder
+        .email(email)
+        .password(password)
+        .nickname(nickname)
+        .optionalUsername(Objects.nonNull(optionalUsername) ? optionalUsername : null)
+        .introduction(Objects.nonNull(introduction) ? introduction : null)
+        .build();
+
+    return userRepository.save(user);
   }
 
 }
