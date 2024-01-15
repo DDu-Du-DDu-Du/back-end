@@ -9,6 +9,7 @@ import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.following.domain.Following;
+import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
@@ -480,7 +481,7 @@ class UserServiceTest {
       // given
       User user = createUser(null, null, null);
       User followee = createUser(null, null, null);
-      createFollowing(user, followee);
+      createFollowing(user, followee, null);
 
       // when
       UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
@@ -489,6 +490,22 @@ class UserServiceTest {
       SimpleUserDto expected = SimpleUserDto.from(followee);
       assertThat(actual.counts()).isEqualTo(1);
       assertThat(actual.users()).containsOnly(expected);
+    }
+
+    @Test
+    void 요청됨이나_무시_상태가_아닌_팔로잉만_조회한다() {
+      // given
+      User user = createUser(null, null, null);
+      User requestedFollowee = createUser(null, null, null);
+      User rejectedFollowee = createUser(null, null, null);
+      createFollowing(user, requestedFollowee, FollowingStatus.REQUESTED);
+      createFollowing(user, rejectedFollowee, FollowingStatus.IGNORED);
+
+      // when
+      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
+
+      // then
+      assertThat(actual.users()).isEmpty();
     }
 
     @Test
@@ -521,10 +538,11 @@ class UserServiceTest {
           .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
-    private Following createFollowing(User follower, User followee) {
+    private Following createFollowing(User follower, User followee, FollowingStatus status) {
       Following following = Following.builder()
           .follower(follower)
           .followee(followee)
+          .status(Objects.nonNull(status) ? status : null)
           .build();
 
       return followingRepository.save(following);
