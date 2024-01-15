@@ -5,18 +5,16 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.InvalidParameterException;
-import com.ddudu.config.JwtConfig;
-import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
@@ -26,41 +24,27 @@ import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.service.GoalService;
-import com.ddudu.support.TestProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ddudu.support.ControllerTestSupport;
 import java.util.List;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = GoalController.class)
-@Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
-@DisplayNameGeneration(ReplaceUnderscores.class)
-class GoalControllerTest {
+@WebMvcTest(GoalController.class)
+class GoalControllerTest extends ControllerTestSupport {
 
   static final Faker faker = new Faker();
 
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private ObjectMapper objectMapper;
-
   @MockBean
-  private GoalService goalService;
+  GoalService goalService;
 
   String validName;
   String validColor;
@@ -77,6 +61,13 @@ class GoalControllerTest {
   @Nested
   class POST_목표_생성_API_테스트 {
 
+    static final String PATH = "/api/goals";
+
+    private static List<String> provide51Letters() {
+      String longString = "a".repeat(51);
+      return List.of(longString);
+    }
+
     @Test
     void 목표_생성을_성공한다() throws Exception {
       // given
@@ -87,14 +78,12 @@ class GoalControllerTest {
           .willReturn(response);
 
       // when then
-      mockMvc.perform(
-              post("/api/goals")
-                  .param("userId", "1")
-                  .content(objectMapper.writeValueAsString(request))
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(post(PATH)
+              .param("userId", "1")
+              .content(objectMapper.writeValueAsString(request))
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isCreated())
-          .andExpect(header().exists("location"))
+          .andExpect(header().string("location", PATH + "/1"))
           .andExpect(jsonPath("$.id").value(response.id()))
           .andExpect(jsonPath("$.name").value(response.name()))
           .andExpect(jsonPath("$.color").value(response.color()));
@@ -112,12 +101,10 @@ class GoalControllerTest {
               .build());
 
       // when then
-      mockMvc.perform(
-              post("/api/goals")
-                  .param("userId", "1")
-                  .content(objectMapper.writeValueAsString(request))
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(post(PATH)
+              .param("userId", "1")
+              .content(objectMapper.writeValueAsString(request))
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.[0].message")
               .value(containsString("목표가 입력되지 않았습니다.")));
@@ -134,12 +121,10 @@ class GoalControllerTest {
               .build());
 
       // when then
-      mockMvc.perform(
-              post("/api/goals")
-                  .param("userId", "1")
-                  .content(objectMapper.writeValueAsString(request))
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(post(PATH)
+              .param("userId", "1")
+              .content(objectMapper.writeValueAsString(request))
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.[0].message")
               .value(containsString("목표는 최대 50자 입니다.")));
@@ -156,12 +141,10 @@ class GoalControllerTest {
               .build());
 
       // when then
-      mockMvc.perform(
-              post("/api/goals")
-                  .param("userId", "1")
-                  .content(objectMapper.writeValueAsString(request))
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(post(PATH)
+              .param("userId", "1")
+              .content(objectMapper.writeValueAsString(request))
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.[0].message")
               .value(containsString("색상 코드는 6자리 16진수입니다.")));
@@ -178,26 +161,31 @@ class GoalControllerTest {
           .willThrow(new InvalidParameterException(GoalErrorCode.INVALID_COLOR_FORMAT));
 
       // when then
-      mockMvc.perform(
-              post("/api/goals")
-                  .param("userId", "1")
-                  .content(objectMapper.writeValueAsString(request))
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(post(PATH)
+              .param("userId", "1")
+              .content(objectMapper.writeValueAsString(request))
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
               .value(containsString(GoalErrorCode.INVALID_COLOR_FORMAT.getMessage())));
-    }
-
-    private static List<String> provide51Letters() {
-      String longString = "a".repeat(51);
-      return List.of(longString);
     }
 
   }
 
   @Nested
   class GET_단일_목표_조회_API_테스트 {
+
+    static final String PATH = "/api/goals/{id}";
+
+    private static GoalResponse createGoalResponse() {
+      return GoalResponse.builder()
+          .id(1L)
+          .name("dev course")
+          .status(GoalStatus.IN_PROGRESS)
+          .color("191919")
+          .privacyType(PrivacyType.PRIVATE)
+          .build();
+    }
 
     @Test
     void 목표_조회를_성공한다() throws Exception {
@@ -207,10 +195,8 @@ class GoalControllerTest {
       given(goalService.findById(anyLong())).willReturn(response);
 
       // when then
-      mockMvc.perform(
-              get("/api/goals/{id}", response.id())
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(get(PATH, response.id())
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(response.id()))
           .andExpect(jsonPath("$.name").value(response.name()))
@@ -240,11 +226,9 @@ class GoalControllerTest {
           .willReturn(response);
 
       // when then
-      mockMvc.perform(
-              put("/api/goals/{id}", 1L)
-                  .content(invalidRequestJson)
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(put(PATH, 1L)
+              .content(invalidRequestJson)
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
               .value(containsString("GoalStatus는 [IN_PROGRESS, DONE] 중 하나여야 합니다.")));
@@ -269,11 +253,9 @@ class GoalControllerTest {
           .willReturn(response);
 
       // when then
-      mockMvc.perform(
-              put("/api/goals/{id}", 1L)
-                  .content(invalidRequestJson)
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(put(PATH, 1L)
+              .content(invalidRequestJson)
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
               .value(containsString("PrivacyType는 [PRIVATE, FOLLOWER, PUBLIC] 중 하나여야 합니다.")));
@@ -287,29 +269,19 @@ class GoalControllerTest {
           .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
       // when then
-      mockMvc.perform(
-              get("/api/goals/{id}", invalidId)
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(get(PATH, invalidId)
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message")
               .value(GoalErrorCode.ID_NOT_EXISTING.getMessage()));
-    }
-
-    private static GoalResponse createGoalResponse() {
-      return GoalResponse.builder()
-          .id(1L)
-          .name("dev course")
-          .status(GoalStatus.IN_PROGRESS)
-          .color("191919")
-          .privacyType(PrivacyType.PRIVATE)
-          .build();
     }
 
   }
 
   @Nested
   class GET_전체_목표_조회_API_테스트 {
+
+    static final String PATH = "/api/goals";
 
     @Test
     void 사용자의_전체_목표를_조회할_수_있다() throws Exception {
@@ -320,11 +292,9 @@ class GoalControllerTest {
       given(goalService.findAllByUser(anyLong())).willReturn(response);
 
       // when then
-      mockMvc.perform(
-              get("/api/goals")
-                  .param("userId", "1")
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(get(PATH)
+              .param("userId", "1")
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
           .andExpect(jsonPath("$[0].id").value(firstElement.id()))
@@ -341,11 +311,9 @@ class GoalControllerTest {
           new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
       // when then
-      mockMvc.perform(
-              get("/api/goals")
-                  .queryParam("userId", invalidUserId)
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(get(PATH)
+              .queryParam("userId", invalidUserId)
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.message")
               .value(containsString(GoalErrorCode.USER_NOT_EXISTING.getMessage())));
@@ -367,6 +335,8 @@ class GoalControllerTest {
   @Nested
   class PUT_목표_수정_API_테스트 {
 
+    static final String PATH = "/api/goals/{id}";
+
     @Test
     void 목표_수정을_성공한다() throws Exception {
       // given
@@ -380,11 +350,9 @@ class GoalControllerTest {
           .willReturn(response);
 
       // when then
-      mockMvc.perform(
-              put("/api/goals/{id}", 1L)
-                  .content(objectMapper.writeValueAsString(request))
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(put(PATH, 1L)
+              .content(objectMapper.writeValueAsString(request))
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(response.id()))
           .andExpect(jsonPath("$.name").value(response.name()))
@@ -414,11 +382,9 @@ class GoalControllerTest {
           .willReturn(response);
 
       // when then
-      mockMvc.perform(
-              put("/api/goals/{id}", 1L)
-                  .content(invalidRequestJson)
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(put(PATH, 1L)
+              .content(invalidRequestJson)
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
               .value(containsString("GoalStatus는 [IN_PROGRESS, DONE] 중 하나여야 합니다.")));
@@ -431,11 +397,9 @@ class GoalControllerTest {
           validName, GoalStatus.IN_PROGRESS, validColor, null);
 
       // when then
-      mockMvc.perform(
-              put("/api/goals/{id}", 1L)
-                  .content(objectMapper.writeValueAsString(request))
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(put(PATH, 1L)
+              .content(objectMapper.writeValueAsString(request))
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$[0].message", is("공개 설정이 입력되지 않았습니다.")));
     }
@@ -460,11 +424,9 @@ class GoalControllerTest {
           .willReturn(response);
 
       // when then
-      mockMvc.perform(
-              put("/api/goals/{id}", 1L)
-                  .content(invalidRequestJson)
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(put(PATH, 1L)
+              .content(invalidRequestJson)
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message")
               .value(containsString("PrivacyType는 [PRIVATE, FOLLOWER, PUBLIC] 중 하나여야 합니다.")));
@@ -475,13 +437,13 @@ class GoalControllerTest {
   @Nested
   class DELETE_목표_삭제_API_테스트 {
 
+    static final String PATH = "/api/goals/{id}";
+
     @Test
     void 목표_삭제를_성공한다() throws Exception {
       // when then
-      mockMvc.perform(
-              delete("/api/goals/{id}", 1L)
-                  .contentType(MediaType.APPLICATION_JSON)
-          )
+      mockMvc.perform(delete(PATH, 1L)
+              .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isNoContent());
     }
 
