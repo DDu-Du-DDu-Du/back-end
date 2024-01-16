@@ -2,6 +2,7 @@ package com.ddudu.user.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.user.domain.Following;
@@ -29,10 +30,8 @@ public class FollowingService {
 
   @Transactional
   public FollowingResponse create(Long followerId, FollowRequest request) {
-    User follower = userRepository.findById(followerId)
-        .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.FOLLOWER_NOT_EXISTING));
-    User followee = userRepository.findById(request.followeeId())
-        .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.FOLLOWEE_NOT_EXISTING));
+    User follower = findUser(followerId, FollowingErrorCode.FOLLOWER_NOT_EXISTING);
+    User followee = findUser(request.followeeId(), FollowingErrorCode.FOLLOWEE_NOT_EXISTING);
 
     if (followingRepository.existsByFollowerAndFollowee(follower, followee)) {
       throw new DuplicateResourceException(FollowingErrorCode.ALREADY_FOLLOWING);
@@ -57,20 +56,10 @@ public class FollowingService {
   public FollowingResponse updateStatus(
       Long followerId, Long followingId, UpdateFollowingRequest request
   ) {
-    Following following = followingRepository.findById(followingId)
-        .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
+    Following following = findFollowing(followingId, FollowingErrorCode.ID_NOT_EXISTING);
 
-    if (!following.isOwnedBy(followerId)) {
-      throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
-    }
-
-    FollowingStatus requestedStatus = request.status();
-
-    if (!requestedStatus.isModifiable()) {
-      throw new InvalidParameterException(FollowingErrorCode.REQUEST_UNAVAILABLE);
-    }
-
-    following.updateStatus(requestedStatus);
+    checkPermission(followerId, following);
+    following.updateStatus(request.status());
 
     return FollowingResponse.from(following);
   }
@@ -84,8 +73,18 @@ public class FollowingService {
         });
   }
 
-  private void checkPermission(Long loginId, Following following) {
-    if (!following.isOwnedBy(loginId)) {
+  private User findUser(Long id, ErrorCode errorCode) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
+  }
+
+  private Following findFollowing(Long id, ErrorCode errorCode) {
+    return followingRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
+  }
+
+  private void checkPermission(Long followerId, Following following) {
+    if (!following.isOwnedBy(followerId)) {
       throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
     }
   }
