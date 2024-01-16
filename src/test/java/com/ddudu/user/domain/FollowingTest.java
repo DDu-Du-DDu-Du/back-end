@@ -46,6 +46,33 @@ class FollowingTest {
   @Nested
   class 팔로잉_생성_테스트 {
 
+    @ParameterizedTest(name = "생성 시 상태: {0}")
+    @NullSource
+    @ValueSource(strings = "REQUESTED")
+    void 팔로잉_생성을_성공한다(String statusName) {
+      // given
+      User followee = createUser(null);
+      String followerEmail = faker.internet()
+          .emailAddress();
+      User follower = createUser(followerEmail);
+      FollowingStatus status = Objects.nonNull(statusName) ? FollowingStatus.valueOf(statusName)
+          : null;
+
+      // when
+      Following following = Following.builder()
+          .follower(follower)
+          .followee(followee)
+          .status(status)
+          .build();
+
+      // then
+      User actualFollower = following.getFollower();
+      User actualFollowee = following.getFollowee();
+
+      assertThat(actualFollower.getId()).isEqualTo(follower.getId());
+      assertThat(actualFollowee.getId()).isEqualTo(followee.getId());
+    }
+
     @ParameterizedTest
     @NullSource
     void 팔로워가_NULL이면_팔로잉_생성을_실패한다(User follower) {
@@ -96,33 +123,6 @@ class FollowingTest {
           .withMessage(FollowingErrorCode.SELF_FOLLOWING_UNAVAILABLE.getMessage());
     }
 
-    @ParameterizedTest(name = "생성 시 상태: {0}")
-    @NullSource
-    @ValueSource(strings = "REQUESTED")
-    void 팔로잉_생성을_성공한다(String statusName) {
-      // given
-      User followee = createUser(null);
-      String followerEmail = faker.internet()
-          .emailAddress();
-      User follower = createUser(followerEmail);
-      FollowingStatus status = Objects.nonNull(statusName) ? FollowingStatus.valueOf(statusName)
-          : null;
-
-      // when
-      Following following = Following.builder()
-          .follower(follower)
-          .followee(followee)
-          .status(status)
-          .build();
-
-      // then
-      User actualFollower = following.getFollower();
-      User actualFollowee = following.getFollowee();
-
-      assertThat(actualFollower.getId()).isEqualTo(follower.getId());
-      assertThat(actualFollowee.getId()).isEqualTo(followee.getId());
-    }
-
   }
 
   @Nested
@@ -137,40 +137,6 @@ class FollowingTest {
       String followerEmail = faker.internet()
           .emailAddress();
       follower = createUser(followerEmail);
-    }
-
-    @Test
-    void 수정할_상태가_Null이면_수정을_실패한다() {
-      // given
-      Following following = Following.builder()
-          .follower(follower)
-          .followee(followee)
-          .build();
-      FollowingStatus status = null;
-
-      // when
-      ThrowingCallable updateStatus = () -> following.updateStatus(status);
-
-      // then
-      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(updateStatus)
-          .withMessage(FollowingErrorCode.NULL_STATUS_REQUESTED.getMessage());
-    }
-
-    @Test
-    void 수정할_상태가_REQUESTED이면_수정을_실패한다() {
-      // given
-      Following following = Following.builder()
-          .follower(follower)
-          .followee(followee)
-          .build();
-      FollowingStatus status = FollowingStatus.REQUESTED;
-
-      // when
-      ThrowingCallable updateStatus = () -> following.updateStatus(status);
-
-      // then
-      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(updateStatus)
-          .withMessage(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage());
     }
 
     @Test
@@ -206,6 +172,40 @@ class FollowingTest {
       // then
 
       assertThat(following.getStatus()).isEqualTo(expected);
+    }
+
+    @Test
+    void 수정할_상태가_Null이면_수정을_실패한다() {
+      // given
+      Following following = Following.builder()
+          .follower(follower)
+          .followee(followee)
+          .build();
+      FollowingStatus status = null;
+
+      // when
+      ThrowingCallable updateStatus = () -> following.updateStatus(status);
+
+      // then
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(updateStatus)
+          .withMessage(FollowingErrorCode.NULL_STATUS_REQUESTED.getMessage());
+    }
+
+    @Test
+    void 수정할_상태가_REQUESTED이면_수정을_실패한다() {
+      // given
+      Following following = Following.builder()
+          .follower(follower)
+          .followee(followee)
+          .build();
+      FollowingStatus status = FollowingStatus.REQUESTED;
+
+      // when
+      ThrowingCallable updateStatus = () -> following.updateStatus(status);
+
+      // then
+      assertThatExceptionOfType(InvalidParameterException.class).isThrownBy(updateStatus)
+          .withMessage(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage());
     }
 
   }

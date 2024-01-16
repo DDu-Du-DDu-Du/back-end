@@ -672,6 +672,31 @@ class UserControllerTest {
     }
 
     @Test
+    void 팔로잉_신청을_성공하고_200_OK를_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(followerId);
+      FollowRequest request = new FollowRequest(followeeId);
+      FollowingResponse response = FollowingResponse.builder()
+          .id(1L)
+          .followerId(followerId)
+          .followeeId(followeeId)
+          .build();
+
+      given(followingService.create(anyLong(), any(FollowRequest.class)))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(post(PATH, followerId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isCreated())
+          .andExpect(header().string("location", is("/api/users/" + followerId + "/followings")));
+    }
+
+    @Test
     void 로그인한_사용자가_없으면_401_Unauthorized를_반환한다() throws Exception {
       // given
       FollowRequest request = new FollowRequest(followeeId);
@@ -708,31 +733,6 @@ class UserControllerTest {
               jsonPath("$.message", is(FollowingErrorCode.FOLLOWEE_NOT_EXISTING.getMessage())));
     }
 
-    @Test
-    void 팔로잉_신청을_성공하고_OK를_반환한다() throws Exception {
-      // given
-      String token = createBearerToken(followerId);
-      FollowRequest request = new FollowRequest(followeeId);
-      FollowingResponse response = FollowingResponse.builder()
-          .id(1L)
-          .followerId(followerId)
-          .followeeId(followeeId)
-          .build();
-
-      given(followingService.create(anyLong(), any(FollowRequest.class)))
-          .willReturn(response);
-
-      // when
-      ResultActions actions = mockMvc.perform(post(PATH, followerId)
-          .header("Authorization", token)
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(request)));
-
-      // then
-      actions.andExpect(status().isCreated())
-          .andExpect(header().string("location", is("/api/users/" + followerId + "/followings")));
-    }
-
   }
 
   @Nested
@@ -754,6 +754,30 @@ class UserControllerTest {
     }
 
     @Test
+    void 팔로잉_상태_변경을_성공하고_200_OK를_반환한다() throws Exception {
+      // given
+      long followeeId = faker.random()
+          .nextLong();
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+      FollowingResponse response = new FollowingResponse(
+          randomId, loginId, followeeId, FollowingStatus.FOLLOWING);
+
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, randomId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.id", is(randomId)))
+          .andExpect(jsonPath("$.status", is(FollowingStatus.FOLLOWING.name())));
+    }
+
+    @Test
     void 요청시_팔로잉_상태가_누락되면_400_Bad_Request를_반환한다() throws Exception {
       // given
       UpdateFollowingRequest request = new UpdateFollowingRequest(null);
@@ -771,26 +795,6 @@ class UserControllerTest {
       actions.andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.[0].code", is(1)))
           .andExpect(jsonPath("$.[0].message", is("요청할 팔로잉 상태는 필수값입니다.")));
-    }
-
-    @Test
-    void 존재하지_않는_팔로잉_아이디면_404_Not_Found를_반환한다() throws Exception {
-      // given
-      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
-
-      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
-          .willThrow(new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
-
-      // when
-      ResultActions actions = mockMvc.perform(put(PATH, loginId, randomId)
-          .header("Authorization", token)
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(request)));
-
-      // then
-      actions.andExpect(status().isNotFound())
-          .andExpect(jsonPath("$.code", is(FollowingErrorCode.ID_NOT_EXISTING.getCode())))
-          .andExpect(jsonPath("$.message", is(FollowingErrorCode.ID_NOT_EXISTING.getMessage())));
     }
 
     @Test
@@ -815,6 +819,21 @@ class UserControllerTest {
     }
 
     @Test
+    void 로그인한_사용자가_없으면_401_Unauthorized를_반환한다() throws Exception {
+      // given
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
+
+      // when
+      ResultActions actions = mockMvc.perform(post(PATH, loginId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isUnauthorized())
+          .andExpect(header().string(HttpHeaders.WWW_AUTHENTICATE, "Bearer"));
+    }
+
+    @Test
     void 로그인한_사용자와_팔로잉의_주인이_다르면_403_Forbidden을_반환한다() throws Exception {
       // given
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
@@ -835,16 +854,12 @@ class UserControllerTest {
     }
 
     @Test
-    void 팔로잉_상태_변경을_성공하고_OK를_반환한다() throws Exception {
+    void 존재하지_않는_팔로잉_아이디면_404_Not_Found를_반환한다() throws Exception {
       // given
-      long followeeId = faker.random()
-          .nextLong();
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
-      FollowingResponse response = new FollowingResponse(
-          randomId, loginId, followeeId, FollowingStatus.FOLLOWING);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
-          .willReturn(response);
+          .willThrow(new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, loginId, randomId)
@@ -853,9 +868,9 @@ class UserControllerTest {
           .content(objectMapper.writeValueAsString(request)));
 
       // then
-      actions.andExpect(status().isOk())
-          .andExpect(jsonPath("$.id", is(randomId)))
-          .andExpect(jsonPath("$.status", is(FollowingStatus.FOLLOWING.name())));
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.ID_NOT_EXISTING.getCode())))
+          .andExpect(jsonPath("$.message", is(FollowingErrorCode.ID_NOT_EXISTING.getMessage())));
     }
 
   }

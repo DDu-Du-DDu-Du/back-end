@@ -84,6 +84,45 @@ class FollowingServiceTest {
   class 팔로잉_생성_테스트 {
 
     @Test
+    void 팔로잉_생성을_성공한다() {
+      // given
+      User follower = createUser();
+      User followee = createUser();
+      FollowRequest request = new FollowRequest(followee.getId());
+
+      // when
+      FollowingResponse expected = followingService.create(follower.getId(), request);
+
+      // then
+      Optional<Following> found = followingRepository.findById(expected.id());
+
+      assertThat(found).isPresent();
+
+      Following actual = found.get();
+
+      assertThat(actual).extracting("follower", "followee", "status")
+          .containsExactly(follower, followee, FollowingStatus.FOLLOWING);
+    }
+
+    @Test
+    void 팔로잉_대상이_허락_옵션을_켜놨으면_팔로우_신청이_요청으로_생성된다() {
+      //given
+      User follower = createUser();
+      User followee = createUser();
+      Options followeeOptions = followee.getOptions();
+
+      followeeOptions.switchOptions();
+
+      FollowRequest request = new FollowRequest(followee.getId());
+
+      // when
+      FollowingResponse response = followingService.create(follower.getId(), request);
+
+      // then
+      assertThat(response.status()).isEqualTo(FollowingStatus.REQUESTED);
+    }
+
+    @Test
     void 사용자가_존재하지_않으면_팔로잉_생성을_실패한다() {
       // given
       long randomId = faker.random()
@@ -138,100 +177,10 @@ class FollowingServiceTest {
           .withMessage(FollowingErrorCode.ALREADY_FOLLOWING.getMessage());
     }
 
-    @Test
-    void 팔로잉_생성을_성공한다() {
-      // given
-      User follower = createUser();
-      User followee = createUser();
-      FollowRequest request = new FollowRequest(followee.getId());
-
-      // when
-      FollowingResponse expected = followingService.create(follower.getId(), request);
-
-      // then
-      Optional<Following> found = followingRepository.findById(expected.id());
-
-      assertThat(found).isPresent();
-
-      Following actual = found.get();
-
-      assertThat(actual).extracting("follower", "followee", "status")
-          .containsExactly(follower, followee, FollowingStatus.FOLLOWING);
-    }
-
-    @Test
-    void 팔로잉_대상이_허락_옵션을_켜놨으면_팔로우_신청이_요청으로_생성된다() {
-      //given
-      User follower = createUser();
-      User followee = createUser();
-      Options followeeOptions = followee.getOptions();
-
-      followeeOptions.switchOptions();
-
-      FollowRequest request = new FollowRequest(followee.getId());
-
-      // when
-      FollowingResponse response = followingService.create(follower.getId(), request);
-
-      // then
-      assertThat(response.status()).isEqualTo(FollowingStatus.REQUESTED);
-    }
-
-    private User createUser() {
-      String email = faker.internet()
-          .emailAddress();
-      String password = faker.internet()
-          .password(8, 40, true, true, true);
-      String nickname = faker.oscarMovie()
-          .character();
-
-      User user = User.builder()
-          .passwordEncoder(passwordEncoder)
-          .email(email)
-          .password(password)
-          .nickname(nickname)
-          .build();
-
-      return userRepository.save(user);
-    }
-
   }
 
   @Nested
   class 팔로잉_수정_테스트 {
-
-    @Test
-    void 존재하지_않는_아이디면_실패한다() {
-      // given
-      long randomId = faker.random()
-          .nextLong();
-      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
-
-      // when
-      ThrowingCallable updateStatus = () -> followingService.updateStatus(
-          randomId, randomId, request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateStatus)
-          .withMessage(FollowingErrorCode.ID_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 팔로잉을_요청_상태로_수정_시도_시_실패한다() {
-      // given
-      User follower = createUser();
-      User followee = createUser();
-      Following following = createFollowing(follower, followee, FollowingStatus.FOLLOWING);
-      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
-
-      // when
-      ThrowingCallable updateStatus = () -> followingService.updateStatus(
-          follower.getId(), following.getId(), request);
-
-      // then
-      assertThatExceptionOfType(BadRequestException.class).isThrownBy(updateStatus)
-          .withMessage(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage());
-    }
 
     @Test
     void 팔로잉_요청을_수락한다() {
@@ -267,6 +216,39 @@ class FollowingServiceTest {
       assertThat(response).extracting("id", "followerId", "followeeId", "status")
           .containsExactly(
               following.getId(), follower.getId(), followee.getId(), FollowingStatus.IGNORED);
+    }
+
+    @Test
+    void 존재하지_않는_아이디면_실패한다() {
+      // given
+      long randomId = faker.random()
+          .nextLong();
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+
+      // when
+      ThrowingCallable updateStatus = () -> followingService.updateStatus(
+          randomId, randomId, request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateStatus)
+          .withMessage(FollowingErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 팔로잉을_요청_상태로_수정_시도_시_실패한다() {
+      // given
+      User follower = createUser();
+      User followee = createUser();
+      Following following = createFollowing(follower, followee, FollowingStatus.FOLLOWING);
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
+
+      // when
+      ThrowingCallable updateStatus = () -> followingService.updateStatus(
+          follower.getId(), following.getId(), request);
+
+      // then
+      assertThatExceptionOfType(BadRequestException.class).isThrownBy(updateStatus)
+          .withMessage(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage());
     }
 
   }
