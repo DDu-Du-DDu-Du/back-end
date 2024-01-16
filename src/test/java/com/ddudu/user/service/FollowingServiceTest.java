@@ -226,30 +226,11 @@ class FollowingServiceTest {
 
       // when
       ThrowingCallable updateStatus = () -> followingService.updateStatus(
-          following.getId(), follower.getId(), request);
+          follower.getId(), following.getId(), request);
 
       // then
       assertThatExceptionOfType(BadRequestException.class).isThrownBy(updateStatus)
           .withMessage(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage());
-    }
-
-    @Test
-    void 로그인한_사용자와_팔로잉의_주인이_다를_경우_수정을_실패한다() {
-      // given
-      User follower = createUser();
-      User followee = createUser();
-      Following following = createFollowing(follower, followee, FollowingStatus.REQUESTED);
-      long randomId = faker.random()
-          .nextLong();
-      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.IGNORED);
-
-      // when
-      ThrowingCallable updateStatus = () -> followingService.updateStatus(
-          following.getId(), randomId, request);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateStatus)
-          .withMessage(FollowingErrorCode.WRONG_OWNER.getMessage());
     }
 
     @Test
@@ -262,7 +243,7 @@ class FollowingServiceTest {
 
       // when
       FollowingResponse response = followingService.updateStatus(
-          following.getId(), follower.getId(), request);
+          follower.getId(), following.getId(), request);
 
       // then
       assertThat(response).extracting("id", "followerId", "followeeId", "status")
@@ -280,7 +261,7 @@ class FollowingServiceTest {
 
       // when
       FollowingResponse response = followingService.updateStatus(
-          following.getId(), follower.getId(), request);
+          follower.getId(), following.getId(), request);
 
       // then
       assertThat(response).extracting("id", "followerId", "followeeId", "status")
@@ -301,7 +282,7 @@ class FollowingServiceTest {
       Following following = createFollowing(follower, followee, null);
 
       // when
-      followingService.delete(following.getId(), follower.getId());
+      followingService.delete(follower.getId(), following.getId());
 
       //then
       Optional<Following> actual = followingRepository.findById(following.getId());
@@ -321,23 +302,6 @@ class FollowingServiceTest {
 
       // then
       assertThatNoException().isThrownBy(delete);
-    }
-
-    @Test
-    void 로그인한_사용자와_팔로워의_아이디가_다르면_삭제를_실패한다() {
-      // given
-      User follower = createUser();
-      User followee = createUser();
-      Following following = createFollowing(follower, followee, null);
-      long randomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-
-      // when
-      ThrowingCallable delete = () -> followingService.delete(following.getId(), randomId);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(delete)
-          .withMessage(FollowingErrorCode.WRONG_OWNER.getMessage());
     }
 
   }

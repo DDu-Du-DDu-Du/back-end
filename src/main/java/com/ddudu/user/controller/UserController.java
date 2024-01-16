@@ -1,6 +1,8 @@
 package com.ddudu.user.controller;
 
 import com.ddudu.common.annotation.Login;
+import com.ddudu.common.exception.ForbiddenException;
+import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
@@ -13,10 +15,12 @@ import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.service.FollowingService;
 import com.ddudu.user.service.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -70,7 +74,9 @@ public class UserController {
       @Valid
       UpdateEmailRequest request
   ) {
-    UserResponse response = userService.updateEmail(loginId, id, request);
+    checkAuthority(loginId, id);
+
+    UserResponse response = userService.updateEmail(id, request);
 
     return ResponseEntity.ok(response);
   }
@@ -85,7 +91,9 @@ public class UserController {
       @Valid
       UpdatePasswordRequest request
   ) {
-    UpdatePasswordResponse response = userService.updatePassword(loginId, id, request);
+    checkAuthority(loginId, id);
+
+    UpdatePasswordResponse response = userService.updatePassword(id, request);
 
     return ResponseEntity.ok(response);
   }
@@ -100,7 +108,9 @@ public class UserController {
       @Valid
       UpdateProfileRequest request
   ) {
-    UserProfileResponse response = userService.updateProfile(loginId, id, request);
+    checkAuthority(loginId, id);
+
+    UserProfileResponse response = userService.updateProfile(id, request);
 
     return ResponseEntity.ok(response);
   }
@@ -108,11 +118,13 @@ public class UserController {
   @PatchMapping("/{id}/options")
   public ResponseEntity<ToggleOptionResponse> switchOption(
       @Login
-      Long login,
+      Long loginId,
       @PathVariable
       Long id
   ) {
-    ToggleOptionResponse response = userService.switchOption(login, id);
+    checkAuthority(loginId, id);
+
+    ToggleOptionResponse response = userService.switchOption(id);
 
     return ResponseEntity.ok(response);
   }
@@ -127,7 +139,9 @@ public class UserController {
       @Valid
       FollowRequest request
   ) {
-    FollowingResponse response = followingService.create(loginId, request);
+    checkAuthority(loginId, id);
+
+    FollowingResponse response = followingService.create(id, request);
     URI uri = URI.create("/api/users/" + loginId + "/followings");
 
     return ResponseEntity.created(uri)
@@ -146,6 +160,8 @@ public class UserController {
       @Valid
       UpdateFollowingRequest request
   ) {
+    checkAuthority(loginId, id);
+
     FollowingResponse response = followingService.updateStatus(id, followingId, request);
 
     return ResponseEntity.ok(response);
@@ -160,10 +176,17 @@ public class UserController {
       @PathVariable
       Long followingId
   ) {
+    checkAuthority(loginId, id);
     followingService.delete(id, followingId);
 
     return ResponseEntity.noContent()
         .build();
+  }
+
+  private void checkAuthority(Long loginId, Long id) {
+    if (!Objects.equals(loginId, id)) {
+      throw new ForbiddenException(UserErrorCode.INVALID_AUTHORITY);
+    }
   }
 
 }

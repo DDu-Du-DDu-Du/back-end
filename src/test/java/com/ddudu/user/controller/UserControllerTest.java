@@ -371,7 +371,7 @@ class UserControllerTest {
           .nickname(nickname)
           .build();
 
-      given(userService.updateEmail(anyLong(), anyLong(), any(UpdateEmailRequest.class)))
+      given(userService.updateEmail(anyLong(), any(UpdateEmailRequest.class)))
           .willReturn(response);
 
       // when
@@ -449,7 +449,7 @@ class UserControllerTest {
       String successMessage = "비밀번호가 성공적으로 변경되었습니다.";
       UpdatePasswordResponse response = new UpdatePasswordResponse(successMessage);
 
-      given(userService.updatePassword(anyLong(), anyLong(), any(UpdatePasswordRequest.class)))
+      given(userService.updatePassword(anyLong(), any(UpdatePasswordRequest.class)))
           .willReturn(response);
 
       // when
@@ -533,7 +533,7 @@ class UserControllerTest {
           .nextLong();
       UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
 
-      given(userService.updateProfile(anyLong(), anyLong(), any(UpdateProfileRequest.class)))
+      given(userService.updateProfile(anyLong(), any(UpdateProfileRequest.class)))
           .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
 
       // when
@@ -559,7 +559,7 @@ class UserControllerTest {
           .introduction(introduction)
           .build();
 
-      given(userService.updateProfile(anyLong(), anyLong(), any(UpdateProfileRequest.class)))
+      given(userService.updateProfile(anyLong(), any(UpdateProfileRequest.class)))
           .willReturn(response);
 
       // when
@@ -595,7 +595,7 @@ class UserControllerTest {
       String token = createBearerToken(userId);
       ToggleOptionResponse response = new ToggleOptionResponse(userId, true);
 
-      given(userService.switchOption(anyLong(), anyLong()))
+      given(userService.switchOption(anyLong()))
           .willReturn(response);
 
       // when
@@ -616,8 +616,8 @@ class UserControllerTest {
           .nextLong(Long.MAX_VALUE);
       String token = createBearerToken(randomId);
 
-      given(userService.switchOption(anyLong(), anyLong()))
-          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHENTICATION));
+      given(userService.switchOption(anyLong()))
+          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
 
       // when
       ResultActions actions = mockMvc.perform(patch("/api/users/{id}/options", userId)
@@ -625,9 +625,9 @@ class UserControllerTest {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code").value(UserErrorCode.INVALID_AUTHENTICATION.getCode()))
+          .andExpect(jsonPath("$.code").value(UserErrorCode.INVALID_AUTHORITY.getCode()))
           .andExpect(
-              jsonPath("$.message").value(UserErrorCode.INVALID_AUTHENTICATION.getMessage()));
+              jsonPath("$.message").value(UserErrorCode.INVALID_AUTHORITY.getMessage()));
     }
 
     @Test
@@ -635,7 +635,7 @@ class UserControllerTest {
       // given
       String token = createBearerToken(userId);
 
-      given(userService.switchOption(anyLong(), anyLong()))
+      given(userService.switchOption(anyLong()))
           .willThrow(new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
       // when
@@ -870,7 +870,7 @@ class UserControllerTest {
           .nextLong(Long.MAX_VALUE);
       randomId = faker.random()
           .nextLong();
-      token = createBearerToken(randomId);
+      token = createBearerToken(loginId);
     }
 
     @Test
@@ -885,6 +885,22 @@ class UserControllerTest {
 
       // then
       actions.andExpect(status().isNoContent());
+    }
+
+    @Test
+    void 로그인한_사용자와_요청의_사용자가_다를_경우_403_Forbidden을_반환한다() throws Exception {
+      // given
+      willDoNothing().given(followingService)
+          .delete(anyLong(), anyLong());
+
+      // when
+      ResultActions actions = mockMvc.perform(delete(PATH, randomId, randomId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(UserErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(UserErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
     @Test

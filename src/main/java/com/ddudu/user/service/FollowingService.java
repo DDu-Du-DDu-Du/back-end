@@ -28,8 +28,8 @@ public class FollowingService {
   private final FollowingRepository followingRepository;
 
   @Transactional
-  public FollowingResponse create(Long loginId, FollowRequest request) {
-    User follower = userRepository.findById(loginId)
+  public FollowingResponse create(Long followerId, FollowRequest request) {
+    User follower = userRepository.findById(followerId)
         .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.FOLLOWER_NOT_EXISTING));
     User followee = userRepository.findById(request.followeeId())
         .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.FOLLOWEE_NOT_EXISTING));
@@ -55,12 +55,12 @@ public class FollowingService {
 
   @Transactional
   public FollowingResponse updateStatus(
-      Long loginId, Long followingId, UpdateFollowingRequest request
+      Long followerId, Long followingId, UpdateFollowingRequest request
   ) {
     Following following = followingRepository.findById(followingId)
         .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
 
-    if (!following.isOwnedBy(loginId)) {
+    if (!following.isOwnedBy(followerId)) {
       throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
     }
 
@@ -76,10 +76,10 @@ public class FollowingService {
   }
 
   @Transactional
-  public void delete(Long loginId, Long followingId) {
+  public void delete(Long followerId, Long followingId) {
     followingRepository.findById(followingId)
         .ifPresent(following -> {
-          checkPermission(loginId, following);
+          checkPermission(followerId, following);
           followingRepository.delete(following);
         });
   }
