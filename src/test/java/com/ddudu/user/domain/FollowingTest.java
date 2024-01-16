@@ -4,11 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.common.exception.InvalidParameterException;
-import com.ddudu.user.domain.Following;
-import com.ddudu.user.domain.FollowingStatus;
-import com.ddudu.user.exception.FollowingErrorCode;
-import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
+import com.ddudu.user.exception.FollowingErrorCode;
 import java.util.Objects;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -20,36 +17,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@EnableJpaAuditing
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class FollowingTest {
 
   static final Faker faker = new Faker();
-  static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+  static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
   UserBuilder builderWithEncoder;
   String validEmail;
   String validPassword;
   String validNickname;
 
-  @Autowired
-  TestEntityManager entityManager;
-
   @BeforeEach
   void setUp() {
     builderWithEncoder = User.builder()
-        .passwordEncoder(passwordEncoder);
+        .passwordEncoder(PASSWORD_ENCODER);
     validEmail = faker.internet()
         .emailAddress();
     validPassword = faker.internet()
@@ -65,16 +50,11 @@ class FollowingTest {
     @NullSource
     void 팔로워가_NULL이면_팔로잉_생성을_실패한다(User follower) {
       // given
-      User followee = builderWithEncoder
-          .email(validEmail)
-          .password(validPassword)
-          .nickname(validNickname)
-          .build();
-      User saved = entityManager.persistFlushFind(followee);
+      User followee = createUser(null);
 
       // when
       ThrowingCallable construct = () -> Following.builder()
-          .followee(saved)
+          .followee(followee)
           .follower(follower)
           .build();
 
@@ -87,16 +67,11 @@ class FollowingTest {
     @NullSource
     void 팔로우_대상이_NULL이면_팔로잉_생성을_실패한다(User followee) {
       // given
-      User follower = builderWithEncoder
-          .email(validEmail)
-          .password(validPassword)
-          .nickname(validNickname)
-          .build();
-      User saved = entityManager.persistFlushFind(follower);
+      User follower = createUser(null);
 
       // when
       ThrowingCallable construct = () -> Following.builder()
-          .follower(saved)
+          .follower(follower)
           .followee(followee)
           .build();
 
@@ -108,11 +83,7 @@ class FollowingTest {
     @Test
     void 본인을_팔로우하는_팔로잉_생성을_실패한다() {
       // given
-      User follower = builderWithEncoder
-          .email(validEmail)
-          .password(validPassword)
-          .nickname(validNickname)
-          .build();
+      User follower = createUser(null);
 
       // when
       ThrowingCallable construct = () -> Following.builder()
@@ -130,27 +101,17 @@ class FollowingTest {
     @ValueSource(strings = "REQUESTED")
     void 팔로잉_생성을_성공한다(String statusName) {
       // given
-      User followee = builderWithEncoder
-          .email(validEmail)
-          .password(validPassword)
-          .nickname(validNickname)
-          .build();
+      User followee = createUser(null);
       String followerEmail = faker.internet()
           .emailAddress();
-      User follower = builderWithEncoder
-          .email(followerEmail)
-          .password(validPassword)
-          .nickname(validNickname)
-          .build();
-      User expectedFollower = entityManager.persistFlushFind(follower);
-      User expectedFollowee = entityManager.persistFlushFind(followee);
+      User follower = createUser(followerEmail);
       FollowingStatus status = Objects.nonNull(statusName) ? FollowingStatus.valueOf(statusName)
           : null;
 
       // when
       Following following = Following.builder()
-          .follower(expectedFollower)
-          .followee(expectedFollowee)
+          .follower(follower)
+          .followee(followee)
           .status(status)
           .build();
 
@@ -158,8 +119,8 @@ class FollowingTest {
       User actualFollower = following.getFollower();
       User actualFollowee = following.getFollowee();
 
-      assertThat(actualFollower.getId()).isEqualTo(expectedFollower.getId());
-      assertThat(actualFollowee.getId()).isEqualTo(expectedFollowee.getId());
+      assertThat(actualFollower.getId()).isEqualTo(follower.getId());
+      assertThat(actualFollowee.getId()).isEqualTo(followee.getId());
     }
 
   }
@@ -172,31 +133,19 @@ class FollowingTest {
 
     @BeforeEach
     void setUp() {
-      User preFollowee = builderWithEncoder
-          .email(validEmail)
-          .password(validPassword)
-          .nickname(validNickname)
-          .build();
+      followee = createUser(null);
       String followerEmail = faker.internet()
           .emailAddress();
-      User preFollower = builderWithEncoder
-          .email(followerEmail)
-          .password(validPassword)
-          .nickname(validNickname)
-          .build();
-
-      follower = entityManager.persistFlushFind(preFollower);
-      followee = entityManager.persistFlushFind(preFollowee);
+      follower = createUser(followerEmail);
     }
 
     @Test
     void 수정할_상태가_Null이면_수정을_실패한다() {
       // given
-      Following preFollowing = Following.builder()
+      Following following = Following.builder()
           .follower(follower)
           .followee(followee)
           .build();
-      Following following = entityManager.persistFlushFind(preFollowing);
       FollowingStatus status = null;
 
       // when
@@ -210,11 +159,10 @@ class FollowingTest {
     @Test
     void 수정할_상태가_REQUESTED이면_수정을_실패한다() {
       // given
-      Following preFollowing = Following.builder()
+      Following following = Following.builder()
           .follower(follower)
           .followee(followee)
           .build();
-      Following following = entityManager.persistFlushFind(preFollowing);
       FollowingStatus status = FollowingStatus.REQUESTED;
 
       // when
@@ -228,43 +176,46 @@ class FollowingTest {
     @Test
     void 팔로잉_요청을_수락한다() {
       // given
-      Following preFollowing = Following.builder()
+      Following following = Following.builder()
           .follower(follower)
           .followee(followee)
           .status(FollowingStatus.REQUESTED)
           .build();
-      Following following = entityManager.persistFlushFind(preFollowing);
       FollowingStatus expected = FollowingStatus.FOLLOWING;
 
       // when
       following.updateStatus(expected);
 
       // then
-      Following actual = entityManager.persistFlushFind(following);
-
-      assertThat(actual.getStatus()).isEqualTo(expected);
+      assertThat(following.getStatus()).isEqualTo(expected);
     }
 
     @Test
     void 팔로잉_요청을_무시한다() {
       // given
-      Following preFollowing = Following.builder()
+      Following following = Following.builder()
           .follower(follower)
           .followee(followee)
           .status(FollowingStatus.REQUESTED)
           .build();
-      Following following = entityManager.persistFlushFind(preFollowing);
       FollowingStatus expected = FollowingStatus.IGNORED;
 
       // when
       following.updateStatus(expected);
 
       // then
-      Following actual = entityManager.persistFlushFind(following);
 
-      assertThat(actual.getStatus()).isEqualTo(expected);
+      assertThat(following.getStatus()).isEqualTo(expected);
     }
 
+  }
+
+  private User createUser(String email) {
+    return builderWithEncoder
+        .email(Objects.isNull(email) ? validEmail : email)
+        .password(validPassword)
+        .nickname(validNickname)
+        .build();
   }
 
 }
