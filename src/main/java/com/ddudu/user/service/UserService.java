@@ -2,8 +2,6 @@ package com.ddudu.user.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
-import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.Password;
@@ -48,6 +46,7 @@ public class UserService {
         .email(email.getAddress())
         .password(request.password())
         .nickname(request.nickname())
+        .introduction(request.introduction())
         .passwordEncoder(passwordEncoder);
 
     if (Objects.nonNull(request.optionalUsername())) {
@@ -58,17 +57,12 @@ public class UserService {
       userBuilder.optionalUsername(request.optionalUsername());
     }
 
-    if (Objects.nonNull(request.introduction())) {
-      userBuilder.introduction(request.introduction());
-    }
-
     return SignUpResponse.from(userRepository.save(userBuilder.build()));
   }
 
   @Transactional
   public UserProfileResponse updateProfile(Long id, UpdateProfileRequest request) {
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+    User user = findUser(id);
 
     user.applyProfileUpdate(request.nickname(), request.introduction());
 
@@ -76,8 +70,7 @@ public class UserService {
   }
 
   public UserResponse updateEmail(Long userId, UpdateEmailRequest request) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+    User user = findUser(userId);
     Email newEmail = new Email(request.email());
 
     if (user.getEmail()
@@ -96,8 +89,7 @@ public class UserService {
 
   @Transactional
   public UpdatePasswordResponse updatePassword(Long userId, UpdatePasswordRequest request) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+    User user = findUser(userId);
     Password password = user.getPassword();
     Password newPassword = new Password(request.password(), passwordEncoder);
 
@@ -111,21 +103,24 @@ public class UserService {
   }
 
   public UserResponse findById(Long userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+    User user = findUser(userId);
 
     return UserResponse.from(user);
   }
 
   @Transactional
   public ToggleOptionResponse switchOption(Long id) {
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+    User user = findUser(id);
     Options options = user.getOptions();
 
     options.switchOptions();
 
     return ToggleOptionResponse.from(user);
+  }
+
+  private User findUser(Long id) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
   }
 
 }
