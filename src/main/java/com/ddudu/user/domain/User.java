@@ -43,14 +43,9 @@ public class User extends BaseEntity {
   private String optionalUsername;
 
   @Embedded
-  @AttributeOverride(
-      name = "address",
-      column = @Column(name = "email", length = 50, nullable = false, unique = true)
-  )
   private Email email;
 
   @Embedded
-  @AttributeOverride(name = "encrypted", column = @Column(name = "password", nullable = false))
   private Password password;
 
   @Column(name = "nickname", length = 20, nullable = false)
@@ -68,10 +63,6 @@ public class User extends BaseEntity {
   private UserStatus status;
 
   @Embedded
-  @AttributeOverride(
-      name = "allowingFollowsAfterApproval",
-      column = @Column(name = "follows_after_approval", nullable = false)
-  )
   private Options options;
 
   @Builder
