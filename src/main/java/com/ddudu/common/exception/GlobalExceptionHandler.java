@@ -16,7 +16,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 @Slf4j
-public class GeneralExceptionHandler {
+public class GlobalExceptionHandler {
 
   private static final int INVALID_INPUT_CODE = 1;
   private static final int INVALID_INPUT_TYPE_CODE = 2;
@@ -102,6 +102,18 @@ public class GeneralExceptionHandler {
     ErrorResponse response = ErrorResponse.from(e);
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(response);
+  }
+
+  @ExceptionHandler(DuplicateResourceException.class)
+  public ResponseEntity<ErrorResponse> handleDuplicateResourceException(
+      DuplicateResourceException e
+  ) {
+    log.warn(e.getMessage(), e);
+
+    ErrorResponse response = ErrorResponse.from(e);
+
+    return ResponseEntity.status(HttpStatus.CONFLICT)
         .body(response);
   }
 
