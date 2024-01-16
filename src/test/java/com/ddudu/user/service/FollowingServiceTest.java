@@ -125,13 +125,13 @@ class FollowingServiceTest {
     @Test
     void 사용자가_존재하지_않으면_팔로잉_생성을_실패한다() {
       // given
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
       User followee = createUser();
       FollowRequest request = new FollowRequest(followee.getId());
 
       // when
-      ThrowingCallable create = () -> followingService.create(randomId, request);
+      ThrowingCallable create = () -> followingService.create(invalidId, request);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
@@ -142,9 +142,9 @@ class FollowingServiceTest {
     void 팔로우_대상이_존재하지_않으면_팔로잉_생성을_실패한다() {
       // given
       User follower = createUser();
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      FollowRequest request = new FollowRequest(randomId);
+      FollowRequest request = new FollowRequest(invalidId);
 
       // when
       ThrowingCallable create = () -> followingService.create(follower.getId(), request);
@@ -221,13 +221,13 @@ class FollowingServiceTest {
     @Test
     void 존재하지_않는_아이디면_실패한다() {
       // given
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong();
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
       // when
       ThrowingCallable updateStatus = () -> followingService.updateStatus(
-          randomId, randomId, request);
+          invalidId, invalidId, request);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateStatus)
@@ -276,11 +276,11 @@ class FollowingServiceTest {
     void 팔로잉이_존재하지_않을_때_예외를_발생시키지_않는다() {
       // given
       User follower = createUser();
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable delete = () -> followingService.delete(randomId, follower.getId());
+      ThrowingCallable delete = () -> followingService.delete(invalidId, follower.getId());
 
       // then
       assertThatNoException().isThrownBy(delete);

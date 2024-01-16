@@ -660,12 +660,12 @@ class UserControllerTest {
 
     static final String PATH = "/api/users/{id}/followings";
 
-    Long followerId;
+    Long loginId;
     Long followeeId;
 
     @BeforeEach
     void setUp() {
-      followerId = faker.random()
+      loginId = faker.random()
           .nextLong(Long.MAX_VALUE);
       followeeId = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -674,11 +674,11 @@ class UserControllerTest {
     @Test
     void 팔로잉_신청을_성공하고_200_OK를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(followerId);
+      String token = createBearerToken(loginId);
       FollowRequest request = new FollowRequest(followeeId);
       FollowingResponse response = FollowingResponse.builder()
           .id(1L)
-          .followerId(followerId)
+          .followerId(loginId)
           .followeeId(followeeId)
           .build();
 
@@ -686,14 +686,14 @@ class UserControllerTest {
           .willReturn(response);
 
       // when
-      ResultActions actions = mockMvc.perform(post(PATH, followerId)
+      ResultActions actions = mockMvc.perform(post(PATH, loginId)
           .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
       // then
       actions.andExpect(status().isCreated())
-          .andExpect(header().string("location", is("/api/users/" + followerId + "/followings")));
+          .andExpect(header().string("location", is("/api/users/" + loginId + "/followings")));
     }
 
     @Test
@@ -702,7 +702,7 @@ class UserControllerTest {
       FollowRequest request = new FollowRequest(followeeId);
 
       // when
-      ResultActions actions = mockMvc.perform(post(PATH, followerId)
+      ResultActions actions = mockMvc.perform(post(PATH, loginId)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -714,14 +714,14 @@ class UserControllerTest {
     @Test
     void 팔로잉_대상_사용자가_존재하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(followerId);
+      String token = createBearerToken(loginId);
       FollowRequest request = new FollowRequest(followeeId);
 
       given(followingService.create(anyLong(), any(FollowRequest.class)))
           .willThrow(new DataNotFoundException(FollowingErrorCode.FOLLOWEE_NOT_EXISTING));
 
       // when
-      ResultActions actions = mockMvc.perform(post(PATH, followerId)
+      ResultActions actions = mockMvc.perform(post(PATH, loginId)
           .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
@@ -741,14 +741,14 @@ class UserControllerTest {
     static final String PATH = "/api/users/{id}/followings/{followingId}";
 
     long loginId;
-    long randomId;
+    long followingId;
     String token;
 
     @BeforeEach
     void setUp() {
       loginId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      randomId = faker.random()
+      followingId = faker.random()
           .nextLong(Long.MAX_VALUE);
       token = createBearerToken(loginId);
     }
@@ -760,20 +760,20 @@ class UserControllerTest {
           .nextLong();
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
       FollowingResponse response = new FollowingResponse(
-          randomId, loginId, followeeId, FollowingStatus.FOLLOWING);
+          followingId, loginId, followeeId, FollowingStatus.FOLLOWING);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willReturn(response);
 
       // when
-      ResultActions actions = mockMvc.perform(put(PATH, loginId, randomId)
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
           .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
       // then
       actions.andExpect(status().isOk())
-          .andExpect(jsonPath("$.id", is(randomId)))
+          .andExpect(jsonPath("$.id", is(followingId)))
           .andExpect(jsonPath("$.status", is(FollowingStatus.FOLLOWING.name())));
     }
 
@@ -783,10 +783,10 @@ class UserControllerTest {
       UpdateFollowingRequest request = new UpdateFollowingRequest(null);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
-          .willReturn(new FollowingResponse(randomId, null, null, null));
+          .willReturn(new FollowingResponse(followingId, null, null, null));
 
       // when
-      ResultActions actions = mockMvc.perform(put(PATH, loginId, randomId)
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
           .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
@@ -806,7 +806,7 @@ class UserControllerTest {
           .willThrow(new BadRequestException(FollowingErrorCode.REQUEST_UNAVAILABLE));
 
       // when
-      ResultActions actions = mockMvc.perform(put(PATH, loginId, randomId)
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
           .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
@@ -824,7 +824,7 @@ class UserControllerTest {
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
 
       // when
-      ResultActions actions = mockMvc.perform(post(PATH, loginId)
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -842,7 +842,7 @@ class UserControllerTest {
           .willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER));
 
       // when
-      ResultActions actions = mockMvc.perform(put(PATH, loginId, randomId)
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
           .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
@@ -862,7 +862,7 @@ class UserControllerTest {
           .willThrow(new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
 
       // when
-      ResultActions actions = mockMvc.perform(put(PATH, loginId, randomId)
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
           .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
@@ -881,15 +881,15 @@ class UserControllerTest {
     static final String PATH = "/api/users/{id}/followings/{followingId}";
 
     long loginId;
-    long randomId;
+    long followingId;
     String token;
 
     @BeforeEach
     void setUp() {
       loginId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      randomId = faker.random()
-          .nextLong();
+      followingId = faker.random()
+          .nextLong(Long.MAX_VALUE);
       token = createBearerToken(loginId);
     }
 
@@ -900,11 +900,26 @@ class UserControllerTest {
           .delete(anyLong(), anyLong());
 
       // when
-      ResultActions actions = mockMvc.perform(delete(PATH, loginId, randomId)
+      ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
           .header("Authorization", token));
 
       // then
       actions.andExpect(status().isNoContent());
+    }
+
+    @Test
+    void 로그인한_사용자가_없으면_401_Unauthorized를_반환한다() throws Exception {
+      // given
+      willDoNothing().given(followingService)
+          .delete(anyLong(), anyLong());
+
+      // when
+      ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isUnauthorized())
+          .andExpect(header().string(HttpHeaders.WWW_AUTHENTICATE, "Bearer"));
     }
 
     @Test
@@ -914,7 +929,7 @@ class UserControllerTest {
           .delete(anyLong(), anyLong());
 
       // when
-      ResultActions actions = mockMvc.perform(delete(PATH, randomId, randomId)
+      ResultActions actions = mockMvc.perform(delete(PATH, followingId, followingId)
           .header("Authorization", token));
 
       // then
@@ -931,7 +946,7 @@ class UserControllerTest {
           .delete(anyLong(), anyLong());
 
       // when
-      ResultActions actions = mockMvc.perform(delete(PATH, loginId, randomId)
+      ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
           .header("Authorization", token));
 
       // then
