@@ -54,7 +54,6 @@ class GoalControllerTest extends ControllerTestSupport {
   String validName;
   Long validUserId;
   String token;
-
   String validColor;
   PrivacyType validPrivacy;
 
@@ -77,7 +76,7 @@ class GoalControllerTest extends ControllerTestSupport {
     static final String PATH = "/api/goals";
 
     @Test
-    void 목표_생성을_성공한다() throws Exception {
+    void 목표_생성에_성공하면_201_Created_응답을_반환한다() throws Exception {
       // given
       Long goalId = faker.random()
           .nextLong();
