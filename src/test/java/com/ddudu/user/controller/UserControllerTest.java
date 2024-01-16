@@ -485,6 +485,7 @@ class UserControllerTest {
 
     String introduction;
     Long userId;
+    String token;
 
     @BeforeEach
     void setUp() {
@@ -492,6 +493,7 @@ class UserControllerTest {
           .title();
       userId = faker.random()
           .nextLong();
+      token = createBearerToken(userId);
     }
 
     static Stream<Arguments> provideUpdateProfileRequestAndStrings() {
@@ -538,7 +540,7 @@ class UserControllerTest {
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, userId)
-          .header("Authorization", createBearerToken(userId))
+          .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -556,7 +558,7 @@ class UserControllerTest {
     ) throws Exception {
       // when
       ResultActions actions = mockMvc.perform(put(PATH, userId)
-          .header("Authorization", createBearerToken(userId))
+          .header("Authorization", token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -569,19 +571,16 @@ class UserControllerTest {
     @Test
     void 프로필_수정_권한이_없으면_403_Forbidden을_반환한다() throws Exception {
       // given
-      long invalidId = faker.random()
-          .nextLong();
       UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
 
       given(userService.updateProfile(anyLong(), any(UpdateProfileRequest.class)))
           .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
 
       // when
-      ResultActions actions = mockMvc.perform(
-          put(PATH, userId)
-              .header("Authorization", createBearerToken(invalidId))
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(request)));
+      ResultActions actions = mockMvc.perform(put(PATH, userId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
 
       // then
       actions.andExpect(status().isForbidden())
@@ -597,17 +596,18 @@ class UserControllerTest {
     static final String PATH = "/api/users/{id}/options";
 
     long userId;
+    String token;
 
     @BeforeEach
     void setUp() {
       userId = faker.random()
           .nextLong(Long.MAX_VALUE);
+      token = createBearerToken(userId);
     }
 
     @Test
     void 수락한_사람만_팔로우_옵션을_토글하고_200_OK를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(userId);
       ToggleOptionResponse response = new ToggleOptionResponse(userId, true);
 
       given(userService.switchOption(anyLong()))
@@ -627,10 +627,6 @@ class UserControllerTest {
     @Test
     void 로그인한_사용자가_요청된_사용자와_다를_경우_403_Forbidden을_반환한다() throws Exception {
       // given
-      long randomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      String token = createBearerToken(randomId);
-
       given(userService.switchOption(anyLong()))
           .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
 
@@ -648,13 +644,11 @@ class UserControllerTest {
     @Test
     void 존재하지_않는_사용자에_대한_요청일_경우_404_Not_Found를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(userId);
-
       given(userService.switchOption(anyLong()))
           .willThrow(new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
       // when
-      ResultActions actions = mockMvc.perform(patch("/api/users/{id}/options", userId)
+      ResultActions actions = mockMvc.perform(patch(PATH, userId)
           .header("Authorization", token));
 
       // then

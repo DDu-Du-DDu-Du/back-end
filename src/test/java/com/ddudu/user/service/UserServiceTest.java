@@ -166,11 +166,11 @@ class UserServiceTest {
     @Test
     void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
       // given
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable login = () -> userService.findById(randomId);
+      ThrowingCallable login = () -> userService.findById(invalidId);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
@@ -238,14 +238,14 @@ class UserServiceTest {
     @Test
     void 존재하지_않는_사용자_아이디_이메일_변경을_실패한다() {
       // given
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
       String newEmail = faker.internet()
           .emailAddress();
 
       // when
       ThrowingCallable updateEmail = () -> userService.updateEmail(
-          randomId, new UpdateEmailRequest(newEmail));
+          invalidId, new UpdateEmailRequest(newEmail));
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateEmail)
@@ -316,14 +316,14 @@ class UserServiceTest {
     @Test
     void 존재하지_않는_사용자_아이디_비밀번호_변경을_실패한다() {
       // given
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
       String newPassword = faker.internet()
           .password(8, 40, true, true, true);
 
       // when
       ThrowingCallable updatePassword = () -> userService.updatePassword(
-          randomId, new UpdatePasswordRequest(newPassword));
+          invalidId, new UpdatePasswordRequest(newPassword));
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updatePassword)
