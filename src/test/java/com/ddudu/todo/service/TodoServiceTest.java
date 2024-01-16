@@ -6,8 +6,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.following.dto.request.FollowRequest;
-import com.ddudu.following.service.FollowingService;
+import com.ddudu.user.dto.request.FollowRequest;
+import com.ddudu.user.service.FollowingService;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;

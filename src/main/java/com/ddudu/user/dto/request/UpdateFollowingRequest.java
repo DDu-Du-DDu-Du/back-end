@@ -1,6 +1,6 @@
-package com.ddudu.following.dto.request;
+package com.ddudu.user.dto.request;
 
-import com.ddudu.following.domain.FollowingStatus;
+import com.ddudu.user.domain.FollowingStatus;
 import jakarta.validation.constraints.NotNull;
 
 public record UpdateFollowingRequest(

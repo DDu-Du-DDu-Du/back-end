@@ -1,10 +1,12 @@
-package com.ddudu.following.domain;
+package com.ddudu.user.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.common.exception.InvalidParameterException;
-import com.ddudu.following.exception.FollowingErrorCode;
+import com.ddudu.user.domain.Following;
+import com.ddudu.user.domain.FollowingStatus;
+import com.ddudu.user.exception.FollowingErrorCode;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import java.util.Objects;

@@ -3,7 +3,7 @@ package com.ddudu.todo.service;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.following.repository.FollowingRepository;
+import com.ddudu.user.repository.FollowingRepository;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
