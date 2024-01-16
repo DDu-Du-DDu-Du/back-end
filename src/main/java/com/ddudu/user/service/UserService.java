@@ -3,10 +3,7 @@ package com.ddudu.user.service;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.user.domain.Email;
-import com.ddudu.user.domain.Options;
-import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -36,28 +33,25 @@ public class UserService {
 
   @Transactional
   public SignUpResponse signUp(SignUpRequest request) {
-    Email email = new Email(request.email());
+    verifyUniqueEmail(request.email());
 
-    if (userRepository.existsByEmail(email)) {
-      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
+    if (Objects.nonNull(request.optionalUsername()) && userRepository.existsByOptionalUsername(
+        request.optionalUsername())) {
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME);
     }
 
-    UserBuilder userBuilder = User.builder()
-        .email(email.getAddress())
+    User user = User.builder()
+        .email(request.email())
         .password(request.password())
         .nickname(request.nickname())
         .introduction(request.introduction())
-        .passwordEncoder(passwordEncoder);
+        .optionalUsername(request.optionalUsername())
+        .passwordEncoder(passwordEncoder)
+        .build();
 
-    if (Objects.nonNull(request.optionalUsername())) {
-      if (userRepository.existsByOptionalUsername(request.optionalUsername())) {
-        throw new DuplicateResourceException(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME);
-      }
+    User saved = userRepository.save(user);
 
-      userBuilder.optionalUsername(request.optionalUsername());
-    }
-
-    return SignUpResponse.from(userRepository.save(userBuilder.build()));
+    return SignUpResponse.from(saved);
   }
 
   @Transactional
@@ -69,19 +63,16 @@ public class UserService {
     return UserProfileResponse.from(user);
   }
 
+  @Transactional
   public UserResponse updateEmail(Long userId, UpdateEmailRequest request) {
     User user = findUser(userId);
-    Email newEmail = new Email(request.email());
+    String newEmail = request.email();
 
-    if (user.getEmail()
-        .equals(newEmail.getAddress())) {
+    if (user.isSameEmail(newEmail)) {
       throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_EMAIL);
     }
 
-    if (userRepository.existsByEmail(newEmail)) {
-      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
-    }
-
+    verifyUniqueEmail(newEmail);
     user.applyEmailUpdate(newEmail);
 
     return UserResponse.from(user);
@@ -90,14 +81,8 @@ public class UserService {
   @Transactional
   public UpdatePasswordResponse updatePassword(Long userId, UpdatePasswordRequest request) {
     User user = findUser(userId);
-    Password password = user.getPassword();
-    Password newPassword = new Password(request.password(), passwordEncoder);
 
-    if (password.check(request.password(), passwordEncoder)) {
-      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_PASSWORD);
-    }
-
-    user.applyPasswordUpdate(newPassword);
+    user.applyPasswordUpdate(request.password(), passwordEncoder);
 
     return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
   }
@@ -111,9 +96,8 @@ public class UserService {
   @Transactional
   public ToggleOptionResponse switchOption(Long id) {
     User user = findUser(id);
-    Options options = user.getOptions();
 
-    options.switchOptions();
+    user.switchOptions();
 
     return ToggleOptionResponse.from(user);
   }
@@ -121,6 +105,14 @@ public class UserService {
   private User findUser(Long id) {
     return userRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+  }
+
+  private void verifyUniqueEmail(String email) {
+    Email newEmail = new Email(email);
+
+    if (userRepository.existsByEmail(newEmail)) {
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
+    }
   }
 
 }

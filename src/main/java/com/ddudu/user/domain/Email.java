@@ -26,6 +26,10 @@ public class Email {
     this.address = address;
   }
 
+  public boolean isSame(String email) {
+    return address.equals(email);
+  }
+
   private void validate(String email) {
     if (StringUtils.isBlank(email)) {
       throw new InvalidParameterException(UserErrorCode.BLANK_EMAIL);

@@ -2,10 +2,10 @@ package com.ddudu.user.domain;
 
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.BaseEntity;
+import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -86,12 +86,20 @@ public class User extends BaseEntity {
     return email.getAddress();
   }
 
-  public void applyEmailUpdate(Email newEmail) {
-    this.email = newEmail;
+  public boolean isSameEmail(String newEmail) {
+    return email.isSame(newEmail);
   }
 
-  public void applyPasswordUpdate(Password newPassword) {
-    this.password = newPassword;
+  public void applyEmailUpdate(String newEmail) {
+    email = new Email(newEmail);
+  }
+
+  public void applyPasswordUpdate(String newPassword, PasswordEncoder passwordEncoder) {
+    if (password.check(newPassword, passwordEncoder)) {
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_PASSWORD);
+    }
+
+    password = new Password(newPassword, passwordEncoder);
   }
 
   public void applyProfileUpdate(String nickname, String introduction) {
@@ -99,6 +107,10 @@ public class User extends BaseEntity {
 
     this.nickname = nickname;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
+  }
+
+  public void switchOptions() {
+    options.switchOptions();
   }
 
   private void validate(String nickname, String optionalUsername, String introduction) {
