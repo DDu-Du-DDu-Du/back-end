@@ -200,7 +200,7 @@ class UserControllerTest {
     }
 
     @Test
-    void 이메일이_존재하면_400_Bad_Request를_반환한다() throws Exception {
+    void 이메일이_존재하면_409_Conflict를_반환한다() throws Exception {
       // given
       SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);
 
@@ -213,12 +213,12 @@ class UserControllerTest {
           .content(objectMapper.writeValueAsString(request)));
 
       // then
-      actions.andExpect(status().isBadRequest())
+      actions.andExpect(status().isConflict())
           .andExpect(jsonPath("$.code", is(UserErrorCode.DUPLICATE_EMAIL.getCode())));
     }
 
     @Test
-    void 선택_아이디가_존재하면_400_Bad_Request를_반환한다() throws Exception {
+    void 선택_아이디가_존재하면_409_Conflict를_반환한다() throws Exception {
       // given
       String username = faker.name()
           .firstName();
@@ -233,7 +233,7 @@ class UserControllerTest {
           .content(objectMapper.writeValueAsString(request)));
 
       // then
-      actions.andExpect(status().isBadRequest())
+      actions.andExpect(status().isConflict())
           .andExpect(jsonPath("$.code", is(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getCode())));
     }
 
@@ -267,13 +267,21 @@ class UserControllerTest {
   @Nested
   class GET_사용자_단일_조회_API_테스트 {
 
+    long loginId;
+    String token;
+
+    @BeforeEach
+    void setUp() {
+      loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      token = createBearerToken(loginId);
+    }
+
     @Test
     void 단일_조회를_성공하고_200_OK를_반환한다() throws Exception {
       // given
-      long userId = faker.random()
-          .nextLong(Long.MAX_VALUE);
       UserResponse expected = UserResponse.builder()
-          .id(userId)
+          .id(loginId)
           .email(email)
           .nickname(nickname)
           .build();
@@ -281,24 +289,21 @@ class UserControllerTest {
       given(userService.findById(anyLong())).willReturn(expected);
 
       // when
-      ResultActions actions = mockMvc.perform(get("/api/users/{id}", userId));
+      ResultActions actions = mockMvc.perform(get("/api/users/{id}", loginId));
 
       // then
       actions.andExpect(status().isOk())
-          .andExpect(jsonPath("$.id").value(userId));
+          .andExpect(jsonPath("$.id").value(loginId));
     }
 
     @Test
     void 사용자가_없으면_단일_조회를_실패하고_404_Not_Found를_반환한다() throws Exception {
       // given
-      long userId = faker.random()
-          .nextLong();
-
       given(userService.findById(anyLong())).willThrow(
           new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
       // when
-      ResultActions actions = mockMvc.perform(get("/api/users/{id}", userId));
+      ResultActions actions = mockMvc.perform(get("/api/users/{id}", loginId));
 
       // then
       actions.andExpect(status().isNotFound())
