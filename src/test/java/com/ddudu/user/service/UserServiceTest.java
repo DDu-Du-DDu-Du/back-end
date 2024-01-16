@@ -98,6 +98,20 @@ class UserServiceTest {
       );
     }
 
+    @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")
+    @MethodSource("provideSignUpRequestAndString")
+    void 회원가입을_성공한다(SignUpRequest request, String message) {
+      // when
+      SignUpResponse expected = userService.signUp(request);
+
+      // then
+      Optional<User> actual = userRepository.findById(expected.id());
+
+      assertThat(actual).isNotEmpty();
+      assertThat(actual.get()).extracting("id", "email", "nickname")
+          .containsExactly(expected.id(), expected.email(), expected.nickname());
+    }
+
     @Test
     void 이메일이_이미_존재하면_회원가입을_실패한다() {
       // given
@@ -132,24 +146,22 @@ class UserServiceTest {
           .withMessage(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getMessage());
     }
 
-    @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")
-    @MethodSource("provideSignUpRequestAndString")
-    void 회원가입을_성공한다(SignUpRequest request, String message) {
-      // when
-      SignUpResponse expected = userService.signUp(request);
-
-      // then
-      Optional<User> actual = userRepository.findById(expected.id());
-
-      assertThat(actual).isNotEmpty();
-      assertThat(actual.get()).extracting("id", "email", "nickname")
-          .containsExactly(expected.id(), expected.email(), expected.nickname());
-    }
-
   }
 
   @Nested
   class 사용자_단일_조회_테스트 {
+
+    @Test
+    void 사용자_단일_조회를_성공한다() {
+      // given
+      User expected = createUser(null, null, null);
+
+      // when
+      UserResponse actual = userService.findById(expected.getId());
+
+      // then
+      assertThat(actual.id()).isEqualTo(expected.getId());
+    }
 
     @Test
     void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
@@ -163,18 +175,6 @@ class UserServiceTest {
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
           .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 사용자_단일_조회를_성공한다() {
-      // given
-      User expected = createUser(null, null, null);
-
-      // when
-      UserResponse actual = userService.findById(expected.getId());
-
-      // then
-      assertThat(actual.id()).isEqualTo(expected.getId());
     }
 
   }
@@ -217,6 +217,25 @@ class UserServiceTest {
   class 이메일_변경_테스트 {
 
     @Test
+    void 이메일_변경에_성공한다() {
+      // given
+      User user = createUser(null, null, null);
+      Long userId = user.getId();
+
+      String newEmail = faker.internet()
+          .emailAddress();
+      UpdateEmailRequest updateEmailRequest = new UpdateEmailRequest(newEmail);
+
+      // when
+      userService.updateEmail(userId, updateEmailRequest);
+
+      // then
+      User updatedUser = userRepository.findById(userId)
+          .get();
+      assertThat(updatedUser.getEmail()).isEqualTo(newEmail);
+    }
+
+    @Test
     void 존재하지_않는_사용자_아이디_이메일_변경을_실패한다() {
       // given
       long randomId = faker.random()
@@ -253,7 +272,7 @@ class UserServiceTest {
       // given
       User user = createUser(null, null, null);
       String differentEmail = faker.internet()
-              .emailAddress();
+          .emailAddress();
 
       createUser(differentEmail, null, null);
 
@@ -268,29 +287,31 @@ class UserServiceTest {
           .withMessage(UserErrorCode.DUPLICATE_EMAIL.getMessage());
     }
 
-    @Test
-    void 이메일_변경에_성공한다() {
-      // given
-      User user = createUser(null, null, null);
-      Long userId = user.getId();
-
-      String newEmail = faker.internet()
-          .emailAddress();
-      UpdateEmailRequest updateEmailRequest = new UpdateEmailRequest(newEmail);
-
-      // when
-      userService.updateEmail(userId, updateEmailRequest);
-
-      // then
-      User updatedUser = userRepository.findById(userId)
-          .get();
-      assertThat(updatedUser.getEmail()).isEqualTo(newEmail);
-    }
-
   }
 
   @Nested
   class 비밀번호_변경_테스트 {
+
+    @Test
+    void 비밀번호_변경을_성공한다() {
+      // given
+      String newPassword = faker.internet()
+          .password(8, 40, true, true, true);
+
+      User user = createUser(null, null, null);
+      Long userId = user.getId();
+
+      UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest(newPassword);
+
+      // when
+      userService.updatePassword(userId, updatePasswordRequest);
+
+      // then
+      User updatedUser = userRepository.findById(userId)
+          .get();
+      assertThat(updatedUser.getPassword()
+          .check(newPassword, passwordEncoder)).isTrue();
+    }
 
     @Test
     void 존재하지_않는_사용자_아이디_비밀번호_변경을_실패한다() {
@@ -322,27 +343,6 @@ class UserServiceTest {
       // then
       assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updatePassword)
           .withMessage(UserErrorCode.DUPLICATE_EXISTING_PASSWORD.getMessage());
-    }
-
-    @Test
-    void 비밀번호_변경을_성공한다() {
-      // given
-      String newPassword = faker.internet()
-          .password(8, 40, true, true, true);
-
-      User user = createUser(null, null, null);
-      Long userId = user.getId();
-
-      UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest(newPassword);
-
-      // when
-      userService.updatePassword(userId, updatePasswordRequest);
-
-      // then
-      User updatedUser = userRepository.findById(userId)
-          .get();
-      assertThat(updatedUser.getPassword()
-          .check(newPassword, passwordEncoder)).isTrue();
     }
 
   }
