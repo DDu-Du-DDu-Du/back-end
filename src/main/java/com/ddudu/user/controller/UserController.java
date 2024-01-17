@@ -1,6 +1,7 @@
 package com.ddudu.user.controller;
 
 import com.ddudu.common.annotation.Login;
+import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -57,11 +58,12 @@ public class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<List<UserProfileResponse>> getAllByKeyword(
-      @RequestParam
-      String keyword
+  public ResponseEntity<List<UserProfileResponse>> search(
+      String keyword,
+      @RequestParam(required = false)
+      UserSearchType searchType
   ) {
-    List<UserProfileResponse> response = userService.findAllByKeyword(keyword);
+    List<UserProfileResponse> response = userService.search(keyword, searchType);
 
     return ResponseEntity.ok(response);
   }

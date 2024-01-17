@@ -3,7 +3,8 @@ package com.ddudu.user.repository;
 import static com.ddudu.user.domain.QUser.user;
 
 import com.ddudu.user.domain.User;
-import com.querydsl.core.BooleanBuilder;
+import com.ddudu.user.domain.UserSearchType;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -19,18 +20,17 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
   }
 
   @Override
-  public List<User> findAllByKeyword(String keyword) {
-    String likePattern = "%" + keyword + "%";
-    BooleanBuilder whereClause = new BooleanBuilder();
-    
-    whereClause.or(user.email.address.like(likePattern));
-    whereClause.or(user.nickname.like(likePattern));
-    whereClause.or(user.optionalUsername.like(likePattern));
+  public List<User> findAllByKeywordAndSearchType(String keyword, UserSearchType userSearchType) {
+    JPAQuery<User> query = jpaQueryFactory
+        .selectFrom(user);
 
-    return jpaQueryFactory
-        .selectFrom(user)
-        .where(whereClause)
-        .fetch();
+    switch (userSearchType) {
+      case EMAIL -> query.where(user.email.address.eq(keyword));
+      case NICKNAME -> query.where(user.nickname.eq(keyword));
+      case OPTIONAL_USERNAME -> query.where(user.optionalUsername.eq(keyword));
+    }
+
+    return query.fetch();
   }
 
 }

@@ -37,4 +37,12 @@ public class Email {
     }
   }
 
+  public static boolean isValidEmail(String email) {
+    if (StringUtils.isBlank(email)) {
+      return false;
+    }
+    return EMAIL_PATTERN.matcher(email)
+        .matches();
+  }
+
 }

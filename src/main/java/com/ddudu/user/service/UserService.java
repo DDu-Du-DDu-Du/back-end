@@ -1,5 +1,7 @@
 package com.ddudu.user.service;
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
@@ -9,6 +11,7 @@ import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
+import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -149,16 +152,27 @@ public class UserService {
     return ToggleOptionResponse.from(user);
   }
 
-  public List<UserProfileResponse> findAllByKeyword(String keyword) {
+  public List<UserProfileResponse> search(String keyword, UserSearchType searchType) {
     if (Strings.isBlank(keyword)) {
       return Collections.emptyList();
     }
 
-    List<User> users = userRepository.findAllByKeyword(keyword);
+    if (isNull(searchType)) {
+      searchType = determineSearchType(keyword);
+    }
+
+    List<User> users = userRepository.findAllByKeywordAndSearchType(keyword, searchType);
 
     return users.stream()
         .map(UserProfileResponse::from)
         .toList();
+  }
+
+  private UserSearchType determineSearchType(String keyword) {
+    if (Email.isValidEmail(keyword)) {
+      return UserSearchType.EMAIL;
+    }
+    return UserSearchType.OPTIONAL_USERNAME;
   }
 
 }
