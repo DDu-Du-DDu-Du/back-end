@@ -15,11 +15,13 @@ import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.ToggleOptionResponse;
+import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -79,7 +81,7 @@ public class UserService {
     return UserProfileResponse.from(user);
   }
 
-  public UserResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
+  public UpdateEmailResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
     if (!loginId.equals(userId)) {
       throw new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION);
     }
@@ -99,7 +101,7 @@ public class UserService {
 
     user.applyEmailUpdate(newEmail);
 
-    return UserResponse.from(user);
+    return new UpdateEmailResponse(newEmail.getAddress());
   }
 
   @Transactional
@@ -124,11 +126,24 @@ public class UserService {
     return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
   }
 
-  public UserResponse findById(Long userId) {
+  public UserProfileResponse findById(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
-    return UserResponse.from(user);
+    return UserProfileResponse.from(user);
+  }
+
+  public UsersResponse findFollowees(Long loginId, Long id) {
+    if (!loginId.equals(id)) {
+      throw new ForbiddenException(UserErrorCode.INVALID_AUTHORITY);
+    }
+
+    User user = userRepository.findById(loginId)
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+    List<User> followees = userRepository.findFolloweesOfUser(user);
+
+    return UsersResponse.from(followees);
   }
 
   @Transactional

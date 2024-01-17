@@ -15,11 +15,9 @@ import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +27,8 @@ public class FollowingService {
   private final UserRepository userRepository;
   private final FollowingRepository followingRepository;
 
-  private static void checkPermission(Long loginId, Following following) {
-    if (!following.isOwnedBy(loginId)) {
-      throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
-    }
-  }
-
   @Transactional
-  @Validated
-  public FollowingResponse create(Long followerId, @Valid FollowRequest request) {
+  public FollowingResponse create(Long followerId, FollowRequest request) {
     User follower = userRepository.findById(followerId)
         .orElseThrow(() -> new DataNotFoundException(FollowingErrorCode.FOLLOWER_NOT_EXISTING));
     User followee = userRepository.findById(request.followeeId())
@@ -89,6 +80,12 @@ public class FollowingService {
           checkPermission(loginId, following);
           followingRepository.delete(following);
         });
+  }
+
+  private void checkPermission(Long loginId, Following following) {
+    if (!following.isOwnedBy(loginId)) {
+      throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
+    }
   }
 
 }

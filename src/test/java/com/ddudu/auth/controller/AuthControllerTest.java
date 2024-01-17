@@ -4,12 +4,11 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.auth.dto.request.LoginRequest;
 import com.ddudu.auth.dto.response.LoginResponse;
 import com.ddudu.auth.dto.response.MeResponse;
@@ -17,46 +16,26 @@ import com.ddudu.auth.exception.AuthErrorCode;
 import com.ddudu.auth.service.AuthService;
 import com.ddudu.common.exception.BadCredentialsException;
 import com.ddudu.common.exception.DataNotFoundException;
-import com.ddudu.config.JwtConfig;
-import com.ddudu.config.WebSecurityConfig;
-import com.ddudu.support.TestProperties;
+import com.ddudu.support.ControllerTestSupport;
 import com.ddudu.user.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(AuthController.class)
-@Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
-@DisplayNameGeneration(ReplaceUnderscores.class)
-class AuthControllerTest {
+class AuthControllerTest extends ControllerTestSupport {
 
   static final Faker faker = new Faker();
   static final String TEST_TOKEN = "test access token";
-  static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
-      .build();
-  static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
-      .claim("auth", Authority.NORMAL);
 
   String email;
   String password;
@@ -68,17 +47,10 @@ class AuthControllerTest {
   @MockBean
   UserRepository userRepository;
 
-  @Autowired
-  ObjectMapper objectMapper;
-
-  @Autowired
-  MockMvc mockMvc;
-
-  @Autowired
-  JwtEncoder jwtEncoder;
-
   @Nested
   class POST_로그인_API_테스트 {
+
+    static final String PATH = "/api/auth/login";
 
     static Stream<Arguments> provideLoginRequestAndString() {
       String email = faker.internet()
@@ -115,7 +87,7 @@ class AuthControllerTest {
     void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(LoginRequest request, String message)
         throws Exception {
       // when
-      ResultActions actions = mockMvc.perform(post("/api/auth/login")
+      ResultActions actions = mockMvc.perform(post(PATH)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -134,7 +106,7 @@ class AuthControllerTest {
           .willThrow(new DataNotFoundException(AuthErrorCode.EMAIL_NOT_EXISTING));
 
       // when
-      ResultActions actions = mockMvc.perform(post("/api/auth/login")
+      ResultActions actions = mockMvc.perform(post(PATH)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -152,7 +124,7 @@ class AuthControllerTest {
           .willThrow(new BadCredentialsException(AuthErrorCode.BAD_CREDENTIALS));
 
       // when
-      ResultActions actions = mockMvc.perform(post("/api/auth/login")
+      ResultActions actions = mockMvc.perform(post(PATH)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -171,7 +143,7 @@ class AuthControllerTest {
           .willReturn(response);
 
       // when
-      ResultActions actions = mockMvc.perform(post("/api/auth/login")
+      ResultActions actions = mockMvc.perform(post(PATH)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -183,6 +155,8 @@ class AuthControllerTest {
 
   @Nested
   class GET_JWT_본인_확인_API_테스트 {
+
+    static final String PATH = "/api/auth/me";
 
     @Test
     void 토큰_검증을_성공하고_OK를_반환한다() throws Exception {
@@ -199,19 +173,12 @@ class AuthControllerTest {
       given(authService.loadUser(anyLong())).willReturn(expected);
 
       // when
-      ResultActions actions = mockMvc.perform(get("/api/auth/me")
-          .header("Authorization", token));
+      ResultActions actions = mockMvc.perform(get(PATH)
+          .header(AUTHORIZATION, token));
 
       // then
       actions.andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(userId));
-    }
-
-    private String createBearerToken(long userId) {
-      JwtClaimsSet claims = claimSet.claim("user", userId)
-          .build();
-      Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-      return "Bearer " + jwt.getTokenValue();
     }
 
   }
