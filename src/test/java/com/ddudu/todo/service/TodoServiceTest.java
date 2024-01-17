@@ -1,7 +1,6 @@
 package com.ddudu.todo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 import com.ddudu.common.exception.DataNotFoundException;
@@ -113,7 +112,7 @@ class TodoServiceTest {
     }
 
     @Test
-    void 사용자ID가_유효하지_않으면_예외가_발생한다() {
+    void 사용자_아이디가_유효하지_않으면_예외가_발생한다() {
       // give
       Long userId = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -129,7 +128,7 @@ class TodoServiceTest {
     }
 
     @Test
-    void 목표ID가_유효하지_않으면_예외가_발생한다() {
+    void 목표_아이디가_유효하지_않으면_예외가_발생한다() {
       // given
       Long goalId = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -170,10 +169,12 @@ class TodoServiceTest {
       Long id = faker.random()
           .nextLong(Long.MAX_VALUE);
 
-      // when then
-      assertThatThrownBy(() -> todoService.findById(user.getId(), id))
-          .isInstanceOf(DataNotFoundException.class)
-          .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+      // when
+      ThrowingCallable findById = () -> todoService.findById(user.getId(), id);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findById)
+          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -297,10 +298,13 @@ class TodoServiceTest {
           .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
-      // when then
-      assertThatThrownBy(() -> todoService.findAllByDate(invalidLoginId, user.getId(), date))
-          .isInstanceOf(DataNotFoundException.class)
-          .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+      // when
+      ThrowingCallable findAllByDate = () -> todoService.findAllByDate(
+          invalidLoginId, user.getId(), date);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findAllByDate)
+          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -310,10 +314,13 @@ class TodoServiceTest {
           .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
-      // when then
-      assertThatThrownBy(() -> todoService.findAllByDate(loginUser.getId(), invalidUserId, date))
-          .isInstanceOf(DataNotFoundException.class)
-          .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+      // when
+      ThrowingCallable findAllByDate = () -> todoService.findAllByDate(
+          loginUser.getId(), invalidUserId, date);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findAllByDate)
+          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
@@ -360,7 +367,7 @@ class TodoServiceTest {
     void 유효하지_않은_ID인_경우_수정에_실패한다() {
       // given
       Long invalidId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       Long goalId = todo.getGoal()
           .getId();
       UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
@@ -377,7 +384,7 @@ class TodoServiceTest {
     void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
       // given
       Long invalidUserId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       Long goalId = todo.getGoal()
           .getId();
       UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
@@ -394,7 +401,7 @@ class TodoServiceTest {
     void 유효하지_않은_목표_ID인_경우_수정에_실패한다() {
       // given
       Long invalidGoalId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       UpdateTodoRequest request = new UpdateTodoRequest(invalidGoalId, name, beginAt);
 
       // when
@@ -447,10 +454,12 @@ class TodoServiceTest {
       Long id = faker.random()
           .nextLong(Long.MAX_VALUE);
 
-      // when then
-      assertThatThrownBy(() -> todoService.updateStatus(user.getId(), id))
-          .isInstanceOf(DataNotFoundException.class)
-          .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+      // when
+      ThrowingCallable updateStatus = () -> todoService.updateStatus(user.getId(), id);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateStatus)
+          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -553,11 +562,13 @@ class TodoServiceTest {
           .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
-      // when then
-      assertThatThrownBy(
-          () -> todoService.findWeeklyCompletions(invalidLoginId, user.getId(), date))
-          .isInstanceOf(DataNotFoundException.class)
-          .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+      // when
+      ThrowingCallable findWeeklyCompletions = () -> todoService.findWeeklyCompletions(
+          invalidLoginId, user.getId(), date);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findWeeklyCompletions)
+          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -567,11 +578,13 @@ class TodoServiceTest {
           .nextLong(Long.MAX_VALUE);
       LocalDate date = LocalDate.now();
 
-      // when then
-      assertThatThrownBy(
-          () -> todoService.findWeeklyCompletions(loginUser.getId(), invalidUserId, date))
-          .isInstanceOf(DataNotFoundException.class)
-          .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+      // when
+      ThrowingCallable findWeeklyCompletions = () -> todoService.findWeeklyCompletions(
+          loginUser.getId(), invalidUserId, date);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findWeeklyCompletions)
+          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -656,11 +669,13 @@ class TodoServiceTest {
           .nextLong(Long.MAX_VALUE);
       YearMonth yearMonth = YearMonth.now();
 
-      // when then
-      assertThatThrownBy(
-          () -> todoService.findMonthlyCompletions(invalidLoginId, user.getId(), yearMonth))
-          .isInstanceOf(DataNotFoundException.class)
-          .hasMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+      // when
+      ThrowingCallable findMonthlyCompletions = () -> todoService.findMonthlyCompletions(
+          invalidLoginId, user.getId(), yearMonth);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findMonthlyCompletions)
+          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -670,11 +685,13 @@ class TodoServiceTest {
           .nextLong(Long.MAX_VALUE);
       YearMonth yearMonth = YearMonth.now();
 
-      // when then
-      assertThatThrownBy(
-          () -> todoService.findMonthlyCompletions(loginUser.getId(), invalidUserId, yearMonth))
-          .isInstanceOf(DataNotFoundException.class)
-          .hasMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+      // when
+      ThrowingCallable findMonthlyCompletions = () -> todoService.findMonthlyCompletions(
+          loginUser.getId(), invalidUserId, yearMonth);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findMonthlyCompletions)
+          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
