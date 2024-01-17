@@ -2,6 +2,7 @@ package com.ddudu.user.controller;
 
 import com.ddudu.common.annotation.Login;
 import com.ddudu.common.exception.ForbiddenException;
+import com.ddudu.user.dto.FollowingSearchType;
 import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -129,18 +131,20 @@ public class UserController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/{id}/followees")
-  public ResponseEntity<UsersResponse> getFollowees(
+  @GetMapping("/{id}/followings")
+  public ResponseEntity<UsersResponse> getFromFollowings(
       @Login
       Long loginId,
       @PathVariable
-      Long id
+      Long id,
+      @RequestParam
+      FollowingSearchType searchType
   ) {
     checkAuthority(loginId, id);
 
-    UsersResponse responses = userService.findFollowees(id);
+    UsersResponse response = userService.findFromFollowings(id, searchType);
 
-    return ResponseEntity.ok(responses);
+    return ResponseEntity.ok(response);
   }
 
   @PostMapping("/{id}/followings")
