@@ -9,7 +9,7 @@ public record TodoInfo(
     Long id,
     String name,
     TodoStatus status,
-    LikeInfo likeInfo
+    LikeInfo likes
 ) {
 
   public static TodoInfo from(Todo todo) {
@@ -25,7 +25,7 @@ public record TodoInfo(
         .id(todo.getId())
         .name(todo.getName())
         .status(todo.getStatus())
-        .likeInfo(likeInfo)
+        .likes(likeInfo)
         .build();
   }
 
