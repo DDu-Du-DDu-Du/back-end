@@ -4,6 +4,7 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.dto.FollowingSearchType;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -95,12 +96,12 @@ public class UserService {
     return UserProfileResponse.from(user);
   }
 
-  public UsersResponse findFollowees(Long id) {
+  public UsersResponse findFromFollowings(Long id, FollowingSearchType searchType) {
     User user = findUser(id);
 
-    List<User> followees = userRepository.findFolloweesOfUser(user);
+    List<User> users = userRepository.findFromFollowingBySearchType(user, searchType);
 
-    return UsersResponse.from(followees);
+    return UsersResponse.from(users);
   }
 
   @Transactional
