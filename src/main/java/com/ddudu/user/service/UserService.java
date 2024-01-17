@@ -65,6 +65,7 @@ public class UserService {
     return UserProfileResponse.from(user);
   }
 
+  @Transactional
   public UpdateEmailResponse updateEmail(Long userId, UpdateEmailRequest request) {
     User user = findUser(userId);
     String newEmail = request.email();
@@ -76,7 +77,7 @@ public class UserService {
     verifyUniqueEmail(newEmail);
     user.applyEmailUpdate(newEmail);
 
-    return new UpdateEmailResponse(newEmail.getAddress());
+    return new UpdateEmailResponse(user.getEmail());
   }
 
   @Transactional

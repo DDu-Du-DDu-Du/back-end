@@ -411,7 +411,7 @@ class UserServiceTest {
       createFollowing(user, followee, null);
 
       // when
-      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
+      UsersResponse actual = userService.findFollowees(user.getId());
 
       // then
       SimpleUserDto expected = SimpleUserDto.from(followee);
@@ -429,26 +429,10 @@ class UserServiceTest {
       createFollowing(user, rejectedFollowee, FollowingStatus.IGNORED);
 
       // when
-      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
+      UsersResponse actual = userService.findFollowees(user.getId());
 
       // then
       assertThat(actual.users()).isEmpty();
-    }
-
-    @Test
-    void 로그인_사용자와_요청의_사용자가_다르면_조회_실패한다() {
-      // given
-      long loginId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      long invalidId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-
-      // when
-      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, invalidId);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findFollowees)
-          .withMessage(UserErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
     @Test
@@ -458,7 +442,7 @@ class UserServiceTest {
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, loginId);
+      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findFollowees)
