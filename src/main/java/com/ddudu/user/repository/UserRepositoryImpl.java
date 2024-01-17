@@ -3,7 +3,9 @@ package com.ddudu.user.repository;
 import static com.ddudu.user.domain.QFollowing.following;
 
 import com.ddudu.user.domain.FollowingStatus;
+import com.ddudu.user.domain.QUser;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.dto.FollowingSearchType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -20,14 +22,21 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
   }
 
   @Override
-  public List<User> findFolloweesOfUser(User follower) {
+  public List<User> findFromFollowingBySearchType(User user, FollowingSearchType searchType) {
     BooleanBuilder whereClause = new BooleanBuilder();
+    QUser owner = following.follower;
+    QUser target = following.followee;
 
-    whereClause.and(following.follower.eq(follower))
+    if (FollowingSearchType.isSearchingFollower(searchType)) {
+      owner = following.followee;
+      target = following.follower;
+    }
+
+    whereClause.and(owner.eq(user))
         .and(following.status.eq(FollowingStatus.FOLLOWING));
 
     return jpaQueryFactory
-        .select(following.followee)
+        .select(target)
         .from(following)
         .where(whereClause)
         .fetch();
