@@ -284,9 +284,9 @@ class TodoServiceTest {
       TodoInfo todoInfo = responses.get(0)
           .todolist()
           .get(0);
-      assertThat(todoInfo.likeInfo()
+      assertThat(todoInfo.likes()
           .count()).isEqualTo(1);
-      assertThat(todoInfo.likeInfo()
+      assertThat(todoInfo.likes()
           .users()).containsExactly(other.getId());
     }
 
