@@ -161,6 +161,31 @@ class UserControllerTest extends ControllerTestSupport {
       );
     }
 
+    @Test
+    void 회원가입을_성공하면_201_Created를_반환한다() throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);
+      SignUpResponse response = SignUpResponse.builder()
+          .id(userId)
+          .email(email)
+          .nickname(nickname)
+          .build();
+
+      given(userService.signUp(any(SignUpRequest.class)))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(post(PATH)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isCreated())
+          .andExpect(header().string("location", is(PATH + "/" + userId)));
+    }
+
     @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
     @MethodSource("provideSignUpRequestAndStrings")
     void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(String cause, SignUpRequest request, String message)
@@ -212,31 +237,6 @@ class UserControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isConflict())
           .andExpect(jsonPath("$.code", is(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getCode())));
-    }
-
-    @Test
-    void 회원가입을_성공하면_OK를_반환한다() throws Exception {
-      // given
-      long userId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);
-      SignUpResponse response = SignUpResponse.builder()
-          .id(userId)
-          .email(email)
-          .nickname(nickname)
-          .build();
-
-      given(userService.signUp(any(SignUpRequest.class)))
-          .willReturn(response);
-
-      // when
-      ResultActions actions = mockMvc.perform(post(PATH)
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(request)));
-
-      // then
-      actions.andExpect(status().isCreated())
-          .andExpect(header().string("location", is(PATH + "/" + userId)));
     }
 
   }
@@ -312,29 +312,6 @@ class UserControllerTest extends ControllerTestSupport {
       );
     }
 
-    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
-    @MethodSource("provideUpdateEmailRequestAndStrings")
-    void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(
-        String cause, UpdateEmailRequest request, String message
-    )
-        throws Exception {
-      // given
-      long userId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      String token = createBearerToken(userId);
-
-      // when
-      ResultActions actions = mockMvc.perform(patch(PATH, userId)
-          .header(AUTHORIZATION, token)
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(request)));
-
-      // then
-      actions.andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.[0].code", is(1)))
-          .andExpect(jsonPath("$.[0].message", is(message)));
-    }
-
     @Test
     void 이메일_변경_성공하면_OK를_반환한다() throws Exception {
       // given
@@ -359,6 +336,29 @@ class UserControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isOk())
           .andExpect(jsonPath("$.email").value(request.email()));
+    }
+
+    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
+    @MethodSource("provideUpdateEmailRequestAndStrings")
+    void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(
+        String cause, UpdateEmailRequest request, String message
+    )
+        throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String token = createBearerToken(userId);
+
+      // when
+      ResultActions actions = mockMvc.perform(patch(PATH, userId)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.[0].code", is(1)))
+          .andExpect(jsonPath("$.[0].message", is(message)));
     }
 
   }
@@ -391,31 +391,8 @@ class UserControllerTest extends ControllerTestSupport {
       );
     }
 
-    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
-    @MethodSource("provideUpdatePasswordRequestAndStrings")
-    void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(
-        String cause, UpdatePasswordRequest request, String message
-    )
-        throws Exception {
-      // given
-      long userId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      String token = createBearerToken(userId);
-
-      // when
-      ResultActions actions = mockMvc.perform(patch(PATH, userId)
-          .header(AUTHORIZATION, token)
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(request)));
-
-      // then
-      actions.andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.[0].code", is(1)))
-          .andExpect(jsonPath("$.[0].message", is(message)));
-    }
-
     @Test
-    void 비밀번호_변경_성공하면_OK를_반환한다() throws Exception {
+    void 비밀번호_변경_성공하면_200_OK를_반환한다() throws Exception {
       // given
       long userId = faker.random()
           .nextLong(Long.MAX_VALUE);
@@ -441,6 +418,29 @@ class UserControllerTest extends ControllerTestSupport {
           .andExpect(jsonPath("$.message").value(successMessage));
     }
 
+    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
+    @MethodSource("provideUpdatePasswordRequestAndStrings")
+    void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(
+        String cause, UpdatePasswordRequest request, String message
+    )
+        throws Exception {
+      // given
+      long userId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String token = createBearerToken(userId);
+
+      // when
+      ResultActions actions = mockMvc.perform(patch(PATH, userId)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.[0].code", is(1)))
+          .andExpect(jsonPath("$.[0].message", is(message)));
+    }
+
   }
 
   @Nested
@@ -450,6 +450,7 @@ class UserControllerTest extends ControllerTestSupport {
 
     String introduction;
     Long userId;
+    String token;
 
     static Stream<Arguments> provideUpdateProfileRequestAndStrings() {
       String nickname = faker.funnyName()
@@ -486,45 +487,7 @@ class UserControllerTest extends ControllerTestSupport {
           .title();
       userId = faker.random()
           .nextLong();
-    }
-
-    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
-    @MethodSource("provideUpdateProfileRequestAndStrings")
-    void 유효하지_않은_요청이면_Bad_Request를_반환한다(
-        String cause, UpdateProfileRequest request, String message
-    ) throws Exception {
-      // when
-      ResultActions actions = mockMvc.perform(put(PATH, userId)
-          .header(AUTHORIZATION, createBearerToken(userId))
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(request)));
-
-      // then
-      actions.andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.[0].code", is(1)))
-          .andExpect(jsonPath("$.[0].message", is(message)));
-    }
-
-    @Test
-    void 프로필_수정_권한이_없으면_Forbidden을_반환한다() throws Exception {
-      // given
-      long invalidId = faker.random()
-          .nextLong();
-      UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
-
-      given(userService.updateProfile(anyLong(), any(UpdateProfileRequest.class)))
-          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
-
-      // when
-      ResultActions actions = mockMvc.perform(put(PATH, userId)
-          .header(AUTHORIZATION, createBearerToken(invalidId))
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(request)));
-
-      // then
-      actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code", is(UserErrorCode.INVALID_AUTHORITY.getCode())))
-          .andExpect(jsonPath("$.message", is(UserErrorCode.INVALID_AUTHORITY.getMessage())));
+      token = createBearerToken(userId);
     }
 
     @Test
@@ -542,7 +505,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, userId)
-          .header(AUTHORIZATION, createBearerToken(userId))
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -553,6 +516,43 @@ class UserControllerTest extends ControllerTestSupport {
           .andExpect(jsonPath("$.introduction").value(response.introduction()));
     }
 
+    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
+    @MethodSource("provideUpdateProfileRequestAndStrings")
+    void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(
+        String cause, UpdateProfileRequest request, String message
+    ) throws Exception {
+      // when
+      ResultActions actions = mockMvc.perform(put(PATH, userId)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.[0].code", is(1)))
+          .andExpect(jsonPath("$.[0].message", is(message)));
+    }
+
+    @Test
+    void 프로필_수정_권한이_없으면_403_Forbidden을_반환한다() throws Exception {
+      // given
+      UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
+
+      given(userService.updateProfile(anyLong(), any(UpdateProfileRequest.class)))
+          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
+
+      // when
+      ResultActions actions = mockMvc.perform(put(PATH, userId)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(UserErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(UserErrorCode.INVALID_AUTHORITY.getMessage())));
+    }
+
   }
 
   @Nested
@@ -561,17 +561,18 @@ class UserControllerTest extends ControllerTestSupport {
     static final String PATH = "/api/users/{id}/options";
 
     long userId;
+    String token;
 
     @BeforeEach
     void setUp() {
       userId = faker.random()
           .nextLong(Long.MAX_VALUE);
+      token = createBearerToken(userId);
     }
 
     @Test
     void 수락한_사람만_팔로우_옵션을_토글하고_200_OK를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(userId);
       ToggleOptionResponse response = new ToggleOptionResponse(userId, true);
 
       given(userService.switchOption(anyLong()))
@@ -591,10 +592,6 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void 로그인한_사용자가_요청된_사용자와_다를_경우_403_Forbidden을_반환한다() throws Exception {
       // given
-      long randomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      String token = createBearerToken(randomId);
-
       given(userService.switchOption(anyLong()))
           .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
 
@@ -612,8 +609,6 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void 존재하지_않는_사용자에_대한_요청일_경우_404_Not_Found를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(userId);
-
       given(userService.switchOption(anyLong()))
           .willThrow(new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
@@ -654,7 +649,7 @@ class UserControllerTest extends ControllerTestSupport {
       UsersResponse response = new UsersResponse(
           1, List.of(new SimpleUserDto(followeeId, anotherNickname)));
 
-      given(userService.findFollowees(anyLong(), anyLong()))
+      given(userService.findFollowees(anyLong()))
           .willReturn(response);
 
       // when
@@ -687,7 +682,7 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void 존재하지_않는_사용자일_경우_404_Not_Found를_반환한다() throws Exception {
       // given
-      given(userService.findFollowees(anyLong(), anyLong()))
+      given(userService.findFollowees(anyLong()))
           .willThrow(new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
       // when
@@ -709,6 +704,7 @@ class UserControllerTest extends ControllerTestSupport {
 
     Long loginId;
     Long followeeId;
+    String token;
 
     @BeforeEach
     void setUp() {
@@ -716,12 +712,12 @@ class UserControllerTest extends ControllerTestSupport {
           .nextLong(Long.MAX_VALUE);
       followeeId = faker.random()
           .nextLong(Long.MAX_VALUE);
+      token = createBearerToken(loginId);
     }
 
     @Test
     void 팔로잉_신청을_성공하고_200_OK를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(loginId);
       FollowRequest request = new FollowRequest(followeeId);
       FollowingResponse response = FollowingResponse.builder()
           .id(1L)
@@ -734,7 +730,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(post(PATH, loginId)
-          .header("Authorization", token)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -761,7 +757,6 @@ class UserControllerTest extends ControllerTestSupport {
     @Test
     void 팔로잉_대상_사용자가_존재하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
-      String token = createBearerToken(loginId);
       FollowRequest request = new FollowRequest(followeeId);
 
       given(followingService.create(anyLong(), any(FollowRequest.class)))
@@ -769,7 +764,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(post(PATH, loginId)
-          .header("Authorization", token)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -814,7 +809,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
-          .header("Authorization", token)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -834,7 +829,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
-          .header("Authorization", token)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -854,7 +849,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
-          .header("Authorization", token)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -890,7 +885,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
-          .header("Authorization", token)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -910,7 +905,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
-          .header("Authorization", token)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -948,7 +943,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
-          .header("Authorization", token));
+          .header(AUTHORIZATION, token));
 
       // then
       actions.andExpect(status().isNoContent());
@@ -977,7 +972,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(delete(PATH, followingId, followingId)
-          .header("Authorization", token));
+          .header(AUTHORIZATION, token));
 
       // then
       actions.andExpect(status().isForbidden())
@@ -994,7 +989,7 @@ class UserControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
-          .header("Authorization", token));
+          .header(AUTHORIZATION, token));
 
       // then
       actions.andExpect(status().isForbidden())

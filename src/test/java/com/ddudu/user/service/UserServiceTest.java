@@ -105,6 +105,20 @@ class UserServiceTest {
       );
     }
 
+    @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")
+    @MethodSource("provideSignUpRequestAndString")
+    void 회원가입을_성공한다(SignUpRequest request, String message) {
+      // when
+      SignUpResponse expected = userService.signUp(request);
+
+      // then
+      Optional<User> actual = userRepository.findById(expected.id());
+
+      assertThat(actual).isNotEmpty();
+      assertThat(actual.get()).extracting("id", "email", "nickname")
+          .containsExactly(expected.id(), expected.email(), expected.nickname());
+    }
+
     @Test
     void 이메일이_이미_존재하면_회원가입을_실패한다() {
       // given
@@ -139,38 +153,10 @@ class UserServiceTest {
           .withMessage(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getMessage());
     }
 
-    @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")
-    @MethodSource("provideSignUpRequestAndString")
-    void 회원가입을_성공한다(SignUpRequest request, String message) {
-      // when
-      SignUpResponse expected = userService.signUp(request);
-
-      // then
-      Optional<User> actual = userRepository.findById(expected.id());
-
-      assertThat(actual).isNotEmpty();
-      assertThat(actual.get()).extracting("id", "email", "nickname")
-          .containsExactly(expected.id(), expected.email(), expected.nickname());
-    }
-
   }
 
   @Nested
   class 사용자_단일_조회_테스트 {
-
-    @Test
-    void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
-      // given
-      long randomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-
-      // when
-      ThrowingCallable login = () -> userService.findById(randomId);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
-          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
-    }
 
     @Test
     void 사용자_단일_조회를_성공한다() {
@@ -182,6 +168,20 @@ class UserServiceTest {
 
       // then
       assertThat(actual.id()).isEqualTo(expected.getId());
+    }
+
+    @Test
+    void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
+      // given
+      long invalidId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable login = () -> userService.findById(invalidId);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
   }
@@ -224,16 +224,35 @@ class UserServiceTest {
   class 이메일_변경_테스트 {
 
     @Test
+    void 이메일_변경에_성공한다() {
+      // given
+      User user = createUser(null, null, null);
+      Long userId = user.getId();
+
+      String newEmail = faker.internet()
+          .emailAddress();
+      UpdateEmailRequest updateEmailRequest = new UpdateEmailRequest(newEmail);
+
+      // when
+      userService.updateEmail(userId, updateEmailRequest);
+
+      // then
+      User updatedUser = userRepository.findById(userId)
+          .get();
+      assertThat(updatedUser.getEmail()).isEqualTo(newEmail);
+    }
+
+    @Test
     void 존재하지_않는_사용자_아이디_이메일_변경을_실패한다() {
       // given
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
       String newEmail = faker.internet()
           .emailAddress();
 
       // when
       ThrowingCallable updateEmail = () -> userService.updateEmail(
-          randomId, new UpdateEmailRequest(newEmail));
+          invalidId, new UpdateEmailRequest(newEmail));
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateEmail)
@@ -260,7 +279,7 @@ class UserServiceTest {
       // given
       User user = createUser(null, null, null);
       String differentEmail = faker.internet()
-              .emailAddress();
+          .emailAddress();
 
       createUser(differentEmail, null, null);
 
@@ -275,61 +294,10 @@ class UserServiceTest {
           .withMessage(UserErrorCode.DUPLICATE_EMAIL.getMessage());
     }
 
-    @Test
-    void 이메일_변경에_성공한다() {
-      // given
-      User user = createUser(null, null, null);
-      Long userId = user.getId();
-
-      String newEmail = faker.internet()
-          .emailAddress();
-      UpdateEmailRequest updateEmailRequest = new UpdateEmailRequest(newEmail);
-
-      // when
-      userService.updateEmail(userId, updateEmailRequest);
-
-      // then
-      User updatedUser = userRepository.findById(userId)
-          .get();
-      assertThat(updatedUser.getEmail()).isEqualTo(newEmail);
-    }
-
   }
 
   @Nested
   class 비밀번호_변경_테스트 {
-
-    @Test
-    void 존재하지_않는_사용자_아이디_비밀번호_변경을_실패한다() {
-      // given
-      long randomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      String newPassword = faker.internet()
-          .password(8, 40, true, true, true);
-
-      // when
-      ThrowingCallable updatePassword = () -> userService.updatePassword(
-          randomId, new UpdatePasswordRequest(newPassword));
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updatePassword)
-          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 변경할_비밀번호가_기존_비밀번호와_동일한_경우_비밀번호_변경을_실패한다() {
-      // given
-      User user = createUser(null, null, null);
-      Long userId = user.getId();
-      UpdatePasswordRequest request = new UpdatePasswordRequest(password);
-
-      // when
-      ThrowingCallable updatePassword = () -> userService.updatePassword(userId, request);
-
-      // then
-      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updatePassword)
-          .withMessage(UserErrorCode.DUPLICATE_EXISTING_PASSWORD.getMessage());
-    }
 
     @Test
     void 비밀번호_변경을_성공한다() {
@@ -350,6 +318,38 @@ class UserServiceTest {
           .get();
       assertThat(updatedUser.getPassword()
           .check(newPassword, passwordEncoder)).isTrue();
+    }
+
+    @Test
+    void 존재하지_않는_사용자_아이디_비밀번호_변경을_실패한다() {
+      // given
+      long invalidId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String newPassword = faker.internet()
+          .password(8, 40, true, true, true);
+
+      // when
+      ThrowingCallable updatePassword = () -> userService.updatePassword(
+          invalidId, new UpdatePasswordRequest(newPassword));
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updatePassword)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 변경할_비밀번호가_기존_비밀번호와_동일한_경우_비밀번호_변경을_실패한다() {
+      // given
+      User user = createUser(null, null, null);
+      Long userId = user.getId();
+      UpdatePasswordRequest request = new UpdatePasswordRequest(password);
+
+      // when
+      ThrowingCallable updatePassword = () -> userService.updatePassword(userId, request);
+
+      // then
+      assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updatePassword)
+          .withMessage(UserErrorCode.DUPLICATE_EXISTING_PASSWORD.getMessage());
     }
 
   }
@@ -411,7 +411,7 @@ class UserServiceTest {
       createFollowing(user, followee, null);
 
       // when
-      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
+      UsersResponse actual = userService.findFollowees(user.getId());
 
       // then
       SimpleUserDto expected = SimpleUserDto.from(followee);
@@ -429,26 +429,10 @@ class UserServiceTest {
       createFollowing(user, rejectedFollowee, FollowingStatus.IGNORED);
 
       // when
-      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
+      UsersResponse actual = userService.findFollowees(user.getId());
 
       // then
       assertThat(actual.users()).isEmpty();
-    }
-
-    @Test
-    void 로그인_사용자와_요청의_사용자가_다르면_조회_실패한다() {
-      // given
-      long loginId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      long invalidId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-
-      // when
-      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, invalidId);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findFollowees)
-          .withMessage(UserErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
     @Test
@@ -458,7 +442,7 @@ class UserServiceTest {
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, loginId);
+      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findFollowees)

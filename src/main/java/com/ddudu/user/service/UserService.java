@@ -2,12 +2,8 @@ package com.ddudu.user.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
-import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.user.domain.Email;
-import com.ddudu.user.domain.Options;
-import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -39,92 +35,68 @@ public class UserService {
 
   @Transactional
   public SignUpResponse signUp(SignUpRequest request) {
-    Email email = new Email(request.email());
+    verifyUniqueEmail(request.email());
 
-    if (userRepository.existsByEmail(email)) {
-      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
+    if (Objects.nonNull(request.optionalUsername()) && userRepository.existsByOptionalUsername(
+        request.optionalUsername())) {
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME);
     }
 
-    UserBuilder userBuilder = User.builder()
-        .email(email.getAddress())
+    User user = User.builder()
+        .email(request.email())
         .password(request.password())
         .nickname(request.nickname())
-        .passwordEncoder(passwordEncoder);
+        .introduction(request.introduction())
+        .optionalUsername(request.optionalUsername())
+        .passwordEncoder(passwordEncoder)
+        .build();
 
-    if (Objects.nonNull(request.optionalUsername())) {
-      if (userRepository.existsByOptionalUsername(request.optionalUsername())) {
-        throw new DuplicateResourceException(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME);
-      }
+    User saved = userRepository.save(user);
 
-      userBuilder.optionalUsername(request.optionalUsername());
-    }
-
-    if (Objects.nonNull(request.introduction())) {
-      userBuilder.introduction(request.introduction());
-    }
-
-    return SignUpResponse.from(userRepository.save(userBuilder.build()));
+    return SignUpResponse.from(saved);
   }
 
   @Transactional
   public UserProfileResponse updateProfile(Long id, UpdateProfileRequest request) {
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+    User user = findUser(id);
 
     user.applyProfileUpdate(request.nickname(), request.introduction());
 
     return UserProfileResponse.from(user);
   }
 
+  @Transactional
   public UpdateEmailResponse updateEmail(Long userId, UpdateEmailRequest request) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
-    Email newEmail = new Email(request.email());
+    User user = findUser(userId);
+    String newEmail = request.email();
 
-    if (user.getEmail()
-        .equals(newEmail.getAddress())) {
+    if (user.isSameEmail(newEmail)) {
       throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_EMAIL);
     }
 
-    if (userRepository.existsByEmail(newEmail)) {
-      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
-    }
-
+    verifyUniqueEmail(newEmail);
     user.applyEmailUpdate(newEmail);
 
-    return new UpdateEmailResponse(newEmail.getAddress());
+    return new UpdateEmailResponse(user.getEmail());
   }
 
   @Transactional
   public UpdatePasswordResponse updatePassword(Long userId, UpdatePasswordRequest request) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
-    Password password = user.getPassword();
-    Password newPassword = new Password(request.password(), passwordEncoder);
+    User user = findUser(userId);
 
-    if (password.check(request.password(), passwordEncoder)) {
-      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_PASSWORD);
-    }
-
-    user.applyPasswordUpdate(newPassword);
+    user.applyPasswordUpdate(request.password(), passwordEncoder);
 
     return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
   }
 
   public UserProfileResponse findById(Long userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+    User user = findUser(userId);
 
     return UserProfileResponse.from(user);
   }
 
-  public UsersResponse findFollowees(Long loginId, Long id) {
-    if (!loginId.equals(id)) {
-      throw new ForbiddenException(UserErrorCode.INVALID_AUTHORITY);
-    }
-
-    User user = userRepository.findById(loginId)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+  public UsersResponse findFollowees(Long id) {
+    User user = findUser(id);
 
     List<User> followees = userRepository.findFolloweesOfUser(user);
 
@@ -133,13 +105,24 @@ public class UserService {
 
   @Transactional
   public ToggleOptionResponse switchOption(Long id) {
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
-    Options options = user.getOptions();
+    User user = findUser(id);
 
-    options.switchOptions();
+    user.switchOptions();
 
     return ToggleOptionResponse.from(user);
+  }
+
+  private User findUser(Long id) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+  }
+
+  private void verifyUniqueEmail(String email) {
+    Email newEmail = new Email(email);
+
+    if (userRepository.existsByEmail(newEmail)) {
+      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
+    }
   }
 
 }
