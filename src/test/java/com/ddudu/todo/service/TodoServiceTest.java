@@ -159,7 +159,7 @@ class TodoServiceTest {
 
       // then
       assertThat(response).extracting(
-              "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name", "todoInfo.status")
+              "goal.id", "goal.name", "todo.id", "todo.name", "todo.status")
           .containsExactly(
               goal.getId(), goal.getName(), todo.getId(), todo.getName(), todo.getStatus());
     }
@@ -214,10 +214,10 @@ class TodoServiceTest {
       assertThat(responses).hasSize(1);
 
       TodoListResponse response1 = responses.get(0);
-      assertThat(response1.goalInfo()
+      assertThat(response1.goal()
           .name())
           .isEqualTo(goal.getName());
-      assertThat(response1.todolist()).extracting("id")
+      assertThat(response1.todos()).extracting("id")
           .containsExactly(todo1.getId(), todo2.getId());
 
     }
@@ -279,10 +279,10 @@ class TodoServiceTest {
       assertThat(responses).hasSize(1);
 
       TodoListResponse response = responses.get(0);
-      assertThat(response.todolist()).hasSize(1);
+      assertThat(response.todos()).hasSize(1);
 
       TodoInfo todoInfo = responses.get(0)
-          .todolist()
+          .todos()
           .get(0);
       assertThat(todoInfo.likes()
           .count()).isEqualTo(1);
@@ -437,9 +437,9 @@ class TodoServiceTest {
 
       // then
       assertThat(response).extracting(
-              "goalInfo.id", "goalInfo.name", "todoInfo.id", "todoInfo.name")
+              "goal.id", "goal.name", "todo.id", "todo.name")
           .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName());
-      assertThat(response.todoInfo()
+      assertThat(response.todo()
           .status()).isNotEqualTo(beforeUpdated);
     }
 
@@ -495,7 +495,7 @@ class TodoServiceTest {
 
       // then
       assertThat(responses).hasSize(7);
-      assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
+      assertThat(responses.get(dayIndex)).extracting("date", "totalCount", "uncompletedCount")
           .containsExactly(date, 2, 2);
     }
 
@@ -521,7 +521,7 @@ class TodoServiceTest {
 
       // then
       assertThat(responses).hasSize(7);
-      assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
+      assertThat(responses.get(dayIndex)).extracting("date", "totalCount", "uncompletedCount")
           .containsExactly(date, 0, 0);
     }
 
@@ -544,7 +544,7 @@ class TodoServiceTest {
 
       // then
       assertThat(responses).hasSize(7);
-      assertThat(responses.get(dayIndex)).extracting("date", "totalTodos", "uncompletedTodos")
+      assertThat(responses.get(dayIndex)).extracting("date", "totalCount", "uncompletedCount")
           .containsExactly(date, 0, 0);
     }
 
@@ -596,7 +596,7 @@ class TodoServiceTest {
       // then
       assertThat(responses).hasSize(daysInMonth);
       assertThat(responses.get(dayOfMonthIndex)).extracting(
-              "date", "totalTodos", "uncompletedTodos")
+              "date", "totalCount", "uncompletedCount")
           .containsExactly(date, 2, 2);
     }
 
@@ -623,7 +623,7 @@ class TodoServiceTest {
       // then
       assertThat(responses).hasSize(daysInMonth);
       assertThat(responses.get(dayOfMonthIndex)).extracting(
-              "date", "totalTodos", "uncompletedTodos")
+              "date", "totalCount", "uncompletedCount")
           .containsExactly(date, 0, 0);
     }
 
@@ -647,7 +647,7 @@ class TodoServiceTest {
       // then
       assertThat(responses).hasSize(daysInMonth);
       assertThat(responses.get(dayOfMonthIndex)).extracting(
-              "date", "totalTodos", "uncompletedTodos")
+              "date", "totalCount", "uncompletedCount")
           .containsExactly(date, 0, 0);
     }
 
