@@ -400,6 +400,48 @@ class TodoControllerTest extends ControllerTestSupport {
           .andExpect(jsonPath("$.message").value(containsString("date의 형식이 유효하지 않습니다.")));
     }
 
+    @Test
+    void 로그인_사용자_ID가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      Long invalidLonginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String invalidToken = createBearerToken(invalidLonginId);
+
+      given(todoService.findAllByDate(anyLong(), anyLong(), any())).willThrow(
+          new DataNotFoundException(TodoErrorCode.LOGIN_USER_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(get(PATH)
+          .header(AUTHORIZATION, invalidToken)
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage())));
+    }
+
+    @Test
+    void 일별_할_일_조회할_사용자_ID가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      given(todoService.findAllByDate(anyLong(), anyLong(), any())).willThrow(
+          new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(get(PATH)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.USER_NOT_EXISTING.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.USER_NOT_EXISTING.getMessage())));
+    }
+
   }
 
   @Nested
@@ -471,6 +513,48 @@ class TodoControllerTest extends ControllerTestSupport {
     }
 
     @Test
+    void 주간_달성률_조회할_로그인_사용자_ID가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      Long invalidLonginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String invalidToken = createBearerToken(invalidLonginId);
+
+      given(todoService.findWeeklyCompletions(anyLong(), anyLong(), any())).willThrow(
+          new DataNotFoundException(TodoErrorCode.LOGIN_USER_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(get(WEEKLY_PATH)
+          .header(AUTHORIZATION, invalidToken)
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage())));
+    }
+
+    @Test
+    void 주간_달성률_조회할_사용자_ID가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      given(todoService.findWeeklyCompletions(anyLong(), anyLong(), any())).willThrow(
+          new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(get(WEEKLY_PATH)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.USER_NOT_EXISTING.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.USER_NOT_EXISTING.getMessage())));
+    }
+
+    @Test
     void 월간_할_일_달성률_조회를_성공하면_200_OK_응답을_반환한다() throws Exception {
       // given
       YearMonth yearMonth = YearMonth.of(2024, 1);
@@ -535,6 +619,50 @@ class TodoControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.message", containsString("형식이 유효하지 않습니다")));
+    }
+
+    @Test
+    void 월간_달성률_조회할_로그인_사용자_ID가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      Long invalidLonginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String invalidToken = createBearerToken(invalidLonginId);
+
+      given(
+          todoService.findMonthlyCompletions(anyLong(), anyLong(), any(YearMonth.class))).willThrow(
+          new DataNotFoundException(TodoErrorCode.LOGIN_USER_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(get(MONTHLY_PATH)
+          .header(AUTHORIZATION, invalidToken)
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage())));
+    }
+
+    @Test
+    void 월간_달성률_조회할_사용자_ID가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      given(
+          todoService.findMonthlyCompletions(anyLong(), anyLong(), any(YearMonth.class))).willThrow(
+          new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(get(MONTHLY_PATH)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(
+              jsonPath("$.code", is(TodoErrorCode.USER_NOT_EXISTING.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(TodoErrorCode.USER_NOT_EXISTING.getMessage())));
     }
 
   }
