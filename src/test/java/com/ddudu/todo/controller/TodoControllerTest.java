@@ -74,46 +74,6 @@ class TodoControllerTest extends ControllerTestSupport {
     token = createBearerToken(userId);
   }
 
-  private GoalInfo createGoalInfo() {
-    return GoalInfo.builder()
-        .id(1L)
-        .name("dev course")
-        .build();
-  }
-
-  private TodoInfo createTodoInfo() {
-    return TodoInfo.builder()
-        .id(1L)
-        .name("할 일 조회 기능 구현")
-        .status(TodoStatus.UNCOMPLETED)
-        .build();
-  }
-
-  private TodoResponse createTodoResponse() {
-    return TodoResponse.builder()
-        .goalInfo(createGoalInfo())
-        .todoInfo(createTodoInfo())
-        .build();
-  }
-
-  private List<TodoListResponse> createTodoListResponse() {
-    TodoListResponse todolist = TodoListResponse.builder()
-        .goalInfo(createGoalInfo())
-        .todolist(Collections.singletonList(createTodoInfo()))
-        .build();
-
-    return Collections.singletonList(todolist);
-  }
-
-  private List<TodoCompletionResponse> createEmptyTodoCompletionResponseList(
-      LocalDate startDate, int numDays
-  ) {
-    return IntStream.range(0, numDays)
-        .mapToObj(startDate::plusDays)
-        .map(TodoCompletionResponse::createEmptyResponse)
-        .toList();
-  }
-
   @Nested
   class POST_할_일_생성_API_테스트 {
 
@@ -158,20 +118,20 @@ class TodoControllerTest extends ControllerTestSupport {
 
       // when then
       mockMvc.perform(get(
-              PATH, response.todoInfo()
+              PATH, response.todo()
                   .id())
               .header(AUTHORIZATION, token)
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.goalInfo.id").value(response.goalInfo()
+          .andExpect(jsonPath("$.goal.id").value(response.goal()
               .id()))
-          .andExpect(jsonPath("$.goalInfo.name").value(response.goalInfo()
+          .andExpect(jsonPath("$.goal.name").value(response.goal()
               .name()))
-          .andExpect(jsonPath("$.todoInfo.id").value(response.todoInfo()
+          .andExpect(jsonPath("$.todo.id").value(response.todo()
               .id()))
-          .andExpect(jsonPath("$.todoInfo.name").value(response.todoInfo()
+          .andExpect(jsonPath("$.todo.name").value(response.todo()
               .name()))
-          .andExpect(jsonPath("$.todoInfo.status").value(response.todoInfo()
+          .andExpect(jsonPath("$.todo.status").value(response.todo()
               .status()
               .name()));
     }
@@ -232,22 +192,22 @@ class TodoControllerTest extends ControllerTestSupport {
               .param("date", date.toString()))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
-          .andExpect(jsonPath("$[0].goalInfo.id").value(responses.get(0)
-              .goalInfo()
+          .andExpect(jsonPath("$[0].goal.id").value(responses.get(0)
+              .goal()
               .id()))
-          .andExpect(jsonPath("$[0].goalInfo.name").value(responses.get(0)
-              .goalInfo()
+          .andExpect(jsonPath("$[0].goal.name").value(responses.get(0)
+              .goal()
               .name()))
-          .andExpect(jsonPath("$[0].todolist[0].id").value(responses.get(0)
-              .todolist()
+          .andExpect(jsonPath("$[0].todos[0].id").value(responses.get(0)
+              .todos()
               .get(0)
               .id()))
-          .andExpect(jsonPath("$[0].todolist[0].name").value(responses.get(0)
-              .todolist()
+          .andExpect(jsonPath("$[0].todos[0].name").value(responses.get(0)
+              .todos()
               .get(0)
               .name()))
-          .andExpect(jsonPath("$[0].todolist[0].status").value(responses.get(0)
-              .todolist()
+          .andExpect(jsonPath("$[0].todos[0].status").value(responses.get(0)
+              .todos()
               .get(0)
               .status()
               .name()));
@@ -264,22 +224,22 @@ class TodoControllerTest extends ControllerTestSupport {
               .header(AUTHORIZATION, token))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").isArray())
-          .andExpect(jsonPath("$[0].goalInfo.id").value(responses.get(0)
-              .goalInfo()
+          .andExpect(jsonPath("$[0].goal.id").value(responses.get(0)
+              .goal()
               .id()))
-          .andExpect(jsonPath("$[0].goalInfo.name").value(responses.get(0)
-              .goalInfo()
+          .andExpect(jsonPath("$[0].goal.name").value(responses.get(0)
+              .goal()
               .name()))
-          .andExpect(jsonPath("$[0].todolist[0].id").value(responses.get(0)
-              .todolist()
+          .andExpect(jsonPath("$[0].todos[0].id").value(responses.get(0)
+              .todos()
               .get(0)
               .id()))
-          .andExpect(jsonPath("$[0].todolist[0].name").value(responses.get(0)
-              .todolist()
+          .andExpect(jsonPath("$[0].todos[0].name").value(responses.get(0)
+              .todos()
               .get(0)
               .name()))
-          .andExpect(jsonPath("$[0].todolist[0].status").value(responses.get(0)
-              .todolist()
+          .andExpect(jsonPath("$[0].todos[0].status").value(responses.get(0)
+              .todos()
               .get(0)
               .status()
               .name()));
@@ -322,8 +282,8 @@ class TodoControllerTest extends ControllerTestSupport {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(7))
           .andExpect(jsonPath("$[0].date").value("2024-01-01"))
-          .andExpect(jsonPath("$[0].totalTodos").value(0))
-          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+          .andExpect(jsonPath("$[0].totalCount").value(0))
+          .andExpect(jsonPath("$[0].uncompletedCount").value(0));
     }
 
     @Test
@@ -343,8 +303,8 @@ class TodoControllerTest extends ControllerTestSupport {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(7))
           .andExpect(jsonPath("$[0].date").value(mondayDate.toString()))
-          .andExpect(jsonPath("$[0].totalTodos").value(0))
-          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+          .andExpect(jsonPath("$[0].totalCount").value(0))
+          .andExpect(jsonPath("$[0].uncompletedCount").value(0));
     }
 
     @ParameterizedTest
@@ -378,8 +338,8 @@ class TodoControllerTest extends ControllerTestSupport {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(31))
           .andExpect(jsonPath("$[0].date").value("2024-01-01"))
-          .andExpect(jsonPath("$[0].totalTodos").value(0))
-          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+          .andExpect(jsonPath("$[0].totalCount").value(0))
+          .andExpect(jsonPath("$[0].uncompletedCount").value(0));
     }
 
     @Test
@@ -402,8 +362,8 @@ class TodoControllerTest extends ControllerTestSupport {
           .andExpect(jsonPath("$.length()").value(daysInMonth))
           .andExpect(jsonPath("$[0].date").value(yearMonth.atDay(1)
               .toString()))
-          .andExpect(jsonPath("$[0].totalTodos").value(0))
-          .andExpect(jsonPath("$[0].uncompletedTodos").value(0));
+          .andExpect(jsonPath("$[0].totalCount").value(0))
+          .andExpect(jsonPath("$[0].uncompletedCount").value(0));
     }
 
     @ParameterizedTest
@@ -578,20 +538,20 @@ class TodoControllerTest extends ControllerTestSupport {
 
       // when then
       mockMvc.perform(patch(
-              PATH, response.todoInfo()
+              PATH, response.todo()
                   .id())
               .header(AUTHORIZATION, token)
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.goalInfo.id").value(response.goalInfo()
+          .andExpect(jsonPath("$.goal.id").value(response.goal()
               .id()))
-          .andExpect(jsonPath("$.goalInfo.name").value(response.goalInfo()
+          .andExpect(jsonPath("$.goal.name").value(response.goal()
               .name()))
-          .andExpect(jsonPath("$.todoInfo.id").value(response.todoInfo()
+          .andExpect(jsonPath("$.todo.id").value(response.todo()
               .id()))
-          .andExpect(jsonPath("$.todoInfo.name").value(response.todoInfo()
+          .andExpect(jsonPath("$.todo.name").value(response.todo()
               .name()))
-          .andExpect(jsonPath("$.todoInfo.status").value(response.todoInfo()
+          .andExpect(jsonPath("$.todo.status").value(response.todo()
               .status()
               .name()));
     }
@@ -672,6 +632,46 @@ class TodoControllerTest extends ControllerTestSupport {
               jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
+  }
+
+  private GoalInfo createGoalInfo() {
+    return GoalInfo.builder()
+        .id(1L)
+        .name("dev course")
+        .build();
+  }
+
+  private TodoInfo createTodoInfo() {
+    return TodoInfo.builder()
+        .id(1L)
+        .name("할 일 조회 기능 구현")
+        .status(TodoStatus.UNCOMPLETED)
+        .build();
+  }
+
+  private TodoResponse createTodoResponse() {
+    return TodoResponse.builder()
+        .goal(createGoalInfo())
+        .todo(createTodoInfo())
+        .build();
+  }
+
+  private List<TodoListResponse> createTodoListResponse() {
+    TodoListResponse todolist = TodoListResponse.builder()
+        .goal(createGoalInfo())
+        .todos(Collections.singletonList(createTodoInfo()))
+        .build();
+
+    return Collections.singletonList(todolist);
+  }
+
+  private List<TodoCompletionResponse> createEmptyTodoCompletionResponseList(
+      LocalDate startDate, int numDays
+  ) {
+    return IntStream.range(0, numDays)
+        .mapToObj(startDate::plusDays)
+        .map(TodoCompletionResponse::createEmptyResponse)
+        .toList();
   }
 
 }
