@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -533,27 +534,17 @@ class TodoControllerTest extends ControllerTestSupport {
     @Test
     void 할_일_상태_변경을_성공한다() throws Exception {
       // given
-      TodoResponse response = createTodoResponse();
-      given(todoService.updateStatus(anyLong(), anyLong())).willReturn(response);
+      Long todoId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      willDoNothing().given(todoService)
+          .updateStatus(anyLong(), anyLong());
 
       // when then
       mockMvc.perform(patch(
-              PATH, response.todo()
-                  .id())
+              PATH, todoId)
               .header(AUTHORIZATION, token)
               .contentType(MediaType.APPLICATION_JSON))
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$.goal.id").value(response.goal()
-              .id()))
-          .andExpect(jsonPath("$.goal.name").value(response.goal()
-              .name()))
-          .andExpect(jsonPath("$.todo.id").value(response.todo()
-              .id()))
-          .andExpect(jsonPath("$.todo.name").value(response.todo()
-              .name()))
-          .andExpect(jsonPath("$.todo.status").value(response.todo()
-              .status()
-              .name()));
+          .andExpect(status().isNoContent());
     }
 
     @Test
@@ -562,7 +553,9 @@ class TodoControllerTest extends ControllerTestSupport {
       // given
       Long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      given(todoService.updateStatus(anyLong(), anyLong())).willThrow(DataNotFoundException.class);
+      willThrow(new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING))
+          .given(todoService)
+          .updateStatus(anyLong(), anyLong());
 
       // when then
       mockMvc.perform(patch(PATH, invalidId)
