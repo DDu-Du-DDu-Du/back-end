@@ -36,4 +36,10 @@ public class BaseEntity {
     }
   }
 
+  public void undelete() {
+    if (isDeleted) {
+      isDeleted = false;
+    }
+  }
+
 }

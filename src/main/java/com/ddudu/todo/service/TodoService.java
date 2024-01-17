@@ -7,9 +7,12 @@ import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
+import com.ddudu.like.domain.Like;
+import com.ddudu.like.repository.LikeRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.request.UpdateTodoRequest;
+import com.ddudu.todo.dto.response.LikeInfo;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
@@ -43,6 +46,7 @@ public class TodoService {
   private final GoalRepository goalRepository;
   private final UserRepository userRepository;
   private final FollowingRepository followingRepository;
+  private final LikeRepository likeRepository;
 
   @Transactional
   public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
@@ -84,15 +88,13 @@ public class TodoService {
         .collect(Collectors.groupingBy(todo -> todo.getGoal()
             .getId()));
 
-    return goals.stream()
-        .map(goal -> {
-          List<TodoInfo> todoInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
-              .stream()
-              .map(TodoInfo::from)
-              .toList();
+    Map<Long, List<Like>> likesByTodo = likeRepository.findByTodos(todos)
+        .stream()
+        .collect(Collectors.groupingBy(like -> like.getTodo()
+            .getId()));
 
-          return TodoListResponse.from(goal, todoInfos);
-        })
+    return goals.stream()
+        .map(goal -> mapGoalToTodoListResponse(goal, todosByGoal, likesByTodo))
         .toList();
   }
 
@@ -225,6 +227,27 @@ public class TodoService {
     }
 
     return List.of(PrivacyType.PUBLIC);
+  }
+
+  private TodoListResponse mapGoalToTodoListResponse(
+      Goal goal, Map<Long, List<Todo>> todosByGoal, Map<Long, List<Like>> likesByTodo
+  ) {
+    List<TodoInfo> todoInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
+        .stream()
+        .map(todo -> mapTodoToTodoInfoWithLikes(todo, likesByTodo))
+        .toList();
+
+    return TodoListResponse.from(goal, todoInfos);
+  }
+
+  private TodoInfo mapTodoToTodoInfoWithLikes(Todo todo, Map<Long, List<Like>> likesByTodo) {
+    List<Long> likedUsers = likesByTodo.getOrDefault(todo.getId(), Collections.emptyList())
+        .stream()
+        .map(like -> like.getUser()
+            .getId())
+        .toList();
+
+    return TodoInfo.from(todo, LikeInfo.from(likedUsers));
   }
 
 }
