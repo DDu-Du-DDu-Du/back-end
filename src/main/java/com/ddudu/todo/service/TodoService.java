@@ -139,14 +139,12 @@ public class TodoService {
   }
 
   @Transactional
-  public TodoResponse updateStatus(Long loginId, Long id) {
+  public void updateStatus(Long loginId, Long id) {
     Todo todo = findTodo(id, TodoErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, todo);
 
     todo.switchStatus();
-
-    return TodoResponse.from(todo);
   }
 
   @Transactional
