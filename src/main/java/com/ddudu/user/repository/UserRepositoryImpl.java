@@ -1,9 +1,12 @@
 package com.ddudu.user.repository;
 
+import static com.ddudu.following.domain.QFollowing.following;
 import static com.ddudu.user.domain.QUser.user;
 
+import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.UserSearchType;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -31,6 +34,19 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     }
 
     return query.fetch();
+  }
+
+  public List<User> findFolloweesOfUser(User follower) {
+    BooleanBuilder whereClause = new BooleanBuilder();
+
+    whereClause.and(following.follower.eq(follower))
+        .and(following.status.eq(FollowingStatus.FOLLOWING));
+
+    return jpaQueryFactory
+        .select(following.followee)
+        .from(following)
+        .where(whereClause)
+        .fetch();
   }
 
 }

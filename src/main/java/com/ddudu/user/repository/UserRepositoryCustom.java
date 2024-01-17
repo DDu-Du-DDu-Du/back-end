@@ -8,4 +8,6 @@ public interface UserRepositoryCustom {
 
   List<User> findAllByKeywordAndSearchType(String keyword, UserSearchType userSearchType);
 
+  List<User> findFolloweesOfUser(User follower);
+
 }

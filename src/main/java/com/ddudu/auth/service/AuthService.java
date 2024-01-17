@@ -12,7 +12,6 @@ import com.ddudu.config.properties.JwtProperties;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.dto.response.UserResponse;
 import com.ddudu.user.repository.UserRepository;
 import java.time.Duration;
 import java.util.HashMap;

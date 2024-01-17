@@ -1,8 +1,9 @@
-package com.ddudu.common.annotation;
+package com.ddudu.common.resolver;
 
 import static com.ddudu.auth.exception.AuthErrorCode.INVALID_AUTHENTICATION;
 
 import com.ddudu.auth.jwt.JwtAuthToken;
+import com.ddudu.common.annotation.Login;
 import com.ddudu.common.exception.InvalidAuthenticationException;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;

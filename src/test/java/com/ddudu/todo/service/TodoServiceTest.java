@@ -11,6 +11,8 @@ import com.ddudu.following.service.FollowingService;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
+import com.ddudu.like.domain.Like;
+import com.ddudu.like.repository.LikeRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
@@ -64,6 +66,9 @@ class TodoServiceTest {
 
   @Autowired
   FollowingService followingService;
+
+  @Autowired
+  LikeRepository likeRepository;
 
   @Autowired
   EntityManager entityManager;
@@ -252,6 +257,37 @@ class TodoServiceTest {
       // then
       assertThat(responses).hasSize(0);
       assertThat(goal.getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
+    }
+
+    @Test
+    void 주어진_날짜에_할_일_리스트_및_좋아요_조회를_성공한다() {
+      // given
+      Goal goal = createGoal(goalName, user);
+      Todo todo = createTodo(name, goal, user);
+      todo.switchStatus();
+
+      LocalDate date = LocalDate.now();
+
+      User other = createUser();
+      Like like = createLike(other, todo);
+
+      // when
+      List<TodoListResponse> responses = todoService.findAllByDate(
+          user.getId(), user.getId(), date);
+
+      // then
+      assertThat(responses).hasSize(1);
+
+      TodoListResponse response = responses.get(0);
+      assertThat(response.todolist()).hasSize(1);
+
+      TodoInfo todoInfo = responses.get(0)
+          .todolist()
+          .get(0);
+      assertThat(todoInfo.likes()
+          .count()).isEqualTo(1);
+      assertThat(todoInfo.likes()
+          .users()).containsExactly(other.getId());
     }
 
     @Test
@@ -722,6 +758,14 @@ class TodoServiceTest {
         .build();
 
     return userRepository.save(user);
+  }
+
+  private Like createLike(User user, Todo todo) {
+    Like like = Like.builder()
+        .user(user)
+        .todo(todo)
+        .build();
+    return likeRepository.save(like);
   }
 
   private void flushAndClearPersistence() {
