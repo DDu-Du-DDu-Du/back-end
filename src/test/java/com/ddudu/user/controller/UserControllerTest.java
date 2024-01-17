@@ -649,7 +649,7 @@ class UserControllerTest extends ControllerTestSupport {
       UsersResponse response = new UsersResponse(
           1, List.of(new SimpleUserDto(followeeId, anotherNickname)));
 
-      given(userService.findFollowees(anyLong(), anyLong()))
+      given(userService.findFollowees(anyLong()))
           .willReturn(response);
 
       // when
@@ -804,7 +804,7 @@ class UserControllerTest extends ControllerTestSupport {
       FollowingResponse response = new FollowingResponse(
           followingId, loginId, followeeId, FollowingStatus.FOLLOWING);
 
-      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willReturn(response);
 
       // when
@@ -824,7 +824,7 @@ class UserControllerTest extends ControllerTestSupport {
       // given
       UpdateFollowingRequest request = new UpdateFollowingRequest(null);
 
-      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willReturn(new FollowingResponse(followingId, null, null, null));
 
       // when
@@ -844,7 +844,7 @@ class UserControllerTest extends ControllerTestSupport {
       // given
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
 
-      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willThrow(new BadRequestException(FollowingErrorCode.REQUEST_UNAVAILABLE));
 
       // when
@@ -880,7 +880,7 @@ class UserControllerTest extends ControllerTestSupport {
       // given
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
-      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER));
 
       // when
@@ -900,7 +900,7 @@ class UserControllerTest extends ControllerTestSupport {
       // given
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
-      given(followingService.updateStatus(anyLong(), any(UpdateFollowingRequest.class)))
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
           .willThrow(new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
 
       // when
@@ -939,7 +939,7 @@ class UserControllerTest extends ControllerTestSupport {
     void 팔로잉_삭제를_성공하고_204_No_Content를_반환한다() throws Exception {
       // given
       willDoNothing().given(followingService)
-          .delete(anyLong());
+          .delete(anyLong(), anyLong());
 
       // when
       ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
@@ -953,7 +953,7 @@ class UserControllerTest extends ControllerTestSupport {
     void 로그인한_사용자가_없으면_401_Unauthorized를_반환한다() throws Exception {
       // given
       willDoNothing().given(followingService)
-          .delete(anyLong());
+          .delete(anyLong(), anyLong());
 
       // when
       ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
@@ -968,7 +968,7 @@ class UserControllerTest extends ControllerTestSupport {
     void 로그인한_사용자와_요청의_사용자가_다를_경우_403_Forbidden을_반환한다() throws Exception {
       // given
       willDoNothing().given(followingService)
-          .delete(anyLong());
+          .delete(anyLong(), anyLong());
 
       // when
       ResultActions actions = mockMvc.perform(delete(PATH, followingId, followingId)
@@ -985,7 +985,7 @@ class UserControllerTest extends ControllerTestSupport {
       // given
       willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER))
           .given(followingService)
-          .delete(anyLong());
+          .delete(anyLong(), anyLong());
 
       // when
       ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)

@@ -138,7 +138,7 @@ public class UserController {
   ) {
     checkAuthority(loginId, id);
 
-    UsersResponse responses = userService.findFollowees(loginId, id);
+    UsersResponse responses = userService.findFollowees(id);
 
     return ResponseEntity.ok(responses);
   }
