@@ -2,7 +2,6 @@ package com.ddudu.user.controller;
 
 import com.ddudu.common.annotation.Login;
 import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
@@ -12,9 +11,10 @@ import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.FollowingResponse;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.ToggleOptionResponse;
+import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.service.FollowingService;
 import com.ddudu.user.service.UserService;
@@ -55,17 +55,17 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> getById(
+  public ResponseEntity<UserProfileResponse> getById(
       @PathVariable
       Long id
   ) {
-    UserResponse response = userService.findById(id);
+    UserProfileResponse response = userService.findById(id);
 
     return ResponseEntity.ok(response);
   }
 
   @PatchMapping("/{id}/email")
-  public ResponseEntity<UserResponse> updateEmail(
+  public ResponseEntity<UpdateEmailResponse> updateEmail(
       @Login
       Long loginId,
       @PathVariable
@@ -76,7 +76,7 @@ public class UserController {
   ) {
     checkAuthority(loginId, id);
 
-    UserResponse response = userService.updateEmail(id, request);
+    UpdateEmailResponse response = userService.updateEmail(id, request);
 
     return ResponseEntity.ok(response);
   }
@@ -127,6 +127,20 @@ public class UserController {
     ToggleOptionResponse response = userService.switchOption(id);
 
     return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{id}/followees")
+  public ResponseEntity<UsersResponse> getFollowees(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id
+  ) {
+    checkAuthority(loginId, id);
+
+    UsersResponse responses = userService.findFollowees(loginId, id);
+
+    return ResponseEntity.ok(responses);
   }
 
   @PostMapping("/{id}/followings")

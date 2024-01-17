@@ -10,11 +10,13 @@ import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.ToggleOptionResponse;
+import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,8 +65,7 @@ public class UserService {
     return UserProfileResponse.from(user);
   }
 
-  @Transactional
-  public UserResponse updateEmail(Long userId, UpdateEmailRequest request) {
+  public UpdateEmailResponse updateEmail(Long userId, UpdateEmailRequest request) {
     User user = findUser(userId);
     String newEmail = request.email();
 
@@ -75,7 +76,7 @@ public class UserService {
     verifyUniqueEmail(newEmail);
     user.applyEmailUpdate(newEmail);
 
-    return UserResponse.from(user);
+    return new UpdateEmailResponse(newEmail.getAddress());
   }
 
   @Transactional
@@ -87,10 +88,18 @@ public class UserService {
     return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
   }
 
-  public UserResponse findById(Long userId) {
+  public UserProfileResponse findById(Long userId) {
     User user = findUser(userId);
 
-    return UserResponse.from(user);
+    return UserProfileResponse.from(user);
+  }
+
+  public UsersResponse findFollowees(Long id) {
+    User user = findUser(id);
+
+    List<User> followees = userRepository.findFolloweesOfUser(user);
+
+    return UsersResponse.from(followees);
   }
 
   @Transactional
