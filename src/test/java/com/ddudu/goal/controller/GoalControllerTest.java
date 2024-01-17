@@ -7,20 +7,17 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidParameterException;
-import com.ddudu.config.JwtConfig;
-import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
@@ -30,61 +27,35 @@ import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.service.GoalService;
-import com.ddudu.support.TestProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ddudu.support.ControllerTestSupport;
 import java.util.List;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@WebMvcTest(controllers = GoalController.class)
-@Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
-@DisplayNameGeneration(ReplaceUnderscores.class)
-class GoalControllerTest {
+@WebMvcTest(GoalController.class)
+class GoalControllerTest extends ControllerTestSupport {
 
   static final Faker faker = new Faker();
-  static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
-      .build();
-  static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
-      .claim("auth", Authority.NORMAL);
-
-  @Autowired
-  private MockMvc mockMvc;
-  @Autowired
-  private ObjectMapper objectMapper;
-  @Autowired
-  private JwtEncoder jwtEncoder;
 
   @MockBean
-  private GoalService goalService;
+  GoalService goalService;
 
-  private String validName;
-  private Long validUserId;
-  private String token;
-
-  private String validColor;
-  private PrivacyType validPrivacy;
+  String validName;
+  Long validUserId;
+  String token;
+  String validColor;
+  PrivacyType validPrivacy;
 
   @BeforeEach
   void setUp() {
@@ -102,6 +73,8 @@ class GoalControllerTest {
   @Nested
   class POST_목표_생성_API_테스트 {
 
+    static final String PATH = "/api/goals";
+
     @Test
     void 목표_생성에_성공하면_201_Created_응답을_반환한다() throws Exception {
       // given
@@ -114,16 +87,14 @@ class GoalControllerTest {
           .willReturn(response);
 
       // when
-      ResultActions actions = mockMvc.perform(
-          post("/api/goals")
-              .header("Authorization", token)
-              .content(objectMapper.writeValueAsString(request))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions actions = mockMvc.perform(post(PATH)
+          .header(AUTHORIZATION, token)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       actions.andExpect(status().isCreated())
-          .andExpect(header().string("location", is("/api/goals/" + goalId)))
+          .andExpect(header().string("location", PATH + "/" + goalId))
           .andExpect(jsonPath("$.id").value(response.id()))
           .andExpect(jsonPath("$.name").value(response.name()))
           .andExpect(jsonPath("$.color").value(response.color()));
@@ -134,12 +105,10 @@ class GoalControllerTest {
     void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(String cause, CreateGoalRequest request, String message)
         throws Exception {
       // when
-      ResultActions actions = mockMvc.perform(
-          post("/api/goals")
-              .header("Authorization", token)
-              .content(objectMapper.writeValueAsString(request))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions actions = mockMvc.perform(post(PATH)
+          .header(AUTHORIZATION, token)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       actions.andExpect(status().isBadRequest())
@@ -159,12 +128,9 @@ class GoalControllerTest {
           """;
 
       // when
-      ResultActions action = mockMvc.perform(
-          post("/api/goals")
-              .header("Authorization", token)
-              .content(invalidRequestJson)
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(post(PATH).header(AUTHORIZATION, token)
+          .content(invalidRequestJson)
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isBadRequest())
@@ -185,12 +151,10 @@ class GoalControllerTest {
           .willThrow(new InvalidParameterException(GoalErrorCode.INVALID_COLOR_FORMAT));
 
       // when
-      ResultActions action = mockMvc.perform(
-          post("/api/goals")
-              .header("Authorization", token)
-              .content(objectMapper.writeValueAsString(request))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(post(PATH)
+          .header(AUTHORIZATION, token)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action
@@ -207,11 +171,9 @@ class GoalControllerTest {
       CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacy);
 
       // when
-      ResultActions action = mockMvc.perform(
-          post("/api/goals")
-              .content(objectMapper.writeValueAsString(request))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(post(PATH)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isUnauthorized());
@@ -228,12 +190,10 @@ class GoalControllerTest {
           .willThrow(new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
       // when
-      ResultActions action = mockMvc.perform(
-          post("/api/goals")
-              .header("Authorization", createBearerToken(invalidId))
-              .content(objectMapper.writeValueAsString(request))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(post(PATH)
+          .header(AUTHORIZATION, createBearerToken(invalidId))
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action
@@ -279,6 +239,8 @@ class GoalControllerTest {
   @Nested
   class GET_단일_목표_조회_API_테스트 {
 
+    static final String PATH = "/api/goals/{id}";
+
     @Test
     void 목표_조회에_성공하면_200_OK를_반환하다() throws Exception {
       // given
@@ -287,11 +249,9 @@ class GoalControllerTest {
       given(goalService.findById(anyLong(), anyLong())).willReturn(response);
 
       // when
-      ResultActions action = mockMvc.perform(
-          get("/api/goals/{id}", response.id())
-              .header("Authorization", token)
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(get(PATH, response.id())
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isOk())
@@ -314,11 +274,9 @@ class GoalControllerTest {
           .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
       // when
-      ResultActions action = mockMvc.perform(
-          get("/api/goals/{id}", invalidId)
-              .header("Authorization", token)
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(get(PATH, invalidId)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isNotFound())
@@ -340,11 +298,9 @@ class GoalControllerTest {
           .willThrow(new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY));
 
       // when
-      ResultActions action = mockMvc.perform(
-          get("/api/goals/{id}", id)
-              .header("Authorization", token)
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(get(PATH, id)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isForbidden())
@@ -372,6 +328,8 @@ class GoalControllerTest {
   @Nested
   class GET_전체_목표_조회_API_테스트 {
 
+    static final String PATH = "/api/goals";
+
     @Test
     void 사용자의_전체_목표_조회에_성공하면_200_OK를_반환한다() throws Exception {
       // given
@@ -381,12 +339,10 @@ class GoalControllerTest {
       given(goalService.findAllByUser(anyLong(), anyLong())).willReturn(response);
 
       // when
-      ResultActions action = mockMvc.perform(
-          get("/api/goals")
-              .header("Authorization", token)
-              .param("userId", "1")
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(get(PATH)
+          .header(AUTHORIZATION, token)
+          .param("userId", "1")
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isOk())
@@ -407,12 +363,10 @@ class GoalControllerTest {
           new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
       // when
-      ResultActions action = mockMvc.perform(
-          get("/api/goals")
-              .header("Authorization", token)
-              .queryParam("userId", String.valueOf(invalidUserId))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(get(PATH)
+          .header(AUTHORIZATION, token)
+          .queryParam("userId", String.valueOf(invalidUserId))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action
@@ -433,12 +387,10 @@ class GoalControllerTest {
           new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY));
 
       // when
-      ResultActions action = mockMvc.perform(
-          get("/api/goals")
-              .header("Authorization", token)
-              .queryParam("userId", String.valueOf(validUserId))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(get(PATH)
+          .header(AUTHORIZATION, token)
+          .queryParam("userId", String.valueOf(validUserId))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action
@@ -467,7 +419,9 @@ class GoalControllerTest {
   @Nested
   class PUT_목표_수정_API_테스트 {
 
-    private GoalStatus goalStatus;
+    static final String PATH = "/api/goals/{id}";
+
+    GoalStatus goalStatus;
 
     @BeforeEach
     void setUp() {
@@ -488,12 +442,10 @@ class GoalControllerTest {
           .willReturn(response);
 
       // when
-      ResultActions action = mockMvc.perform(
-          put("/api/goals/{id}", goalId)
-              .header("Authorization", token)
-              .content(objectMapper.writeValueAsString(request))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(put(PATH, goalId)
+          .header(AUTHORIZATION, token)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isOk())
@@ -515,12 +467,10 @@ class GoalControllerTest {
           .nextLong();
 
       // when
-      ResultActions actions = mockMvc.perform(
-          put("/api/goals/{id}", goalId)
-              .header("Authorization", token)
-              .content(objectMapper.writeValueAsString(request))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions actions = mockMvc.perform(put(PATH, goalId)
+          .header(AUTHORIZATION, token)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       actions.andExpect(status().isBadRequest())
@@ -541,12 +491,10 @@ class GoalControllerTest {
           """;
 
       // when
-      ResultActions action = mockMvc.perform(
-          put("/api/goals/{id}", 1L)
-              .header("Authorization", createBearerToken(validUserId))
-              .content(invalidRequestJson)
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(put(PATH, 1L)
+          .header(AUTHORIZATION, createBearerToken(validUserId))
+          .content(invalidRequestJson)
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isBadRequest())
@@ -570,12 +518,10 @@ class GoalControllerTest {
           """, invalidPrivacyType);
 
       // when
-      ResultActions action = mockMvc.perform(
-          put("/api/goals/{id}", 1L)
-              .header("Authorization", token)
-              .content(invalidRequestJson)
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(put(PATH, 1L)
+          .header(AUTHORIZATION, token)
+          .content(invalidRequestJson)
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isBadRequest())
@@ -597,12 +543,10 @@ class GoalControllerTest {
           new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
       // when
-      ResultActions action = mockMvc.perform(
-          put("/api/goals/{id}", invalidId)
-              .header("Authorization", token)
-              .content(objectMapper.writeValueAsString(request))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(put(PATH, invalidId)
+          .header(AUTHORIZATION, token)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action
@@ -627,12 +571,9 @@ class GoalControllerTest {
           new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY));
 
       // when
-      ResultActions action = mockMvc.perform(
-          put("/api/goals/{id}", goalId)
-              .header("Authorization", token)
-              .content(objectMapper.writeValueAsString(request))
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(put(PATH, goalId).header(AUTHORIZATION, token)
+          .content(objectMapper.writeValueAsString(request))
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action
@@ -699,6 +640,8 @@ class GoalControllerTest {
   @Nested
   class DELETE_목표_삭제_API_테스트 {
 
+    static final String PATH = "/api/goals/{id}";
+
     @Test
     void 목표_삭제에_성공하면_204_No_Content를_반환한다() throws Exception {
       // given
@@ -709,11 +652,9 @@ class GoalControllerTest {
           .delete(anyLong(), anyLong());
 
       // when
-      ResultActions action = mockMvc.perform(
-          delete("/api/goals/{id}", goalId)
-              .header("Authorization", token)
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(delete(PATH, goalId)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action.andExpect(status().isNoContent());
@@ -722,8 +663,6 @@ class GoalControllerTest {
     @Test
     void 로그인_사용자에게_권한이_없으면_403_Forbidden을_반환한다() throws Exception {
       // given
-      Long invalidUserId = faker.random()
-          .nextLong();
       Long goalId = faker.random()
           .nextLong();
 
@@ -731,11 +670,9 @@ class GoalControllerTest {
           .delete(anyLong(), anyLong());
 
       // when
-      ResultActions action = mockMvc.perform(
-          delete("/api/goals/{id}", goalId)
-              .header("Authorization", token)
-              .contentType(MediaType.APPLICATION_JSON)
-      );
+      ResultActions action = mockMvc.perform(delete(PATH, goalId)
+          .header(AUTHORIZATION, token)
+          .contentType(MediaType.APPLICATION_JSON));
 
       // then
       action
@@ -746,14 +683,6 @@ class GoalControllerTest {
               .value(containsString(GoalErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
-  }
-
-  private String createBearerToken(Long userId) {
-    JwtClaimsSet claims = claimSet.claim("user", userId)
-        .build();
-    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-
-    return "Bearer " + jwt.getTokenValue();
   }
 
   private static PrivacyType provideRandomPrivacy() {

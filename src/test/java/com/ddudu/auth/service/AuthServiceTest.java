@@ -106,8 +106,8 @@ class AuthServiceTest {
     @Test
     void 로그인을_성공하고_JWT를_발급받는다() {
       // given
-      String nickname = faker.funnyName()
-          .name();
+      String nickname = faker.internet()
+          .username();
       User user = User.builder()
           .email(email)
           .password(password)

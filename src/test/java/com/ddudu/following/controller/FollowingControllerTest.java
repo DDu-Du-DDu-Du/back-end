@@ -6,80 +6,46 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.config.JwtConfig;
-import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.following.dto.request.FollowRequest;
 import com.ddudu.following.dto.request.UpdateFollowingRequest;
 import com.ddudu.following.dto.response.FollowingResponse;
 import com.ddudu.following.exception.FollowingErrorCode;
 import com.ddudu.following.service.FollowingService;
-import com.ddudu.support.TestProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ddudu.support.ControllerTestSupport;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @WebMvcTest(FollowingController.class)
-@Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
-@DisplayNameGeneration(ReplaceUnderscores.class)
-class FollowingControllerTest {
+class FollowingControllerTest extends ControllerTestSupport {
 
   static final Faker faker = new Faker();
-  static final JwsHeader header = JwsHeader.with(MacAlgorithm.HS512)
-      .build();
-  static final JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
-      .claim("auth", Authority.NORMAL);
 
   @MockBean
   FollowingService followingService;
 
-  @Autowired
-  ObjectMapper objectMapper;
-
-  @Autowired
-  MockMvc mockMvc;
-
-  @Autowired
-  JwtEncoder jwtEncoder;
-
-  private String createBearerToken(long userId) {
-    JwtClaimsSet claims = claimSet.claim("user", userId)
-        .build();
-    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(header, claims));
-    return "Bearer " + jwt.getTokenValue();
-  }
-
   @Nested
   class POST_팔로잉_신청_API_테스트 {
+
+    static final String PATH = "/api/followings";
 
     Long followerId;
     Long followeeId;
@@ -98,7 +64,7 @@ class FollowingControllerTest {
       FollowRequest request = new FollowRequest(followeeId);
 
       // when
-      ResultActions actions = mockMvc.perform(post("/api/followings")
+      ResultActions actions = mockMvc.perform(post(PATH)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -117,8 +83,8 @@ class FollowingControllerTest {
           .willThrow(new DataNotFoundException(FollowingErrorCode.FOLLOWEE_NOT_EXISTING));
 
       // when
-      ResultActions actions = mockMvc.perform(post("/api/followings")
-          .header("Authorization", token)
+      ResultActions actions = mockMvc.perform(post(PATH)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -144,20 +110,22 @@ class FollowingControllerTest {
           .willReturn(response);
 
       // when
-      ResultActions actions = mockMvc.perform(post("/api/followings")
-          .header("Authorization", token)
+      ResultActions actions = mockMvc.perform(post(PATH)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
       // then
       actions.andExpect(status().isCreated())
-          .andExpect(header().string("location", is("/api/followings/1")));
+          .andExpect(header().string("location", is(PATH + "/1")));
     }
 
   }
 
   @Nested
   class PUT_팔로잉_수정_API_테스트 {
+
+    static final String PATH = "/api/followings/{id}";
 
     long randomId;
     String token;
@@ -178,8 +146,8 @@ class FollowingControllerTest {
           .willReturn(new FollowingResponse(randomId, null, null, null));
 
       // when
-      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
-          .header("Authorization", token)
+      ResultActions actions = mockMvc.perform(put(PATH, randomId)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -198,8 +166,8 @@ class FollowingControllerTest {
           .willThrow(new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
 
       // when
-      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
-          .header("Authorization", token)
+      ResultActions actions = mockMvc.perform(put(PATH, randomId)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -218,8 +186,8 @@ class FollowingControllerTest {
           .willThrow(new BadRequestException(FollowingErrorCode.REQUEST_UNAVAILABLE));
 
       // when
-      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
-          .header("Authorization", token)
+      ResultActions actions = mockMvc.perform(put(PATH, randomId)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -239,8 +207,8 @@ class FollowingControllerTest {
           .willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER));
 
       // when
-      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
-          .header("Authorization", token)
+      ResultActions actions = mockMvc.perform(put(PATH, randomId)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -265,8 +233,8 @@ class FollowingControllerTest {
           .willReturn(response);
 
       // when
-      ResultActions actions = mockMvc.perform(put("/api/followings/{id}", randomId)
-          .header("Authorization", token)
+      ResultActions actions = mockMvc.perform(put(PATH, randomId)
+          .header(AUTHORIZATION, token)
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(request)));
 
@@ -281,28 +249,28 @@ class FollowingControllerTest {
   @Nested
   class DELETE_팔로잉_삭제_API_테스트 {
 
+    static final String PATH = "/api/followings/{id}";
+
     long randomId;
     String token;
+    MockHttpServletRequestBuilder requestBuilder;
 
     @BeforeEach
     void setUp() {
       randomId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       token = createBearerToken(randomId);
     }
 
     @Test
     void 팔로잉_삭제를_성공하고_204_No_Content를_반환한다() throws Exception {
       // given
-      long followingId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-
       willDoNothing().given(followingService)
           .delete(anyLong(), anyLong());
 
       // when
-      ResultActions actions = mockMvc.perform(delete("/api/followings/{id}", followingId)
-          .header("Authorization", token));
+      ResultActions actions = mockMvc.perform(delete(PATH, randomId)
+          .header(AUTHORIZATION, token));
 
       // then
       actions.andExpect(status().isNoContent());
@@ -319,8 +287,8 @@ class FollowingControllerTest {
           .delete(anyLong(), anyLong());
 
       // when
-      ResultActions actions = mockMvc.perform(delete("/api/followings/{id}", followingId)
-          .header("Authorization", token));
+      ResultActions actions = mockMvc.perform(delete(PATH, followingId)
+          .header(AUTHORIZATION, token));
 
       // then
       actions.andExpect(status().isForbidden())
