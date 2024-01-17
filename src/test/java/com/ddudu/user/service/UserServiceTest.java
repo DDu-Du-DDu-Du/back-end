@@ -8,16 +8,21 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.common.exception.InvalidTokenException;
+import com.ddudu.following.domain.Following;
+import com.ddudu.following.domain.FollowingStatus;
+import com.ddudu.following.repository.FollowingRepository;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
+import com.ddudu.user.dto.SimpleUserDto;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.ToggleOptionResponse;
-import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.dto.response.UserProfileResponse;
+import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Objects;
@@ -55,6 +60,9 @@ class UserServiceTest {
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  FollowingRepository followingRepository;
 
   @Autowired
   PasswordEncoder passwordEncoder;
@@ -171,7 +179,7 @@ class UserServiceTest {
       User expected = createUser(null, null, null);
 
       // when
-      UserResponse actual = userService.findById(expected.getId());
+      UserProfileResponse actual = userService.findById(expected.getId());
 
       // then
       assertThat(actual.id()).isEqualTo(expected.getId());
@@ -461,6 +469,83 @@ class UserServiceTest {
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(toggleOption)
           .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+  }
+
+  @Nested
+  class 팔로이_조회_테스트 {
+
+    @Test
+    void 팔로이_조회를_성공한다() {
+      // given
+      User user = createUser(null, null, null);
+      User followee = createUser(null, null, null);
+      createFollowing(user, followee, null);
+
+      // when
+      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
+
+      // then
+      SimpleUserDto expected = SimpleUserDto.from(followee);
+      assertThat(actual.counts()).isEqualTo(1);
+      assertThat(actual.users()).containsOnly(expected);
+    }
+
+    @Test
+    void 요청됨이나_무시_상태가_아닌_팔로잉만_조회한다() {
+      // given
+      User user = createUser(null, null, null);
+      User requestedFollowee = createUser(null, null, null);
+      User rejectedFollowee = createUser(null, null, null);
+      createFollowing(user, requestedFollowee, FollowingStatus.REQUESTED);
+      createFollowing(user, rejectedFollowee, FollowingStatus.IGNORED);
+
+      // when
+      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
+
+      // then
+      assertThat(actual.users()).isEmpty();
+    }
+
+    @Test
+    void 로그인_사용자와_요청의_사용자가_다르면_조회_실패한다() {
+      // given
+      long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      long invalidId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, invalidId);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findFollowees)
+          .withMessage(UserErrorCode.INVALID_AUTHORITY.getMessage());
+    }
+
+    @Test
+    void 사용자가_존재하지_않으면_조회를_실패한다() {
+      // given
+      long loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, loginId);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findFollowees)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+    private Following createFollowing(User follower, User followee, FollowingStatus status) {
+      Following following = Following.builder()
+          .follower(follower)
+          .followee(followee)
+          .status(Objects.nonNull(status) ? status : null)
+          .build();
+
+      return followingRepository.save(following);
     }
 
   }

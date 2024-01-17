@@ -1,5 +1,7 @@
 package com.ddudu.user.controller;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasValue;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -19,18 +21,21 @@ import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
+import com.ddudu.user.dto.SimpleUserDto;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.ToggleOptionResponse;
+import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
-import com.ddudu.user.dto.response.UserResponse;
+import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +59,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @WebMvcTest(UserController.class)
 @Import({WebSecurityConfig.class, TestProperties.class, JwtConfig.class})
@@ -258,9 +264,8 @@ class UserControllerTest {
       // given
       long userId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      UserResponse expected = UserResponse.builder()
+      UserProfileResponse expected = UserProfileResponse.builder()
           .id(userId)
-          .email(email)
           .nickname(nickname)
           .build();
 
@@ -351,11 +356,7 @@ class UserControllerTest {
       String newEmail = faker.internet()
           .emailAddress();
       UpdateEmailRequest request = new UpdateEmailRequest(newEmail);
-      UserResponse response = UserResponse.builder()
-          .id(userId)
-          .email(request.email())
-          .nickname(nickname)
-          .build();
+      UpdateEmailResponse response = new UpdateEmailResponse(newEmail);
 
       given(userService.updateEmail(anyLong(), anyLong(), any(UpdateEmailRequest.class)))
           .willReturn(response);
@@ -457,14 +458,6 @@ class UserControllerTest {
     String introduction;
     Long userId;
 
-    @BeforeEach
-    void setUp() {
-      introduction = faker.book()
-          .title();
-      userId = faker.random()
-          .nextLong();
-    }
-
     static Stream<Arguments> provideUpdateProfileRequestAndStrings() {
       String nickname = faker.funnyName()
           .name();
@@ -492,6 +485,14 @@ class UserControllerTest {
               "자기소개는 최대 50자 입니다."
           )
       );
+    }
+
+    @BeforeEach
+    void setUp() {
+      introduction = faker.book()
+          .title();
+      userId = faker.random()
+          .nextLong();
     }
 
     @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
@@ -627,6 +628,82 @@ class UserControllerTest {
       // when
       ResultActions actions = mockMvc.perform(patch("/api/users/{id}/options", userId)
           .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code").value(UserErrorCode.ID_NOT_EXISTING.getCode()))
+          .andExpect(jsonPath("$.message").value(UserErrorCode.ID_NOT_EXISTING.getMessage()));
+    }
+
+  }
+
+  @Nested
+  class GET_팔로이_조회_API_테스트 {
+
+    Long loginId;
+    MockHttpServletRequestBuilder requestBuilder;
+
+    @BeforeEach
+    void setUp() {
+      loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      requestBuilder = get(
+          "/api/users/{id}/followees", loginId);
+    }
+
+    @Test
+    void 로그인_사용자의_팔로이_조회를_성공하고_200_OK를_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(loginId);
+      long followeeId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String anotherNickname = faker.funnyName()
+          .name();
+      UsersResponse response = new UsersResponse(
+          1, List.of(new SimpleUserDto(followeeId, anotherNickname)));
+
+      given(userService.findFollowees(anyLong(), anyLong()))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(requestBuilder.header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.counts").value(1))
+          .andExpect(jsonPath("$.users").value(hasSize(1)))
+          .andExpect(jsonPath("$.users.[0]").value(hasValue(followeeId)));
+    }
+
+    @Test
+    void 로그인한_사용자와_요청의_사용자가_다르면_403_Forbidden을_반환한다() throws Exception {
+      // given
+      long invalidId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String token = createBearerToken(invalidId);
+
+      given(userService.findFollowees(anyLong(), anyLong()))
+          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
+
+      // when
+      ResultActions actions = mockMvc.perform(requestBuilder.header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code").value(UserErrorCode.INVALID_AUTHORITY.getCode()))
+          .andExpect(jsonPath("$.message").value(UserErrorCode.INVALID_AUTHORITY.getMessage()));
+    }
+
+    @Test
+    void 존재하지_않는_사용자일_경우_404_Not_Found를_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(loginId);
+
+      given(userService.findFollowees(anyLong(), anyLong()))
+          .willThrow(new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(requestBuilder.header("Authorization", token));
 
       // then
       actions.andExpect(status().isNotFound())
