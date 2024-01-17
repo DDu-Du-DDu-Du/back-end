@@ -1,6 +1,6 @@
-package com.ddudu.following.repository;
+package com.ddudu.user.repository;
 
-import com.ddudu.following.domain.Following;
+import com.ddudu.user.domain.Following;
 import com.ddudu.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

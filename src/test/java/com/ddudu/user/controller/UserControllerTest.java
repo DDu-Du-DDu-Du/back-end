@@ -6,6 +6,9 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -14,22 +17,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.support.ControllerTestSupport;
+import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.dto.SimpleUserDto;
+import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
+import com.ddudu.user.dto.request.UpdateFollowingRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.user.dto.request.UpdateProfileRequest;
+import com.ddudu.user.dto.response.FollowingResponse;
 import com.ddudu.user.dto.response.SignUpResponse;
 import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UpdateEmailResponse;
 import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UsersResponse;
+import com.ddudu.user.exception.FollowingErrorCode;
 import com.ddudu.user.exception.UserErrorCode;
+import com.ddudu.user.service.FollowingService;
 import com.ddudu.user.service.UserService;
 import java.util.List;
 import java.util.stream.Stream;
@@ -42,6 +52,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -52,6 +63,9 @@ class UserControllerTest extends ControllerTestSupport {
 
   @MockBean
   UserService userService;
+
+  @MockBean
+  FollowingService followingService;
 
   String email;
   String password;
@@ -163,7 +177,7 @@ class UserControllerTest extends ControllerTestSupport {
     }
 
     @Test
-    void 이메일이_존재하면_400_Bad_Request를_반환한다() throws Exception {
+    void 이메일이_존재하면_409_Conflict를_반환한다() throws Exception {
       // given
       SignUpRequest request = new SignUpRequest(null, email, password, nickname, null);
 
@@ -176,12 +190,12 @@ class UserControllerTest extends ControllerTestSupport {
           .content(objectMapper.writeValueAsString(request)));
 
       // then
-      actions.andExpect(status().isBadRequest())
+      actions.andExpect(status().isConflict())
           .andExpect(jsonPath("$.code", is(UserErrorCode.DUPLICATE_EMAIL.getCode())));
     }
 
     @Test
-    void 선택_아이디가_존재하면_400_Bad_Request를_반환한다() throws Exception {
+    void 선택_아이디가_존재하면_409_Conflict를_반환한다() throws Exception {
       // given
       String username = faker.name()
           .firstName();
@@ -196,7 +210,7 @@ class UserControllerTest extends ControllerTestSupport {
           .content(objectMapper.writeValueAsString(request)));
 
       // then
-      actions.andExpect(status().isBadRequest())
+      actions.andExpect(status().isConflict())
           .andExpect(jsonPath("$.code", is(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getCode())));
     }
 
@@ -333,7 +347,7 @@ class UserControllerTest extends ControllerTestSupport {
       UpdateEmailRequest request = new UpdateEmailRequest(newEmail);
       UpdateEmailResponse response = new UpdateEmailResponse(newEmail);
 
-      given(userService.updateEmail(anyLong(), anyLong(), any(UpdateEmailRequest.class)))
+      given(userService.updateEmail(anyLong(), any(UpdateEmailRequest.class)))
           .willReturn(response);
 
       // when
@@ -413,7 +427,7 @@ class UserControllerTest extends ControllerTestSupport {
       String successMessage = "비밀번호가 성공적으로 변경되었습니다.";
       UpdatePasswordResponse response = new UpdatePasswordResponse(successMessage);
 
-      given(userService.updatePassword(anyLong(), anyLong(), any(UpdatePasswordRequest.class)))
+      given(userService.updatePassword(anyLong(), any(UpdatePasswordRequest.class)))
           .willReturn(response);
 
       // when
@@ -498,7 +512,7 @@ class UserControllerTest extends ControllerTestSupport {
           .nextLong();
       UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
 
-      given(userService.updateProfile(anyLong(), anyLong(), any(UpdateProfileRequest.class)))
+      given(userService.updateProfile(anyLong(), any(UpdateProfileRequest.class)))
           .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
 
       // when
@@ -523,7 +537,7 @@ class UserControllerTest extends ControllerTestSupport {
           .introduction(introduction)
           .build();
 
-      given(userService.updateProfile(anyLong(), anyLong(), any(UpdateProfileRequest.class)))
+      given(userService.updateProfile(anyLong(), any(UpdateProfileRequest.class)))
           .willReturn(response);
 
       // when
@@ -560,7 +574,7 @@ class UserControllerTest extends ControllerTestSupport {
       String token = createBearerToken(userId);
       ToggleOptionResponse response = new ToggleOptionResponse(userId, true);
 
-      given(userService.switchOption(anyLong(), anyLong()))
+      given(userService.switchOption(anyLong()))
           .willReturn(response);
 
       // when
@@ -581,8 +595,8 @@ class UserControllerTest extends ControllerTestSupport {
           .nextLong(Long.MAX_VALUE);
       String token = createBearerToken(randomId);
 
-      given(userService.switchOption(anyLong(), anyLong()))
-          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHENTICATION));
+      given(userService.switchOption(anyLong()))
+          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
 
       // when
       ResultActions actions = mockMvc.perform(patch(PATH, userId)
@@ -590,9 +604,9 @@ class UserControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code").value(UserErrorCode.INVALID_AUTHENTICATION.getCode()))
+          .andExpect(jsonPath("$.code").value(UserErrorCode.INVALID_AUTHORITY.getCode()))
           .andExpect(
-              jsonPath("$.message").value(UserErrorCode.INVALID_AUTHENTICATION.getMessage()));
+              jsonPath("$.message").value(UserErrorCode.INVALID_AUTHORITY.getMessage()));
     }
 
     @Test
@@ -600,7 +614,7 @@ class UserControllerTest extends ControllerTestSupport {
       // given
       String token = createBearerToken(userId);
 
-      given(userService.switchOption(anyLong(), anyLong()))
+      given(userService.switchOption(anyLong()))
           .willThrow(new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
       // when
@@ -660,9 +674,6 @@ class UserControllerTest extends ControllerTestSupport {
       long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
 
-      given(userService.findFollowees(anyLong(), anyLong()))
-          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
-
       // when
       ResultActions actions = mockMvc.perform(get(PATH, invalidId)
           .header(AUTHORIZATION, token));
@@ -687,6 +698,308 @@ class UserControllerTest extends ControllerTestSupport {
       actions.andExpect(status().isNotFound())
           .andExpect(jsonPath("$.code").value(UserErrorCode.ID_NOT_EXISTING.getCode()))
           .andExpect(jsonPath("$.message").value(UserErrorCode.ID_NOT_EXISTING.getMessage()));
+    }
+
+  }
+
+  @Nested
+  class POST_팔로잉_신청_API_테스트 {
+
+    static final String PATH = "/api/users/{id}/followings";
+
+    Long loginId;
+    Long followeeId;
+
+    @BeforeEach
+    void setUp() {
+      loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      followeeId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+    }
+
+    @Test
+    void 팔로잉_신청을_성공하고_200_OK를_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(loginId);
+      FollowRequest request = new FollowRequest(followeeId);
+      FollowingResponse response = FollowingResponse.builder()
+          .id(1L)
+          .followerId(loginId)
+          .followeeId(followeeId)
+          .build();
+
+      given(followingService.create(anyLong(), any(FollowRequest.class)))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(post(PATH, loginId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isCreated())
+          .andExpect(header().string("location", is("/api/users/" + loginId + "/followings")));
+    }
+
+    @Test
+    void 로그인한_사용자가_없으면_401_Unauthorized를_반환한다() throws Exception {
+      // given
+      FollowRequest request = new FollowRequest(followeeId);
+
+      // when
+      ResultActions actions = mockMvc.perform(post(PATH, loginId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isUnauthorized())
+          .andExpect(header().string(HttpHeaders.WWW_AUTHENTICATE, "Bearer"));
+    }
+
+    @Test
+    void 팔로잉_대상_사용자가_존재하지_않으면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      String token = createBearerToken(loginId);
+      FollowRequest request = new FollowRequest(followeeId);
+
+      given(followingService.create(anyLong(), any(FollowRequest.class)))
+          .willThrow(new DataNotFoundException(FollowingErrorCode.FOLLOWEE_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(post(PATH, loginId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.FOLLOWEE_NOT_EXISTING.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(FollowingErrorCode.FOLLOWEE_NOT_EXISTING.getMessage())));
+    }
+
+  }
+
+  @Nested
+  class PUT_팔로잉_수정_API_테스트 {
+
+    static final String PATH = "/api/users/{id}/followings/{followingId}";
+
+    long loginId;
+    long followingId;
+    String token;
+
+    @BeforeEach
+    void setUp() {
+      loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      followingId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      token = createBearerToken(loginId);
+    }
+
+    @Test
+    void 팔로잉_상태_변경을_성공하고_200_OK를_반환한다() throws Exception {
+      // given
+      long followeeId = faker.random()
+          .nextLong();
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+      FollowingResponse response = new FollowingResponse(
+          followingId, loginId, followeeId, FollowingStatus.FOLLOWING);
+
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
+          .willReturn(response);
+
+      // when
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.id", is(followingId)))
+          .andExpect(jsonPath("$.status", is(FollowingStatus.FOLLOWING.name())));
+    }
+
+    @Test
+    void 요청시_팔로잉_상태가_누락되면_400_Bad_Request를_반환한다() throws Exception {
+      // given
+      UpdateFollowingRequest request = new UpdateFollowingRequest(null);
+
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
+          .willReturn(new FollowingResponse(followingId, null, null, null));
+
+      // when
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.[0].code", is(1)))
+          .andExpect(jsonPath("$.[0].message", is("요청할 팔로잉 상태는 필수값입니다.")));
+    }
+
+    @Test
+    void 요청_상태로_수정_시도_시_400_Bad_Request를_반환한다() throws Exception {
+      // given
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
+
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
+          .willThrow(new BadRequestException(FollowingErrorCode.REQUEST_UNAVAILABLE));
+
+      // when
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.REQUEST_UNAVAILABLE.getCode())))
+          .andExpect(
+              jsonPath("$.message", is(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage())));
+    }
+
+    @Test
+    void 로그인한_사용자가_없으면_401_Unauthorized를_반환한다() throws Exception {
+      // given
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.REQUESTED);
+
+      // when
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isUnauthorized())
+          .andExpect(header().string(HttpHeaders.WWW_AUTHENTICATE, "Bearer"));
+    }
+
+    @Test
+    void 로그인한_사용자와_팔로잉의_주인이_다르면_403_Forbidden을_반환한다() throws Exception {
+      // given
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
+          .willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER));
+
+      // when
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.WRONG_OWNER.getCode())))
+          .andExpect(jsonPath("$.message", is(FollowingErrorCode.WRONG_OWNER.getMessage())));
+    }
+
+    @Test
+    void 존재하지_않는_팔로잉_아이디면_404_Not_Found를_반환한다() throws Exception {
+      // given
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+
+      given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
+          .willThrow(new DataNotFoundException(FollowingErrorCode.ID_NOT_EXISTING));
+
+      // when
+      ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
+          .header("Authorization", token)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(request)));
+
+      // then
+      actions.andExpect(status().isNotFound())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.ID_NOT_EXISTING.getCode())))
+          .andExpect(jsonPath("$.message", is(FollowingErrorCode.ID_NOT_EXISTING.getMessage())));
+    }
+
+  }
+
+  @Nested
+  class DELETE_팔로잉_삭제_API_테스트 {
+
+    static final String PATH = "/api/users/{id}/followings/{followingId}";
+
+    long loginId;
+    long followingId;
+    String token;
+
+    @BeforeEach
+    void setUp() {
+      loginId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      followingId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      token = createBearerToken(loginId);
+    }
+
+    @Test
+    void 팔로잉_삭제를_성공하고_204_No_Content를_반환한다() throws Exception {
+      // given
+      willDoNothing().given(followingService)
+          .delete(anyLong(), anyLong());
+
+      // when
+      ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isNoContent());
+    }
+
+    @Test
+    void 로그인한_사용자가_없으면_401_Unauthorized를_반환한다() throws Exception {
+      // given
+      willDoNothing().given(followingService)
+          .delete(anyLong(), anyLong());
+
+      // when
+      ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
+          .contentType(MediaType.APPLICATION_JSON));
+
+      // then
+      actions.andExpect(status().isUnauthorized())
+          .andExpect(header().string(HttpHeaders.WWW_AUTHENTICATE, "Bearer"));
+    }
+
+    @Test
+    void 로그인한_사용자와_요청의_사용자가_다를_경우_403_Forbidden을_반환한다() throws Exception {
+      // given
+      willDoNothing().given(followingService)
+          .delete(anyLong(), anyLong());
+
+      // when
+      ResultActions actions = mockMvc.perform(delete(PATH, followingId, followingId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(UserErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(UserErrorCode.INVALID_AUTHORITY.getMessage())));
+    }
+
+    @Test
+    void 로그인한_사용자와_팔로워가_다를_경우_403_Forbidden을_반환한다() throws Exception {
+      // given
+      willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER))
+          .given(followingService)
+          .delete(anyLong(), anyLong());
+
+      // when
+      ResultActions actions = mockMvc.perform(delete(PATH, loginId, followingId)
+          .header("Authorization", token));
+
+      // then
+      actions.andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.WRONG_OWNER.getCode())))
+          .andExpect(jsonPath("$.message", is(FollowingErrorCode.WRONG_OWNER.getMessage())));
     }
 
   }

@@ -3,7 +3,6 @@ package com.ddudu.user.service;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.Password;
@@ -68,11 +67,7 @@ public class UserService {
   }
 
   @Transactional
-  public UserProfileResponse updateProfile(Long loginId, Long id, UpdateProfileRequest request) {
-    if (loginId != id) {
-      throw new ForbiddenException(UserErrorCode.INVALID_AUTHORITY);
-    }
-
+  public UserProfileResponse updateProfile(Long id, UpdateProfileRequest request) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
@@ -81,11 +76,7 @@ public class UserService {
     return UserProfileResponse.from(user);
   }
 
-  public UpdateEmailResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
-    if (!loginId.equals(userId)) {
-      throw new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION);
-    }
-
+  public UpdateEmailResponse updateEmail(Long userId, UpdateEmailRequest request) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
     Email newEmail = new Email(request.email());
@@ -105,13 +96,7 @@ public class UserService {
   }
 
   @Transactional
-  public UpdatePasswordResponse updatePassword(
-      Long loginId, Long userId, UpdatePasswordRequest request
-  ) {
-    if (!loginId.equals(userId)) {
-      throw new InvalidTokenException(UserErrorCode.INVALID_AUTHENTICATION);
-    }
-
+  public UpdatePasswordResponse updatePassword(Long userId, UpdatePasswordRequest request) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
     Password password = user.getPassword();
@@ -147,12 +132,8 @@ public class UserService {
   }
 
   @Transactional
-  public ToggleOptionResponse switchOption(Long loginId, Long id) {
-    if (!loginId.equals(id)) {
-      throw new ForbiddenException(UserErrorCode.INVALID_AUTHENTICATION);
-    }
-
-    User user = userRepository.findById(loginId)
+  public ToggleOptionResponse switchOption(Long id) {
+    User user = userRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
     Options options = user.getOptions();
 

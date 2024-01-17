@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,7 +16,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 @Slf4j
-public class GeneralExceptionHandler {
+public class GlobalExceptionHandler {
 
   private static final int INVALID_INPUT_CODE = 1;
   private static final int INVALID_INPUT_TYPE_CODE = 2;
@@ -78,6 +79,7 @@ public class GeneralExceptionHandler {
     ErrorResponse response = ErrorResponse.from(e);
 
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .header(HttpHeaders.WWW_AUTHENTICATE, "Bearer")
         .body(response);
   }
 
@@ -100,6 +102,18 @@ public class GeneralExceptionHandler {
     ErrorResponse response = ErrorResponse.from(e);
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(response);
+  }
+
+  @ExceptionHandler(DuplicateResourceException.class)
+  public ResponseEntity<ErrorResponse> handleDuplicateResourceException(
+      DuplicateResourceException e
+  ) {
+    log.warn(e.getMessage(), e);
+
+    ErrorResponse response = ErrorResponse.from(e);
+
+    return ResponseEntity.status(HttpStatus.CONFLICT)
         .body(response);
   }
 
