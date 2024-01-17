@@ -76,7 +76,7 @@ public class UserService {
     return UserProfileResponse.from(user);
   }
 
-  public UpdateEmailResponse updateEmail(Long loginId, Long userId, UpdateEmailRequest request) {
+  public UpdateEmailResponse updateEmail(Long userId, UpdateEmailRequest request) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
     Email newEmail = new Email(request.email());

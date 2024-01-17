@@ -674,9 +674,6 @@ class UserControllerTest extends ControllerTestSupport {
       long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
 
-      willDoNothing().given(userService)
-          .findFollowees(anyLong(), anyLong());
-
       // when
       ResultActions actions = mockMvc.perform(get(PATH, invalidId)
           .header(AUTHORIZATION, token));

@@ -76,7 +76,7 @@ public class UserController {
   ) {
     checkAuthority(loginId, id);
 
-    UpdateEmailResponse response = userService.updateEmail(loginId, id, request);
+    UpdateEmailResponse response = userService.updateEmail(id, request);
 
     return ResponseEntity.ok(response);
   }
