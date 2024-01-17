@@ -433,14 +433,12 @@ class TodoServiceTest {
       TodoStatus beforeUpdated = todo.getStatus();
 
       // when
-      TodoResponse response = todoService.updateStatus(user.getId(), todo.getId());
+      todoService.updateStatus(user.getId(), todo.getId());
 
       // then
-      assertThat(response).extracting(
-              "goal.id", "goal.name", "todo.id", "todo.name")
-          .containsExactly(goal.getId(), goal.getName(), todo.getId(), todo.getName());
-      assertThat(response.todo()
-          .status()).isNotEqualTo(beforeUpdated);
+      Optional<Todo> actual = todoRepository.findById(todo.getId());
+      assertThat(actual.get()
+          .getStatus()).isNotEqualTo(beforeUpdated);
     }
 
     @Test
