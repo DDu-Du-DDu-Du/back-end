@@ -82,9 +82,9 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
         .map(result -> TodoCompletionResponse.builder()
             .date(result.get(0, LocalDateTime.class)
                 .toLocalDate())
-            .totalTodos(result.get(1, Long.class)
+            .totalCount(result.get(1, Long.class)
                 .intValue())
-            .uncompletedTodos(result.get(2, Long.class)
+            .uncompletedCount(result.get(2, Long.class)
                 .intValue())
             .build())
         .toList();

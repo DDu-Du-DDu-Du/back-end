@@ -6,14 +6,14 @@ import lombok.Builder;
 
 @Builder
 public record TodoListResponse(
-    GoalInfo goalInfo,
-    List<TodoInfo> todolist
+    GoalInfo goal,
+    List<TodoInfo> todos
 ) {
 
   public static TodoListResponse from(Goal goal, List<TodoInfo> todos) {
     return TodoListResponse.builder()
-        .goalInfo(GoalInfo.from(goal))
-        .todolist(todos)
+        .goal(GoalInfo.from(goal))
+        .todos(todos)
         .build();
   }
 
