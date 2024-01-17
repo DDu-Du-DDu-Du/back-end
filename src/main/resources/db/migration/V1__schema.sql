@@ -67,3 +67,18 @@ CREATE TABLE IF NOT EXISTS followings
     CONSTRAINT fk_follower_id FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+-- Likes
+CREATE TABLE IF NOT EXISTS likes
+(
+    id         BIGINT      AUTO_INCREMENT,
+    user_id    BIGINT      NOT NULL,
+    todo_id    BIGINT      NOT NULL,
+    created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted TINYINT(1)  NOT NULL DEFAULT 0,
+    CONSTRAINT pk_like_id PRIMARY KEY (id),
+    CONSTRAINT fk_like_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_like_todo_id FOREIGN KEY (todo_id) REFERENCES todo (id) ON DELETE CASCADE
+);
+
