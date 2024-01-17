@@ -1,4 +1,4 @@
-package com.ddudu.following.exception;
+package com.ddudu.user.exception;
 
 import com.ddudu.common.exception.ErrorCode;
 

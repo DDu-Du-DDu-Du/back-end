@@ -1,4 +1,4 @@
-package com.ddudu.following.dto.request;
+package com.ddudu.user.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 

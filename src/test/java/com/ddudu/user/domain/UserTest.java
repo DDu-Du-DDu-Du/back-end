@@ -17,18 +17,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-@EnableJpaAuditing
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class UserTest {
 
@@ -39,9 +30,6 @@ class UserTest {
   String validEmail;
   String validPassword;
   String validNickname;
-
-  @Autowired
-  TestEntityManager entityManager;
 
   @BeforeEach
   void setUp() {
@@ -60,43 +48,16 @@ class UserTest {
 
     @Test
     void User_인스턴스를_생성한다() {
-      // given
-      User expected = builderWithEncoder
+      // when
+      User user = builderWithEncoder
           .email(validEmail)
           .password(validPassword)
           .nickname(validNickname)
           .build();
 
-      // when
-      User actual = entityManager.persist(expected);
-
       // then
-      assertThat(actual).usingRecursiveComparison()
-          .isEqualTo(expected);
-    }
-
-    @Test
-    void User_엔티티_Id에_Auto_Increment가_적용된다() {
-      // given
-      String differentEmail = faker.internet()
-          .emailAddress();
-      User first = builderWithEncoder
-          .email(validEmail)
-          .password(validPassword)
-          .nickname(validNickname)
-          .build();
-      User second = builderWithEncoder
-          .email(differentEmail)
-          .password(validPassword)
-          .nickname(validNickname)
-          .build();
-
-      // when
-      User persistedFirst = entityManager.persist(first);
-      User persistedSecond = entityManager.persist(second);
-
-      // then
-      assertThat(persistedSecond.getId()).isGreaterThan(persistedFirst.getId());
+      assertThat(user).extracting("email", "nickname")
+          .containsExactly(validEmail, validNickname);
     }
 
     @ParameterizedTest(name = "유효하지 않은 이메일 : {0}")

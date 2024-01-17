@@ -5,8 +5,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.following.dto.request.FollowRequest;
-import com.ddudu.following.service.FollowingService;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
@@ -23,7 +21,9 @@ import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.todo.repository.TodoRepository;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.service.FollowingService;
 import jakarta.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
