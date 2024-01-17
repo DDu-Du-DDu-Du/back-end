@@ -11,6 +11,7 @@ import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
+import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -24,9 +25,9 @@ import com.ddudu.user.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
+import org.apache.logging.log4j.util.Strings;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -186,39 +187,59 @@ class UserServiceTest {
   @Nested
   class 사용자_검색_테스트 {
 
-    String keyword;
-    String emailWithKeyword;
-    String nicknameWithKeyword;
-    String optionalUsernameWithKeyword;
+    String email;
+    String optionalUsername;
 
     @BeforeEach
     void setUp() {
-      keyword = faker.lorem()
-          .word();
-      emailWithKeyword = faker.internet()
-          .emailAddress(keyword);
-      nicknameWithKeyword = createWordWithKeyword(keyword);
-      optionalUsernameWithKeyword = createWordWithKeyword(keyword);
+      email = faker.internet()
+          .emailAddress();
+      optionalUsername = faker.internet()
+          .username();
+
+      createUser(email, null, null);
+      createUser(null, nickname, null);
+      createUser(null, null, optionalUsername);
     }
 
     @Test
-    void 사용자_검색에_성공한다() {
-      // given
-      User user1 = createUser(emailWithKeyword, null, null);
-      User user2 = createUser(null, nicknameWithKeyword, null);
-      User user3 = createUser(null, null, optionalUsernameWithKeyword);
-      createUser(null, null, null);
-
+    void 이메일로_사용자_검색에_성공한다() {
       // when
-      List<UserProfileResponse> actual = userService.findAllByKeyword(keyword);
+      List<UserProfileResponse> searched = userService.search(email, UserSearchType.EMAIL);
 
       // then
-      UserProfileResponse profile1 = UserProfileResponse.from(user1);
-      UserProfileResponse profile2 = UserProfileResponse.from(user2);
-      UserProfileResponse profile3 = UserProfileResponse.from(user3);
+      assertThat(searched).hasSize(1);
+      User actual = userRepository.findById(searched.get(0)
+              .id())
+          .get();
+      assertThat(actual
+          .getEmail()).isEqualTo(email);
+    }
 
-      assertThat(actual).hasSize(3);
-      assertThat(actual).contains(profile1, profile2, profile3);
+    @Test
+    void 아이디로_사용자_검색에_성공한다() {
+      // when
+      List<UserProfileResponse> searched = userService.search(
+          optionalUsername, UserSearchType.OPTIONAL_USERNAME);
+
+      // then
+      assertThat(searched).hasSize(1);
+      User actual = userRepository.findById(searched.get(0)
+              .id())
+          .get();
+      assertThat(actual
+          .getOptionalUsername()).isEqualTo(optionalUsername);
+    }
+
+    @Test
+    void 닉네임으로_사용자_검색에_성공한다() {
+      // when
+      List<UserProfileResponse> searched = userService.search(nickname, UserSearchType.NICKNAME);
+
+      // then
+      assertThat(searched).hasSize(1);
+      assertThat(searched.get(0)
+          .nickname()).isEqualTo(nickname);
     }
 
     @ParameterizedTest(name = "{0}일 때, 빈 리스트를 응답한다.")
@@ -230,22 +251,38 @@ class UserServiceTest {
       createUser(email, null, null);
 
       // when
-      List<UserProfileResponse> actual = userService.findAllByKeyword(keyword);
+      List<UserProfileResponse> actual = userService.search(keyword, UserSearchType.EMAIL);
 
       // then
       assertThat(actual).isEmpty();
     }
 
-    public static String createWordWithKeyword(String keyword) {
-      Faker faker = new Faker();
-      Random random = new Random();
+    @Test
+    void 검색_유형이_입력되지_않은_경우_키워드가_이메일_형식이면_이메일로_검색한다() {
+      // when
+      List<UserProfileResponse> searched = userService.search(email, null);
 
-      String randomWord = faker.lorem()
-          .word();
-      int insertPosition = random.nextInt(randomWord.length() + 1);
+      // then
+      assertThat(searched).hasSize(1);
+      User actual = userRepository.findById(searched.get(0)
+              .id())
+          .get();
+      assertThat(actual
+          .getEmail()).isEqualTo(email);
+    }
 
-      return randomWord.substring(0, insertPosition) + keyword + randomWord.substring(
-          insertPosition);
+    @Test
+    void 검색_유형이_입력되지_않은_경우_키워드가_이메일_형식이_아니면_아이디로_검색한다() {
+      // when
+      List<UserProfileResponse> searched = userService.search(optionalUsername, null);
+
+      // then
+      assertThat(searched).hasSize(1);
+      User actual = userRepository.findById(searched.get(0)
+              .id())
+          .get();
+      assertThat(actual
+          .getOptionalUsername()).isEqualTo(optionalUsername);
     }
 
     private User createUser(String email, String nickname, String optionalUsername) {
@@ -254,16 +291,16 @@ class UserServiceTest {
             .emailAddress();
       }
 
-      if (Objects.isNull(nickname)) {
-        nickname = faker.funnyName()
-            .name();
+      if (Strings.isBlank(nickname)) {
+        nickname = faker.internet()
+            .username();
       }
 
       User user = builderWithEncoder
           .email(email)
           .password(password)
           .nickname(nickname)
-          .optionalUsername(optionalUsername)
+          .optionalUsername(Objects.nonNull(optionalUsername) ? optionalUsername : null)
           .build();
 
       return userRepository.save(user);

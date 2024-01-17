@@ -1,5 +1,6 @@
 package com.ddudu.user.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -20,6 +21,7 @@ import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.config.JwtConfig;
 import com.ddudu.config.WebSecurityConfig;
 import com.ddudu.support.TestProperties;
+import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -43,6 +45,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -299,31 +302,20 @@ class UserControllerTest {
   @Nested
   class GET_사용자_검색_API_테스트 {
 
-    String introduction;
-    String keyword;
-
-    @BeforeEach
-    void setUp() {
-      introduction = faker.book()
-          .title();
-      keyword = faker.lorem()
-          .word();
-    }
-
-    @Test
-    void 사용자_검색을_성공하고_200_OK를_반환한다() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"NICKNAME", "EMAIL", "OPTIONAL_USERNAME"})
+    void 사용자_검색을_성공하고_200_OK를_반환한다(String searchType) throws Exception {
       // given
-      String nickname = faker.funnyName()
-          .name();
       UserProfileResponse profile = createUserProfile(nickname);
       List<UserProfileResponse> expected = List.of(profile);
 
-      given(userService.findAllByKeyword(anyString())).willReturn(expected);
+      given(userService.search(anyString(), any(UserSearchType.class))).willReturn(expected);
 
       // when
       ResultActions actions = mockMvc.perform(
           get("/api/users")
-              .queryParam("keyword", keyword)
+              .queryParam("keyword", nickname)
+              .queryParam("searchType", searchType)
               .contentType(MediaType.APPLICATION_JSON)
       );
 
@@ -335,9 +327,32 @@ class UserControllerTest {
           .andExpect(jsonPath("$[0].introduction").value(profile.introduction()));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid search type", "nickname"})
+    void 유효하지_않은_검색_유형이_입력된_경우_400_Bad_Request_응답을_반환한다(String searchType) throws Exception {
+      // given
+      String keyword = faker.lorem()
+          .word();
+
+      // when
+      ResultActions actions = mockMvc.perform(
+          get("/api/users")
+              .queryParam("keyword", keyword)
+              .queryParam("searchType", searchType)
+              .contentType(MediaType.APPLICATION_JSON)
+      );
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("searchType의 형식이 유효하지 않습니다.")));
+    }
+
     private UserProfileResponse createUserProfile(String nickname) {
       Long id = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
+      String introduction = faker.book()
+          .title();
 
       return new UserProfileResponse(id, nickname, introduction);
     }
