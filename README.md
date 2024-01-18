@@ -60,6 +60,7 @@
 # 🛠 기술 스택
 **개발 환경 (Environment)** 
 
+<img src="https://img.shields.io/badge/IntelliJ IDEA-8A3391?style=flat-square&logo=IntelliJ IDEA&logoColor=black&style=flat"/></a>
 <img src="https://img.shields.io/badge/Java17-007396?style=flat-square&logo=Java&logoColor=white&style=flat"/></a>
 <img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=Gradle&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Spring Boot 3.2.0-6DB33F?style=flat-square&logo=Spring&logoColor=white&style=flat"/></a>
@@ -74,20 +75,19 @@
 <img src="https://img.shields.io/badge/Checkstyle-ECD53F?style=flat-square&logo=Checkstyle&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Jacoco-BE312E?style=flat-square&logo=Jacoco&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white"/></a>
+<img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=GitHub-Actions&logoColor=white"/></a>
 
 
-**협업 툴(Tools))** 
+**협업 툴(Tools)** 
 
 <img src="https://img.shields.io/badge/Notion-FFFFFF?style=flat-square&logo=Notion&logoColor=black"/></a>
+<img src="https://img.shields.io/badge/Jira-0052CC?style=flat-square&logo=Jira%20software&logoColor=white&style=flat"/></a>
 <img src="https://img.shields.io/badge/slack-232F3E?style=flat-square&logo=slack&logoColor=white&style=flat"/></a>
 <img src="https://img.shields.io/badge/Github-000000?style=flat-square&logo=Github&logoColor=white&style=flat"/></a>
-<img src="https://img.shields.io/badge/Jira-0052CC?style=flat-square&logo=Jira%20software&logoColor=white&style=flat"/></a>
-<img src="https://img.shields.io/badge/IntelliJ IDEA-8A3391?style=flat-square&logo=IntelliJ IDEA&logoColor=black&style=flat"/></a>
-<img src="https://img.shields.io/badge/ERDCloud-4429A7?style=flat-square&logoColor=white&style=flat"/></a>
-<img src="https://img.shields.io/badge/REST Docs-8CA1AF?style=flat-square&logo=Read the Docs&logoColor=white&style=flat"/></a>
-<img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=GitHub-Actions&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Miro-FFFC00?style=flat-square&logo=Miro&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=Miro&logoColor=white"/></a>
+<img src="https://img.shields.io/badge/REST Docs-8CA1AF?style=flat-square&logo=Read the Docs&logoColor=white&style=flat"/></a>
+<img src="https://img.shields.io/badge/ERDCloud-4429A7?style=flat-square&logoColor=white&style=flat"/></a>
 
 </br>
 
