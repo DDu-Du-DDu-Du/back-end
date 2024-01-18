@@ -52,11 +52,12 @@ public class Following extends BaseEntity {
     this.status = Objects.requireNonNullElse(status, FollowingStatus.FOLLOWING);
   }
 
-  public boolean isOwnedBy(Long followerId) {
-    Long ownerId = this.follower
-        .getId();
+  public boolean isRequestedTo(User user) {
+    return  Objects.equals(followee, user);
+  }
 
-    return Objects.equals(followerId, ownerId);
+  public boolean isOwnedBy(User owner) {
+    return Objects.equals(follower, owner);
   }
 
   public void updateStatus(FollowingStatus status) {
