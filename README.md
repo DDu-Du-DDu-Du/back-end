@@ -1,3 +1,5 @@
+![header](https://capsule-render.vercel.app/api?type=Venom&color=FCFBF7&height=300&section=header&text=DDUDU-DDUDU&fontSize=90&fontColor=0D1B46)
+
 # 뚜두뚜두 - Todomate 클론 코딩
 친구와 함께하는 일정 관리, 뚜두뚜두
 
@@ -57,7 +59,7 @@
 
 # 🛠 기술 스택
 **개발 환경 (Environment)** 
-<div align="center">
+
 <img src="https://img.shields.io/badge/Java17-007396?style=flat-square&logo=Java&logoColor=white&style=flat"/></a>
 <img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=Gradle&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Spring Boot 3.2.0-6DB33F?style=flat-square&logo=Spring&logoColor=white&style=flat"/></a>
@@ -72,11 +74,10 @@
 <img src="https://img.shields.io/badge/Checkstyle-ECD53F?style=flat-square&logo=Checkstyle&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Jacoco-BE312E?style=flat-square&logo=Jacoco&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white"/></a>
-</div>
 
 
-**협업 툴(Tools))**
-<div align="center">
+**협업 툴(Tools))** 
+
 <img src="https://img.shields.io/badge/Notion-FFFFFF?style=flat-square&logo=Notion&logoColor=black"/></a>
 <img src="https://img.shields.io/badge/slack-232F3E?style=flat-square&logo=slack&logoColor=white&style=flat"/></a>
 <img src="https://img.shields.io/badge/Github-000000?style=flat-square&logo=Github&logoColor=white&style=flat"/></a>
@@ -87,16 +88,15 @@
 <img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=GitHub-Actions&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Miro-FFFC00?style=flat-square&logo=Miro&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=Miro&logoColor=white"/></a>
-</div>
 
 </br>
 
-# ERD
+# 📑 ERD
 <a href="https://www.erdcloud.com/d/4t2Mw7NWc3oQWHJFj">![8e34a73ddd7480e93e65aef06c51bfdd](https://github.com/DDu-Du-DDu-Du/back-end/assets/80446430/411ee228-8132-47f6-8dcf-06168f504714)</a>
 
 </br>
 
-# API 문서
+# 📑 API 문서
 [API 문서 링크](https://www.notion.so/backend-devcourse/API-6cb6547166074620a868f77eba674030?pvs=4)
 
 </br>
