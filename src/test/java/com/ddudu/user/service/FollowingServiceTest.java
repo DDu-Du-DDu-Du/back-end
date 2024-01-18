@@ -222,7 +222,7 @@ class FollowingServiceTest {
     void 존재하지_않는_사용자면_실패한다() {
       // given
       long invalidId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
       // when
@@ -239,7 +239,7 @@ class FollowingServiceTest {
       // given
       User follower = createUser();
       long invalidId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
       // when
