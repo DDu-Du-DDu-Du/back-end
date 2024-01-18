@@ -12,7 +12,8 @@ public enum FollowingErrorCode implements ErrorCode {
   NULL_STATUS_REQUESTED(6007, "요청할 팔로잉 상태는 필수값입니다."),
   ID_NOT_EXISTING(6008, "해당 아이디의 팔로잉이 존재하지 않습니다."),
   REQUEST_UNAVAILABLE(6009, "이미 생성된 팔로잉을 요청 상태로 변경할 수 없습니다."),
-  WRONG_OWNER(6010, "해당 사용자가 생성한 팔로잉이 아닙니다.");
+  WRONG_OWNER(6010, "해당 사용자가 생성한 팔로잉이 아닙니다."),
+  NOT_ENGAGED_USER(6011, "해당 사용자와 관련되지 않은 팔로잉 요청입니다.");
 
   private final int code;
   private final String message;

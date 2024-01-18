@@ -876,12 +876,12 @@ class UserControllerTest extends ControllerTestSupport {
     }
 
     @Test
-    void 로그인한_사용자와_팔로잉의_주인이_다르면_403_Forbidden을_반환한다() throws Exception {
+    void 로그인한_사용자와_받은_팔로잉이_아니면_403_Forbidden을_반환한다() throws Exception {
       // given
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
-          .willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER));
+          .willThrow(new ForbiddenException(FollowingErrorCode.NOT_ENGAGED_USER));
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
@@ -891,8 +891,8 @@ class UserControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code", is(FollowingErrorCode.WRONG_OWNER.getCode())))
-          .andExpect(jsonPath("$.message", is(FollowingErrorCode.WRONG_OWNER.getMessage())));
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.NOT_ENGAGED_USER.getCode())))
+          .andExpect(jsonPath("$.message", is(FollowingErrorCode.NOT_ENGAGED_USER.getMessage())));
     }
 
     @Test
