@@ -7,7 +7,6 @@ import com.ddudu.following.domain.FollowingStatus;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.UserSearchType;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -24,16 +23,18 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
   @Override
   public List<User> findAllByKeywordAndSearchType(String keyword, UserSearchType userSearchType) {
-    JPAQuery<User> query = jpaQueryFactory
-        .selectFrom(user);
+    BooleanBuilder whereClause = new BooleanBuilder();
 
     switch (userSearchType) {
-      case EMAIL -> query.where(user.email.address.eq(keyword));
-      case NICKNAME -> query.where(user.nickname.eq(keyword));
-      case OPTIONAL_USERNAME -> query.where(user.optionalUsername.eq(keyword));
+      case EMAIL -> whereClause.and(user.email.address.eq(keyword));
+      case NICKNAME -> whereClause.and(user.nickname.eq(keyword));
+      case OPTIONAL_USERNAME -> whereClause.and(user.optionalUsername.eq(keyword));
     }
 
-    return query.fetch();
+    return jpaQueryFactory
+        .selectFrom(user)
+        .where(whereClause)
+        .fetch();
   }
 
   public List<User> findFolloweesOfUser(User follower) {
