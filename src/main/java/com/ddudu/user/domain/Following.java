@@ -1,9 +1,8 @@
-package com.ddudu.following.domain;
+package com.ddudu.user.domain;
 
 import com.ddudu.common.BaseEntity;
 import com.ddudu.common.exception.InvalidParameterException;
-import com.ddudu.following.exception.FollowingErrorCode;
-import com.ddudu.user.domain.User;
+import com.ddudu.user.exception.FollowingErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -53,11 +52,12 @@ public class Following extends BaseEntity {
     this.status = Objects.requireNonNullElse(status, FollowingStatus.FOLLOWING);
   }
 
-  public boolean isOwnedBy(Long followerId) {
-    Long ownerId = this.follower
-        .getId();
+  public boolean isRequestedTo(User user) {
+    return  Objects.equals(followee, user);
+  }
 
-    return Objects.equals(followerId, ownerId);
+  public boolean isOwnedBy(User owner) {
+    return Objects.equals(follower, owner);
   }
 
   public void updateStatus(FollowingStatus status) {

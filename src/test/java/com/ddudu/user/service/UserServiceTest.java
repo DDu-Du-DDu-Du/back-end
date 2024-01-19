@@ -7,10 +7,8 @@ import com.ddudu.auth.jwt.converter.JwtConverter;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.common.exception.InvalidTokenException;
-import com.ddudu.following.domain.Following;
-import com.ddudu.following.domain.FollowingStatus;
-import com.ddudu.following.repository.FollowingRepository;
+import com.ddudu.user.domain.Following;
+import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
@@ -25,6 +23,7 @@ import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
+import com.ddudu.user.repository.FollowingRepository;
 import com.ddudu.user.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
@@ -110,6 +109,20 @@ class UserServiceTest {
       );
     }
 
+    @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")
+    @MethodSource("provideSignUpRequestAndString")
+    void 회원가입을_성공한다(SignUpRequest request, String message) {
+      // when
+      SignUpResponse expected = userService.signUp(request);
+
+      // then
+      Optional<User> actual = userRepository.findById(expected.id());
+
+      assertThat(actual).isNotEmpty();
+      assertThat(actual.get()).extracting("id", "email", "nickname")
+          .containsExactly(expected.id(), expected.email(), expected.nickname());
+    }
+
     @Test
     void 이메일이_이미_존재하면_회원가입을_실패한다() {
       // given
@@ -144,38 +157,10 @@ class UserServiceTest {
           .withMessage(UserErrorCode.DUPLICATE_OPTIONAL_USERNAME.getMessage());
     }
 
-    @ParameterizedTest(name = "{1}하면 회원가입을 성공한다")
-    @MethodSource("provideSignUpRequestAndString")
-    void 회원가입을_성공한다(SignUpRequest request, String message) {
-      // when
-      SignUpResponse expected = userService.signUp(request);
-
-      // then
-      Optional<User> actual = userRepository.findById(expected.id());
-
-      assertThat(actual).isNotEmpty();
-      assertThat(actual.get()).extracting("id", "email", "nickname")
-          .containsExactly(expected.id(), expected.email(), expected.nickname());
-    }
-
   }
 
   @Nested
   class 사용자_단일_조회_테스트 {
-
-    @Test
-    void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
-      // given
-      long randomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-
-      // when
-      ThrowingCallable login = () -> userService.findById(randomId);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
-          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
-    }
 
     @Test
     void 사용자_단일_조회를_성공한다() {
@@ -187,6 +172,20 @@ class UserServiceTest {
 
       // then
       assertThat(actual.id()).isEqualTo(expected.getId());
+    }
+
+    @Test
+    void 존재하지_않는_사용자_아이디_단일_조회를_실패한다() {
+      // given
+      long invalidId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+
+      // when
+      ThrowingCallable login = () -> userService.findById(invalidId);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
   }
@@ -338,7 +337,7 @@ class UserServiceTest {
       UpdateProfileRequest request = new UpdateProfileRequest(newNickname, newIntroduction);
 
       // when
-      userService.updateProfile(user.getId(), user.getId(), request);
+      userService.updateProfile(user.getId(), request);
 
       // then
       User actual = userRepository.findById(user.getId())
@@ -347,58 +346,41 @@ class UserServiceTest {
           .containsExactly(newNickname, newIntroduction);
     }
 
-    @Test
-    void 로그인_사용자와_변경하고자_하는_프로필의_사용자가_다를_경우_프로필_수정에_실패한다() {
-      // given
-      Long invalidLoginId = faker.random()
-          .nextLong();
-      User user = createUser(null, null, null);
-      UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
-
-      // when
-      ThrowingCallable updateProfile = () -> userService.updateProfile(
-          invalidLoginId, user.getId(), request);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateProfile)
-          .withMessage(UserErrorCode.INVALID_AUTHORITY.getMessage());
-    }
-
   }
 
   @Nested
   class 이메일_변경_테스트 {
 
     @Test
-    void 로그인한_사용자와_이메일_변경할_사용자가_다르면_변경을_실패한다() {
+    void 이메일_변경에_성공한다() {
       // given
-      long loginRandomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      long randomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
+      User user = createUser(null, null, null);
+      Long userId = user.getId();
+
       String newEmail = faker.internet()
           .emailAddress();
+      UpdateEmailRequest updateEmailRequest = new UpdateEmailRequest(newEmail);
 
       // when
-      ThrowingCallable updateEmail = () -> userService.updateEmail(
-          loginRandomId, randomId, new UpdateEmailRequest(newEmail));
+      userService.updateEmail(userId, updateEmailRequest);
 
       // then
-      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updateEmail)
-          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+      User updatedUser = userRepository.findById(userId)
+          .get();
+      assertThat(updatedUser.getEmail()).isEqualTo(newEmail);
     }
 
     @Test
     void 존재하지_않는_사용자_아이디_이메일_변경을_실패한다() {
       // given
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
       String newEmail = faker.internet()
           .emailAddress();
 
       // when
       ThrowingCallable updateEmail = () -> userService.updateEmail(
-          randomId, randomId, new UpdateEmailRequest(newEmail));
+          invalidId, new UpdateEmailRequest(newEmail));
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateEmail)
@@ -413,7 +395,7 @@ class UserServiceTest {
 
       // when
       ThrowingCallable updateEmail = () -> userService.updateEmail(
-          user.getId(), user.getId(), request);
+          user.getId(), request);
 
       // then
       assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updateEmail)
@@ -433,30 +415,11 @@ class UserServiceTest {
 
       // when
       ThrowingCallable updateEmail = () -> userService.updateEmail(
-          user.getId(), user.getId(), request);
+          user.getId(), request);
 
       // then
       assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updateEmail)
           .withMessage(UserErrorCode.DUPLICATE_EMAIL.getMessage());
-    }
-
-    @Test
-    void 이메일_변경에_성공한다() {
-      // given
-      User user = createUser(null, null, null);
-      Long userId = user.getId();
-
-      String newEmail = faker.internet()
-          .emailAddress();
-      UpdateEmailRequest updateEmailRequest = new UpdateEmailRequest(newEmail);
-
-      // when
-      userService.updateEmail(userId, userId, updateEmailRequest);
-
-      // then
-      User updatedUser = userRepository.findById(userId)
-          .get();
-      assertThat(updatedUser.getEmail()).isEqualTo(newEmail);
     }
 
   }
@@ -465,35 +428,37 @@ class UserServiceTest {
   class 비밀번호_변경_테스트 {
 
     @Test
-    void 로그인한_사용자와_비밀번호_변경할_사용자가_다르면_변경을_실패한다() {
+    void 비밀번호_변경을_성공한다() {
       // given
-      long loginRandomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      long randomId = faker.random()
-          .nextLong(Long.MAX_VALUE);
       String newPassword = faker.internet()
           .password(8, 40, true, true, true);
 
+      User user = createUser(null, null, null);
+      Long userId = user.getId();
+
+      UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest(newPassword);
+
       // when
-      ThrowingCallable updatePassword = () -> userService.updatePassword(
-          loginRandomId, randomId, new UpdatePasswordRequest(newPassword));
+      userService.updatePassword(userId, updatePasswordRequest);
 
       // then
-      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(updatePassword)
-          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
+      User updatedUser = userRepository.findById(userId)
+          .get();
+      assertThat(updatedUser.getPassword()
+          .check(newPassword, passwordEncoder)).isTrue();
     }
 
     @Test
     void 존재하지_않는_사용자_아이디_비밀번호_변경을_실패한다() {
       // given
-      long randomId = faker.random()
+      long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
       String newPassword = faker.internet()
           .password(8, 40, true, true, true);
 
       // when
       ThrowingCallable updatePassword = () -> userService.updatePassword(
-          randomId, randomId, new UpdatePasswordRequest(newPassword));
+          invalidId, new UpdatePasswordRequest(newPassword));
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updatePassword)
@@ -508,32 +473,11 @@ class UserServiceTest {
       UpdatePasswordRequest request = new UpdatePasswordRequest(password);
 
       // when
-      ThrowingCallable updatePassword = () -> userService.updatePassword(userId, userId, request);
+      ThrowingCallable updatePassword = () -> userService.updatePassword(userId, request);
 
       // then
       assertThatExceptionOfType(DuplicateResourceException.class).isThrownBy(updatePassword)
           .withMessage(UserErrorCode.DUPLICATE_EXISTING_PASSWORD.getMessage());
-    }
-
-    @Test
-    void 비밀번호_변경을_성공한다() {
-      // given
-      String newPassword = faker.internet()
-          .password(8, 40, true, true, true);
-
-      User user = createUser(null, null, null);
-      Long userId = user.getId();
-
-      UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest(newPassword);
-
-      // when
-      userService.updatePassword(userId, userId, updatePasswordRequest);
-
-      // then
-      User updatedUser = userRepository.findById(userId)
-          .get();
-      assertThat(updatedUser.getPassword()
-          .check(newPassword, passwordEncoder)).isTrue();
     }
 
   }
@@ -547,8 +491,7 @@ class UserServiceTest {
       User user = createUser(null, null, null);
 
       // when
-      ToggleOptionResponse response = userService.switchOption(
-          user.getId(), user.getId());
+      ToggleOptionResponse response = userService.switchOption(user.getId());
 
       // then
       assertThat(response.allowFollowsAfterApproval()).isTrue();
@@ -563,26 +506,10 @@ class UserServiceTest {
       options.switchOptions();
 
       // when
-      ToggleOptionResponse response = userService.switchOption(user.getId(), user.getId());
+      ToggleOptionResponse response = userService.switchOption(user.getId());
 
       // then
       assertThat(response.allowFollowsAfterApproval()).isFalse();
-    }
-
-    @Test
-    void 로그인한_사용자와_요청된_사용자가_다르면_옵션_변경을_실패한다() {
-      // given
-      long loginId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      long id = faker.random()
-          .nextLong(Long.MAX_VALUE);
-
-      // when
-      ThrowingCallable toggleOption = () -> userService.switchOption(loginId, id);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(toggleOption)
-          .withMessage(UserErrorCode.INVALID_AUTHENTICATION.getMessage());
     }
 
     @Test
@@ -592,7 +519,7 @@ class UserServiceTest {
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable toggleOption = () -> userService.switchOption(userId, userId);
+      ThrowingCallable toggleOption = () -> userService.switchOption(userId);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(toggleOption)
@@ -612,7 +539,7 @@ class UserServiceTest {
       createFollowing(user, followee, null);
 
       // when
-      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
+      UsersResponse actual = userService.findFollowees(user.getId());
 
       // then
       SimpleUserDto expected = SimpleUserDto.from(followee);
@@ -630,26 +557,10 @@ class UserServiceTest {
       createFollowing(user, rejectedFollowee, FollowingStatus.IGNORED);
 
       // when
-      UsersResponse actual = userService.findFollowees(user.getId(), user.getId());
+      UsersResponse actual = userService.findFollowees(user.getId());
 
       // then
       assertThat(actual.users()).isEmpty();
-    }
-
-    @Test
-    void 로그인_사용자와_요청의_사용자가_다르면_조회_실패한다() {
-      // given
-      long loginId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      long invalidId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-
-      // when
-      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, invalidId);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findFollowees)
-          .withMessage(UserErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
     @Test
@@ -659,7 +570,7 @@ class UserServiceTest {
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId, loginId);
+      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findFollowees)

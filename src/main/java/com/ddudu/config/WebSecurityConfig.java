@@ -19,18 +19,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+  private static final String ALL_RESOURCES = "/api/**";
+
   @Bean
   public SecurityFilterChain restFilterChain(HttpSecurity http, JwtConverter jwtConverter)
       throws Exception {
     return http
         .securityMatchers(matcher -> matcher
-            .requestMatchers("/api/**"))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.GET, "/api/users/me")
-              .hasAuthority(Authority.NORMAL.getAuthority())
-            .requestMatchers(HttpMethod.POST, "/api/followings")
-              .hasAuthority(Authority.NORMAL.getAuthority())
-            .requestMatchers("/api/**").permitAll())
+            .requestMatchers(ALL_RESOURCES))
         .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .requestCache(RequestCacheConfigurer::disable)

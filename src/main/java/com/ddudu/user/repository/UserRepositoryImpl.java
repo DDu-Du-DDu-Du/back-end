@@ -1,9 +1,9 @@
 package com.ddudu.user.repository;
 
-import static com.ddudu.following.domain.QFollowing.following;
+import static com.ddudu.user.domain.QFollowing.following;
 import static com.ddudu.user.domain.QUser.user;
 
-import com.ddudu.following.domain.FollowingStatus;
+import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.UserSearchType;
 import com.querydsl.core.BooleanBuilder;
