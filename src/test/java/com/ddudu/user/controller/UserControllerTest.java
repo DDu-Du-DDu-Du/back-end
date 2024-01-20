@@ -1,7 +1,6 @@
 package com.ddudu.user.controller;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasValue;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +25,7 @@ import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.support.ControllerTestSupport;
 import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.UserSearchType;
+import com.ddudu.user.dto.FollowingSearchType;
 import com.ddudu.user.dto.SimpleUserDto;
 import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.SignUpRequest;
@@ -52,6 +52,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -689,9 +690,9 @@ class UserControllerTest extends ControllerTestSupport {
   }
 
   @Nested
-  class GET_팔로이_조회_API_테스트 {
+  class GET_팔로워_팔로이_조회_API_테스트 {
 
-    static final String PATH = "/api/users/{id}/followees";
+    static final String PATH = "/api/users/{id}/followings";
 
     Long loginId;
     String token;
@@ -703,39 +704,45 @@ class UserControllerTest extends ControllerTestSupport {
       token = createBearerToken(loginId);
     }
 
-    @Test
-    void 로그인_사용자의_팔로이_조회를_성공하고_200_OK를_반환한다() throws Exception {
+    @ParameterizedTest(name = "조회 대상: {0}")
+    @EnumSource(FollowingSearchType.class)
+    void 로그인_사용자의_팔로잉_정보_조회를_성공하고_200_OK를_반환한다(FollowingSearchType searchType)
+        throws Exception {
       // given
-      long followeeId = faker.random()
+      long targetId = faker.random()
           .nextLong(Long.MAX_VALUE);
       String anotherNickname = faker.funnyName()
           .name();
       UsersResponse response = new UsersResponse(
-          1, List.of(new SimpleUserDto(followeeId, anotherNickname)));
+          1, List.of(new SimpleUserDto(targetId, anotherNickname)));
 
-      given(userService.findFollowees(anyLong()))
+      given(userService.findFromFollowings(anyLong(), any(FollowingSearchType.class)))
           .willReturn(response);
 
       // when
       ResultActions actions = mockMvc.perform(get(PATH, loginId)
-          .header(AUTHORIZATION, token));
+          .header(AUTHORIZATION, token)
+          .param("searchType", searchType.name()));
 
       // then
       actions.andExpect(status().isOk())
           .andExpect(jsonPath("$.counts").value(1))
-          .andExpect(jsonPath("$.users").value(hasSize(1)))
-          .andExpect(jsonPath("$.users.[0]").value(hasValue(followeeId)));
+          .andExpect(jsonPath("$.users.length()").value(1))
+          .andExpect(jsonPath("$.users.[0]").value(hasValue(targetId)));
     }
 
-    @Test
-    void 로그인한_사용자와_요청의_사용자가_다르면_403_Forbidden을_반환한다() throws Exception {
+    @ParameterizedTest(name = "조회 대상: {0}")
+    @EnumSource(FollowingSearchType.class)
+    void 로그인한_사용자와_요청의_사용자가_다르면_403_Forbidden을_반환한다(FollowingSearchType searchType)
+        throws Exception {
       // given
       long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
 
       // when
       ResultActions actions = mockMvc.perform(get(PATH, invalidId)
-          .header(AUTHORIZATION, token));
+          .header(AUTHORIZATION, token)
+          .param("searchType", searchType.name()));
 
       // then
       actions.andExpect(status().isForbidden())
@@ -743,15 +750,18 @@ class UserControllerTest extends ControllerTestSupport {
           .andExpect(jsonPath("$.message").value(UserErrorCode.INVALID_AUTHORITY.getMessage()));
     }
 
-    @Test
-    void 존재하지_않는_사용자일_경우_404_Not_Found를_반환한다() throws Exception {
+    @ParameterizedTest(name = "조회 대상: {0}")
+    @EnumSource(FollowingSearchType.class)
+    void 존재하지_않는_사용자일_경우_404_Not_Found를_반환한다(FollowingSearchType searchType)
+        throws Exception {
       // given
-      given(userService.findFollowees(anyLong()))
+      given(userService.findFromFollowings(anyLong(), any(FollowingSearchType.class)))
           .willThrow(new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(get(PATH, loginId)
-          .header(AUTHORIZATION, token));
+          .header(AUTHORIZATION, token)
+          .param("searchType", searchType.name()));
 
       // then
       actions.andExpect(status().isNotFound())

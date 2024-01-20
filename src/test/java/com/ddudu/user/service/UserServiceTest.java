@@ -6,13 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.ddudu.auth.jwt.converter.JwtConverter;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
-import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.user.domain.Following;
 import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
 import com.ddudu.user.domain.UserSearchType;
+import com.ddudu.user.dto.FollowingSearchType;
 import com.ddudu.user.dto.SimpleUserDto;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
@@ -40,6 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -529,26 +530,33 @@ class UserServiceTest {
   }
 
   @Nested
-  class 팔로이_조회_테스트 {
+  class 팔로워_팔로이_조회_테스트 {
 
-    @Test
-    void 팔로이_조회를_성공한다() {
+    @ParameterizedTest(name = "조회 대상: {0}")
+    @EnumSource(FollowingSearchType.class)
+    void 사용자의_팔로잉_정보_조회를_성공한다(FollowingSearchType searchType) {
       // given
       User user = createUser(null, null, null);
-      User followee = createUser(null, null, null);
-      createFollowing(user, followee, null);
+      User target = createUser(null, null, null);
+
+      if (FollowingSearchType.isSearchingFollower(searchType)) {
+        createFollowing(target, user, null);
+      } else {
+        createFollowing(user, target, null);
+      }
 
       // when
-      UsersResponse actual = userService.findFollowees(user.getId());
+      UsersResponse actual = userService.findFromFollowings(user.getId(), searchType);
 
       // then
-      SimpleUserDto expected = SimpleUserDto.from(followee);
+      SimpleUserDto expected = SimpleUserDto.from(target);
       assertThat(actual.counts()).isEqualTo(1);
       assertThat(actual.users()).containsOnly(expected);
     }
 
-    @Test
-    void 요청됨이나_무시_상태가_아닌_팔로잉만_조회한다() {
+    @ParameterizedTest(name = "조회 대상: {0}")
+    @EnumSource(FollowingSearchType.class)
+    void 요청됨이나_무시_상태가_아닌_팔로잉만_조회한다(FollowingSearchType searchType) {
       // given
       User user = createUser(null, null, null);
       User requestedFollowee = createUser(null, null, null);
@@ -557,20 +565,21 @@ class UserServiceTest {
       createFollowing(user, rejectedFollowee, FollowingStatus.IGNORED);
 
       // when
-      UsersResponse actual = userService.findFollowees(user.getId());
+      UsersResponse actual = userService.findFromFollowings(user.getId(), searchType);
 
       // then
       assertThat(actual.users()).isEmpty();
     }
 
-    @Test
-    void 사용자가_존재하지_않으면_조회를_실패한다() {
+    @ParameterizedTest(name = "조회 대상: {0}")
+    @EnumSource(FollowingSearchType.class)
+    void 사용자가_존재하지_않으면_조회를_실패한다(FollowingSearchType searchType) {
       // given
       long loginId = faker.random()
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable findFollowees = () -> userService.findFollowees(loginId);
+      ThrowingCallable findFollowees = () -> userService.findFromFollowings(loginId, searchType);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findFollowees)

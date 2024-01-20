@@ -57,57 +57,16 @@ class AuthServiceTest {
         .emailAddress();
     password = faker.internet()
         .password(8, 40, true, true, true);
-    nickname = faker.funnyName()
-        .name();
+    nickname = faker.internet()
+        .username();
   }
 
   @Nested
   class 로그인_테스트 {
 
     @Test
-    void 존재하지_않는_이메일_로그인을_실패한다() {
-      // given
-      LoginRequest request = new LoginRequest(email, password);
-
-      // when
-      ThrowingCallable login = () -> authService.login(request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
-          .withMessage(AuthErrorCode.EMAIL_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 비밀번호가_다를_시_로그인을_실패한다() {
-      // given
-      String nickname = faker.funnyName()
-          .name();
-      User user = User.builder()
-          .email(email)
-          .passwordEncoder(passwordEncoder)
-          .password(password)
-          .nickname(nickname)
-          .build();
-
-      userRepository.save(user);
-
-      String newPassword = faker.internet()
-          .password();
-      LoginRequest request = new LoginRequest(email, newPassword);
-
-      // when
-      ThrowingCallable login = () -> authService.login(request);
-
-      // then
-      assertThatExceptionOfType(BadCredentialsException.class).isThrownBy(login)
-          .withMessage(AuthErrorCode.BAD_CREDENTIALS.getMessage());
-    }
-
-    @Test
     void 로그인을_성공하고_JWT를_발급받는다() {
       // given
-      String nickname = faker.internet()
-          .username();
       User user = User.builder()
           .email(email)
           .password(password)
@@ -130,30 +89,51 @@ class AuthServiceTest {
       assertThat(actualAuthority).isEqualTo(expected.getAuthority());
     }
 
+    @Test
+    void 존재하지_않는_이메일_로그인을_실패한다() {
+      // given
+      LoginRequest request = new LoginRequest(email, password);
+
+      // when
+      ThrowingCallable login = () -> authService.login(request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
+          .withMessage(AuthErrorCode.EMAIL_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 비밀번호가_다를_시_로그인을_실패한다() {
+      // given
+      User user = User.builder()
+          .email(email)
+          .passwordEncoder(passwordEncoder)
+          .password(password)
+          .nickname(nickname)
+          .build();
+
+      userRepository.save(user);
+
+      String newPassword = faker.internet()
+          .password();
+      LoginRequest request = new LoginRequest(email, newPassword);
+
+      // when
+      ThrowingCallable login = () -> authService.login(request);
+
+      // then
+      assertThatExceptionOfType(BadCredentialsException.class).isThrownBy(login)
+          .withMessage(AuthErrorCode.BAD_CREDENTIALS.getMessage());
+    }
+
   }
 
   @Nested
   class 사용자_로딩_테스트 {
 
     @Test
-    void 존재하지_않는_사용자_아이디_로딩을_실패한다() {
-      // given
-      long randomId = faker.random()
-          .nextLong();
-
-      // when
-      ThrowingCallable login = () -> authService.loadUser(randomId);
-
-      // then
-      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(login)
-          .withMessage(AuthErrorCode.INVALID_AUTHENTICATION.getMessage());
-    }
-
-    @Test
     void 사용자_로딩을_성공한다() {
       // given
-      String email = faker.internet()
-          .emailAddress();
       User user = User.builder()
           .passwordEncoder(passwordEncoder)
           .email(email)
@@ -167,6 +147,20 @@ class AuthServiceTest {
 
       // then
       assertThat(actual.id()).isEqualTo(expected.getId());
+    }
+
+    @Test
+    void 존재하지_않는_사용자_아이디_로딩을_실패한다() {
+      // given
+      long randomId = faker.random()
+          .nextLong();
+
+      // when
+      ThrowingCallable login = () -> authService.loadUser(randomId);
+
+      // then
+      assertThatExceptionOfType(InvalidTokenException.class).isThrownBy(login)
+          .withMessage(AuthErrorCode.INVALID_AUTHENTICATION.getMessage());
     }
 
   }
