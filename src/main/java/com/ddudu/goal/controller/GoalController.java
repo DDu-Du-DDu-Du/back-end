@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class GoalController {
 
+  private static final String GOALS_BASE_PATH = "/api/goals/";
+
   private final GoalService goalService;
 
   @PostMapping
@@ -38,7 +40,7 @@ public class GoalController {
           CreateGoalRequest request
   ) {
     CreateGoalResponse response = goalService.create(userId, request);
-    URI uri = URI.create("/api/goals/" + response.id());
+    URI uri = URI.create(GOALS_BASE_PATH + response.id());
 
     return ResponseEntity.created(uri)
         .body(response);
