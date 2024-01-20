@@ -1,6 +1,7 @@
 package com.ddudu.goal.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
@@ -29,8 +30,7 @@ public class GoalService {
   public CreateGoalResponse create(
       Long userId, CreateGoalRequest request
   ) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
+    User user = findUser(userId, GoalErrorCode.USER_NOT_EXISTING);
 
     Goal goal = Goal.builder()
         .name(request.name())
@@ -46,8 +46,7 @@ public class GoalService {
   public void update(
       Long loginId, Long id, UpdateGoalRequest request
   ) {
-    Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
+    Goal goal = findGoal(id, GoalErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, goal);
 
@@ -56,8 +55,7 @@ public class GoalService {
   }
 
   public GoalResponse findById(Long loginId, Long id) {
-    Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
+    Goal goal = findGoal(id, GoalErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, goal);
 
@@ -69,8 +67,7 @@ public class GoalService {
       throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
     }
 
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
+    User user = findUser(userId, GoalErrorCode.USER_NOT_EXISTING);
 
     List<Goal> goals = goalRepository.findAllByUser(user);
 
@@ -92,6 +89,16 @@ public class GoalService {
     if (!goal.isCreatedByUser(loginId)) {
       throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
     }
+  }
+
+  private User findUser(Long userId, ErrorCode errorCode) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
+  }
+
+  private Goal findGoal(Long goalId, ErrorCode errorCode) {
+    return goalRepository.findById(goalId)
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
   }
 
 }
