@@ -7,6 +7,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException
 import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
+import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.user.domain.Following;
 import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.Options;
@@ -15,6 +16,7 @@ import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.UpdateFollowingRequest;
 import com.ddudu.user.dto.response.FollowingResponse;
 import com.ddudu.user.exception.FollowingErrorCode;
+import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.FollowingRepository;
 import com.ddudu.user.repository.UserRepository;
 import java.util.Objects;
@@ -190,7 +192,7 @@ class FollowingServiceTest {
 
       // when
       FollowingResponse response = followingService.updateStatus(
-          follower.getId(), following.getId(), request);
+          followee.getId(), following.getId(), request);
 
       // then
       assertThat(response).extracting("id", "followerId", "followeeId", "status")
@@ -208,7 +210,7 @@ class FollowingServiceTest {
 
       // when
       FollowingResponse response = followingService.updateStatus(
-          follower.getId(), following.getId(), request);
+          followee.getId(), following.getId(), request);
 
       // then
       assertThat(response).extracting("id", "followerId", "followeeId", "status")
@@ -217,15 +219,32 @@ class FollowingServiceTest {
     }
 
     @Test
-    void 존재하지_않는_아이디면_실패한다() {
+    void 존재하지_않는_사용자면_실패한다() {
       // given
       long invalidId = faker.random()
-          .nextLong();
+          .nextLong(Long.MAX_VALUE);
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
       // when
       ThrowingCallable updateStatus = () -> followingService.updateStatus(
           invalidId, invalidId, request);
+
+      // then
+      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateStatus)
+          .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+    @Test
+    void 존재하지_않는_아이디면_실패한다() {
+      // given
+      User follower = createUser();
+      long invalidId = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+
+      // when
+      ThrowingCallable updateStatus = () -> followingService.updateStatus(
+          follower.getId(), invalidId, request);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateStatus)
@@ -242,11 +261,29 @@ class FollowingServiceTest {
 
       // when
       ThrowingCallable updateStatus = () -> followingService.updateStatus(
-          follower.getId(), following.getId(), request);
+          followee.getId(), following.getId(), request);
 
       // then
       assertThatExceptionOfType(BadRequestException.class).isThrownBy(updateStatus)
           .withMessage(FollowingErrorCode.REQUEST_UNAVAILABLE.getMessage());
+    }
+
+    @Test
+    void 팔로잉_요청_받은_사용자가_아니면_수정을_실패한다() {
+      // given
+      User follower = createUser();
+      User followee = createUser();
+      Following following = createFollowing(follower, followee, FollowingStatus.REQUESTED);
+      User invalidUser = createUser();
+      UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
+
+      // when
+      ThrowingCallable updateStatus = () -> followingService.updateStatus(
+          invalidUser.getId(), following.getId(), request);
+
+      // then
+      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateStatus)
+          .withMessage(FollowingErrorCode.NOT_ENGAGED_USER.getMessage());
     }
 
   }
@@ -278,7 +315,7 @@ class FollowingServiceTest {
           .nextLong(Long.MAX_VALUE);
 
       // when
-      ThrowingCallable delete = () -> followingService.delete(invalidId, follower.getId());
+      ThrowingCallable delete = () -> followingService.delete(follower.getId(), invalidId);
 
       // then
       assertThatNoException().isThrownBy(delete);

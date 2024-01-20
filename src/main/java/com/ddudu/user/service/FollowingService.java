@@ -4,7 +4,6 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.user.domain.Following;
 import com.ddudu.user.domain.Following.FollowingBuilder;
 import com.ddudu.user.domain.FollowingStatus;
@@ -14,6 +13,7 @@ import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.UpdateFollowingRequest;
 import com.ddudu.user.dto.response.FollowingResponse;
 import com.ddudu.user.exception.FollowingErrorCode;
+import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.FollowingRepository;
 import com.ddudu.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,9 +56,13 @@ public class FollowingService {
   public FollowingResponse updateStatus(
       Long followerId, Long followingId, UpdateFollowingRequest request
   ) {
+    User user = findUser(followerId, UserErrorCode.ID_NOT_EXISTING);
     Following following = findFollowing(followingId, FollowingErrorCode.ID_NOT_EXISTING);
 
-    checkPermission(followerId, following);
+    if (!following.isRequestedTo(user)) {
+      throw new ForbiddenException(FollowingErrorCode.NOT_ENGAGED_USER);
+    }
+
     following.updateStatus(request.status());
 
     return FollowingResponse.from(following);
@@ -66,9 +70,11 @@ public class FollowingService {
 
   @Transactional
   public void delete(Long followerId, Long followingId) {
+    User owner = findUser(followerId, UserErrorCode.ID_NOT_EXISTING);
+
     followingRepository.findById(followingId)
         .ifPresent(following -> {
-          checkPermission(followerId, following);
+          checkPermission(owner, following);
           followingRepository.delete(following);
         });
   }
@@ -83,8 +89,8 @@ public class FollowingService {
         .orElseThrow(() -> new DataNotFoundException(errorCode));
   }
 
-  private void checkPermission(Long followerId, Following following) {
-    if (!following.isOwnedBy(followerId)) {
+  private void checkPermission(User owner, Following following) {
+    if (!following.isOwnedBy(owner)) {
       throw new ForbiddenException(FollowingErrorCode.WRONG_OWNER);
     }
   }

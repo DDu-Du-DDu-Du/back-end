@@ -11,6 +11,7 @@ import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
+import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.FollowingSearchType;
 import com.ddudu.user.dto.SimpleUserDto;
 import com.ddudu.user.dto.request.SignUpRequest;
@@ -24,10 +25,12 @@ import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.FollowingRepository;
 import com.ddudu.user.repository.UserRepository;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
+import org.apache.logging.log4j.util.Strings;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -36,6 +39,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,6 +187,130 @@ class UserServiceTest {
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(login)
           .withMessage(UserErrorCode.ID_NOT_EXISTING.getMessage());
+    }
+
+  }
+
+  @Nested
+  class 사용자_검색_테스트 {
+
+    String email;
+    String optionalUsername;
+
+    @BeforeEach
+    void setUp() {
+      email = faker.internet()
+          .emailAddress();
+      optionalUsername = faker.internet()
+          .username();
+
+      createUser(email, null, null);
+      createUser(null, nickname, null);
+      createUser(null, null, optionalUsername);
+    }
+
+    @Test
+    void 이메일로_사용자_검색에_성공한다() {
+      // when
+      List<UserProfileResponse> searched = userService.search(email, UserSearchType.EMAIL);
+
+      // then
+      assertThat(searched).hasSize(1);
+      User actual = userRepository.findById(searched.get(0)
+              .id())
+          .get();
+      assertThat(actual
+          .getEmail()).isEqualTo(email);
+    }
+
+    @Test
+    void 아이디로_사용자_검색에_성공한다() {
+      // when
+      List<UserProfileResponse> searched = userService.search(
+          optionalUsername, UserSearchType.OPTIONAL_USERNAME);
+
+      // then
+      assertThat(searched).hasSize(1);
+      User actual = userRepository.findById(searched.get(0)
+              .id())
+          .get();
+      assertThat(actual
+          .getOptionalUsername()).isEqualTo(optionalUsername);
+    }
+
+    @Test
+    void 닉네임으로_사용자_검색에_성공한다() {
+      // when
+      List<UserProfileResponse> searched = userService.search(nickname, UserSearchType.NICKNAME);
+
+      // then
+      assertThat(searched).hasSize(1);
+      assertThat(searched.get(0)
+          .nickname()).isEqualTo(nickname);
+    }
+
+    @ParameterizedTest(name = "{0}일 때, 빈 리스트를 응답한다.")
+    @EmptySource
+    void 키워드가_공백이면_빈_리스트를_반환한다(String keyword) {
+      // given
+      String email = faker.internet()
+          .emailAddress();
+      createUser(email, null, null);
+
+      // when
+      List<UserProfileResponse> actual = userService.search(keyword, UserSearchType.EMAIL);
+
+      // then
+      assertThat(actual).isEmpty();
+    }
+
+    @Test
+    void 검색_유형이_입력되지_않은_경우_키워드가_이메일_형식이면_이메일로_검색한다() {
+      // when
+      List<UserProfileResponse> searched = userService.search(email, null);
+
+      // then
+      assertThat(searched).hasSize(1);
+      User actual = userRepository.findById(searched.get(0)
+              .id())
+          .get();
+      assertThat(actual
+          .getEmail()).isEqualTo(email);
+    }
+
+    @Test
+    void 검색_유형이_입력되지_않은_경우_키워드가_이메일_형식이_아니면_아이디로_검색한다() {
+      // when
+      List<UserProfileResponse> searched = userService.search(optionalUsername, null);
+
+      // then
+      assertThat(searched).hasSize(1);
+      User actual = userRepository.findById(searched.get(0)
+              .id())
+          .get();
+      assertThat(actual
+          .getOptionalUsername()).isEqualTo(optionalUsername);
+    }
+
+    private User createUser(String email, String nickname, String optionalUsername) {
+      if (Objects.isNull(email)) {
+        email = faker.internet()
+            .emailAddress();
+      }
+
+      if (Strings.isBlank(nickname)) {
+        nickname = faker.internet()
+            .username();
+      }
+
+      User user = builderWithEncoder
+          .email(email)
+          .password(password)
+          .nickname(nickname)
+          .optionalUsername(Objects.nonNull(optionalUsername) ? optionalUsername : null)
+          .build();
+
+      return userRepository.save(user);
     }
 
   }

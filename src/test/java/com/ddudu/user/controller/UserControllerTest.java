@@ -1,9 +1,11 @@
 package com.ddudu.user.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasValue;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
@@ -22,6 +24,7 @@ import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.support.ControllerTestSupport;
 import com.ddudu.user.domain.FollowingStatus;
+import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.FollowingSearchType;
 import com.ddudu.user.dto.SimpleUserDto;
 import com.ddudu.user.dto.request.FollowRequest;
@@ -51,6 +54,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -283,6 +287,66 @@ class UserControllerTest extends ControllerTestSupport {
       actions.andExpect(status().isNotFound())
           .andExpect(jsonPath("$.code").value(UserErrorCode.ID_NOT_EXISTING.getCode()))
           .andExpect(jsonPath("$.message").value(UserErrorCode.ID_NOT_EXISTING.getMessage()));
+    }
+
+  }
+
+  @Nested
+  class GET_사용자_검색_API_테스트 {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"NICKNAME", "EMAIL", "OPTIONAL_USERNAME"})
+    void 사용자_검색을_성공하고_200_OK를_반환한다(String searchType) throws Exception {
+      // given
+      UserProfileResponse profile = createUserProfile(nickname);
+      List<UserProfileResponse> expected = List.of(profile);
+
+      given(userService.search(anyString(), any(UserSearchType.class))).willReturn(expected);
+
+      // when
+      ResultActions actions = mockMvc.perform(
+          get("/api/users")
+              .queryParam("keyword", nickname)
+              .queryParam("searchType", searchType)
+              .contentType(MediaType.APPLICATION_JSON)
+      );
+
+      // then
+      actions.andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(expected.size()))
+          .andExpect(jsonPath("$[0].id").value(profile.id()))
+          .andExpect(jsonPath("$[0].nickname").value(profile.nickname()))
+          .andExpect(jsonPath("$[0].introduction").value(profile.introduction()));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid search type", "nickname"})
+    void 유효하지_않은_검색_유형이_입력된_경우_400_Bad_Request_응답을_반환한다(String searchType) throws Exception {
+      // given
+      String keyword = faker.lorem()
+          .word();
+
+      // when
+      ResultActions actions = mockMvc.perform(
+          get("/api/users")
+              .queryParam("keyword", keyword)
+              .queryParam("searchType", searchType)
+              .contentType(MediaType.APPLICATION_JSON)
+      );
+
+      // then
+      actions.andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message")
+              .value(containsString("searchType의 형식이 유효하지 않습니다.")));
+    }
+
+    private UserProfileResponse createUserProfile(String nickname) {
+      Long id = faker.random()
+          .nextLong(Long.MAX_VALUE);
+      String introduction = faker.book()
+          .title();
+
+      return new UserProfileResponse(id, nickname, introduction);
     }
 
   }
@@ -886,12 +950,12 @@ class UserControllerTest extends ControllerTestSupport {
     }
 
     @Test
-    void 로그인한_사용자와_팔로잉의_주인이_다르면_403_Forbidden을_반환한다() throws Exception {
+    void 로그인한_사용자와_받은_팔로잉이_아니면_403_Forbidden을_반환한다() throws Exception {
       // given
       UpdateFollowingRequest request = new UpdateFollowingRequest(FollowingStatus.FOLLOWING);
 
       given(followingService.updateStatus(anyLong(), anyLong(), any(UpdateFollowingRequest.class)))
-          .willThrow(new ForbiddenException(FollowingErrorCode.WRONG_OWNER));
+          .willThrow(new ForbiddenException(FollowingErrorCode.NOT_ENGAGED_USER));
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, loginId, followingId)
@@ -901,8 +965,8 @@ class UserControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code", is(FollowingErrorCode.WRONG_OWNER.getCode())))
-          .andExpect(jsonPath("$.message", is(FollowingErrorCode.WRONG_OWNER.getMessage())));
+          .andExpect(jsonPath("$.code", is(FollowingErrorCode.NOT_ENGAGED_USER.getCode())))
+          .andExpect(jsonPath("$.message", is(FollowingErrorCode.NOT_ENGAGED_USER.getMessage())));
     }
 
     @Test

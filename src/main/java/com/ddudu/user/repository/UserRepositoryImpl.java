@@ -1,10 +1,12 @@
 package com.ddudu.user.repository;
 
 import static com.ddudu.user.domain.QFollowing.following;
+import static com.ddudu.user.domain.QUser.user;
 
 import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.QUser;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.FollowingSearchType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,6 +21,22 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
   public UserRepositoryImpl(EntityManager em) {
     this.jpaQueryFactory = new JPAQueryFactory(em);
+  }
+
+  @Override
+  public List<User> findAllByKeywordAndSearchType(String keyword, UserSearchType userSearchType) {
+    BooleanBuilder whereClause = new BooleanBuilder();
+
+    switch (userSearchType) {
+      case EMAIL -> whereClause.and(user.email.address.eq(keyword));
+      case NICKNAME -> whereClause.and(user.nickname.eq(keyword));
+      case OPTIONAL_USERNAME -> whereClause.and(user.optionalUsername.eq(keyword));
+    }
+
+    return jpaQueryFactory
+        .selectFrom(user)
+        .where(whereClause)
+        .fetch();
   }
 
   @Override
