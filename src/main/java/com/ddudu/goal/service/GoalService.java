@@ -46,7 +46,7 @@ public class GoalService {
   }
 
   @Transactional
-  public GoalResponse update(
+  public void update(
       Long loginId, Long id, @Valid UpdateGoalRequest request
   ) {
     Goal goal = goalRepository.findById(id)
@@ -56,8 +56,6 @@ public class GoalService {
 
     goal.applyGoalUpdates(
         request.name(), request.status(), request.color(), request.privacyType());
-
-    return GoalResponse.from(goal);
   }
 
   public GoalResponse findById(Long loginId, Long id) {

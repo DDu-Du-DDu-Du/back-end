@@ -429,7 +429,7 @@ class GoalControllerTest extends ControllerTestSupport {
     }
 
     @Test
-    void 목표_수정에_성공하면_200_OK를_반환한다() throws Exception {
+    void 목표_수정에_성공하면_204_No_Content를_반환한다() throws Exception {
       // given
       Long goalId = faker.random()
           .nextLong();
@@ -438,8 +438,8 @@ class GoalControllerTest extends ControllerTestSupport {
       GoalResponse response = new GoalResponse(
           goalId, validName, GoalStatus.IN_PROGRESS, validColor, validPrivacy);
 
-      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
-          .willReturn(response);
+      willDoNothing().given(goalService)
+          .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
 
       // when
       ResultActions action = mockMvc.perform(put(PATH, goalId)
@@ -539,8 +539,8 @@ class GoalControllerTest extends ControllerTestSupport {
       UpdateGoalRequest request = new UpdateGoalRequest(
           validName, GoalStatus.IN_PROGRESS, validColor, validPrivacy);
 
-      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class))).willThrow(
-          new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
+      willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING)).given(goalService)
+          .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
 
       // when
       ResultActions action = mockMvc.perform(put(PATH, invalidId)
@@ -567,8 +567,8 @@ class GoalControllerTest extends ControllerTestSupport {
       UpdateGoalRequest request = new UpdateGoalRequest(
           validName, GoalStatus.IN_PROGRESS, validColor, validPrivacy);
 
-      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class))).willThrow(
-          new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY));
+      willThrow(new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY)).given(goalService)
+          .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
 
       // when
       ResultActions action = mockMvc.perform(put(PATH, goalId).header(AUTHORIZATION, token)
