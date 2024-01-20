@@ -2,6 +2,7 @@ package com.ddudu.user.controller;
 
 import com.ddudu.common.annotation.Login;
 import com.ddudu.common.exception.ForbiddenException;
+import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
@@ -20,6 +21,7 @@ import com.ddudu.user.service.FollowingService;
 import com.ddudu.user.service.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -60,6 +63,17 @@ public class UserController {
       Long id
   ) {
     UserProfileResponse response = userService.findById(id);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping
+  public ResponseEntity<List<UserProfileResponse>> search(
+      String keyword,
+      @RequestParam(required = false)
+      UserSearchType searchType
+  ) {
+    List<UserProfileResponse> response = userService.search(keyword, searchType);
 
     return ResponseEntity.ok(response);
   }

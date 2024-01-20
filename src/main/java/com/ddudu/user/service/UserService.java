@@ -1,9 +1,12 @@
 package com.ddudu.user.service;
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.request.SignUpRequest;
 import com.ddudu.user.dto.request.UpdateEmailRequest;
 import com.ddudu.user.dto.request.UpdatePasswordRequest;
@@ -16,9 +19,11 @@ import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
 import com.ddudu.user.repository.UserRepository;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,6 +117,29 @@ public class UserService {
     return ToggleOptionResponse.from(user);
   }
 
+  public List<UserProfileResponse> search(String keyword, UserSearchType searchType) {
+    if (Strings.isBlank(keyword)) {
+      return Collections.emptyList();
+    }
+
+    if (isNull(searchType)) {
+      searchType = determineSearchType(keyword);
+    }
+
+    List<User> users = userRepository.findAllByKeywordAndSearchType(keyword, searchType);
+
+    return users.stream()
+        .map(UserProfileResponse::from)
+        .toList();
+  }
+
+  private UserSearchType determineSearchType(String keyword) {
+    if (Email.isValidEmail(keyword)) {
+      return UserSearchType.EMAIL;
+    }
+    return UserSearchType.OPTIONAL_USERNAME;
+  }
+
   private User findUser(Long id) {
     return userRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(UserErrorCode.ID_NOT_EXISTING));
@@ -123,6 +151,7 @@ public class UserService {
     if (userRepository.existsByEmail(newEmail)) {
       throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
     }
+
   }
 
 }
