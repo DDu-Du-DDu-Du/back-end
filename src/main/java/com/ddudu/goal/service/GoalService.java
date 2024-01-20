@@ -85,7 +85,7 @@ public class GoalService {
         });
   }
 
-  private static void checkPermission(Long loginId, Goal goal) {
+  private void checkPermission(Long loginId, Goal goal) {
     if (!goal.isCreatedByUser(loginId)) {
       throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
     }
