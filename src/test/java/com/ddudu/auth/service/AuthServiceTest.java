@@ -57,8 +57,8 @@ class AuthServiceTest {
         .emailAddress();
     password = faker.internet()
         .password(8, 40, true, true, true);
-    nickname = faker.funnyName()
-        .name();
+    nickname = faker.internet()
+        .username();
   }
 
   @Nested
@@ -67,8 +67,6 @@ class AuthServiceTest {
     @Test
     void 로그인을_성공하고_JWT를_발급받는다() {
       // given
-      String nickname = faker.internet()
-          .username();
       User user = User.builder()
           .email(email)
           .password(password)
@@ -107,8 +105,6 @@ class AuthServiceTest {
     @Test
     void 비밀번호가_다를_시_로그인을_실패한다() {
       // given
-      String nickname = faker.internet()
-          .username();
       User user = User.builder()
           .email(email)
           .passwordEncoder(passwordEncoder)
@@ -138,8 +134,6 @@ class AuthServiceTest {
     @Test
     void 사용자_로딩을_성공한다() {
       // given
-      String email = faker.internet()
-          .emailAddress();
       User user = User.builder()
           .passwordEncoder(passwordEncoder)
           .email(email)
