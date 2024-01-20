@@ -434,14 +434,7 @@ class GoalControllerTest extends ControllerTestSupport {
           .contentType(MediaType.APPLICATION_JSON));
 
       // then
-      action.andExpect(status().isOk())
-          .andExpect(jsonPath("$.id").value(response.id()))
-          .andExpect(jsonPath("$.name").value(response.name()))
-          .andExpect(jsonPath("$.status").value(response.status()
-              .name()))
-          .andExpect(jsonPath("$.color").value(response.color()))
-          .andExpect(jsonPath("$.privacyType").value(response.privacyType()
-              .name()));
+      action.andExpect(status().isNoContent());
     }
 
     @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
