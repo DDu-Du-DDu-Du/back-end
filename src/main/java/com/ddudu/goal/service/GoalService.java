@@ -12,17 +12,14 @@ import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Validated
 public class GoalService {
 
   private final GoalRepository goalRepository;
@@ -30,7 +27,7 @@ public class GoalService {
 
   @Transactional
   public CreateGoalResponse create(
-      Long userId, @Valid CreateGoalRequest request
+      Long userId, CreateGoalRequest request
   ) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
@@ -47,7 +44,7 @@ public class GoalService {
 
   @Transactional
   public void update(
-      Long loginId, Long id, @Valid UpdateGoalRequest request
+      Long loginId, Long id, UpdateGoalRequest request
   ) {
     Goal goal = goalRepository.findById(id)
         .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
