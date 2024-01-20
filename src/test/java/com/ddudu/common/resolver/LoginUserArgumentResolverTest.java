@@ -90,7 +90,7 @@ class LoginUserArgumentResolverTest {
   }
 
   @Test
-  void Authentication이_null이면_예외를_반환한다() {
+  void Authentication이_null이면_InvalidAuthenticationException_예외를_반환한다() {
     // given
     given(securityContext.getAuthentication()).willReturn(null);
     SecurityContextHolder.setContext(securityContext);
