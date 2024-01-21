@@ -416,7 +416,7 @@ class GoalControllerTest extends ControllerTestSupport {
     }
 
     @Test
-    void 목표_수정에_성공하면_204_No_Content를_반환한다() throws Exception {
+    void 목표_수정에_성공하면_200_OK를_반환한다() throws Exception {
       // given
       Long goalId = faker.random()
           .nextLong();
@@ -425,8 +425,8 @@ class GoalControllerTest extends ControllerTestSupport {
       GoalResponse response = new GoalResponse(
           goalId, name, GoalStatus.IN_PROGRESS, color, privacyType);
 
-      willDoNothing().given(goalService)
-          .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
+          .willReturn(response);
 
       // when
       ResultActions action = mockMvc.perform(put(PATH, goalId)
@@ -435,7 +435,14 @@ class GoalControllerTest extends ControllerTestSupport {
           .contentType(MediaType.APPLICATION_JSON));
 
       // then
-      action.andExpect(status().isNoContent());
+      action.andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(response.id()))
+          .andExpect(jsonPath("$.name").value(response.name()))
+          .andExpect(jsonPath("$.status").value(response.status()
+              .name()))
+          .andExpect(jsonPath("$.color").value(response.color()))
+          .andExpect(jsonPath("$.privacyType").value(response.privacyType()
+              .name()));
     }
 
     @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
@@ -519,8 +526,8 @@ class GoalControllerTest extends ControllerTestSupport {
       UpdateGoalRequest request = new UpdateGoalRequest(
           name, GoalStatus.IN_PROGRESS, color, privacyType);
 
-      willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING)).given(goalService)
-          .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
+          .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
       // when
       ResultActions action = mockMvc.perform(put(PATH, invalidId)
@@ -548,8 +555,8 @@ class GoalControllerTest extends ControllerTestSupport {
       UpdateGoalRequest request = new UpdateGoalRequest(
           name, GoalStatus.IN_PROGRESS, color, privacyType);
 
-      willThrow(new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY)).given(goalService)
-          .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
+          .willThrow(new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY));
 
       // when
       ResultActions action = mockMvc.perform(put(PATH, goalId)
