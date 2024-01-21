@@ -169,15 +169,16 @@ class GoalControllerTest extends ControllerTestSupport {
     void 로그인_사용자_정보가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
       CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
-      Long invalidId = faker.random()
+      Long anotherUserId = faker.random()
           .nextLong();
+      String invalidToken = createBearerToken(anotherUserId);
 
       given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willThrow(new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
       // when
       ResultActions action = mockMvc.perform(post(PATH)
-          .header(AUTHORIZATION, createBearerToken(invalidId))
+          .header(AUTHORIZATION, invalidToken)
           .content(objectMapper.writeValueAsString(request))
           .contentType(MediaType.APPLICATION_JSON));
 
@@ -471,7 +472,7 @@ class GoalControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions action = mockMvc.perform(put(PATH, 1L)
-          .header(AUTHORIZATION, createBearerToken(userId))
+          .header(AUTHORIZATION, token)
           .content(invalidRequestJson)
           .contentType(MediaType.APPLICATION_JSON));
 
@@ -539,8 +540,9 @@ class GoalControllerTest extends ControllerTestSupport {
     @Test
     void 로그인_사용자에게_권한이_없으면_403_Forbidden을_반환한다() throws Exception {
       // given
-      Long invalidUserId = faker.random()
+      Long anotherUserId = faker.random()
           .nextLong();
+      String invalidToken = createBearerToken(anotherUserId);
       Long goalId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
@@ -550,7 +552,8 @@ class GoalControllerTest extends ControllerTestSupport {
           .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
 
       // when
-      ResultActions action = mockMvc.perform(put(PATH, goalId).header(AUTHORIZATION, token)
+      ResultActions action = mockMvc.perform(put(PATH, goalId)
+          .header(AUTHORIZATION, invalidToken)
           .content(objectMapper.writeValueAsString(request))
           .contentType(MediaType.APPLICATION_JSON));
 
