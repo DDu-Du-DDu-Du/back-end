@@ -55,7 +55,7 @@ class GoalControllerTest extends ControllerTestSupport {
   Long userId;
   String token;
   String color;
-  PrivacyType validPrivacy;
+  PrivacyType privacyType;
 
   @BeforeEach
   void setUp() {
@@ -67,7 +67,7 @@ class GoalControllerTest extends ControllerTestSupport {
     color = faker.color()
         .hex()
         .substring(1);
-    validPrivacy = provideRandomPrivacy();
+    privacyType = provideRandomPrivacy();
   }
 
   @Nested
@@ -80,7 +80,7 @@ class GoalControllerTest extends ControllerTestSupport {
       // given
       Long goalId = faker.random()
           .nextLong();
-      CreateGoalRequest request = new CreateGoalRequest(name, color, validPrivacy);
+      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
       CreateGoalResponse response = new CreateGoalResponse(goalId, name, color);
 
       given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
@@ -145,7 +145,7 @@ class GoalControllerTest extends ControllerTestSupport {
       // given
       String invalidColor = faker.lorem()
           .characters(1, 5, true, true);
-      CreateGoalRequest request = new CreateGoalRequest(name, invalidColor, validPrivacy);
+      CreateGoalRequest request = new CreateGoalRequest(name, invalidColor, privacyType);
 
       given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willThrow(new InvalidParameterException(GoalErrorCode.INVALID_COLOR_FORMAT));
@@ -168,7 +168,7 @@ class GoalControllerTest extends ControllerTestSupport {
     @Test
     void 로그인_사용자_정보가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
-      CreateGoalRequest request = new CreateGoalRequest(name, color, validPrivacy);
+      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
       Long invalidId = faker.random()
           .nextLong();
 
@@ -305,7 +305,7 @@ class GoalControllerTest extends ControllerTestSupport {
           .name(name)
           .status(GoalStatus.IN_PROGRESS)
           .color(color)
-          .privacyType(validPrivacy)
+          .privacyType(privacyType)
           .build();
     }
 
@@ -420,9 +420,9 @@ class GoalControllerTest extends ControllerTestSupport {
       Long goalId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          name, GoalStatus.IN_PROGRESS, color, validPrivacy);
+          name, GoalStatus.IN_PROGRESS, color, privacyType);
       GoalResponse response = new GoalResponse(
-          goalId, name, GoalStatus.IN_PROGRESS, color, validPrivacy);
+          goalId, name, GoalStatus.IN_PROGRESS, color, privacyType);
 
       willDoNothing().given(goalService)
           .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
@@ -516,7 +516,7 @@ class GoalControllerTest extends ControllerTestSupport {
       Long invalidId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          name, GoalStatus.IN_PROGRESS, color, validPrivacy);
+          name, GoalStatus.IN_PROGRESS, color, privacyType);
 
       willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING)).given(goalService)
           .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
@@ -544,7 +544,7 @@ class GoalControllerTest extends ControllerTestSupport {
       Long goalId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          name, GoalStatus.IN_PROGRESS, color, validPrivacy);
+          name, GoalStatus.IN_PROGRESS, color, privacyType);
 
       willThrow(new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY)).given(goalService)
           .update(anyLong(), anyLong(), any(UpdateGoalRequest.class));
