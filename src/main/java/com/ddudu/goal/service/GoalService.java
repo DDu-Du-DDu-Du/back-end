@@ -43,7 +43,7 @@ public class GoalService {
   }
 
   @Transactional
-  public void update(
+  public GoalResponse update(
       Long loginId, Long id, UpdateGoalRequest request
   ) {
     Goal goal = findGoal(id, GoalErrorCode.ID_NOT_EXISTING);
@@ -52,6 +52,8 @@ public class GoalService {
 
     goal.applyGoalUpdates(
         request.name(), request.status(), request.color(), request.privacyType());
+
+    return GoalResponse.from(goal);
   }
 
   public GoalResponse findById(Long loginId, Long id) {

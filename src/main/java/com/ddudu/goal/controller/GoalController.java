@@ -47,7 +47,7 @@ public class GoalController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Void> update(
+  public ResponseEntity<GoalResponse> update(
       @Login
       Long loginId,
       @PathVariable
@@ -56,10 +56,10 @@ public class GoalController {
       @Valid
       UpdateGoalRequest request
   ) {
-    goalService.update(loginId, id, request);
+    GoalResponse response = goalService.update(loginId, id, request);
 
-    return ResponseEntity.noContent()
-        .build();
+    return ResponseEntity.ok()
+        .body(response);
   }
 
   @GetMapping("/{id}")
