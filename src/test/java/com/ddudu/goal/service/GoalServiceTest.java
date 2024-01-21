@@ -56,19 +56,19 @@ class GoalServiceTest {
   private EntityManager entityManager;
 
   private User user;
-  private String validName;
-  private String validColor;
-  private PrivacyType validPrivacyType;
+  private String name;
+  private String color;
+  private PrivacyType privacyType;
 
   @BeforeEach
   void setUp() {
     user = createUser();
-    validName = faker.lorem()
+    name = faker.lorem()
         .word();
-    validColor = faker.color()
+    color = faker.color()
         .hex()
         .substring(1);
-    validPrivacyType = provideRandomPrivacy();
+    privacyType = provideRandomPrivacy();
   }
 
   @Nested
@@ -77,19 +77,19 @@ class GoalServiceTest {
     @Test
     void 목표명_색상_공개_설정을_입력해_목표_생성에_성공한다() {
       // when
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacyType);
+      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
       CreateGoalResponse expected = goalService.create(user.getId(), request);
 
       // then
       Optional<Goal> actual = goalRepository.findById(expected.id());
       assertThat(actual.get()).extracting("name", "color", "privacyType")
-          .containsExactly(expected.name(), expected.color(), validPrivacyType);
+          .containsExactly(expected.name(), expected.color(), privacyType);
     }
 
     @Test
     void 목표_생성_시_ID가_자동_생성된다() {
       // given
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacyType);
+      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
 
       // when
       CreateGoalResponse expected = goalService.create(user.getId(), request);
@@ -103,7 +103,7 @@ class GoalServiceTest {
     @Test
     void 목표_생성_시_목표_상태는_IN_PROGRESS가_된다() {
       // given
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacyType);
+      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
 
       // when
       CreateGoalResponse expected = goalService.create(user.getId(), request);
@@ -121,7 +121,7 @@ class GoalServiceTest {
       String defaultColor = "191919";
 
       CreateGoalRequest request = new CreateGoalRequest(
-          validName, invalidColor, validPrivacyType);
+          name, invalidColor, privacyType);
 
       // when
       CreateGoalResponse expected = goalService.create(user.getId(), request);
@@ -136,7 +136,7 @@ class GoalServiceTest {
     void 보기_설정을_설정하지_않으면_PRIVATE이_적용된다() {
       // given
       PrivacyType defaultPrivacyType = PrivacyType.PRIVATE;
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, null);
+      CreateGoalRequest request = new CreateGoalRequest(name, color, null);
 
       // when
       CreateGoalResponse expected = goalService.create(user.getId(), request);
@@ -152,7 +152,7 @@ class GoalServiceTest {
       // given
       Long invalidUserId = faker.random()
           .nextLong();
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacyType);
+      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
 
       // when
       ThrowingCallable create = () -> goalService.create(invalidUserId, request);
@@ -170,7 +170,7 @@ class GoalServiceTest {
     @Test
     void ID를_통해_목표를_조회_할_수_있다() {
       // given
-      Goal expected = createGoal(user, validName);
+      Goal expected = createGoal(user, name);
       Long id = expected.getId();
       Long loginId = user.getId();
 
@@ -189,7 +189,7 @@ class GoalServiceTest {
     void 삭제된_목표의_ID인_경우_조회에_실패한다() {
       // given
       Long loginId = user.getId();
-      Goal goal = createGoal(user, validName);
+      Goal goal = createGoal(user, name);
 
       goal.delete();
       flushAndClearPersistence();
@@ -220,7 +220,7 @@ class GoalServiceTest {
     @Test
     void 로그인_사용자가_권한이_없는_경우_조회에_실패한다() {
       // given
-      Goal goal = createGoal(user, validName);
+      Goal goal = createGoal(user, name);
       Long invalidLoginId = faker.random()
           .nextLong();
 
@@ -240,7 +240,7 @@ class GoalServiceTest {
     @Test
     void 사용자의_전체_목표를_조회_할_수_있다() {
       // given
-      List<Goal> expected = createGoals(user, List.of(validName));
+      List<Goal> expected = createGoals(user, List.of(name));
       Long loginId = user.getId();
 
       // when
@@ -264,7 +264,7 @@ class GoalServiceTest {
       Long invalidLoginId = faker.random()
           .nextLong();
 
-      createGoals(user, List.of(validName));
+      createGoals(user, List.of(name));
 
       // when
       ThrowingCallable findAllByUser = () -> goalService.findAllByUser(
@@ -299,7 +299,7 @@ class GoalServiceTest {
     @Test
     void 목표를_수정_할_수_있다() {
       // given
-      Goal goal = createGoal(user, validName);
+      Goal goal = createGoal(user, name);
       Long loginId = user.getId();
       UpdateGoalRequest request = new UpdateGoalRequest(
           changedName, changedStatus, changedColor, changedPrivacyType);
@@ -317,7 +317,7 @@ class GoalServiceTest {
     @Test
     void 유효하지_않은_ID인_경우_수정에_실패한다() {
       // given
-      createGoal(user, validName);
+      createGoal(user, name);
 
       Long invalidId = faker.random()
           .nextLong();
@@ -335,7 +335,7 @@ class GoalServiceTest {
     @Test
     void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
       // given
-      Goal goal = createGoal(user, validName);
+      Goal goal = createGoal(user, name);
       Long invalidLoginId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
@@ -364,7 +364,7 @@ class GoalServiceTest {
     void 목표를_삭제_할_수_있다() {
       // given
       Long loginId = user.getId();
-      Goal goal = createGoal(user, validName);
+      Goal goal = createGoal(user, name);
       Optional<Goal> found = goalRepository.findById(goal.getId());
       assertThat(found).isNotEmpty();
 
@@ -395,7 +395,7 @@ class GoalServiceTest {
     void 목표가_이미_삭제된_경우_예외를_발생시키지_않는다() {
       // given
       Long loginId = user.getId();
-      Goal goal = createGoal(user, validName);
+      Goal goal = createGoal(user, name);
 
       goalService.delete(loginId, goal.getId());
       flushAndClearPersistence();
@@ -412,7 +412,7 @@ class GoalServiceTest {
     @Test
     void 로그인_사용자가_권한이_없는_경우_삭제에_실패한다() {
       // given
-      Goal goal = createGoal(user, validName);
+      Goal goal = createGoal(user, name);
       Long invalidLoginId = faker.random()
           .nextLong();
 

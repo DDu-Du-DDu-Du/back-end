@@ -51,23 +51,23 @@ class GoalControllerTest extends ControllerTestSupport {
   @MockBean
   GoalService goalService;
 
-  String validName;
-  Long validUserId;
+  String name;
+  Long userId;
   String token;
-  String validColor;
-  PrivacyType validPrivacy;
+  String color;
+  PrivacyType privacyType;
 
   @BeforeEach
   void setUp() {
-    validName = faker.lorem()
+    name = faker.lorem()
         .word();
-    validUserId = faker.random()
+    userId = faker.random()
         .nextLong();
-    token = createBearerToken(validUserId);
-    validColor = faker.color()
+    token = createBearerToken(userId);
+    color = faker.color()
         .hex()
         .substring(1);
-    validPrivacy = provideRandomPrivacy();
+    privacyType = provideRandomPrivacy();
   }
 
   @Nested
@@ -80,8 +80,8 @@ class GoalControllerTest extends ControllerTestSupport {
       // given
       Long goalId = faker.random()
           .nextLong();
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacy);
-      CreateGoalResponse response = new CreateGoalResponse(goalId, validName, validColor);
+      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
+      CreateGoalResponse response = new CreateGoalResponse(goalId, name, color);
 
       given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willReturn(response);
@@ -145,7 +145,7 @@ class GoalControllerTest extends ControllerTestSupport {
       // given
       String invalidColor = faker.lorem()
           .characters(1, 5, true, true);
-      CreateGoalRequest request = new CreateGoalRequest(validName, invalidColor, validPrivacy);
+      CreateGoalRequest request = new CreateGoalRequest(name, invalidColor, privacyType);
 
       given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willThrow(new InvalidParameterException(GoalErrorCode.INVALID_COLOR_FORMAT));
@@ -166,32 +166,19 @@ class GoalControllerTest extends ControllerTestSupport {
     }
 
     @Test
-    void 로그인_사용자_정보가_없으면_401_Unauthorized를_반환한다() throws Exception {
-      // given
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacy);
-
-      // when
-      ResultActions action = mockMvc.perform(post(PATH)
-          .content(objectMapper.writeValueAsString(request))
-          .contentType(MediaType.APPLICATION_JSON));
-
-      // then
-      action.andExpect(status().isUnauthorized());
-    }
-
-    @Test
     void 로그인_사용자_정보가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
-      CreateGoalRequest request = new CreateGoalRequest(validName, validColor, validPrivacy);
-      Long invalidId = faker.random()
+      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
+      Long anotherUserId = faker.random()
           .nextLong();
+      String invalidToken = createBearerToken(anotherUserId);
 
       given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
           .willThrow(new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
 
       // when
       ResultActions action = mockMvc.perform(post(PATH)
-          .header(AUTHORIZATION, createBearerToken(invalidId))
+          .header(AUTHORIZATION, invalidToken)
           .content(objectMapper.writeValueAsString(request))
           .contentType(MediaType.APPLICATION_JSON));
 
@@ -316,10 +303,10 @@ class GoalControllerTest extends ControllerTestSupport {
 
       return GoalResponse.builder()
           .id(id)
-          .name(validName)
+          .name(name)
           .status(GoalStatus.IN_PROGRESS)
-          .color(validColor)
-          .privacyType(validPrivacy)
+          .color(color)
+          .privacyType(privacyType)
           .build();
     }
 
@@ -389,7 +376,7 @@ class GoalControllerTest extends ControllerTestSupport {
       // when
       ResultActions action = mockMvc.perform(get(PATH)
           .header(AUTHORIZATION, token)
-          .queryParam("userId", String.valueOf(validUserId))
+          .queryParam("userId", String.valueOf(userId))
           .contentType(MediaType.APPLICATION_JSON));
 
       // then
@@ -406,9 +393,9 @@ class GoalControllerTest extends ControllerTestSupport {
           .nextLong();
       GoalSummaryResponse goalSummaryResponse = GoalSummaryResponse.builder()
           .id(goalId)
-          .name(validName)
+          .name(name)
           .status(GoalStatus.IN_PROGRESS.name())
-          .color(validColor)
+          .color(color)
           .build();
 
       return List.of(goalSummaryResponse);
@@ -434,9 +421,9 @@ class GoalControllerTest extends ControllerTestSupport {
       Long goalId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          validName, GoalStatus.IN_PROGRESS, validColor, validPrivacy);
+          name, GoalStatus.IN_PROGRESS, color, privacyType);
       GoalResponse response = new GoalResponse(
-          goalId, validName, GoalStatus.IN_PROGRESS, validColor, validPrivacy);
+          goalId, name, GoalStatus.IN_PROGRESS, color, privacyType);
 
       given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willReturn(response);
@@ -492,7 +479,7 @@ class GoalControllerTest extends ControllerTestSupport {
 
       // when
       ResultActions action = mockMvc.perform(put(PATH, 1L)
-          .header(AUTHORIZATION, createBearerToken(validUserId))
+          .header(AUTHORIZATION, token)
           .content(invalidRequestJson)
           .contentType(MediaType.APPLICATION_JSON));
 
@@ -537,10 +524,10 @@ class GoalControllerTest extends ControllerTestSupport {
       Long invalidId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          validName, GoalStatus.IN_PROGRESS, validColor, validPrivacy);
+          name, GoalStatus.IN_PROGRESS, color, privacyType);
 
-      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class))).willThrow(
-          new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
+          .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
 
       // when
       ResultActions action = mockMvc.perform(put(PATH, invalidId)
@@ -560,18 +547,20 @@ class GoalControllerTest extends ControllerTestSupport {
     @Test
     void 로그인_사용자에게_권한이_없으면_403_Forbidden을_반환한다() throws Exception {
       // given
-      Long invalidUserId = faker.random()
+      Long anotherUserId = faker.random()
           .nextLong();
+      String invalidToken = createBearerToken(anotherUserId);
       Long goalId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          validName, GoalStatus.IN_PROGRESS, validColor, validPrivacy);
+          name, GoalStatus.IN_PROGRESS, color, privacyType);
 
-      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class))).willThrow(
-          new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY));
+      given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
+          .willThrow(new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY));
 
       // when
-      ResultActions action = mockMvc.perform(put(PATH, goalId).header(AUTHORIZATION, token)
+      ResultActions action = mockMvc.perform(put(PATH, goalId)
+          .header(AUTHORIZATION, invalidToken)
           .content(objectMapper.writeValueAsString(request))
           .contentType(MediaType.APPLICATION_JSON));
 

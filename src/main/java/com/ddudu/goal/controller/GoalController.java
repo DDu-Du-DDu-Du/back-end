@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/goals")
 @RequiredArgsConstructor
-@Slf4j
 public class GoalController {
+
+  private static final String GOALS_BASE_PATH = "/api/goals/";
 
   private final GoalService goalService;
 
@@ -37,10 +37,10 @@ public class GoalController {
       Long userId,
       @RequestBody
       @Valid
-          CreateGoalRequest request
+      CreateGoalRequest request
   ) {
     CreateGoalResponse response = goalService.create(userId, request);
-    URI uri = URI.create("/api/goals/" + response.id());
+    URI uri = URI.create(GOALS_BASE_PATH + response.id());
 
     return ResponseEntity.created(uri)
         .body(response);
@@ -51,14 +51,15 @@ public class GoalController {
       @Login
       Long loginId,
       @PathVariable
-          Long id,
+      Long id,
       @RequestBody
       @Valid
-          UpdateGoalRequest request
+      UpdateGoalRequest request
   ) {
     GoalResponse response = goalService.update(loginId, id, request);
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok()
+        .body(response);
   }
 
   @GetMapping("/{id}")
@@ -66,7 +67,7 @@ public class GoalController {
       @Login
       Long loginId,
       @PathVariable
-          Long id
+      Long id
   ) {
     GoalResponse response = goalService.findById(loginId, id);
 
@@ -78,7 +79,7 @@ public class GoalController {
       @Login
       Long loginId,
       @RequestParam
-          Long userId
+      Long userId
   ) {
     List<GoalSummaryResponse> response = goalService.findAllByUser(loginId, userId);
 
@@ -90,7 +91,7 @@ public class GoalController {
       @Login
       Long loginId,
       @PathVariable
-          Long id
+      Long id
   ) {
     goalService.delete(loginId, id);
 

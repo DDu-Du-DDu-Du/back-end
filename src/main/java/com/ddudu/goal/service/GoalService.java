@@ -1,6 +1,7 @@
 package com.ddudu.goal.service;
 
 import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
@@ -12,17 +13,14 @@ import com.ddudu.goal.exception.GoalErrorCode;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Validated
 public class GoalService {
 
   private final GoalRepository goalRepository;
@@ -30,10 +28,9 @@ public class GoalService {
 
   @Transactional
   public CreateGoalResponse create(
-      Long userId, @Valid CreateGoalRequest request
+      Long userId, CreateGoalRequest request
   ) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
+    User user = findUser(userId, GoalErrorCode.USER_NOT_EXISTING);
 
     Goal goal = Goal.builder()
         .name(request.name())
@@ -47,10 +44,9 @@ public class GoalService {
 
   @Transactional
   public GoalResponse update(
-      Long loginId, Long id, @Valid UpdateGoalRequest request
+      Long loginId, Long id, UpdateGoalRequest request
   ) {
-    Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
+    Goal goal = findGoal(id, GoalErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, goal);
 
@@ -61,8 +57,7 @@ public class GoalService {
   }
 
   public GoalResponse findById(Long loginId, Long id) {
-    Goal goal = goalRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
+    Goal goal = findGoal(id, GoalErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, goal);
 
@@ -74,8 +69,7 @@ public class GoalService {
       throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
     }
 
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
+    User user = findUser(userId, GoalErrorCode.USER_NOT_EXISTING);
 
     List<Goal> goals = goalRepository.findAllByUser(user);
 
@@ -93,10 +87,20 @@ public class GoalService {
         });
   }
 
-  private static void checkPermission(Long loginId, Goal goal) {
+  private void checkPermission(Long loginId, Goal goal) {
     if (!goal.isCreatedByUser(loginId)) {
       throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
     }
+  }
+
+  private User findUser(Long userId, ErrorCode errorCode) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
+  }
+
+  private Goal findGoal(Long goalId, ErrorCode errorCode) {
+    return goalRepository.findById(goalId)
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
   }
 
 }
