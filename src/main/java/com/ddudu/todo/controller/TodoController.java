@@ -38,10 +38,10 @@ public class TodoController {
   @PostMapping
   public ResponseEntity<TodoInfo> create(
       @Login
-      Long loginId,
+          Long loginId,
       @RequestBody
       @Valid
-      CreateTodoRequest request
+          CreateTodoRequest request
   ) {
     TodoInfo response = todoService.create(loginId, request);
     URI uri = URI.create("/api/todos/" + response.id());
@@ -53,9 +53,9 @@ public class TodoController {
   @GetMapping("/{id}")
   public ResponseEntity<TodoResponse> getById(
       @Login
-      Long loginId,
+          Long loginId,
       @PathVariable
-      Long id
+          Long id
   ) {
     TodoResponse response = todoService.findById(loginId, id);
 
@@ -65,12 +65,12 @@ public class TodoController {
   @GetMapping("/daily")
   public ResponseEntity<List<TodoListResponse>> getDaily(
       @Login
-      Long loginId,
+          Long loginId,
       @RequestParam(required = false)
-      Long userId,
+          Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+          LocalDate date
   ) {
     userId = (userId == null) ? loginId : userId;
     date = (date == null) ? LocalDate.now() : date;
@@ -82,12 +82,12 @@ public class TodoController {
   @GetMapping("/weekly")
   public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
       @Login
-      Long loginId,
+          Long loginId,
       @RequestParam(required = false)
-      Long userId,
+          Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+          LocalDate date
   ) {
     userId = (userId == null) ? loginId : userId;
     DayOfWeek weekStart = DayOfWeek.MONDAY;
@@ -102,12 +102,12 @@ public class TodoController {
   @GetMapping("/monthly")
   public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
       @Login
-      Long loginId,
+          Long loginId,
       @RequestParam(required = false)
-      Long userId,
+          Long userId,
       @RequestParam(value = "date", required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
-      YearMonth yearMonth
+          YearMonth yearMonth
   ) {
     userId = (userId == null) ? loginId : userId;
     yearMonth = (yearMonth == null) ? YearMonth.now() : yearMonth;
@@ -120,12 +120,12 @@ public class TodoController {
   @PutMapping("/{id}")
   public ResponseEntity<TodoInfo> update(
       @Login
-      Long loginId,
+          Long loginId,
       @PathVariable
-      Long id,
+          Long id,
       @RequestBody
       @Valid
-      UpdateTodoRequest request
+          UpdateTodoRequest request
   ) {
     TodoInfo response = todoService.update(loginId, id, request);
 
@@ -133,23 +133,24 @@ public class TodoController {
   }
 
   @PatchMapping("/{id}/status")
-  public ResponseEntity<TodoResponse> updateStatus(
+  public ResponseEntity<Void> updateStatus(
       @Login
-      Long loginId,
+          Long loginId,
       @PathVariable
-      Long id
+          Long id
   ) {
-    TodoResponse response = todoService.updateStatus(loginId, id);
+    todoService.updateStatus(loginId, id);
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.noContent()
+        .build();
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(
       @Login
-      Long loginId,
+          Long loginId,
       @PathVariable
-      Long id
+          Long id
   ) {
     todoService.delete(loginId, id);
 

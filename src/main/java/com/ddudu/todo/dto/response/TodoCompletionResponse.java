@@ -6,15 +6,15 @@ import lombok.Builder;
 @Builder
 public record TodoCompletionResponse(
     LocalDate date,
-    int totalTodos,
-    int uncompletedTodos
+    int totalCount,
+    int uncompletedCount
 ) {
 
   public static TodoCompletionResponse createEmptyResponse(LocalDate date) {
     return TodoCompletionResponse.builder()
         .date(date)
-        .totalTodos(0)
-        .uncompletedTodos(0)
+        .totalCount(0)
+        .uncompletedCount(0)
         .build();
   }
 

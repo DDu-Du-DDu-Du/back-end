@@ -51,8 +51,7 @@ public class TodoService {
   @Transactional
   public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
     User user = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
-    Goal goal = goalRepository.findById(request.goalId())
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
+    Goal goal = findGoal(request.goalId(), TodoErrorCode.GOAL_NOT_EXISTING);
 
     checkGoalPermission(loginId, goal);
 
@@ -67,8 +66,7 @@ public class TodoService {
   }
 
   public TodoResponse findById(Long loginId, Long id) {
-    Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
+    Todo todo = findTodo(id, TodoErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, todo);
 
@@ -127,13 +125,11 @@ public class TodoService {
 
   @Transactional
   public TodoInfo update(Long loginId, Long id, UpdateTodoRequest request) {
-    Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
+    Todo todo = findTodo(id, TodoErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, todo);
 
-    Goal goal = goalRepository.findById(request.goalId())
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
+    Goal goal = findGoal(request.goalId(), TodoErrorCode.GOAL_NOT_EXISTING);
 
     checkGoalPermission(loginId, goal);
 
@@ -143,15 +139,12 @@ public class TodoService {
   }
 
   @Transactional
-  public TodoResponse updateStatus(Long loginId, Long id) {
-    Todo todo = todoRepository.findById(id)
-        .orElseThrow(() -> new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
+  public void updateStatus(Long loginId, Long id) {
+    Todo todo = findTodo(id, TodoErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, todo);
 
     todo.switchStatus();
-
-    return TodoResponse.from(todo);
   }
 
   @Transactional
@@ -197,6 +190,16 @@ public class TodoService {
 
   private User findUser(Long userId, ErrorCode errorCode) {
     return userRepository.findById(userId)
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
+  }
+
+  private Goal findGoal(Long goalId, ErrorCode errorCode) {
+    return goalRepository.findById(goalId)
+        .orElseThrow(() -> new DataNotFoundException(errorCode));
+  }
+
+  private Todo findTodo(Long todoId, ErrorCode errorCode) {
+    return todoRepository.findById(todoId)
         .orElseThrow(() -> new DataNotFoundException(errorCode));
   }
 
