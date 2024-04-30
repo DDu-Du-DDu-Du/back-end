@@ -4,7 +4,6 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
     id 'jacoco'
     id 'checkstyle'
-    id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 group = 'com.devcourse'
@@ -22,15 +21,10 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-    asciidoctorExt
 }
 
 repositories {
     mavenCentral()
-}
-
-ext {
-    snippetsDir = file('build/generated-snippets')
 }
 
 dependencies {
@@ -62,10 +56,6 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-    // RestDocs
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
@@ -73,8 +63,8 @@ dependencies {
 
 def querydslSrcDir = 'src/main/generated'
 
-clean {
-    delete file(querydslSrcDir)
+compileJava {
+    options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }
 
 processResources.dependsOn('copyMainSecret')
@@ -92,10 +82,6 @@ tasks.register('copyTestSecret', Copy) {
     into './src/test/resources'
 }
 
-tasks.withType(JavaCompile) {
-    options.generatedSourceOutputDirectory = file(querydslSrcDir)
-}
-
 tasks.withType(Checkstyle) {
     reports {
         xml.required = true
@@ -103,11 +89,10 @@ tasks.withType(Checkstyle) {
     }
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
 
     finalizedBy jacocoTestReport
-    outputs.dir snippetsDir
 }
 
 jacocoTestReport {
@@ -166,20 +151,6 @@ private excludedClassFilesForJacoco(classDirectories) {
     )
 }
 
-asciidoctor {
-    inputs.dir snippetsDir
-    configurations 'asciidoctorExt'
-    sources {
-        include 'index.adoc'
-    }
-    dependsOn test
-    outputDir 'src/docs/asciidoc'
-}
-
-bootJar {
-    dependsOn asciidoctor
-    copy {
-        from "${asciidoctor.outputDir}"
-        into 'build/static/docs'
-    }
+clean {
+    delete file(querydslSrcDir)
 }
