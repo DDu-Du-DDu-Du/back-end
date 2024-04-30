@@ -1,6 +1,0 @@
-jwt:
-  secret-key: 7KCA7Z2sLe2MgC3snZjsp4TsnbTripQt7J6g7J20LeunjuyKteuLiOuLpC3sgqzsi6Qt7KCA64+ELeq3uOuemOyalAo=
-  expired-after: 15
-spring:
-  profiles:
-    active: local

@@ -227,3 +227,6 @@ DduDuStyle.xml
 
 # IntelliJ EnvFile
 scripts/**/.env
+
+# Secrets
+src/**/application*.yaml
