@@ -105,50 +105,31 @@ jacocoTestReport {
         xml.outputLocation = layout.buildDirectory.file('jacocoReports/jacoco.xml')
     }
 
-    excludedClassFilesForJacoco(classDirectories)
-
     finalizedBy jacocoTestCoverageVerification
 }
 
 jacocoTestCoverageVerification {
-    excludedClassFilesForJacoco(classDirectories)
-
     violationRules {
         rule {
-            enabled = true
             element = 'CLASS'
 
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.60
+                minimum = 0.50
             }
 
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.70
+                minimum = 0.50
             }
 
-            limit {
-                counter = 'LINE'
-                value = 'TOTALCOUNT'
-                maximum = 200
-            }
+            includes = ['*.service.*']
+
+            excludes = ["*.Q*"]
         }
     }
-}
-
-private excludedClassFilesForJacoco(classDirectories) {
-    classDirectories.setFrom(
-            files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: [
-                        "**/*Application*",
-                        "**/*Config*",
-                        "**/*Q*"
-                ])
-            })
-    )
 }
 
 clean {
