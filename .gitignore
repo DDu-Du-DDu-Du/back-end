@@ -224,3 +224,9 @@ DduDuStyle.xml
 
 # Ignore QueryDSL generated files
 /src/main/generated/
+
+# IntelliJ EnvFile
+scripts/**/.env
+
+# Secrets
+src/**/application*.yaml

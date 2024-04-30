@@ -1,0 +1,31 @@
+name: ddudu-be
+
+services:
+  mysql-local:
+    image: mysql:8.0
+    container_name: mysql-local
+    ports:
+      - ${MYSQL_LOCAL_PORT}
+    volumes:
+      - data_volume:/var/lib/mysql-local
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+  mysql-test:
+    image: mysql:8.0
+    container_name: mysql-test
+    ports:
+      - ${MYSQL_TEST_PORT}
+    volumes:
+      - data_volume:/var/lib/mysql-test
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_TEST_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+volumes:
+  data_volume:
