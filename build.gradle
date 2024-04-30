@@ -77,6 +77,21 @@ clean {
     delete file(querydslSrcDir)
 }
 
+processResources.dependsOn('copyMainSecret')
+processTestResources.dependsOn('copyTestSecret')
+
+tasks.register('copyMainSecret', Copy) {
+    from './secrets/main'
+    include 'application*.yaml'
+    into './src/main/resources'
+}
+
+tasks.register('copyTestSecret', Copy) {
+    from './secrets/test'
+    include 'application*.yaml'
+    into './src/test/resources'
+}
+
 tasks.withType(JavaCompile) {
     options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }
