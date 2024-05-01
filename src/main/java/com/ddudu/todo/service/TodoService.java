@@ -5,9 +5,9 @@ import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.goal.repository.GoalRepository;
+import com.ddudu.goal.repository.GoalDao;
 import com.ddudu.like.domain.Like;
-import com.ddudu.like.repository.LikeRepository;
+import com.ddudu.like.repository.LikeDao;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.request.UpdateTodoRequest;
@@ -17,10 +17,10 @@ import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.exception.TodoErrorCode;
-import com.ddudu.todo.repository.TodoRepository;
+import com.ddudu.todo.repository.TodoDao;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.FollowingRepository;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.FollowingDao;
+import com.ddudu.user.repository.UserDao;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,14 +42,18 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class TodoService {
 
-  private final TodoRepository todoRepository;
-  private final GoalRepository goalRepository;
-  private final UserRepository userRepository;
-  private final FollowingRepository followingRepository;
-  private final LikeRepository likeRepository;
+  private final TodoDao todoRepository;
+  private final GoalDao goalRepository;
+  private final UserDao userRepository;
+  private final FollowingDao followingRepository;
+  private final LikeDao likeRepository;
 
   @Transactional
-  public TodoInfo create(Long loginId, @Valid CreateTodoRequest request) {
+  public TodoInfo create(
+      Long loginId,
+      @Valid
+      CreateTodoRequest request
+  ) {
     User user = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
     Goal goal = findGoal(request.goalId(), TodoErrorCode.GOAL_NOT_EXISTING);
 

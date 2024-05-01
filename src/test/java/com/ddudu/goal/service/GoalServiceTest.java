@@ -14,9 +14,9 @@ import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.exception.GoalErrorCode;
-import com.ddudu.goal.repository.GoalRepository;
+import com.ddudu.goal.repository.GoalDao;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.UserDao;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -47,10 +47,10 @@ class GoalServiceTest {
   private GoalService goalService;
 
   @Autowired
-  private GoalRepository goalRepository;
+  private GoalDao goalRepository;
 
   @Autowired
-  private UserRepository userRepository;
+  private UserDao userRepository;
 
   @Autowired
   private EntityManager entityManager;

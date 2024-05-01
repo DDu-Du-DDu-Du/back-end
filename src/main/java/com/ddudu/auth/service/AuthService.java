@@ -12,7 +12,7 @@ import com.ddudu.config.properties.JwtProperties;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.UserDao;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AuthService {
 
-  private final UserRepository userRepository;
+  private final UserDao userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtIssuer jwtIssuer;
   private final JwtProperties jwtProperties;

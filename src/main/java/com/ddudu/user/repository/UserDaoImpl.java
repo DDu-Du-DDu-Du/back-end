@@ -15,11 +15,11 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserRepositoryImpl implements UserRepositoryCustom {
+public class UserDaoImpl implements UserDaoCustom {
 
   private final JPAQueryFactory jpaQueryFactory;
 
-  public UserRepositoryImpl(EntityManager em) {
+  public UserDaoImpl(EntityManager em) {
     this.jpaQueryFactory = new JPAQueryFactory(em);
   }
 

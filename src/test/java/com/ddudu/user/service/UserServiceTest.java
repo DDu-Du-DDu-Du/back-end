@@ -23,8 +23,8 @@ import com.ddudu.user.dto.response.ToggleOptionResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
-import com.ddudu.user.repository.FollowingRepository;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.FollowingDao;
+import com.ddudu.user.repository.UserDao;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -63,10 +63,10 @@ class UserServiceTest {
   UserService userService;
 
   @Autowired
-  UserRepository userRepository;
+  UserDao userRepository;
 
   @Autowired
-  FollowingRepository followingRepository;
+  FollowingDao followingRepository;
 
   @Autowired
   PasswordEncoder passwordEncoder;

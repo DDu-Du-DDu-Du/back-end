@@ -5,7 +5,7 @@ import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.FollowingSearchType;
 import java.util.List;
 
-public interface UserRepositoryCustom {
+public interface UserDaoCustom {
 
   List<UserEntity> findFromFollowingBySearchType(
       UserEntity follower, FollowingSearchType searchType

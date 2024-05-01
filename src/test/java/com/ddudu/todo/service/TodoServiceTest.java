@@ -7,9 +7,9 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.goal.repository.GoalRepository;
+import com.ddudu.goal.repository.GoalDao;
 import com.ddudu.like.domain.Like;
-import com.ddudu.like.repository.LikeRepository;
+import com.ddudu.like.repository.LikeDao;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
@@ -19,10 +19,10 @@ import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.exception.TodoErrorCode;
-import com.ddudu.todo.repository.TodoRepository;
+import com.ddudu.todo.repository.TodoDao;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.dto.request.FollowRequest;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.UserDao;
 import com.ddudu.user.service.FollowingService;
 import jakarta.persistence.EntityManager;
 import java.time.DayOfWeek;
@@ -55,19 +55,19 @@ class TodoServiceTest {
   TodoService todoService;
 
   @Autowired
-  TodoRepository todoRepository;
+  TodoDao todoRepository;
 
   @Autowired
-  GoalRepository goalRepository;
+  GoalDao goalRepository;
 
   @Autowired
-  UserRepository userRepository;
+  UserDao userRepository;
 
   @Autowired
   FollowingService followingService;
 
   @Autowired
-  LikeRepository likeRepository;
+  LikeDao likeRepository;
 
   @Autowired
   EntityManager entityManager;

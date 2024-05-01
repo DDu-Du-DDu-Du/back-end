@@ -20,7 +20,7 @@ import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.UserDao;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -37,7 +37,7 @@ public class UserService {
 
   private static final String PASSWORD_UPDATE_SUCCESS = "비밀번호가 성공적으로 변경되었습니다.";
 
-  private final UserRepository userRepository;
+  private final UserDao userRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Transactional

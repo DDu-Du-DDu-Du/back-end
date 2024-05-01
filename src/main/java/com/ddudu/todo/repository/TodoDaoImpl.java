@@ -18,11 +18,11 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TodoRepositoryImpl implements TodoRepositoryCustom {
+public class TodoDaoImpl implements TodoDaoCustom {
 
   private final JPAQueryFactory jpaQueryFactory;
 
-  public TodoRepositoryImpl(EntityManager em) {
+  public TodoDaoImpl(EntityManager em) {
     this.jpaQueryFactory = new JPAQueryFactory(em);
   }
 

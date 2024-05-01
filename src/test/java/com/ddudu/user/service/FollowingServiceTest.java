@@ -17,8 +17,8 @@ import com.ddudu.user.dto.request.UpdateFollowingRequest;
 import com.ddudu.user.dto.response.FollowingResponse;
 import com.ddudu.user.exception.FollowingErrorCode;
 import com.ddudu.user.exception.UserErrorCode;
-import com.ddudu.user.repository.FollowingRepository;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.FollowingDao;
+import com.ddudu.user.repository.UserDao;
 import java.util.Objects;
 import java.util.Optional;
 import net.datafaker.Faker;
@@ -40,13 +40,13 @@ class FollowingServiceTest {
   static final Faker faker = new Faker();
 
   @Autowired
-  UserRepository userRepository;
+  UserDao userRepository;
 
   @Autowired
   FollowingService followingService;
 
   @Autowired
-  FollowingRepository followingRepository;
+  FollowingDao followingRepository;
 
   @Autowired
   PasswordEncoder passwordEncoder;

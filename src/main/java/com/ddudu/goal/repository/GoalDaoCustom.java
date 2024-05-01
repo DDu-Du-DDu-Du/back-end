@@ -5,7 +5,7 @@ import com.ddudu.persistence.entity.GoalEntity;
 import com.ddudu.persistence.entity.UserEntity;
 import java.util.List;
 
-public interface GoalRepositoryCustom {
+public interface GoalDaoCustom {
 
   List<GoalEntity> findAllByUser(UserEntity user);
 

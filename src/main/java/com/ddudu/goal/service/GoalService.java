@@ -10,9 +10,9 @@ import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.exception.GoalErrorCode;
-import com.ddudu.goal.repository.GoalRepository;
+import com.ddudu.goal.repository.GoalDao;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.UserDao;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GoalService {
 
-  private final GoalRepository goalRepository;
-  private final UserRepository userRepository;
+  private final GoalDao goalRepository;
+  private final UserDao userRepository;
 
   @Transactional
   public CreateGoalResponse create(

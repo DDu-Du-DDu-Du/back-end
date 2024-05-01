@@ -7,7 +7,7 @@ import com.ddudu.todo.dto.response.TodoCompletionResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface TodoRepositoryCustom {
+public interface TodoDaoCustom {
 
   List<TodoEntity> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, UserEntity user);
 

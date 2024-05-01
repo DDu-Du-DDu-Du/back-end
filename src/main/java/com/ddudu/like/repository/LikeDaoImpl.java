@@ -10,11 +10,11 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class LikeRepositoryImpl implements LikeRepositoryCustom {
+public class LikeDaoImpl implements LikeDaoCustom {
 
   private final JPAQueryFactory jpaQueryFactory;
 
-  public LikeRepositoryImpl(EntityManager em) {
+  public LikeDaoImpl(EntityManager em) {
     this.jpaQueryFactory = new JPAQueryFactory(em);
   }
 

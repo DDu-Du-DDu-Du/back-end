@@ -5,7 +5,7 @@ import com.ddudu.persistence.entity.TodoEntity;
 import com.ddudu.persistence.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LikeRepository extends JpaRepository<LikeEntity, Long>, LikeRepositoryCustom {
+public interface LikeDao extends JpaRepository<LikeEntity, Long>, LikeDaoCustom {
 
   LikeEntity findByUserAndTodo(UserEntity user, TodoEntity todo);
 

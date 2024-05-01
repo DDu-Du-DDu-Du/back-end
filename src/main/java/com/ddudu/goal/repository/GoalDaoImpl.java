@@ -13,11 +13,11 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class GoalRepositoryImpl implements GoalRepositoryCustom {
+public class GoalDaoImpl implements GoalDaoCustom {
 
   private final JPAQueryFactory jpaQueryFactory;
 
-  public GoalRepositoryImpl(EntityManager em) {
+  public GoalDaoImpl(EntityManager em) {
     this.jpaQueryFactory = new JPAQueryFactory(em);
   }
 

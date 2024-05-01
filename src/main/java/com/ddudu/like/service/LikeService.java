@@ -6,11 +6,11 @@ import com.ddudu.like.domain.Like;
 import com.ddudu.like.dto.request.LikeRequest;
 import com.ddudu.like.dto.response.LikeResponse;
 import com.ddudu.like.exception.LikeErrorCode;
-import com.ddudu.like.repository.LikeRepository;
+import com.ddudu.like.repository.LikeDao;
 import com.ddudu.todo.domain.Todo;
-import com.ddudu.todo.repository.TodoRepository;
+import com.ddudu.todo.repository.TodoDao;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.UserDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class LikeService {
 
-  private final LikeRepository likeRepository;
-  private final UserRepository userRepository;
-  private final TodoRepository todoRepository;
+  private final LikeDao likeRepository;
+  private final UserDao userRepository;
+  private final TodoDao todoRepository;
 
   @Transactional
   public LikeResponse toggle(Long loginId, LikeRequest request) {

@@ -4,7 +4,7 @@ import com.ddudu.persistence.entity.GoalEntity;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface GoalRepository extends JpaRepository<GoalEntity, Long>, GoalRepositoryCustom {
+public interface GoalDao extends JpaRepository<GoalEntity, Long>, GoalDaoCustom {
 
   Optional<GoalEntity> findById(Long id);
 

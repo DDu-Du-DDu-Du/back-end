@@ -12,7 +12,7 @@ import com.ddudu.common.exception.BadCredentialsException;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.InvalidTokenException;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.UserDao;
 import java.util.Map;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -39,7 +39,7 @@ class AuthServiceTest {
   AuthService authService;
 
   @Autowired
-  UserRepository userRepository;
+  UserDao userRepository;
 
   @Autowired
   PasswordEncoder passwordEncoder;

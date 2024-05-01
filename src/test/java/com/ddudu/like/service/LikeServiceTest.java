@@ -7,16 +7,16 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.goal.repository.GoalRepository;
+import com.ddudu.goal.repository.GoalDao;
 import com.ddudu.like.domain.Like;
 import com.ddudu.like.dto.request.LikeRequest;
 import com.ddudu.like.dto.response.LikeResponse;
 import com.ddudu.like.exception.LikeErrorCode;
-import com.ddudu.like.repository.LikeRepository;
+import com.ddudu.like.repository.LikeDao;
 import com.ddudu.todo.domain.Todo;
-import com.ddudu.todo.repository.TodoRepository;
+import com.ddudu.todo.repository.TodoDao;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.user.repository.UserDao;
 import java.util.Optional;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -41,16 +41,16 @@ class LikeServiceTest {
   LikeService likeService;
 
   @Autowired
-  LikeRepository likeRepository;
+  LikeDao likeRepository;
 
   @Autowired
-  UserRepository userRepository;
+  UserDao userRepository;
 
   @Autowired
-  GoalRepository goalRepository;
+  GoalDao goalRepository;
 
   @Autowired
-  TodoRepository todoRepository;
+  TodoDao todoRepository;
 
   User user;
   Goal goal;
