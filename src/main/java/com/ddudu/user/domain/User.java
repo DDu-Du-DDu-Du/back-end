@@ -33,7 +33,8 @@ public class User extends BaseDomain {
 
   @Builder
   public User(
-      Long id, String optionalUsername, String email, Password password,
+      Long id, String optionalUsername, String email, PasswordEncoder passwordEncoder,
+      String password, String encryptedPassword,
       String nickname, String introduction, Authority authority, UserStatus status, Options options,
       LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
   ) {
@@ -43,7 +44,8 @@ public class User extends BaseDomain {
     this.id = id;
     this.optionalUsername = optionalUsername;
     this.email = new Email(email);
-    this.password = password;
+    this.password = isNull(encryptedPassword) ? new Password(password, passwordEncoder)
+        : new Password(encryptedPassword);
     this.nickname = nickname;
     this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;

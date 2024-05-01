@@ -5,7 +5,6 @@ import static java.util.Objects.isNull;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.user.domain.Email;
-import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.UserRepository;
 import com.ddudu.user.domain.UserSearchType;
@@ -51,7 +50,8 @@ public class UserService {
 
     User user = User.builder()
         .email(request.email())
-        .password(new Password(request.password(), passwordEncoder))
+        .password(request.password())
+        .passwordEncoder(passwordEncoder)
         .nickname(request.nickname())
         .introduction(request.introduction())
         .optionalUsername(request.optionalUsername())

@@ -3,7 +3,6 @@ package com.ddudu.persistence.entity;
 import com.ddudu.auth.domain.authority.Authority;
 import com.ddudu.common.BaseEntity;
 import com.ddudu.user.domain.Options;
-import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.UserStatus;
 import jakarta.persistence.Column;
@@ -101,7 +100,7 @@ public class UserEntity extends BaseEntity {
         .id(id)
         .optionalUsername(optionalUsername)
         .email(email)
-        .password(new Password(encrypted))
+        .encryptedPassword(encrypted)
         .nickname(nickname)
         .introduction(introduction)
         .authority(authority)
