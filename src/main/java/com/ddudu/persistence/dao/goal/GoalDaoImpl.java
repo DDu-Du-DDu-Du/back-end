@@ -2,8 +2,8 @@ package com.ddudu.persistence.dao.goal;
 
 import static com.ddudu.persistence.entity.QGoalEntity.goalEntity;
 
-import com.ddudu.goal.domain.GoalStatus;
-import com.ddudu.goal.domain.PrivacyType;
+import com.ddudu.application.goal.domain.GoalStatus;
+import com.ddudu.application.goal.domain.PrivacyType;
 import com.ddudu.persistence.entity.GoalEntity;
 import com.ddudu.persistence.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;

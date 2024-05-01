@@ -2,13 +2,14 @@ package com.ddudu.persistence.repository;
 
 import static java.util.Objects.isNull;
 
-import com.ddudu.like.domain.Like;
+import com.ddudu.application.like.domain.Like;
+import com.ddudu.application.like.domain.LikeRepository;
 import com.ddudu.persistence.dao.like.LikeDao;
 import com.ddudu.persistence.entity.LikeEntity;
 import com.ddudu.persistence.entity.TodoEntity;
 import com.ddudu.persistence.entity.UserEntity;
-import com.ddudu.todo.domain.Todo;
-import com.ddudu.user.domain.User;
+import com.ddudu.application.todo.domain.Todo;
+import com.ddudu.application.user.domain.User;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class LikeRepositoryImpl implements com.ddudu.like.domain.LikeRepository {
+public class LikeRepositoryImpl implements LikeRepository {
 
   private final LikeDao likeDao;
 

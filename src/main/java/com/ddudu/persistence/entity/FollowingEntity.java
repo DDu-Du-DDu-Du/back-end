@@ -1,8 +1,8 @@
 package com.ddudu.persistence.entity;
 
-import com.ddudu.common.BaseEntity;
-import com.ddudu.user.domain.Following;
-import com.ddudu.user.domain.FollowingStatus;
+import com.ddudu.application.common.BaseEntity;
+import com.ddudu.application.user.domain.Following;
+import com.ddudu.application.user.domain.FollowingStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -9,13 +9,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.auth.dto.request.LoginRequest;
-import com.ddudu.auth.dto.response.LoginResponse;
-import com.ddudu.auth.dto.response.MeResponse;
-import com.ddudu.auth.exception.AuthErrorCode;
-import com.ddudu.auth.service.AuthService;
-import com.ddudu.common.exception.BadCredentialsException;
-import com.ddudu.common.exception.DataNotFoundException;
+import com.ddudu.application.auth.controller.AuthController;
+import com.ddudu.application.auth.dto.request.LoginRequest;
+import com.ddudu.application.auth.dto.response.LoginResponse;
+import com.ddudu.application.auth.dto.response.MeResponse;
+import com.ddudu.application.auth.exception.AuthErrorCode;
+import com.ddudu.application.auth.service.AuthService;
+import com.ddudu.application.common.exception.BadCredentialsException;
+import com.ddudu.application.common.exception.DataNotFoundException;
 import com.ddudu.persistence.dao.user.UserDao;
 import com.ddudu.support.ControllerTestSupport;
 import java.util.stream.Stream;

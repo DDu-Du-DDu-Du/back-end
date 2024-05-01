@@ -1,9 +1,9 @@
 package com.ddudu.persistence.entity;
 
-import com.ddudu.common.BaseEntity;
-import com.ddudu.goal.domain.Goal;
-import com.ddudu.goal.domain.GoalStatus;
-import com.ddudu.goal.domain.PrivacyType;
+import com.ddudu.application.common.BaseEntity;
+import com.ddudu.application.goal.domain.Goal;
+import com.ddudu.application.goal.domain.GoalStatus;
+import com.ddudu.application.goal.domain.PrivacyType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

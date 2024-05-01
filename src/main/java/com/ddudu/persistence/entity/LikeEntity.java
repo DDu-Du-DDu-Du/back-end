@@ -1,7 +1,7 @@
 package com.ddudu.persistence.entity;
 
-import com.ddudu.common.BaseEntity;
-import com.ddudu.like.domain.Like;
+import com.ddudu.application.common.BaseEntity;
+import com.ddudu.application.like.domain.Like;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

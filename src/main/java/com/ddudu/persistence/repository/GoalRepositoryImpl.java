@@ -1,12 +1,12 @@
 package com.ddudu.persistence.repository;
 
-import com.ddudu.goal.domain.Goal;
-import com.ddudu.goal.domain.GoalRepository;
-import com.ddudu.goal.domain.PrivacyType;
+import com.ddudu.application.goal.domain.Goal;
+import com.ddudu.application.goal.domain.GoalRepository;
+import com.ddudu.application.goal.domain.PrivacyType;
 import com.ddudu.persistence.dao.goal.GoalDao;
 import com.ddudu.persistence.entity.GoalEntity;
 import com.ddudu.persistence.entity.UserEntity;
-import com.ddudu.user.domain.User;
+import com.ddudu.application.user.domain.User;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.ddudu.persistence.entity;
 
-import com.ddudu.common.BaseEntity;
-import com.ddudu.todo.domain.Todo;
-import com.ddudu.todo.domain.TodoStatus;
+import com.ddudu.application.common.BaseEntity;
+import com.ddudu.application.todo.domain.Todo;
+import com.ddudu.application.todo.domain.TodoStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

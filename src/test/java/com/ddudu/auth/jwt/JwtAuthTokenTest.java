@@ -2,9 +2,10 @@ package com.ddudu.auth.jwt;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.auth.domain.authority.Authority;
-import com.ddudu.auth.exception.AuthErrorCode;
-import com.ddudu.common.exception.InvalidTokenException;
+import com.ddudu.application.auth.domain.authority.Authority;
+import com.ddudu.application.auth.exception.AuthErrorCode;
+import com.ddudu.application.auth.jwt.JwtAuthToken;
+import com.ddudu.application.common.exception.InvalidTokenException;
 import java.time.Instant;
 import java.util.Collections;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;

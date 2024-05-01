@@ -2,11 +2,11 @@ package com.ddudu.persistence.dao.todo;
 
 import static com.ddudu.persistence.entity.QTodoEntity.todoEntity;
 
-import com.ddudu.goal.domain.PrivacyType;
+import com.ddudu.application.goal.domain.PrivacyType;
 import com.ddudu.persistence.entity.TodoEntity;
 import com.ddudu.persistence.entity.UserEntity;
-import com.ddudu.todo.domain.TodoStatus;
-import com.ddudu.todo.dto.response.TodoCompletionResponse;
+import com.ddudu.application.todo.domain.TodoStatus;
+import com.ddudu.application.todo.dto.response.TodoCompletionResponse;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;

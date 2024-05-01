@@ -5,9 +5,9 @@ import static com.ddudu.persistence.entity.QUserEntity.userEntity;
 
 import com.ddudu.persistence.entity.QUserEntity;
 import com.ddudu.persistence.entity.UserEntity;
-import com.ddudu.user.domain.FollowingStatus;
-import com.ddudu.user.domain.UserSearchType;
-import com.ddudu.user.dto.FollowingSearchType;
+import com.ddudu.application.user.domain.FollowingStatus;
+import com.ddudu.application.user.domain.UserSearchType;
+import com.ddudu.application.user.dto.FollowingSearchType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

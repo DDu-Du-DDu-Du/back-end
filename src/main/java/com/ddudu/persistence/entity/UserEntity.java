@@ -1,10 +1,10 @@
 package com.ddudu.persistence.entity;
 
-import com.ddudu.auth.domain.authority.Authority;
-import com.ddudu.common.BaseEntity;
-import com.ddudu.user.domain.Options;
-import com.ddudu.user.domain.User;
-import com.ddudu.user.domain.UserStatus;
+import com.ddudu.application.auth.domain.authority.Authority;
+import com.ddudu.application.common.BaseEntity;
+import com.ddudu.application.user.domain.Options;
+import com.ddudu.application.user.domain.User;
+import com.ddudu.application.user.domain.UserStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

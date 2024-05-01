@@ -3,9 +3,12 @@ package com.ddudu.user.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.common.exception.InvalidParameterException;
-import com.ddudu.user.domain.User.UserBuilder;
-import com.ddudu.user.exception.FollowingErrorCode;
+import com.ddudu.application.common.exception.InvalidParameterException;
+import com.ddudu.application.user.domain.Following;
+import com.ddudu.application.user.domain.FollowingStatus;
+import com.ddudu.application.user.domain.User;
+import com.ddudu.application.user.domain.User.UserBuilder;
+import com.ddudu.application.user.exception.FollowingErrorCode;
 import java.util.Objects;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;

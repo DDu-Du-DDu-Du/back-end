@@ -1,13 +1,13 @@
 package com.ddudu.persistence.repository;
 
-import com.ddudu.goal.domain.PrivacyType;
+import com.ddudu.application.goal.domain.PrivacyType;
 import com.ddudu.persistence.dao.todo.TodoDao;
 import com.ddudu.persistence.entity.TodoEntity;
 import com.ddudu.persistence.entity.UserEntity;
-import com.ddudu.todo.domain.Todo;
-import com.ddudu.todo.domain.TodoRepository;
-import com.ddudu.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.user.domain.User;
+import com.ddudu.application.todo.domain.Todo;
+import com.ddudu.application.todo.domain.TodoRepository;
+import com.ddudu.application.todo.dto.response.TodoCompletionResponse;
+import com.ddudu.application.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package com.ddudu.persistence.dao.goal;
 
-import com.ddudu.goal.domain.PrivacyType;
+import com.ddudu.application.goal.domain.PrivacyType;
 import com.ddudu.persistence.entity.GoalEntity;
 import com.ddudu.persistence.entity.UserEntity;
 import java.util.List;

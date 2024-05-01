@@ -3,9 +3,12 @@ package com.ddudu.goal.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.ddudu.common.exception.InvalidParameterException;
-import com.ddudu.goal.exception.GoalErrorCode;
-import com.ddudu.user.domain.User;
+import com.ddudu.application.common.exception.InvalidParameterException;
+import com.ddudu.application.goal.domain.Goal;
+import com.ddudu.application.goal.domain.GoalStatus;
+import com.ddudu.application.goal.domain.PrivacyType;
+import com.ddudu.application.goal.exception.GoalErrorCode;
+import com.ddudu.application.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import net.datafaker.Faker;
