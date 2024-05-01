@@ -149,7 +149,7 @@ public class UserService {
   private void verifyUniqueEmail(String email) {
     Email newEmail = new Email(email);
 
-    if (userRepository.existsByEmail(newEmail)) {
+    if (userRepository.existsByEmail(newEmail.getAddress())) {
       throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EMAIL);
     }
 

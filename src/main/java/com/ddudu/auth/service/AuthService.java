@@ -36,7 +36,7 @@ public class AuthService {
   public LoginResponse login(LoginRequest request) {
     Email email = new Email(request.email());
 
-    User user = userRepository.findByEmail(email)
+    User user = userRepository.findByEmail(email.getAddress())
         .orElseThrow(() -> new DataNotFoundException(AuthErrorCode.EMAIL_NOT_EXISTING));
     Password userPassword = user.getPassword();
 

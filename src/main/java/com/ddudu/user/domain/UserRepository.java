@@ -10,13 +10,13 @@ public interface UserRepository {
 
   boolean existsByOptionalUsername(String optionalUsername);
 
-  boolean existsByEmail(Email newEmail);
+  boolean existsByEmail(String email);
 
   User save(User user);
 
   Optional<User> findById(Long id);
 
-  Optional<User> findByEmail(Email email);
+  Optional<User> findByEmail(String email);
 
   List<User> findFromFollowingBySearchType(User user, FollowingSearchType searchType);
 
