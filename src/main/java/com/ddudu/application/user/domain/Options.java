@@ -11,7 +11,7 @@ public class Options {
   @Column(name = "follows_after_approval", nullable = false)
   private boolean allowingFollowsAfterApproval;
 
-  protected Options() {
+  public Options() {
     allowingFollowsAfterApproval = DEFAULT_OFF;
   }
 
