@@ -65,6 +65,8 @@ public class FollowingService {
 
     following.updateStatus(request.status());
 
+    followingRepository.update(following);
+
     return FollowingResponse.from(following);
   }
 

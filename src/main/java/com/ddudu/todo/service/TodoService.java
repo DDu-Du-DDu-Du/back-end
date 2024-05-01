@@ -139,6 +139,8 @@ public class TodoService {
 
     todo.applyTodoUpdates(goal, request.name(), request.beginAt());
 
+    todoRepository.update(todo);
+
     return TodoInfo.from(todo);
   }
 
@@ -149,6 +151,8 @@ public class TodoService {
     checkPermission(loginId, todo);
 
     todo.switchStatus();
+
+    todoRepository.update(todo);
   }
 
   @Transactional
@@ -157,6 +161,7 @@ public class TodoService {
         .ifPresent(todo -> {
           checkPermission(loginId, todo);
           todo.delete();
+          todoRepository.update(todo);
         });
   }
 

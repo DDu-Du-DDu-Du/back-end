@@ -68,6 +68,8 @@ public class UserService {
 
     user.applyProfileUpdate(request.nickname(), request.introduction());
 
+    userRepository.update(user);
+
     return UserProfileResponse.from(user);
   }
 
@@ -83,6 +85,8 @@ public class UserService {
     verifyUniqueEmail(newEmail);
     user.applyEmailUpdate(newEmail);
 
+    userRepository.update(user);
+
     return new UpdateEmailResponse(user.getEmail());
   }
 
@@ -91,6 +95,8 @@ public class UserService {
     User user = findUser(userId);
 
     user.applyPasswordUpdate(request.password(), passwordEncoder);
+
+    userRepository.update(user);
 
     return new UpdatePasswordResponse(PASSWORD_UPDATE_SUCCESS);
   }
@@ -114,6 +120,8 @@ public class UserService {
     User user = findUser(id);
 
     user.switchOptions();
+
+    userRepository.update(user);
 
     return ToggleOptionResponse.from(user);
   }

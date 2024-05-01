@@ -53,6 +53,8 @@ public class GoalService {
     goal.applyGoalUpdates(
         request.name(), request.status(), request.color(), request.privacyType());
 
+    goalRepository.update(goal);
+
     return GoalResponse.from(goal);
   }
 
@@ -84,6 +86,7 @@ public class GoalService {
         .ifPresent(goal -> {
           checkPermission(loginId, goal);
           goal.delete();
+          goalRepository.update(goal);
         });
   }
 
