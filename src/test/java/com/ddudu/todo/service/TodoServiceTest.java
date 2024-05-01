@@ -9,7 +9,7 @@ import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.goal.repository.GoalRepository;
 import com.ddudu.like.domain.Like;
-import com.ddudu.like.repository.LikeRepository;
+import com.ddudu.like.persistence.repository.LikeRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.request.CreateTodoRequest;

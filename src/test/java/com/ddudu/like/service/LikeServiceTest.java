@@ -12,7 +12,7 @@ import com.ddudu.like.domain.Like;
 import com.ddudu.like.dto.request.LikeRequest;
 import com.ddudu.like.dto.response.LikeResponse;
 import com.ddudu.like.exception.LikeErrorCode;
-import com.ddudu.like.repository.LikeRepository;
+import com.ddudu.like.persistence.repository.LikeRepository;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.repository.TodoRepository;
 import com.ddudu.user.domain.User;
@@ -91,6 +91,7 @@ class LikeServiceTest {
       LikeRequest request = new LikeRequest(other.getId(), todo.getId());
       Like like = createLike(other, todo);
       like.delete();
+      likeRepository.update(like);
 
       // when
       LikeResponse expected = likeService.toggle(other.getId(), request);
