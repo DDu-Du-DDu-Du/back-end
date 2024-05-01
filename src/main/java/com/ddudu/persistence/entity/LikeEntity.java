@@ -2,7 +2,6 @@ package com.ddudu.persistence.entity;
 
 import com.ddudu.common.BaseEntity;
 import com.ddudu.like.domain.Like;
-import com.ddudu.todo.domain.Todo;
 import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,11 +33,11 @@ public class LikeEntity extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "todo_id", nullable = false)
-  private Todo todo;
+  private TodoEntity todo;
 
   @Builder
   public LikeEntity(
-      Long id, User user, Todo todo, LocalDateTime createdAt, LocalDateTime updatedAt,
+      Long id, User user, TodoEntity todo, LocalDateTime createdAt, LocalDateTime updatedAt,
       Boolean isDeleted
   ) {
     super(createdAt, updatedAt, isDeleted);
@@ -52,7 +51,7 @@ public class LikeEntity extends BaseEntity {
     return LikeEntity.builder()
         .id(like.getId())
         .user(like.getUser())
-        .todo(like.getTodo())
+        .todo(TodoEntity.from(like.getTodo()))
         .createdAt(like.getCreatedAt())
         .updatedAt(like.getUpdatedAt())
         .isDeleted(like.isDeleted())
@@ -63,7 +62,7 @@ public class LikeEntity extends BaseEntity {
     return Like.builder()
         .id(id)
         .user(user)
-        .todo(todo)
+        .todo(todo.toDomain())
         .createdAt(getCreatedAt())
         .updatedAt(getUpdatedAt())
         .isDeleted(isDeleted())
