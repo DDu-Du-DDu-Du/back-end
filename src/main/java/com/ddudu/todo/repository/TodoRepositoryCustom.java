@@ -1,18 +1,19 @@
 package com.ddudu.todo.repository;
 
 import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.todo.domain.Todo;
+import com.ddudu.persistence.entity.TodoEntity;
+import com.ddudu.persistence.entity.UserEntity;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TodoRepositoryCustom {
 
-  List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, User user);
+  List<TodoEntity> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, UserEntity user);
 
   List<TodoCompletionResponse> findTodosCompletion(
-      LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
+      LocalDateTime startDate, LocalDateTime endDate, UserEntity user,
+      List<PrivacyType> privacyTypes
   );
 
 }

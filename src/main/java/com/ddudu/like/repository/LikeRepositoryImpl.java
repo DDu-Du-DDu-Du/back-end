@@ -1,9 +1,9 @@
 package com.ddudu.like.repository;
 
-import static com.ddudu.like.domain.QLike.like;
+import static com.ddudu.persistence.entity.QLikeEntity.likeEntity;
 
-import com.ddudu.like.domain.Like;
-import com.ddudu.todo.domain.Todo;
+import com.ddudu.persistence.entity.LikeEntity;
+import com.ddudu.persistence.entity.TodoEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -19,12 +19,12 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
   }
 
   @Override
-  public List<Like> findByTodos(List<Todo> todos) {
+  public List<LikeEntity> findByTodos(List<TodoEntity> todos) {
     return jpaQueryFactory
-        .selectFrom(like)
+        .selectFrom(likeEntity)
         .where(
-            like.todo.in(todos),
-            like.isDeleted.eq(false)
+            likeEntity.todo.in(todos),
+            likeEntity.isDeleted.eq(false)
         )
         .fetch();
   }

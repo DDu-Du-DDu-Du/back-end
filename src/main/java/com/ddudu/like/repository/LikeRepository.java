@@ -1,12 +1,12 @@
 package com.ddudu.like.repository;
 
-import com.ddudu.like.domain.Like;
-import com.ddudu.todo.domain.Todo;
-import com.ddudu.user.domain.User;
+import com.ddudu.persistence.entity.LikeEntity;
+import com.ddudu.persistence.entity.TodoEntity;
+import com.ddudu.persistence.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LikeRepository extends JpaRepository<Like, Long>, LikeRepositoryCustom {
+public interface LikeRepository extends JpaRepository<LikeEntity, Long>, LikeRepositoryCustom {
 
-  Like findByUserAndTodo(User user, Todo todo);
+  LikeEntity findByUserAndTodo(UserEntity user, TodoEntity todo);
 
 }

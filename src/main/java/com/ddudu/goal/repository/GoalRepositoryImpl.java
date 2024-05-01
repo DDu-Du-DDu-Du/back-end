@@ -1,11 +1,11 @@
 package com.ddudu.goal.repository;
 
-import static com.ddudu.goal.domain.QGoal.goal;
+import static com.ddudu.persistence.entity.QGoalEntity.goalEntity;
 
-import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.user.domain.User;
+import com.ddudu.persistence.entity.GoalEntity;
+import com.ddudu.persistence.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -22,26 +22,28 @@ public class GoalRepositoryImpl implements GoalRepositoryCustom {
   }
 
   @Override
-  public List<Goal> findAllByUser(User user) {
+  public List<GoalEntity> findAllByUser(UserEntity user) {
     return jpaQueryFactory
-        .selectFrom(goal)
-        .where(goal.user.eq(user))
+        .selectFrom(goalEntity)
+        .where(goalEntity.user.eq(user))
         .orderBy(
-            goal.status.desc(),
-            goal.id.desc()
+            goalEntity.status.desc(),
+            goalEntity.id.desc()
         )
         .fetch();
   }
 
   @Override
-  public List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes) {
+  public List<GoalEntity> findAllByUserAndPrivacyTypes(
+      UserEntity user, List<PrivacyType> privacyTypes
+  ) {
     BooleanBuilder whereClause = new BooleanBuilder();
-    whereClause.and(goal.user.eq(user));
-    whereClause.and(goal.status.eq(GoalStatus.IN_PROGRESS));
-    whereClause.and(goal.privacyType.in(privacyTypes));
+    whereClause.and(goalEntity.user.eq(user));
+    whereClause.and(goalEntity.status.eq(GoalStatus.IN_PROGRESS));
+    whereClause.and(goalEntity.privacyType.in(privacyTypes));
 
     return jpaQueryFactory
-        .selectFrom(goal)
+        .selectFrom(goalEntity)
         .where(whereClause)
         .fetch();
   }

@@ -1,11 +1,11 @@
 package com.ddudu.user.repository;
 
-import com.ddudu.user.domain.Following;
-import com.ddudu.user.domain.User;
+import com.ddudu.persistence.entity.FollowingEntity;
+import com.ddudu.persistence.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FollowingRepository extends JpaRepository<Following, Long> {
+public interface FollowingRepository extends JpaRepository<FollowingEntity, Long> {
 
-  boolean existsByFollowerAndFollowee(User follower, User followee);
+  boolean existsByFollowerAndFollowee(UserEntity follower, UserEntity followee);
 
 }

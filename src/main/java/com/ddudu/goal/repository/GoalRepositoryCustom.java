@@ -1,14 +1,14 @@
 package com.ddudu.goal.repository;
 
-import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.user.domain.User;
+import com.ddudu.persistence.entity.GoalEntity;
+import com.ddudu.persistence.entity.UserEntity;
 import java.util.List;
 
 public interface GoalRepositoryCustom {
 
-  List<Goal> findAllByUser(User user);
+  List<GoalEntity> findAllByUser(UserEntity user);
 
-  List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes);
+  List<GoalEntity> findAllByUserAndPrivacyTypes(UserEntity user, List<PrivacyType> privacyTypes);
 
 }

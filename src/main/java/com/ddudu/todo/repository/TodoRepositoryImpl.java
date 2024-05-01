@@ -1,12 +1,12 @@
 package com.ddudu.todo.repository;
 
-import static com.ddudu.todo.domain.QTodo.todo;
+import static com.ddudu.persistence.entity.QTodoEntity.todoEntity;
 
 import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.todo.domain.Todo;
+import com.ddudu.persistence.entity.TodoEntity;
+import com.ddudu.persistence.entity.UserEntity;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.user.domain.User;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
@@ -27,37 +27,40 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
   }
 
   @Override
-  public List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, User user) {
+  public List<TodoEntity> findTodosByDate(
+      LocalDateTime startDate, LocalDateTime endDate, UserEntity user
+  ) {
     return jpaQueryFactory
-        .selectFrom(todo)
-        .join(todo.goal)
+        .selectFrom(todoEntity)
+        .join(todoEntity.goal)
         .fetchJoin()
         .where(
-            todo.beginAt.between(startDate, endDate),
-            todo.user.eq(user)
+            todoEntity.beginAt.between(startDate, endDate),
+            todoEntity.user.eq(user)
         )
-        .orderBy(todo.status.desc(), todo.endAt.asc())
+        .orderBy(todoEntity.status.desc(), todoEntity.endAt.asc())
         .fetch();
   }
 
   @Override
   public List<TodoCompletionResponse> findTodosCompletion(
-      LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
+      LocalDateTime startDate, LocalDateTime endDate, UserEntity user,
+      List<PrivacyType> privacyTypes
   ) {
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
-        LocalDate.class, "{0}", todo.beginAt);
+        LocalDate.class, "{0}", todoEntity.beginAt);
 
     NumberTemplate<Long> totalTodosTemplate = Expressions.numberTemplate(
         Long.class,
-        "COUNT({0})", todo.id
+        "COUNT({0})", todoEntity.id
     );
 
     NumberTemplate<Long> uncompletedTodosTemplate = Expressions.numberTemplate(
         Long.class,
         "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
-        todo.status,
+        todoEntity.status,
         TodoStatus.UNCOMPLETED,
-        todo.id
+        todoEntity.id
     );
 
     return jpaQueryFactory
@@ -69,12 +72,12 @@ public class TodoRepositoryImpl implements TodoRepositoryCustom {
             uncompletedTodosTemplate
                 .as("uncompletedTodos")
         )
-        .from(todo)
+        .from(todoEntity)
         .where(
-            todo.beginAt.goe(startDate),
-            todo.beginAt.lt(endDate),
-            todo.user.eq(user),
-            todo.goal.privacyType.in(privacyTypes)
+            todoEntity.beginAt.goe(startDate),
+            todoEntity.beginAt.lt(endDate),
+            todoEntity.user.eq(user),
+            todoEntity.goal.privacyType.in(privacyTypes)
         )
         .groupBy(dateTemplate)
         .fetch()

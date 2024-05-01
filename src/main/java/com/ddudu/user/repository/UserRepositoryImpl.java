@@ -1,11 +1,11 @@
 package com.ddudu.user.repository;
 
-import static com.ddudu.user.domain.QFollowing.following;
-import static com.ddudu.user.domain.QUser.user;
+import static com.ddudu.persistence.entity.QFollowingEntity.followingEntity;
+import static com.ddudu.persistence.entity.QUserEntity.userEntity;
 
+import com.ddudu.persistence.entity.QUserEntity;
+import com.ddudu.persistence.entity.UserEntity;
 import com.ddudu.user.domain.FollowingStatus;
-import com.ddudu.user.domain.QUser;
-import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.FollowingSearchType;
 import com.querydsl.core.BooleanBuilder;
@@ -24,38 +24,42 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
   }
 
   @Override
-  public List<User> findAllByKeywordAndSearchType(String keyword, UserSearchType userSearchType) {
+  public List<UserEntity> findAllByKeywordAndSearchType(
+      String keyword, UserSearchType userSearchType
+  ) {
     BooleanBuilder whereClause = new BooleanBuilder();
 
     switch (userSearchType) {
-      case EMAIL -> whereClause.and(user.email.address.eq(keyword));
-      case NICKNAME -> whereClause.and(user.nickname.eq(keyword));
-      case OPTIONAL_USERNAME -> whereClause.and(user.optionalUsername.eq(keyword));
+      case EMAIL -> whereClause.and(userEntity.email.eq(keyword));
+      case NICKNAME -> whereClause.and(userEntity.nickname.eq(keyword));
+      case OPTIONAL_USERNAME -> whereClause.and(userEntity.optionalUsername.eq(keyword));
     }
 
     return jpaQueryFactory
-        .selectFrom(user)
+        .selectFrom(userEntity)
         .where(whereClause)
         .fetch();
   }
 
   @Override
-  public List<User> findFromFollowingBySearchType(User user, FollowingSearchType searchType) {
+  public List<UserEntity> findFromFollowingBySearchType(
+      UserEntity user, FollowingSearchType searchType
+  ) {
     BooleanBuilder whereClause = new BooleanBuilder();
-    QUser owner = following.follower;
-    QUser target = following.followee;
+    QUserEntity owner = followingEntity.follower;
+    QUserEntity target = followingEntity.followee;
 
     if (FollowingSearchType.isSearchingFollower(searchType)) {
-      owner = following.followee;
-      target = following.follower;
+      owner = followingEntity.followee;
+      target = followingEntity.follower;
     }
 
     whereClause.and(owner.eq(user))
-        .and(following.status.eq(FollowingStatus.FOLLOWING));
+        .and(followingEntity.status.eq(FollowingStatus.FOLLOWING));
 
     return jpaQueryFactory
         .select(target)
-        .from(following)
+        .from(followingEntity)
         .where(whereClause)
         .fetch();
   }
