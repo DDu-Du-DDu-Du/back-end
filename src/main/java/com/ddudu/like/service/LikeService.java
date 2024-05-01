@@ -36,7 +36,9 @@ public class LikeService {
     Like existingLike = likeRepository.findByUserAndTodo(user, todo);
 
     if (existingLike != null) {
-      return LikeResponse.from(switchLikeStatus(existingLike));
+      switchLikeStatus(existingLike);
+      likeRepository.update(existingLike);
+      return LikeResponse.from(existingLike);
     }
 
     Like like = Like.builder()
