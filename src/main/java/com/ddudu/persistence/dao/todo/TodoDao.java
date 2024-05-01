@@ -1,4 +1,4 @@
-package com.ddudu.todo.repository;
+package com.ddudu.persistence.dao.todo;
 
 import com.ddudu.persistence.entity.TodoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

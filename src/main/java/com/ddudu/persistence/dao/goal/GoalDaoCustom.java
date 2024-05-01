@@ -1,4 +1,4 @@
-package com.ddudu.goal.repository;
+package com.ddudu.persistence.dao.goal;
 
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.persistence.entity.GoalEntity;

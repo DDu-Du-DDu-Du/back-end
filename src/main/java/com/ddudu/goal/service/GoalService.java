@@ -4,15 +4,15 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.goal.domain.GoalRepository;
 import com.ddudu.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.goal.dto.response.CreateGoalResponse;
 import com.ddudu.goal.dto.response.GoalResponse;
 import com.ddudu.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.goal.exception.GoalErrorCode;
-import com.ddudu.goal.repository.GoalDao;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.UserDao;
+import com.ddudu.user.domain.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GoalService {
 
-  private final GoalDao goalRepository;
-  private final UserDao userRepository;
+  private final GoalRepository goalRepository;
+  private final UserRepository userRepository;
 
   @Transactional
   public CreateGoalResponse create(

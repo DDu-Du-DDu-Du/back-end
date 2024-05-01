@@ -1,4 +1,4 @@
-package com.ddudu.like.repository;
+package com.ddudu.persistence.dao.like;
 
 import com.ddudu.persistence.entity.LikeEntity;
 import com.ddudu.persistence.entity.TodoEntity;

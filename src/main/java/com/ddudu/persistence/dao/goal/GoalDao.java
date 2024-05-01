@@ -1,4 +1,4 @@
-package com.ddudu.goal.repository;
+package com.ddudu.persistence.dao.goal;
 
 import com.ddudu.persistence.entity.GoalEntity;
 import java.util.Optional;

@@ -6,16 +6,16 @@ import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.user.domain.Following;
 import com.ddudu.user.domain.Following.FollowingBuilder;
+import com.ddudu.user.domain.FollowingRepository;
 import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.domain.UserRepository;
 import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.UpdateFollowingRequest;
 import com.ddudu.user.dto.response.FollowingResponse;
 import com.ddudu.user.exception.FollowingErrorCode;
 import com.ddudu.user.exception.UserErrorCode;
-import com.ddudu.user.repository.FollowingDao;
-import com.ddudu.user.repository.UserDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FollowingService {
 
-  private final UserDao userRepository;
-  private final FollowingDao followingRepository;
+  private final UserRepository userRepository;
+  private final FollowingRepository followingRepository;
 
   @Transactional
   public FollowingResponse create(Long followerId, FollowRequest request) {

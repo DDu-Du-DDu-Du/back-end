@@ -1,4 +1,4 @@
-package com.ddudu.goal.repository;
+package com.ddudu.persistence.dao.goal;
 
 import static com.ddudu.persistence.entity.QGoalEntity.goalEntity;
 

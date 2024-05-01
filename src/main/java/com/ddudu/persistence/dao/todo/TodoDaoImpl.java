@@ -1,4 +1,4 @@
-package com.ddudu.todo.repository;
+package com.ddudu.persistence.dao.todo;
 
 import static com.ddudu.persistence.entity.QTodoEntity.todoEntity;
 

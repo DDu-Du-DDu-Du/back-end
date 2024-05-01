@@ -1,4 +1,4 @@
-package com.ddudu.user.repository;
+package com.ddudu.persistence.dao.user;
 
 import static com.ddudu.persistence.entity.QFollowingEntity.followingEntity;
 import static com.ddudu.persistence.entity.QUserEntity.userEntity;

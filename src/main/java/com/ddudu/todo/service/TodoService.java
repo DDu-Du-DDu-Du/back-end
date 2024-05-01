@@ -4,11 +4,12 @@ import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.goal.domain.GoalRepository;
 import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.goal.repository.GoalDao;
 import com.ddudu.like.domain.Like;
-import com.ddudu.like.repository.LikeDao;
+import com.ddudu.like.domain.LikeRepository;
 import com.ddudu.todo.domain.Todo;
+import com.ddudu.todo.domain.TodoRepository;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.todo.dto.response.LikeInfo;
@@ -17,10 +18,9 @@ import com.ddudu.todo.dto.response.TodoInfo;
 import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.exception.TodoErrorCode;
-import com.ddudu.todo.repository.TodoDao;
+import com.ddudu.user.domain.FollowingRepository;
 import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.FollowingDao;
-import com.ddudu.user.repository.UserDao;
+import com.ddudu.user.domain.UserRepository;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,11 +42,11 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class TodoService {
 
-  private final TodoDao todoRepository;
-  private final GoalDao goalRepository;
-  private final UserDao userRepository;
-  private final FollowingDao followingRepository;
-  private final LikeDao likeRepository;
+  private final TodoRepository todoRepository;
+  private final GoalRepository goalRepository;
+  private final UserRepository userRepository;
+  private final FollowingRepository followingRepository;
+  private final LikeRepository likeRepository;
 
   @Transactional
   public TodoInfo create(
@@ -168,8 +168,7 @@ public class TodoService {
     Map<LocalDate, TodoCompletionResponse> completionByDate = todoRepository.findTodosCompletion(
             startDate, endDate, user, privacyTypes)
         .stream()
-        .collect(
-            Collectors.toMap(TodoCompletionResponse::date, response -> response));
+        .collect(Collectors.toMap(TodoCompletionResponse::date, response -> response));
 
     List<TodoCompletionResponse> completionList = new ArrayList<>();
     for (LocalDateTime currentDate = startDate; currentDate.isBefore(endDate);

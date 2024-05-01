@@ -7,6 +7,7 @@ import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.user.domain.Email;
 import com.ddudu.user.domain.Password;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.domain.UserRepository;
 import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.FollowingSearchType;
 import com.ddudu.user.dto.request.SignUpRequest;
@@ -20,7 +21,6 @@ import com.ddudu.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.user.dto.response.UserProfileResponse;
 import com.ddudu.user.dto.response.UsersResponse;
 import com.ddudu.user.exception.UserErrorCode;
-import com.ddudu.user.repository.UserDao;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -37,7 +37,7 @@ public class UserService {
 
   private static final String PASSWORD_UPDATE_SUCCESS = "비밀번호가 성공적으로 변경되었습니다.";
 
-  private final UserDao userRepository;
+  private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Transactional

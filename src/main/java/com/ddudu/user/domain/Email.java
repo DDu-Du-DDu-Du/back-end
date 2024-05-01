@@ -11,7 +11,7 @@ public class Email {
 
   private static final Pattern EMAIL_PATTERN = Pattern.compile(
       "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+[.][0-9A-Za-z]+$");
-  
+
   private String address;
 
   public Email(String address) {

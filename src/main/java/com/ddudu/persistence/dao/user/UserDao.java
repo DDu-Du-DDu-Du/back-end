@@ -1,4 +1,4 @@
-package com.ddudu.user.repository;
+package com.ddudu.persistence.dao.user;
 
 import com.ddudu.persistence.entity.UserEntity;
 import com.ddudu.user.domain.Email;
