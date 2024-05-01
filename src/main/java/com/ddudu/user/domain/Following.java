@@ -50,6 +50,27 @@ public class Following extends BaseDomain {
     this.status = status;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Following following = (Following) o;
+    if (id != null) {
+      return id.equals(following.id);
+    } else {
+      return super.equals(o);
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return (id != null) ? id.hashCode() : super.hashCode();
+  }
+
   private void validate(User follower, User followee) {
     if (Objects.isNull(follower)) {
       throw new InvalidParameterException(FollowingErrorCode.NULL_FOLLOWER);

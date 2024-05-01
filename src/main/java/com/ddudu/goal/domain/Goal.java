@@ -61,6 +61,27 @@ public class Goal extends BaseDomain {
     return Objects.deepEquals(this.user.getId(), userId);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Goal goal = (Goal) o;
+    if (id != null) {
+      return id.equals(goal.id);
+    } else {
+      return super.equals(o);
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return (id != null) ? id.hashCode() : super.hashCode();
+  }
+
   private void validate(String name, User user) {
     validateName(name);
     validateUser(user);

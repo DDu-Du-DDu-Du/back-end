@@ -82,6 +82,27 @@ public class User extends BaseDomain {
     options.switchOptions();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    User user = (User) o;
+    if (id != null) {
+      return id.equals(user.id);
+    } else {
+      return super.equals(o);
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return (id != null) ? id.hashCode() : super.hashCode();
+  }
+
   private void validate(String nickname, String optionalUsername, String introduction) {
     validateNickname(nickname);
 

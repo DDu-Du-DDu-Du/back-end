@@ -31,6 +31,27 @@ public class Like extends BaseDomain {
     this.todo = todo;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Like like = (Like) o;
+    if (id != null) {
+      return id.equals(like.id);
+    } else {
+      return super.equals(o);
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return (id != null) ? id.hashCode() : super.hashCode();
+  }
+
   private void validate(User user, Todo todo) {
     if (Objects.isNull(user)) {
       throw new InvalidParameterException(LikeErrorCode.NULL_USER);
