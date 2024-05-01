@@ -1,9 +1,9 @@
 package com.ddudu.application.like.controller;
 
 import com.ddudu.application.common.annotation.Login;
+import com.ddudu.application.like.dto.request.LikeRequest;
 import com.ddudu.application.like.dto.response.LikeResponse;
 import com.ddudu.application.like.service.LikeService;
-import com.ddudu.application.like.dto.request.LikeRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +22,10 @@ public class LikeController {
   @PostMapping
   public ResponseEntity<LikeResponse> toggle(
       @Login
-          Long loginId,
+      Long loginId,
       @RequestBody
       @Valid
-          LikeRequest request
+      LikeRequest request
   ) {
     LikeResponse response = likeService.toggle(loginId, request);
 

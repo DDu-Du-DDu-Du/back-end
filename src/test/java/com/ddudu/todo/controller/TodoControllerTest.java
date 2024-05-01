@@ -19,7 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ddudu.application.common.exception.DataNotFoundException;
 import com.ddudu.application.common.exception.ForbiddenException;
 import com.ddudu.application.todo.controller.TodoController;
-import com.ddudu.support.ControllerTestSupport;
 import com.ddudu.application.todo.domain.TodoStatus;
 import com.ddudu.application.todo.dto.request.CreateTodoRequest;
 import com.ddudu.application.todo.dto.request.UpdateTodoRequest;
@@ -30,6 +29,7 @@ import com.ddudu.application.todo.dto.response.TodoListResponse;
 import com.ddudu.application.todo.dto.response.TodoResponse;
 import com.ddudu.application.todo.exception.TodoErrorCode;
 import com.ddudu.application.todo.service.TodoService;
+import com.ddudu.support.ControllerTestSupport;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -651,7 +651,8 @@ class TodoControllerTest extends ControllerTestSupport {
       // given
       given(
           todoService.findMonthlyCompletions(anyLong(), anyLong(), any(YearMonth.class))).willThrow(
-          new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+          new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING)
+      );
 
       // when
       ResultActions actions = mockMvc.perform(get(MONTHLY_PATH)

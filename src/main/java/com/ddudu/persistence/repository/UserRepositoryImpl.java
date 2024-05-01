@@ -1,11 +1,11 @@
 package com.ddudu.persistence.repository;
 
-import com.ddudu.persistence.dao.user.UserDao;
-import com.ddudu.persistence.entity.UserEntity;
 import com.ddudu.application.user.domain.User;
 import com.ddudu.application.user.domain.UserRepository;
 import com.ddudu.application.user.domain.UserSearchType;
 import com.ddudu.application.user.dto.FollowingSearchType;
+import com.ddudu.persistence.dao.user.UserDao;
+import com.ddudu.persistence.entity.UserEntity;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

@@ -1,11 +1,11 @@
 package com.ddudu.persistence.repository;
 
-import com.ddudu.persistence.dao.user.FollowingDao;
-import com.ddudu.persistence.entity.FollowingEntity;
-import com.ddudu.persistence.entity.UserEntity;
 import com.ddudu.application.user.domain.Following;
 import com.ddudu.application.user.domain.FollowingRepository;
 import com.ddudu.application.user.domain.User;
+import com.ddudu.persistence.dao.user.FollowingDao;
+import com.ddudu.persistence.entity.FollowingEntity;
+import com.ddudu.persistence.entity.UserEntity;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

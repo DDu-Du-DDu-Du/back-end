@@ -1,7 +1,7 @@
 package com.ddudu.application.todo.dto.response;
 
-import com.ddudu.application.todo.domain.Todo;
 import com.ddudu.application.goal.domain.Goal;
+import com.ddudu.application.todo.domain.Todo;
 import lombok.Builder;
 
 @Builder

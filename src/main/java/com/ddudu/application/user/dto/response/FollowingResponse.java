@@ -1,7 +1,7 @@
 package com.ddudu.application.user.dto.response;
 
-import com.ddudu.application.user.domain.FollowingStatus;
 import com.ddudu.application.user.domain.Following;
+import com.ddudu.application.user.domain.FollowingStatus;
 import lombok.Builder;
 
 @Builder

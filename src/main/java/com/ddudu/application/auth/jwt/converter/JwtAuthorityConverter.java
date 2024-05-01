@@ -1,8 +1,8 @@
 package com.ddudu.application.auth.jwt.converter;
 
+import com.ddudu.application.auth.domain.authority.Authority;
 import com.ddudu.application.auth.exception.AuthErrorCode;
 import com.ddudu.application.common.exception.InvalidTokenException;
-import com.ddudu.application.auth.domain.authority.Authority;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;

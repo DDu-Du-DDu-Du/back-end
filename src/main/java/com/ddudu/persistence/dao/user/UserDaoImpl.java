@@ -3,11 +3,11 @@ package com.ddudu.persistence.dao.user;
 import static com.ddudu.persistence.entity.QFollowingEntity.followingEntity;
 import static com.ddudu.persistence.entity.QUserEntity.userEntity;
 
-import com.ddudu.persistence.entity.QUserEntity;
-import com.ddudu.persistence.entity.UserEntity;
 import com.ddudu.application.user.domain.FollowingStatus;
 import com.ddudu.application.user.domain.UserSearchType;
 import com.ddudu.application.user.dto.FollowingSearchType;
+import com.ddudu.persistence.entity.QUserEntity;
+import com.ddudu.persistence.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

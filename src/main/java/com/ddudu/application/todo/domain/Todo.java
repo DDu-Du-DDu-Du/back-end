@@ -3,10 +3,10 @@ package com.ddudu.application.todo.domain;
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
-import com.ddudu.application.common.exception.InvalidParameterException;
-import com.ddudu.application.todo.exception.TodoErrorCode;
 import com.ddudu.application.common.domain.BaseDomain;
+import com.ddudu.application.common.exception.InvalidParameterException;
 import com.ddudu.application.goal.domain.Goal;
+import com.ddudu.application.todo.exception.TodoErrorCode;
 import com.ddudu.application.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.Objects;

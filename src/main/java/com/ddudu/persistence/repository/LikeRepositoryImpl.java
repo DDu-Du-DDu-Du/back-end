@@ -4,12 +4,12 @@ import static java.util.Objects.isNull;
 
 import com.ddudu.application.like.domain.Like;
 import com.ddudu.application.like.domain.LikeRepository;
+import com.ddudu.application.todo.domain.Todo;
+import com.ddudu.application.user.domain.User;
 import com.ddudu.persistence.dao.like.LikeDao;
 import com.ddudu.persistence.entity.LikeEntity;
 import com.ddudu.persistence.entity.TodoEntity;
 import com.ddudu.persistence.entity.UserEntity;
-import com.ddudu.application.todo.domain.Todo;
-import com.ddudu.application.user.domain.User;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
