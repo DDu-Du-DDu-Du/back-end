@@ -8,12 +8,12 @@ import com.ddudu.common.exception.BadRequestException;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.persistence.dao.user.FollowingDao;
-import com.ddudu.persistence.dao.user.UserDao;
 import com.ddudu.user.domain.Following;
+import com.ddudu.user.domain.FollowingRepository;
 import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.domain.UserRepository;
 import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.dto.request.UpdateFollowingRequest;
 import com.ddudu.user.dto.response.FollowingResponse;
@@ -40,13 +40,13 @@ class FollowingServiceTest {
   static final Faker faker = new Faker();
 
   @Autowired
-  UserDao userRepository;
+  UserRepository userRepository;
 
   @Autowired
   FollowingService followingService;
 
   @Autowired
-  FollowingDao followingRepository;
+  FollowingRepository followingRepository;
 
   @Autowired
   PasswordEncoder passwordEncoder;
@@ -112,6 +112,7 @@ class FollowingServiceTest {
       Options followeeOptions = followee.getOptions();
 
       followeeOptions.switchOptions();
+      userRepository.update(followee);
 
       FollowRequest request = new FollowRequest(followee.getId());
 

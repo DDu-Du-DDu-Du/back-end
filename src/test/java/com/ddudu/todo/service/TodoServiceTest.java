@@ -6,13 +6,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.ForbiddenException;
 import com.ddudu.goal.domain.Goal;
+import com.ddudu.goal.domain.GoalRepository;
 import com.ddudu.goal.domain.PrivacyType;
 import com.ddudu.like.domain.Like;
-import com.ddudu.persistence.dao.goal.GoalDao;
-import com.ddudu.persistence.dao.like.LikeDao;
-import com.ddudu.persistence.dao.todo.TodoDao;
-import com.ddudu.persistence.dao.user.UserDao;
+import com.ddudu.like.domain.LikeRepository;
 import com.ddudu.todo.domain.Todo;
+import com.ddudu.todo.domain.TodoRepository;
 import com.ddudu.todo.domain.TodoStatus;
 import com.ddudu.todo.dto.request.CreateTodoRequest;
 import com.ddudu.todo.dto.request.UpdateTodoRequest;
@@ -22,6 +21,7 @@ import com.ddudu.todo.dto.response.TodoListResponse;
 import com.ddudu.todo.dto.response.TodoResponse;
 import com.ddudu.todo.exception.TodoErrorCode;
 import com.ddudu.user.domain.User;
+import com.ddudu.user.domain.UserRepository;
 import com.ddudu.user.dto.request.FollowRequest;
 import com.ddudu.user.service.FollowingService;
 import jakarta.persistence.EntityManager;
@@ -55,19 +55,19 @@ class TodoServiceTest {
   TodoService todoService;
 
   @Autowired
-  TodoDao todoRepository;
+  TodoRepository todoRepository;
 
   @Autowired
-  GoalDao goalRepository;
+  GoalRepository goalRepository;
 
   @Autowired
-  UserDao userRepository;
+  UserRepository userRepository;
 
   @Autowired
   FollowingService followingService;
 
   @Autowired
-  LikeDao likeRepository;
+  LikeRepository likeRepository;
 
   @Autowired
   EntityManager entityManager;

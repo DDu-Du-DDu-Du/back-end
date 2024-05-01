@@ -6,13 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.ddudu.auth.jwt.converter.JwtConverter;
 import com.ddudu.common.exception.DataNotFoundException;
 import com.ddudu.common.exception.DuplicateResourceException;
-import com.ddudu.persistence.dao.user.FollowingDao;
-import com.ddudu.persistence.dao.user.UserDao;
 import com.ddudu.user.domain.Following;
+import com.ddudu.user.domain.FollowingRepository;
 import com.ddudu.user.domain.FollowingStatus;
 import com.ddudu.user.domain.Options;
 import com.ddudu.user.domain.User;
 import com.ddudu.user.domain.User.UserBuilder;
+import com.ddudu.user.domain.UserRepository;
 import com.ddudu.user.domain.UserSearchType;
 import com.ddudu.user.dto.FollowingSearchType;
 import com.ddudu.user.dto.SimpleUserDto;
@@ -63,10 +63,10 @@ class UserServiceTest {
   UserService userService;
 
   @Autowired
-  UserDao userRepository;
+  UserRepository userRepository;
 
   @Autowired
-  FollowingDao followingRepository;
+  FollowingRepository followingRepository;
 
   @Autowired
   PasswordEncoder passwordEncoder;
@@ -505,6 +505,7 @@ class UserServiceTest {
       Options options = user.getOptions();
 
       options.switchOptions();
+      userRepository.update(user);
 
       // when
       ToggleOptionResponse response = userService.switchOption(user.getId());
