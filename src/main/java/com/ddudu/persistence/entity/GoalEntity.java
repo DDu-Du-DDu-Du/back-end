@@ -4,7 +4,6 @@ import com.ddudu.common.BaseEntity;
 import com.ddudu.goal.domain.Goal;
 import com.ddudu.goal.domain.GoalStatus;
 import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,7 +37,7 @@ public class GoalEntity extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  private UserEntity user;
 
   @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
   @Enumerated(EnumType.STRING)
@@ -53,7 +52,8 @@ public class GoalEntity extends BaseEntity {
 
   @Builder
   public GoalEntity(
-      Long id, String name, User user, GoalStatus status, String color, PrivacyType privacyType,
+      Long id, String name, UserEntity user, GoalStatus status, String color,
+      PrivacyType privacyType,
       LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
   ) {
     super(createdAt, updatedAt, isDeleted);
@@ -70,7 +70,7 @@ public class GoalEntity extends BaseEntity {
     return GoalEntity.builder()
         .id(goal.getId())
         .name(goal.getName())
-        .user(goal.getUser())
+        .user(UserEntity.from(goal.getUser()))
         .status(goal.getStatus())
         .color(goal.getColor())
         .privacyType(goal.getPrivacyType())
@@ -84,7 +84,7 @@ public class GoalEntity extends BaseEntity {
     return Goal.builder()
         .id(id)
         .name(name)
-        .user(user)
+        .user(user.toDomain())
         .status(status)
         .color(color)
         .privacyType(privacyType)

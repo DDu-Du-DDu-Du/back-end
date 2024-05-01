@@ -3,7 +3,6 @@ package com.ddudu.persistence.entity;
 import com.ddudu.common.BaseEntity;
 import com.ddudu.todo.domain.Todo;
 import com.ddudu.todo.domain.TodoStatus;
-import com.ddudu.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,7 +37,7 @@ public class TodoEntity extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
-  private User user;
+  private UserEntity user;
 
   @Column(name = "name", length = 50, nullable = false)
   private String name;
@@ -55,7 +54,8 @@ public class TodoEntity extends BaseEntity {
 
   @Builder
   public TodoEntity(
-      Long id, GoalEntity goal, User user, String name, TodoStatus status, LocalDateTime beginAt,
+      Long id, GoalEntity goal, UserEntity user, String name, TodoStatus status,
+      LocalDateTime beginAt,
       LocalDateTime endAt, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
   ) {
     super(createdAt, updatedAt, isDeleted);
@@ -73,7 +73,7 @@ public class TodoEntity extends BaseEntity {
     return TodoEntity.builder()
         .id(todo.getId())
         .goal(GoalEntity.from(todo.getGoal()))
-        .user(todo.getUser())
+        .user(UserEntity.from(todo.getUser()))
         .name(todo.getName())
         .status(todo.getStatus())
         .beginAt(todo.getBeginAt())
@@ -88,7 +88,7 @@ public class TodoEntity extends BaseEntity {
     return Todo.builder()
         .id(id)
         .goal(goal.toDomain())
-        .user(user)
+        .user(user.toDomain())
         .name(name)
         .status(status)
         .beginAt(beginAt)

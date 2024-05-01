@@ -4,14 +4,9 @@ import static io.micrometer.common.util.StringUtils.isBlank;
 
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.goal.exception.GoalErrorCode;
-import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Color {
 

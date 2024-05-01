@@ -1,13 +1,8 @@
 package com.ddudu.user.domain;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Embeddable
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Options {
 
@@ -18,6 +13,10 @@ public class Options {
 
   protected Options() {
     allowingFollowsAfterApproval = DEFAULT_OFF;
+  }
+
+  public Options(boolean isAllowed) {
+    allowingFollowsAfterApproval = isAllowed;
   }
 
   public void switchOptions() {

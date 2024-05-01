@@ -1,85 +1,54 @@
 package com.ddudu.user.domain;
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.auth.domain.authority.Authority;
-import com.ddudu.common.BaseEntity;
+import com.ddudu.common.domain.BaseDomain;
 import com.ddudu.common.exception.DuplicateResourceException;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Objects;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Entity
-@Table(name = "users")
-@SQLRestriction("is_deleted = 0")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class User extends BaseEntity {
+public class User extends BaseDomain {
 
   private static final int MAX_NICKNAME_LENGTH = 20;
   private static final int MAX_OPTIONAL_USERNAME_LENGTH = 20;
   private static final int MAX_INTRODUCTION_LENGTH = 50;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
   private Long id;
-
-  @Column(name = "optional_username", length = 20, unique = true)
   private String optionalUsername;
-
-  @Embedded
   private Email email;
-
-  @Embedded
   private Password password;
-
-  @Column(name = "nickname", length = 20, nullable = false)
   private String nickname;
-
-  @Column(name = "introduction", length = 50)
   private String introduction;
-
-  @Column(name = "authority", columnDefinition = "VARCHAR", length = 15)
-  @Enumerated(EnumType.STRING)
   private Authority authority;
-
-  @Column(name = "status", columnDefinition = "VARCHAR", length = 20)
-  @Enumerated(EnumType.STRING)
   private UserStatus status;
-
-  @Embedded
   private Options options;
 
   @Builder
   public User(
-      String optionalUsername, String email, String password, PasswordEncoder passwordEncoder,
-      String nickname, String introduction, Authority authority
+      Long id, String optionalUsername, String email, Password password,
+      String nickname, String introduction, Authority authority, UserStatus status, Options options,
+      LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
   ) {
+    super(createdAt, updatedAt, isDeleted);
     validate(nickname, optionalUsername, introduction);
 
+    this.id = id;
     this.optionalUsername = optionalUsername;
     this.email = new Email(email);
-    this.password = new Password(password, passwordEncoder);
+    this.password = password;
     this.nickname = nickname;
     this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
-    options = new Options();
-    status = UserStatus.ACTIVE;
+    this.status = isNull(status) ? UserStatus.ACTIVE : status;
+    this.options = isNull(options) ? new Options() : options;
   }
 
   public String getEmail() {

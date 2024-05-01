@@ -3,23 +3,22 @@ package com.ddudu.user.domain;
 import com.ddudu.common.exception.InvalidParameterException;
 import com.ddudu.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Password {
 
   private static final Pattern PASSWORD_PATTERN = Pattern.compile(
       "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@!%*#?&^]).{8,50}$");
   private static final int MIN_PASSWORD_LENGTH = 8;
 
-  @Column(name = "password", nullable = false)
   private String encrypted;
+
+  public Password(String encrypted) {
+    this.encrypted = encrypted;
+  }
 
   public Password(String rawPassword, PasswordEncoder passwordEncoder) {
     validate(rawPassword);
