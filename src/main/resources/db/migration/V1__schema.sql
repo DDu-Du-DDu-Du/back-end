@@ -104,6 +104,20 @@ CREATE TABLE IF NOT EXISTS user_achievements
     CONSTRAINT fk_user_achievement_achievement_id FOREIGN KEY (achievement_id) REFERENCES achievements (id) ON DELETE CASCADE
 );
 
+-- NOTIFICATION
+CREATE TABLE IF NOT EXISTS notifications
+(
+    id          BIGINT AUTO_INCREMENT,
+    receiver_id BIGINT       NOT NULL,
+    message     VARCHAR(255) NOT NULL,
+    type        VARCHAR(15)  NOT NULL,
+    is_read     TINYINT(1)   NOT NULL DEFAULT 0,
+    created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_notification_id PRIMARY KEY (id),
+    CONSTRAINT fk_notification_receiver_id FOREIGN KEY (receiver_id) REFERENCES users (id)
+);
+
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
