@@ -1,5 +1,7 @@
 package com.ddudu.persistence.entity;
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.application.common.BaseEntity;
 import com.ddudu.application.todo.domain.Todo;
 import com.ddudu.application.todo.domain.TodoStatus;
@@ -20,9 +22,12 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "todo")
+@Table(name = "ddudus")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TodoEntity extends BaseEntity {
+
+  private static final TodoStatus DEFAULT_STATUS = TodoStatus.UNCOMPLETED;
+  private static final boolean DEFAULT_IS_POSTPONED = false;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,11 +55,14 @@ public class TodoEntity extends BaseEntity {
   @Column(name = "end_at")
   private LocalDateTime endAt;
 
+  @Column(name = "is_postponed", nullable = false, columnDefinition = "TINYINT(1)")
+  private boolean isPostponed;
+
   @Builder
   public TodoEntity(
-    Long id, GoalEntity goal, UserEntity user, String name, TodoStatus status,
-    LocalDateTime beginAt,
-    LocalDateTime endAt, LocalDateTime createdAt, LocalDateTime updatedAt
+      Long id, GoalEntity goal, UserEntity user, String name, TodoStatus status,
+      LocalDateTime beginAt, LocalDateTime endAt, Boolean isPostponed, LocalDateTime createdAt,
+      LocalDateTime updatedAt
   ) {
     super(createdAt, updatedAt);
 
@@ -62,37 +70,38 @@ public class TodoEntity extends BaseEntity {
     this.goal = goal;
     this.user = user;
     this.name = name;
-    this.status = status;
+    this.status = isNull(status) ? DEFAULT_STATUS : status;
     this.beginAt = beginAt;
     this.endAt = endAt;
+    this.isPostponed = isNull(isPostponed) ? DEFAULT_IS_POSTPONED : isPostponed;
   }
 
   public static TodoEntity from(Todo todo) {
     return TodoEntity.builder()
-      .id(todo.getId())
-      .goal(GoalEntity.from(todo.getGoal()))
-      .user(UserEntity.from(todo.getUser()))
-      .name(todo.getName())
-      .status(todo.getStatus())
-      .beginAt(todo.getBeginAt())
-      .endAt(todo.getEndAt())
-      .createdAt(todo.getCreatedAt())
-      .updatedAt(todo.getUpdatedAt())
-      .build();
+        .id(todo.getId())
+        .goal(GoalEntity.from(todo.getGoal()))
+        .user(UserEntity.from(todo.getUser()))
+        .name(todo.getName())
+        .status(todo.getStatus())
+        .beginAt(todo.getBeginAt())
+        .endAt(todo.getEndAt())
+        .createdAt(todo.getCreatedAt())
+        .updatedAt(todo.getUpdatedAt())
+        .build();
   }
 
   public Todo toDomain() {
     return Todo.builder()
-      .id(id)
-      .goal(goal.toDomain())
-      .user(user.toDomain())
-      .name(name)
-      .status(status)
-      .beginAt(beginAt)
-      .endAt(endAt)
-      .createdAt(getCreatedAt())
-      .updatedAt(getUpdatedAt())
-      .build();
+        .id(id)
+        .goal(goal.toDomain())
+        .user(user.toDomain())
+        .name(name)
+        .status(status)
+        .beginAt(beginAt)
+        .endAt(endAt)
+        .createdAt(getCreatedAt())
+        .updatedAt(getUpdatedAt())
+        .build();
   }
 
 }
