@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users
 );
 
 -- GOAL
-CREATE TABLE IF NOT EXISTS goal
+CREATE TABLE IF NOT EXISTS goals
 (
     id         BIGINT      AUTO_INCREMENT,
     user_id    BIGINT      NOT NULL,

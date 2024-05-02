@@ -21,7 +21,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "goal")
+@Table(name = "goals")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoalEntity extends BaseEntity {
 
@@ -50,9 +50,9 @@ public class GoalEntity extends BaseEntity {
 
   @Builder
   public GoalEntity(
-    Long id, String name, UserEntity user, GoalStatus status, String color,
-    PrivacyType privacyType,
-    LocalDateTime createdAt, LocalDateTime updatedAt
+      Long id, String name, UserEntity user, GoalStatus status, String color,
+      PrivacyType privacyType,
+      LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
     super(createdAt, updatedAt);
 
@@ -66,28 +66,28 @@ public class GoalEntity extends BaseEntity {
 
   public static GoalEntity from(Goal goal) {
     return GoalEntity.builder()
-      .id(goal.getId())
-      .name(goal.getName())
-      .user(UserEntity.from(goal.getUser()))
-      .status(goal.getStatus())
-      .color(goal.getColor())
-      .privacyType(goal.getPrivacyType())
-      .createdAt(goal.getCreatedAt())
-      .updatedAt(goal.getUpdatedAt())
-      .build();
+        .id(goal.getId())
+        .name(goal.getName())
+        .user(UserEntity.from(goal.getUser()))
+        .status(goal.getStatus())
+        .color(goal.getColor())
+        .privacyType(goal.getPrivacyType())
+        .createdAt(goal.getCreatedAt())
+        .updatedAt(goal.getUpdatedAt())
+        .build();
   }
 
   public Goal toDomain() {
     return Goal.builder()
-      .id(id)
-      .name(name)
-      .user(user.toDomain())
-      .status(status)
-      .color(color)
-      .privacyType(privacyType)
-      .createdAt(getCreatedAt())
-      .updatedAt(getUpdatedAt())
-      .build();
+        .id(id)
+        .name(name)
+        .user(user.toDomain())
+        .status(status)
+        .color(color)
+        .privacyType(privacyType)
+        .createdAt(getCreatedAt())
+        .updatedAt(getUpdatedAt())
+        .build();
   }
 
 }
