@@ -64,6 +64,20 @@ CREATE TABLE IF NOT EXISTS followings
     CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+-- PERIOD GOAL
+CREATE TABLE IF NOT EXISTS period_goals
+(
+    id         BIGINT AUTO_INCREMENT,
+    user_id    BIGINT       NOT NULL,
+    contents   VARCHAR(255) NOT NULL,
+    type       VARCHAR(15)  NOT NULL,
+    plan_date  DATE         NOT NULL,
+    created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_period_goal_id PRIMARY KEY (id),
+    CONSTRAINT fk_period_goal_user_id FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
