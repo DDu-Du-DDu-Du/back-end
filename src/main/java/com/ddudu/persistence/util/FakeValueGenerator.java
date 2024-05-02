@@ -24,4 +24,9 @@ public final class FakeValueGenerator {
         .username();
   }
 
+  public static Long id() {
+    return FAKER.random()
+        .nextLong(Long.MAX_VALUE);
+  }
+
 }

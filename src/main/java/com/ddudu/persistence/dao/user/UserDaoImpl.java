@@ -45,12 +45,12 @@ public class UserDaoImpl implements UserDaoCustom {
       UserEntity user, FollowingSearchType searchType
   ) {
     BooleanBuilder whereClause = new BooleanBuilder();
-    QUserEntity owner = followingEntity.follower;
-    QUserEntity target = followingEntity.followee;
+    QUserEntity owner = followingEntity.id.follower;
+    QUserEntity target = followingEntity.id.followee;
 
     if (FollowingSearchType.isSearchingFollower(searchType)) {
-      owner = followingEntity.followee;
-      target = followingEntity.follower;
+      owner = followingEntity.id.followee;
+      target = followingEntity.id.follower;
     }
 
     whereClause.and(owner.eq(user))

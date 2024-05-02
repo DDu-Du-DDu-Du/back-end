@@ -30,8 +30,8 @@ public class FollowingRepositoryImpl implements FollowingRepository {
 
   @Override
   public Optional<Following> findById(Long id) {
-    return followingDao.findById(id)
-        .map(FollowingEntity::toDomain);
+    // DO NOTHING
+    return Optional.empty();
   }
 
   @Override
