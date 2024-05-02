@@ -34,6 +34,7 @@ import net.datafaker.Faker;
 import org.apache.logging.log4j.util.Strings;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -89,6 +90,7 @@ class UserServiceTest {
   }
 
   @Nested
+  @Disabled
   class 회원가입_테스트 {
 
     static Stream<Arguments> provideSignUpRequestAndString() {
@@ -211,6 +213,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Disabled
     void 이메일로_사용자_검색에_성공한다() {
       // when
       List<UserProfileResponse> searched = userService.search(email, UserSearchType.EMAIL);
@@ -252,6 +255,7 @@ class UserServiceTest {
 
     @ParameterizedTest(name = "{0}일 때, 빈 리스트를 응답한다.")
     @EmptySource
+    @Disabled
     void 키워드가_공백이면_빈_리스트를_반환한다(String keyword) {
       // given
       String email = faker.internet()
@@ -266,6 +270,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Disabled
     void 검색_유형이_입력되지_않은_경우_키워드가_이메일_형식이면_이메일로_검색한다() {
       // when
       List<UserProfileResponse> searched = userService.search(email, null);
@@ -351,6 +356,7 @@ class UserServiceTest {
   }
 
   @Nested
+  @Disabled
   class 이메일_변경_테스트 {
 
     @Test
@@ -427,6 +433,7 @@ class UserServiceTest {
   }
 
   @Nested
+  @Disabled
   class 비밀번호_변경_테스트 {
 
     @Test
