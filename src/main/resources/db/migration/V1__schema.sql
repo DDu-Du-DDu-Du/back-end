@@ -90,6 +90,20 @@ CREATE TABLE IF NOT EXISTS achievements
     CONSTRAINT pk_achievement_id PRIMARY KEY (id)
 );
 
+-- USER ACHIEVEMENTS
+CREATE TABLE IF NOT EXISTS user_achievements
+(
+    id             BIGINT AUTO_INCREMENT,
+    user_id        BIGINT     NOT NULL,
+    achievement_id BIGINT     NOT NULL,
+    is_main        TINYINT(1) NOT NULL DEFAULT 0,
+    created_at     TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_user_achievement PRIMARY KEY (id),
+    CONSTRAINT fk_user_achievement_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_achievement_achievement_id FOREIGN KEY (achievement_id) REFERENCES achievements (id) ON DELETE CASCADE
+);
+
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
