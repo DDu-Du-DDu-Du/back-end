@@ -78,6 +78,18 @@ CREATE TABLE IF NOT EXISTS period_goals
     CONSTRAINT fk_period_goal_user_id FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
+-- ACHIEVEMENTS
+CREATE TABLE IF NOT EXISTS achievements
+(
+    id              BIGINT AUTO_INCREMENT,
+    name            VARCHAR(20)   NOT NULL,
+    description     VARCHAR(255)  NOT NULL,
+    badge_image_url VARCHAR(1024) NOT NULL,
+    created_at      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_achievement_id PRIMARY KEY (id)
+);
+
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
