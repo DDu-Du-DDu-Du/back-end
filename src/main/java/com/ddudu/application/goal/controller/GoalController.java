@@ -7,10 +7,16 @@ import com.ddudu.application.goal.dto.response.CreateGoalResponse;
 import com.ddudu.application.goal.dto.response.GoalResponse;
 import com.ddudu.application.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.goal.service.GoalService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/goals")
 @RequiredArgsConstructor
+@Tag(name = "목표 관련 API")
 public class GoalController {
 
   private static final String GOALS_BASE_PATH = "/api/goals/";
@@ -32,6 +39,15 @@ public class GoalController {
   private final GoalService goalService;
 
   @PostMapping
+  @Operation(summary = "목표 생성")
+  @ApiResponse(
+      responseCode = "201",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = CreateGoalResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<CreateGoalResponse> create(
       @Login
       Long userId,
@@ -47,6 +63,15 @@ public class GoalController {
   }
 
   @PutMapping("/{id}")
+  @Operation(summary = "목표 수정")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = GoalResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<GoalResponse> update(
       @Login
       Long loginId,
@@ -63,6 +88,15 @@ public class GoalController {
   }
 
   @GetMapping("/{id}")
+  @Operation(summary = "목표 상세 조회")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = GoalResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<GoalResponse> getById(
       @Login
       Long loginId,
@@ -75,6 +109,15 @@ public class GoalController {
   }
 
   @GetMapping
+  @Operation(summary = "목표 전체 조회")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = GoalSummaryResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<List<GoalSummaryResponse>> getAllByUser(
       @Login
       Long loginId,
@@ -86,7 +129,16 @@ public class GoalController {
     return ResponseEntity.ok(response);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping(
+      value = "/{id}",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(summary = "목표 삭제")
+  @ApiResponse(
+      responseCode = "204"
+  )
+  @Deprecated
   public ResponseEntity<Void> delete(
       @Login
       Long loginId,

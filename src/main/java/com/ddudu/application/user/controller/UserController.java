@@ -20,11 +20,17 @@ import com.ddudu.application.user.dto.response.UsersResponse;
 import com.ddudu.application.user.exception.UserErrorCode;
 import com.ddudu.application.user.service.FollowingService;
 import com.ddudu.application.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,12 +46,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "회원 관련 API")
 public class UserController {
 
   private final UserService userService;
   private final FollowingService followingService;
 
   @PostMapping
+  @Operation(summary = "회원가입")
+  @ApiResponse(
+      responseCode = "201",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = SignUpResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<SignUpResponse> signUp(
       @RequestBody
       @Valid
@@ -59,6 +75,15 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
+  @Operation(summary = "회원 상세 조회")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = UserProfileResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<UserProfileResponse> getById(
       @PathVariable
       Long id
@@ -68,7 +93,12 @@ public class UserController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping
+  @GetMapping(
+      produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(summary = "사용자 검색")
+  @Deprecated
   public ResponseEntity<List<UserProfileResponse>> search(
       String keyword,
       @RequestParam(required = false)
@@ -80,6 +110,8 @@ public class UserController {
   }
 
   @PatchMapping("/{id}/email")
+  @Operation(summary = "이메일 변경")
+  @Deprecated
   public ResponseEntity<UpdateEmailResponse> updateEmail(
       @Login
       Long loginId,
@@ -97,6 +129,8 @@ public class UserController {
   }
 
   @PatchMapping("/{id}/password")
+  @Operation(summary = "비밀번호 변경")
+  @Deprecated
   public ResponseEntity<UpdatePasswordResponse> updatePassword(
       @Login
       Long loginId,
@@ -114,6 +148,15 @@ public class UserController {
   }
 
   @PutMapping("/{id}/profile")
+  @Operation(summary = "프로필 변경")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = UserProfileResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<UserProfileResponse> updateProfile(
       @Login
       Long loginId,
@@ -131,6 +174,15 @@ public class UserController {
   }
 
   @PatchMapping("/{id}/options")
+  @Operation(summary = "사용자 옵션 변경")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = ToggleOptionResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<ToggleOptionResponse> switchOption(
       @Login
       Long loginId,
@@ -145,6 +197,15 @@ public class UserController {
   }
 
   @GetMapping("/{id}/followings")
+  @Operation(summary = "사용자 팔로잉 조회")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = UsersResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<UsersResponse> getFromFollowings(
       @Login
       Long loginId,
@@ -161,6 +222,15 @@ public class UserController {
   }
 
   @PostMapping("/{id}/followings")
+  @Operation(summary = "팔로잉 신청")
+  @ApiResponse(
+      responseCode = "201",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = FollowingResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<FollowingResponse> createFollowing(
       @Login
       Long loginId,
@@ -180,6 +250,15 @@ public class UserController {
   }
 
   @PutMapping("/{id}/followings/{followingId}")
+  @Operation(summary = "팔로잉 상태 변경")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = FollowingResponse.class)
+      )
+  )
+  @Deprecated
   public ResponseEntity<FollowingResponse> updateFollowingStatus(
       @Login
       Long loginId,
@@ -199,6 +278,11 @@ public class UserController {
   }
 
   @DeleteMapping("/{id}/followings/{followingId}")
+  @Operation(summary = "팔로잉 거절")
+  @ApiResponse(
+      responseCode = "204"
+  )
+  @Deprecated
   public ResponseEntity<Void> deleteFollowing(
       @Login
       Long loginId,
