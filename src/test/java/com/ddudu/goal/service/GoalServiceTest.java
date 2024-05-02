@@ -190,8 +190,7 @@ class GoalServiceTest {
     void 삭제된_목표의_ID인_경우_조회에_실패한다() {
       // given
       Goal goal = createGoal(user, name);
-      goal.delete();
-      goalRepository.update(goal);
+      goalRepository.delete(goal);
       flushAndClearPersistence();
 
       Long loginId = user.getId();
