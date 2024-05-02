@@ -30,9 +30,8 @@ public class UserDaoImpl implements UserDaoCustom {
     BooleanBuilder whereClause = new BooleanBuilder();
 
     switch (userSearchType) {
-      case EMAIL -> whereClause.and(userEntity.email.eq(keyword));
       case NICKNAME -> whereClause.and(userEntity.nickname.eq(keyword));
-      case OPTIONAL_USERNAME -> whereClause.and(userEntity.optionalUsername.eq(keyword));
+      case OPTIONAL_USERNAME -> whereClause.and(userEntity.username.eq(keyword));
     }
 
     return jpaQueryFactory

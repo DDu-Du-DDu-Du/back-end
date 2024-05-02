@@ -1,10 +1,13 @@
 package com.ddudu.persistence.entity;
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.application.auth.domain.authority.Authority;
 import com.ddudu.application.common.BaseEntity;
 import com.ddudu.application.user.domain.Options;
 import com.ddudu.application.user.domain.User;
 import com.ddudu.application.user.domain.UserStatus;
+import com.ddudu.persistence.util.FakeValueGenerator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,25 +26,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserEntity extends BaseEntity {
 
+  private static final Authority DEFAULT_AUTHORITY = Authority.NORMAL;
+  private static final UserStatus DEFAULT_STATUS = UserStatus.ACTIVE;
+  private static final boolean DEFAULT_ALLOWING_FOLLOWS_AFTER_APPROVAL = false;
+  private static final boolean DEFAULT_TEMPLATE_NOTIFICATION = true;
+  private static final boolean DEFAULT_DDUDU_NOTIFICATION = true;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "optional_username", length = 20, unique = true)
-  private String optionalUsername;
-
-  @Column(name = "email", length = 50, nullable = false, unique = true)
-  private String email;
-
-  @Column(name = "password", nullable = false)
-  private String encrypted;
-
   @Column(name = "nickname", length = 20, nullable = false)
   private String nickname;
 
+  @Column(name = "username", length = 20, unique = true)
+  private String username;
+
   @Column(name = "introduction", length = 50)
   private String introduction;
+
+  @Column(name = "profile_image_url", length = 1024)
+  private String profile_image_url;
 
   @Column(name = "authority", columnDefinition = "VARCHAR", length = 15)
   @Enumerated(EnumType.STRING)
@@ -54,57 +60,67 @@ public class UserEntity extends BaseEntity {
   @Column(name = "follows_after_approval", nullable = false)
   private boolean allowingFollowsAfterApproval;
 
+  @Column(name = "template_notification", nullable = false)
+  private boolean templateNotification;
+
+  @Column(name = "ddudu_notification", nullable = false)
+  private boolean dduduNotification;
+
   @Builder
   public UserEntity(
-    Long id, String optionalUsername, String email, String encrypted, String nickname,
-    String introduction, Authority authority, UserStatus status,
-    boolean allowingFollowsAfterApproval, LocalDateTime createdAt, LocalDateTime updatedAt
+      Long id, String nickname, String username, String introduction, String profile_image_url,
+      Authority authority, UserStatus status, Boolean allowingFollowsAfterApproval,
+      Boolean templateNotification, Boolean dduduNotification,
+      LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
     super(createdAt, updatedAt);
 
     this.id = id;
-    this.optionalUsername = optionalUsername;
-    this.email = email;
-    this.encrypted = encrypted;
     this.nickname = nickname;
+    this.username = username;
     this.introduction = introduction;
-    this.authority = authority;
-    this.status = status;
-    this.allowingFollowsAfterApproval = allowingFollowsAfterApproval;
+    this.profile_image_url = profile_image_url;
+    this.authority = isNull(authority) ? DEFAULT_AUTHORITY : authority;
+    this.status = isNull(status) ? DEFAULT_STATUS : status;
+    this.allowingFollowsAfterApproval =
+        isNull(allowingFollowsAfterApproval) ? DEFAULT_ALLOWING_FOLLOWS_AFTER_APPROVAL
+            : allowingFollowsAfterApproval;
+    this.templateNotification = isNull(templateNotification) ? DEFAULT_TEMPLATE_NOTIFICATION
+        : templateNotification;
+    this.dduduNotification =
+        isNull(dduduNotification) ? DEFAULT_DDUDU_NOTIFICATION : dduduNotification;
   }
 
   public static UserEntity from(User user) {
     return UserEntity.builder()
-      .id(user.getId())
-      .optionalUsername(user.getOptionalUsername())
-      .email(user.getEmail())
-      .encrypted(user.getPassword()
-        .getEncrypted())
-      .nickname(user.getNickname())
-      .introduction(user.getIntroduction())
-      .authority(user.getAuthority())
-      .status(user.getStatus())
-      .allowingFollowsAfterApproval(user.getOptions()
-        .isAllowingFollowsAfterApproval())
-      .createdAt(user.getCreatedAt())
-      .updatedAt(user.getUpdatedAt())
-      .build();
+        .id(user.getId())
+        .nickname(user.getNickname())
+        .username(isNull(user.getOptionalUsername()) ? FakeValueGenerator.username()
+            : user.getOptionalUsername())
+        .introduction(user.getIntroduction())
+        .authority(user.getAuthority())
+        .status(user.getStatus())
+        .allowingFollowsAfterApproval(user.getOptions()
+            .isAllowingFollowsAfterApproval())
+        .createdAt(user.getCreatedAt())
+        .updatedAt(user.getUpdatedAt())
+        .build();
   }
 
   public User toDomain() {
     return User.builder()
-      .id(id)
-      .optionalUsername(optionalUsername)
-      .email(email)
-      .encryptedPassword(encrypted)
-      .nickname(nickname)
-      .introduction(introduction)
-      .authority(authority)
-      .status(status)
-      .options(new Options(allowingFollowsAfterApproval))
-      .createdAt(getCreatedAt())
-      .updatedAt(getUpdatedAt())
-      .build();
+        .id(id)
+        .optionalUsername(username)
+        .email(FakeValueGenerator.email())
+        .encryptedPassword(FakeValueGenerator.password())
+        .nickname(nickname)
+        .introduction(introduction)
+        .authority(authority)
+        .status(status)
+        .options(new Options(allowingFollowsAfterApproval))
+        .createdAt(getCreatedAt())
+        .updatedAt(getUpdatedAt())
+        .build();
   }
 
 }
