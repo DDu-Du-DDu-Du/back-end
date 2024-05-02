@@ -54,13 +54,12 @@ CREATE TABLE IF NOT EXISTS ddudus
 -- FOLLOWING
 CREATE TABLE IF NOT EXISTS followings
 (
-    id          BIGINT AUTO_INCREMENT,
     follower_id BIGINT      NOT NULL,
     followee_id BIGINT      NOT NULL,
     status      VARCHAR(20) NOT NULL DEFAULT 'FOLLOWING',
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT pk_friend_id PRIMARY KEY (id),
+    CONSTRAINT pk_friend_follower_followee PRIMARY KEY (follower_id, followee_id),
     CONSTRAINT fk_follower_id FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON DELETE CASCADE
 );
