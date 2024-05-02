@@ -1,22 +1,24 @@
 package com.ddudu.like.service;
 
+import static com.ddudu.application.todo.domain.TodoStatus.COMPLETE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.common.exception.DataNotFoundException;
-import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.goal.domain.Goal;
-import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.goal.repository.GoalRepository;
-import com.ddudu.like.domain.Like;
-import com.ddudu.like.dto.request.LikeRequest;
-import com.ddudu.like.dto.response.LikeResponse;
-import com.ddudu.like.exception.LikeErrorCode;
-import com.ddudu.like.repository.LikeRepository;
-import com.ddudu.todo.domain.Todo;
-import com.ddudu.todo.repository.TodoRepository;
-import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.application.common.exception.DataNotFoundException;
+import com.ddudu.application.common.exception.ForbiddenException;
+import com.ddudu.application.goal.domain.Goal;
+import com.ddudu.application.goal.domain.GoalRepository;
+import com.ddudu.application.goal.domain.PrivacyType;
+import com.ddudu.application.like.domain.Like;
+import com.ddudu.application.like.domain.LikeRepository;
+import com.ddudu.application.like.dto.request.LikeRequest;
+import com.ddudu.application.like.dto.response.LikeResponse;
+import com.ddudu.application.like.exception.LikeErrorCode;
+import com.ddudu.application.like.service.LikeService;
+import com.ddudu.application.todo.domain.Todo;
+import com.ddudu.application.todo.domain.TodoRepository;
+import com.ddudu.application.user.domain.User;
+import com.ddudu.application.user.domain.UserRepository;
 import java.util.Optional;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -60,8 +62,7 @@ class LikeServiceTest {
   void setUp() {
     user = createUser();
     goal = createGoal(user);
-    todo = createTodo(user, goal);
-    todo.switchStatus();
+    todo = createCompletedTodo(user, goal);
   }
 
   @Nested
@@ -91,6 +92,7 @@ class LikeServiceTest {
       LikeRequest request = new LikeRequest(other.getId(), todo.getId());
       Like like = createLike(other, todo);
       like.delete();
+      likeRepository.update(like);
 
       // when
       LikeResponse expected = likeService.toggle(other.getId(), request);
@@ -195,7 +197,7 @@ class LikeServiceTest {
     return goalRepository.save(goal);
   }
 
-  private Todo createTodo(User user, Goal goal) {
+  private Todo createCompletedTodo(User user, Goal goal) {
     String name = faker.lorem()
         .word();
 
@@ -203,6 +205,7 @@ class LikeServiceTest {
         .name(name)
         .user(user)
         .goal(goal)
+        .status(COMPLETE)
         .build();
 
     return todoRepository.save(todo);

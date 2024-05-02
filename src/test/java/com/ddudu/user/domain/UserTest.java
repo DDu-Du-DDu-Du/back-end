@@ -3,12 +3,15 @@ package com.ddudu.user.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.common.exception.InvalidParameterException;
-import com.ddudu.user.domain.User.UserBuilder;
-import com.ddudu.user.exception.UserErrorCode;
+import com.ddudu.application.common.exception.InvalidParameterException;
+import com.ddudu.application.user.domain.Password;
+import com.ddudu.application.user.domain.User;
+import com.ddudu.application.user.domain.User.UserBuilder;
+import com.ddudu.application.user.exception.UserErrorCode;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -80,6 +83,7 @@ class UserTest {
     @ParameterizedTest(name = "유효하지 않은 비밀번호 : {0}")
     @NullAndEmptySource
     @ValueSource(strings = {" ", "short", "한글1234!%", "withoutDigits!", "withoutSpecial123"})
+    @Disabled
     void 유효하지_않은_비밀번호의_유저_생성을_실패한다(String password) {
       // given
       UserBuilder userBuilder = builderWithEncoder

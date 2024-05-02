@@ -3,20 +3,21 @@ package com.ddudu.goal.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.common.exception.DataNotFoundException;
-import com.ddudu.common.exception.ForbiddenException;
-import com.ddudu.goal.domain.Goal;
-import com.ddudu.goal.domain.GoalStatus;
-import com.ddudu.goal.domain.PrivacyType;
-import com.ddudu.goal.dto.requset.CreateGoalRequest;
-import com.ddudu.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.goal.dto.response.CreateGoalResponse;
-import com.ddudu.goal.dto.response.GoalResponse;
-import com.ddudu.goal.dto.response.GoalSummaryResponse;
-import com.ddudu.goal.exception.GoalErrorCode;
-import com.ddudu.goal.repository.GoalRepository;
-import com.ddudu.user.domain.User;
-import com.ddudu.user.repository.UserRepository;
+import com.ddudu.application.common.exception.DataNotFoundException;
+import com.ddudu.application.common.exception.ForbiddenException;
+import com.ddudu.application.goal.domain.Goal;
+import com.ddudu.application.goal.domain.GoalRepository;
+import com.ddudu.application.goal.domain.GoalStatus;
+import com.ddudu.application.goal.domain.PrivacyType;
+import com.ddudu.application.goal.dto.requset.CreateGoalRequest;
+import com.ddudu.application.goal.dto.requset.UpdateGoalRequest;
+import com.ddudu.application.goal.dto.response.CreateGoalResponse;
+import com.ddudu.application.goal.dto.response.GoalResponse;
+import com.ddudu.application.goal.dto.response.GoalSummaryResponse;
+import com.ddudu.application.goal.exception.GoalErrorCode;
+import com.ddudu.application.goal.service.GoalService;
+import com.ddudu.application.user.domain.User;
+import com.ddudu.application.user.domain.UserRepository;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -188,11 +189,12 @@ class GoalServiceTest {
     @Test
     void 삭제된_목표의_ID인_경우_조회에_실패한다() {
       // given
-      Long loginId = user.getId();
       Goal goal = createGoal(user, name);
-
       goal.delete();
+      goalRepository.update(goal);
       flushAndClearPersistence();
+
+      Long loginId = user.getId();
 
       // when
       ThrowingCallable findById = () -> goalService.findById(loginId, goal.getId());
