@@ -1,7 +1,7 @@
 -- USER
 CREATE TABLE IF NOT EXISTS users
 (
-    id                     BIGINT        AUTO_INCREMENT,
+    id                     BIGINT AUTO_INCREMENT,
     nickname               VARCHAR(20)   NOT NULL,
     username               VARCHAR(20)   NOT NULL,
     introduction           VARCHAR(50)   NULL,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS users
 -- GOAL
 CREATE TABLE IF NOT EXISTS goals
 (
-    id         BIGINT      AUTO_INCREMENT,
+    id         BIGINT AUTO_INCREMENT,
     user_id    BIGINT      NOT NULL,
     name       VARCHAR(50) NOT NULL,
     color      CHAR(6)     NOT NULL DEFAULT '191919',
@@ -33,27 +33,28 @@ CREATE TABLE IF NOT EXISTS goals
     CONSTRAINT ck_color CHECK ( CHAR_LENGTH(color) = 6 )
 );
 
--- TO DO
-CREATE TABLE IF NOT EXISTS todo
+-- DDUDU
+CREATE TABLE IF NOT EXISTS ddudus
 (
-    id         BIGINT      AUTO_INCREMENT,
-    user_id    BIGINT      NOT NULL,
-    goal_id    BIGINT      NOT NULL,
-    name       VARCHAR(50) NOT NULL,
-    status     VARCHAR(20) NOT NULL DEFAULT 'UNCOMPLETED',
-    begin_at   TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    end_at     TIMESTAMP   NULL,
-    created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id           BIGINT AUTO_INCREMENT,
+    user_id      BIGINT      NOT NULL,
+    goal_id      BIGINT      NOT NULL,
+    name         VARCHAR(50) NOT NULL,
+    status       VARCHAR(20) NOT NULL DEFAULT 'UNCOMPLETED',
+    begin_at     TIMESTAMP   NOT NULL,
+    end_at       TIMESTAMP   NULL,
+    is_postponed TINYINT(1)  NOT NULL DEFAULT 0,
+    created_at   TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT pk_todo_id PRIMARY KEY (id),
     CONSTRAINT fk_todo_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_todo_goal_id FOREIGN KEY (goal_id) REFERENCES goal (id)
+    CONSTRAINT fk_todo_goal_id FOREIGN KEY (goal_id) REFERENCES goals (id)
 );
 
 -- FOLLOWING
 CREATE TABLE IF NOT EXISTS followings
 (
-    id          BIGINT      AUTO_INCREMENT,
+    id          BIGINT AUTO_INCREMENT,
     follower_id BIGINT      NOT NULL,
     followee_id BIGINT      NOT NULL,
     status      VARCHAR(20) NOT NULL DEFAULT 'FOLLOWING',
@@ -67,13 +68,13 @@ CREATE TABLE IF NOT EXISTS followings
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
-    id         BIGINT    AUTO_INCREMENT,
+    id         BIGINT AUTO_INCREMENT,
     user_id    BIGINT    NOT NULL,
     todo_id    BIGINT    NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT pk_like_id PRIMARY KEY (id),
     CONSTRAINT fk_like_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT fk_like_todo_id FOREIGN KEY (todo_id) REFERENCES todo (id) ON DELETE CASCADE
+    CONSTRAINT fk_like_todo_id FOREIGN KEY (todo_id) REFERENCES ddudus (id) ON DELETE CASCADE
 );
 
