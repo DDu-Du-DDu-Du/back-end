@@ -1,20 +1,20 @@
 -- USER
 CREATE TABLE IF NOT EXISTS users
 (
-    id                     BIGINT       AUTO_INCREMENT,
-    optional_username      VARCHAR(20)  NULL,
-    email                  VARCHAR(50)  NOT NULL,
-    password               VARCHAR(255) NOT NULL,
-    nickname               VARCHAR(20)  NOT NULL,
-    introduction           VARCHAR(50)  NULL,
-    authority              VARCHAR(15)  NOT NULL DEFAULT 'NORMAL',
-    status                 VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
-    follows_after_approval TINYINT(1)   NOT NULL DEFAULT 0,
-    created_at             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id                     BIGINT        AUTO_INCREMENT,
+    nickname               VARCHAR(20)   NOT NULL,
+    username               VARCHAR(20)   NOT NULL,
+    introduction           VARCHAR(50)   NULL,
+    profile_image_url      VARCHAR(1024) NULL,
+    authority              VARCHAR(15)   NOT NULL DEFAULT 'NORMAL',
+    status                 VARCHAR(20)   NOT NULL DEFAULT 'ACTIVE',
+    follows_after_approval TINYINT(1)    NOT NULL DEFAULT 0,
+    template_notification  TINYINT(1)    NOT NULL DEFAULT 1,
+    ddudu_notification     TINYINT(1)    NOT NULL DEFAULT 1,
+    created_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT pk_user_id PRIMARY KEY (id),
-    CONSTRAINT uk_user_optional_username UNIQUE (optional_username),
-    CONSTRAINT uk_user_email UNIQUE (email)
+    CONSTRAINT uk_user_username UNIQUE (username)
 );
 
 -- GOAL
@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS followings
     follower_id BIGINT      NOT NULL,
     followee_id BIGINT      NOT NULL,
     status      VARCHAR(20) NOT NULL DEFAULT 'FOLLOWING',
-    created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT pk_friend_id PRIMARY KEY (id),
     CONSTRAINT fk_follower_id FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_followee_id FOREIGN KEY (followee_id) REFERENCES users (id) ON DELETE CASCADE
@@ -67,11 +67,11 @@ CREATE TABLE IF NOT EXISTS followings
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
-    id         BIGINT      AUTO_INCREMENT,
-    user_id    BIGINT      NOT NULL,
-    todo_id    BIGINT      NOT NULL,
-    created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id         BIGINT    AUTO_INCREMENT,
+    user_id    BIGINT    NOT NULL,
+    todo_id    BIGINT    NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT pk_like_id PRIMARY KEY (id),
     CONSTRAINT fk_like_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_like_todo_id FOREIGN KEY (todo_id) REFERENCES todo (id) ON DELETE CASCADE
