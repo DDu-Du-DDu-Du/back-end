@@ -18,11 +18,9 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "todo")
-@SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TodoEntity extends BaseEntity {
 
@@ -54,11 +52,11 @@ public class TodoEntity extends BaseEntity {
 
   @Builder
   public TodoEntity(
-      Long id, GoalEntity goal, UserEntity user, String name, TodoStatus status,
-      LocalDateTime beginAt,
-      LocalDateTime endAt, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
+    Long id, GoalEntity goal, UserEntity user, String name, TodoStatus status,
+    LocalDateTime beginAt,
+    LocalDateTime endAt, LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
 
     this.id = id;
     this.goal = goal;
@@ -71,32 +69,30 @@ public class TodoEntity extends BaseEntity {
 
   public static TodoEntity from(Todo todo) {
     return TodoEntity.builder()
-        .id(todo.getId())
-        .goal(GoalEntity.from(todo.getGoal()))
-        .user(UserEntity.from(todo.getUser()))
-        .name(todo.getName())
-        .status(todo.getStatus())
-        .beginAt(todo.getBeginAt())
-        .endAt(todo.getEndAt())
-        .createdAt(todo.getCreatedAt())
-        .updatedAt(todo.getUpdatedAt())
-        .isDeleted(todo.isDeleted())
-        .build();
+      .id(todo.getId())
+      .goal(GoalEntity.from(todo.getGoal()))
+      .user(UserEntity.from(todo.getUser()))
+      .name(todo.getName())
+      .status(todo.getStatus())
+      .beginAt(todo.getBeginAt())
+      .endAt(todo.getEndAt())
+      .createdAt(todo.getCreatedAt())
+      .updatedAt(todo.getUpdatedAt())
+      .build();
   }
 
   public Todo toDomain() {
     return Todo.builder()
-        .id(id)
-        .goal(goal.toDomain())
-        .user(user.toDomain())
-        .name(name)
-        .status(status)
-        .beginAt(beginAt)
-        .endAt(endAt)
-        .createdAt(getCreatedAt())
-        .updatedAt(getUpdatedAt())
-        .isDeleted(isDeleted())
-        .build();
+      .id(id)
+      .goal(goal.toDomain())
+      .user(user.toDomain())
+      .name(name)
+      .status(status)
+      .beginAt(beginAt)
+      .endAt(endAt)
+      .createdAt(getCreatedAt())
+      .updatedAt(getUpdatedAt())
+      .build();
   }
 
 }

@@ -29,9 +29,9 @@ public class Goal extends BaseDomain {
   @Builder
   public Goal(
       Long id, String name, User user, GoalStatus status, String color, PrivacyType privacyType,
-      LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
+      LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
     validate(name, user);
 
     this.id = id;

@@ -36,8 +36,7 @@ public class LikeService {
     Like existingLike = likeRepository.findByUserAndTodo(user, todo);
 
     if (existingLike != null) {
-      switchLikeStatus(existingLike);
-      likeRepository.update(existingLike);
+      likeRepository.delete(existingLike);
       return LikeResponse.from(existingLike);
     }
 
@@ -53,16 +52,6 @@ public class LikeService {
     if (!loginId.equals(userId)) {
       throw new ForbiddenException(LikeErrorCode.INVALID_AUTHORITY);
     }
-  }
-
-  private Like switchLikeStatus(Like like) {
-    if (!like.isDeleted()) {
-      like.delete();
-      return like;
-    }
-
-    like.undelete();
-    return like;
   }
 
 }

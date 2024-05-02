@@ -30,9 +30,9 @@ public class Todo extends BaseDomain {
   @Builder
   public Todo(
       Long id, Goal goal, User user, String name, TodoStatus status, LocalDateTime beginAt,
-      LocalDateTime endAt, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
+      LocalDateTime endAt, LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
     validate(goal, user, name);
 
     this.id = id;

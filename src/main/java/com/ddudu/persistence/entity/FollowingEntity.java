@@ -43,10 +43,10 @@ public class FollowingEntity extends BaseEntity {
 
   @Builder
   public FollowingEntity(
-      Long id, UserEntity follower, UserEntity followee, FollowingStatus status,
-      LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
+    Long id, UserEntity follower, UserEntity followee, FollowingStatus status,
+    LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
 
     this.id = id;
     this.follower = follower;
@@ -56,26 +56,24 @@ public class FollowingEntity extends BaseEntity {
 
   public static FollowingEntity from(Following following) {
     return FollowingEntity.builder()
-        .id(following.getId())
-        .follower(UserEntity.from(following.getFollower()))
-        .followee(UserEntity.from(following.getFollowee()))
-        .status(following.getStatus())
-        .createdAt(following.getCreatedAt())
-        .updatedAt(following.getUpdatedAt())
-        .isDeleted(following.isDeleted())
-        .build();
+      .id(following.getId())
+      .follower(UserEntity.from(following.getFollower()))
+      .followee(UserEntity.from(following.getFollowee()))
+      .status(following.getStatus())
+      .createdAt(following.getCreatedAt())
+      .updatedAt(following.getUpdatedAt())
+      .build();
   }
 
   public Following toDomain() {
     return Following.builder()
-        .id(id)
-        .follower(follower.toDomain())
-        .followee(followee.toDomain())
-        .status(status)
-        .createdAt(getCreatedAt())
-        .updatedAt(getUpdatedAt())
-        .isDeleted(isDeleted())
-        .build();
+      .id(id)
+      .follower(follower.toDomain())
+      .followee(followee.toDomain())
+      .status(status)
+      .createdAt(getCreatedAt())
+      .updatedAt(getUpdatedAt())
+      .build();
   }
 
 }

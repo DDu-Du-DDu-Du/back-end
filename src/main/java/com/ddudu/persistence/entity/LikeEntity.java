@@ -36,10 +36,9 @@ public class LikeEntity extends BaseEntity {
 
   @Builder
   public LikeEntity(
-      Long id, UserEntity user, TodoEntity todo, LocalDateTime createdAt, LocalDateTime updatedAt,
-      Boolean isDeleted
+    Long id, UserEntity user, TodoEntity todo, LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
 
     this.id = id;
     this.user = user;
@@ -48,24 +47,22 @@ public class LikeEntity extends BaseEntity {
 
   public static LikeEntity from(Like like) {
     return LikeEntity.builder()
-        .id(like.getId())
-        .user(UserEntity.from(like.getUser()))
-        .todo(TodoEntity.from(like.getTodo()))
-        .createdAt(like.getCreatedAt())
-        .updatedAt(like.getUpdatedAt())
-        .isDeleted(like.isDeleted())
-        .build();
+      .id(like.getId())
+      .user(UserEntity.from(like.getUser()))
+      .todo(TodoEntity.from(like.getTodo()))
+      .createdAt(like.getCreatedAt())
+      .updatedAt(like.getUpdatedAt())
+      .build();
   }
 
   public Like toDomain() {
     return Like.builder()
-        .id(id)
-        .user(user.toDomain())
-        .todo(todo.toDomain())
-        .createdAt(getCreatedAt())
-        .updatedAt(getUpdatedAt())
-        .isDeleted(isDeleted())
-        .build();
+      .id(id)
+      .user(user.toDomain())
+      .todo(todo.toDomain())
+      .createdAt(getCreatedAt())
+      .updatedAt(getUpdatedAt())
+      .build();
   }
 
 }

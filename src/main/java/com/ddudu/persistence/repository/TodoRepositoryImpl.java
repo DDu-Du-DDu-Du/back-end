@@ -54,4 +54,9 @@ public class TodoRepositoryImpl implements TodoRepository {
     todoDao.save(TodoEntity.from(todo));
   }
 
+  @Override
+  public void delete(Todo todo) {
+    todoDao.delete(TodoEntity.from(todo));
+  }
+
 }

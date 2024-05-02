@@ -19,4 +19,6 @@ public interface LikeRepository {
 
   void update(Like like);
 
+  void delete(Like like);
+
 }

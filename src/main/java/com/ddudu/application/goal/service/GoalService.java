@@ -85,8 +85,7 @@ public class GoalService {
     goalRepository.findById(id)
         .ifPresent(goal -> {
           checkPermission(loginId, goal);
-          goal.delete();
-          goalRepository.update(goal);
+          goalRepository.delete(goal);
         });
   }
 

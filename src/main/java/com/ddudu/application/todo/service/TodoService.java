@@ -160,8 +160,7 @@ public class TodoService {
     todoRepository.findById(id)
         .ifPresent(todo -> {
           checkPermission(loginId, todo);
-          todo.delete();
-          todoRepository.update(todo);
+          todoRepository.delete(todo);
         });
   }
 

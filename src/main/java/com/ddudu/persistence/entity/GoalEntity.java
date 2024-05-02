@@ -19,11 +19,9 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "goal")
-@SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoalEntity extends BaseEntity {
 
@@ -52,11 +50,11 @@ public class GoalEntity extends BaseEntity {
 
   @Builder
   public GoalEntity(
-      Long id, String name, UserEntity user, GoalStatus status, String color,
-      PrivacyType privacyType,
-      LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
+    Long id, String name, UserEntity user, GoalStatus status, String color,
+    PrivacyType privacyType,
+    LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
 
     this.id = id;
     this.name = name;
@@ -68,30 +66,28 @@ public class GoalEntity extends BaseEntity {
 
   public static GoalEntity from(Goal goal) {
     return GoalEntity.builder()
-        .id(goal.getId())
-        .name(goal.getName())
-        .user(UserEntity.from(goal.getUser()))
-        .status(goal.getStatus())
-        .color(goal.getColor())
-        .privacyType(goal.getPrivacyType())
-        .createdAt(goal.getCreatedAt())
-        .updatedAt(goal.getUpdatedAt())
-        .isDeleted(goal.isDeleted())
-        .build();
+      .id(goal.getId())
+      .name(goal.getName())
+      .user(UserEntity.from(goal.getUser()))
+      .status(goal.getStatus())
+      .color(goal.getColor())
+      .privacyType(goal.getPrivacyType())
+      .createdAt(goal.getCreatedAt())
+      .updatedAt(goal.getUpdatedAt())
+      .build();
   }
 
   public Goal toDomain() {
     return Goal.builder()
-        .id(id)
-        .name(name)
-        .user(user.toDomain())
-        .status(status)
-        .color(color)
-        .privacyType(privacyType)
-        .createdAt(getCreatedAt())
-        .updatedAt(getUpdatedAt())
-        .isDeleted(isDeleted())
-        .build();
+      .id(id)
+      .name(name)
+      .user(user.toDomain())
+      .status(status)
+      .color(color)
+      .privacyType(privacyType)
+      .createdAt(getCreatedAt())
+      .updatedAt(getUpdatedAt())
+      .build();
   }
 
 }

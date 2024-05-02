@@ -66,4 +66,9 @@ public class UserRepositoryImpl implements UserRepository {
     userDao.save(UserEntity.from(user));
   }
 
+  @Override
+  public void delete(User user) {
+    userDao.delete(UserEntity.from(user));
+  }
+
 }

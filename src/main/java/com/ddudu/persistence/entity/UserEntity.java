@@ -17,11 +17,9 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "users")
-@SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserEntity extends BaseEntity {
 
@@ -58,12 +56,11 @@ public class UserEntity extends BaseEntity {
 
   @Builder
   public UserEntity(
-      Long id, String optionalUsername, String email, String encrypted, String nickname,
-      String introduction, Authority authority, UserStatus status,
-      boolean allowingFollowsAfterApproval, LocalDateTime createdAt, LocalDateTime updatedAt,
-      Boolean isDeleted
+    Long id, String optionalUsername, String email, String encrypted, String nickname,
+    String introduction, Authority authority, UserStatus status,
+    boolean allowingFollowsAfterApproval, LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
 
     this.id = id;
     this.optionalUsername = optionalUsername;
@@ -78,38 +75,36 @@ public class UserEntity extends BaseEntity {
 
   public static UserEntity from(User user) {
     return UserEntity.builder()
-        .id(user.getId())
-        .optionalUsername(user.getOptionalUsername())
-        .email(user.getEmail())
-        .encrypted(user.getPassword()
-            .getEncrypted())
-        .nickname(user.getNickname())
-        .introduction(user.getIntroduction())
-        .authority(user.getAuthority())
-        .status(user.getStatus())
-        .allowingFollowsAfterApproval(user.getOptions()
-            .isAllowingFollowsAfterApproval())
-        .createdAt(user.getCreatedAt())
-        .updatedAt(user.getUpdatedAt())
-        .isDeleted(user.isDeleted())
-        .build();
+      .id(user.getId())
+      .optionalUsername(user.getOptionalUsername())
+      .email(user.getEmail())
+      .encrypted(user.getPassword()
+        .getEncrypted())
+      .nickname(user.getNickname())
+      .introduction(user.getIntroduction())
+      .authority(user.getAuthority())
+      .status(user.getStatus())
+      .allowingFollowsAfterApproval(user.getOptions()
+        .isAllowingFollowsAfterApproval())
+      .createdAt(user.getCreatedAt())
+      .updatedAt(user.getUpdatedAt())
+      .build();
   }
 
   public User toDomain() {
     return User.builder()
-        .id(id)
-        .optionalUsername(optionalUsername)
-        .email(email)
-        .encryptedPassword(encrypted)
-        .nickname(nickname)
-        .introduction(introduction)
-        .authority(authority)
-        .status(status)
-        .options(new Options(allowingFollowsAfterApproval))
-        .createdAt(getCreatedAt())
-        .updatedAt(getUpdatedAt())
-        .isDeleted(isDeleted())
-        .build();
+      .id(id)
+      .optionalUsername(optionalUsername)
+      .email(email)
+      .encryptedPassword(encrypted)
+      .nickname(nickname)
+      .introduction(introduction)
+      .authority(authority)
+      .status(status)
+      .options(new Options(allowingFollowsAfterApproval))
+      .createdAt(getCreatedAt())
+      .updatedAt(getUpdatedAt())
+      .build();
   }
 
 }
