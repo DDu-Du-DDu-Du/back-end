@@ -118,6 +118,23 @@ CREATE TABLE IF NOT EXISTS notifications
     CONSTRAINT fk_notification_receiver_id FOREIGN KEY (receiver_id) REFERENCES users (id)
 );
 
+-- TEMPLATES
+CREATE TABLE IF NOT EXISTS templates
+(
+    id              BIGINT AUTO_INCREMENT,
+    goal_id         BIGINT       NULL,
+    create_by       BIGINT       NOT NULL,
+    title           VARCHAR(50)  NOT NULL,
+    description     VARCHAR(1000),
+    time_estimation VARCHAR(20)  NULL,
+    sharing_message VARCHAR(100) NULL,
+    created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_template_id PRIMARY KEY (id),
+    CONSTRAINT fk_template_goal_id FOREIGN KEY (goal_id) REFERENCES goals (id),
+    CONSTRAINT fk_template_create_by FOREIGN KEY (create_by) REFERENCES users (id)
+);
+
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
