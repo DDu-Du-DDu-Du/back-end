@@ -6,12 +6,13 @@ on:
       env:
         required: true
         type: string
-      access-id:
+    secrets:
+      AWS_ACCESS_KEY_ID:
         required: true
-        type: string
-      secret-key:
+      AWS_SECRET_ACCESS_KEY:
         required: true
-        type: string
+      SUBMODULES_SECRET:
+        required: true
 
 permissions:
   contents: read

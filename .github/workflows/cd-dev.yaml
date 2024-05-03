@@ -10,6 +10,7 @@ jobs:
     uses: ./.github/workflows/cd-pipeline.yaml
     with:
       env: dev
-      access-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      secret-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
-    secrets: inherit
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      SUBMODULES_SECRET: ${{ secrets.SUBMODULES_SECRET }}
