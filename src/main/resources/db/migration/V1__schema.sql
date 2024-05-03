@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS templates
 (
     id              BIGINT AUTO_INCREMENT,
     goal_id         BIGINT       NULL,
-    create_by       BIGINT       NOT NULL,
+    created_by      BIGINT       NOT NULL,
     title           VARCHAR(50)  NOT NULL,
     description     VARCHAR(1000),
     time_estimation VARCHAR(20)  NULL,
