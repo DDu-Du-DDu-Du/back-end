@@ -96,7 +96,7 @@ tasks.withType(Checkstyle) {
 test {
     useJUnitPlatform()
 
-    finalizedBy jacocoTestReport
+    // finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
