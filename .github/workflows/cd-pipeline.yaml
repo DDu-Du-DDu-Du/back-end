@@ -65,7 +65,7 @@ jobs:
 
       - name: Docker 이미지 빌드 후 배포
         env:
-          REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ddudu-ecr
           IMAGE_TAG: ${{ github.sha }}
           PROFILE: ${{ inputs.env }}
