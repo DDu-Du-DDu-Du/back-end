@@ -14,11 +14,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "user_achievements")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification extends BaseEntity {
+public class UserAchievementEntity extends BaseEntity {
 
-  private static final boolean DEFAULT_IS_READ = false;
+  private static final boolean DEFAULT_IS_MAIN = false;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,16 +26,14 @@ public class Notification extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "receiver_id", nullable = false)
-  private UserEntity receiver;
+  @JoinColumn(name = "user_id", nullable = false)
+  private UserEntity user;
 
-  @Column(name = "message", nullable = false)
-  private String message;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "achievement_id", nullable = false)
+  private AchievementEntity achievementEntity;
 
-  @Column(name = "type", nullable = false, length = 15)
-  private String type;
-
-  @Column(name = "is_read", nullable = false)
-  private boolean isRead;
+  @Column(name = "is_main", nullable = false)
+  private boolean isMain;
 
 }

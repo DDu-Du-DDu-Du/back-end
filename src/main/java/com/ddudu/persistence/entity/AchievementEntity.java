@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "achievements")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Achievement extends BaseEntity {
+public class AchievementEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -14,11 +14,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user_achievements")
+@Table(name = "templates")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserAchievement extends BaseEntity {
-
-  private static final boolean DEFAULT_IS_MAIN = false;
+public class TemplateEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,14 +24,23 @@ public class UserAchievement extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity user;
+  @JoinColumn(name = "goal_id")
+  private GoalEntity goal;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "achievement_id", nullable = false)
-  private Achievement achievement;
+  @JoinColumn(name = "created_by", nullable = false)
+  private UserEntity user;
 
-  @Column(name = "is_main", nullable = false)
-  private boolean isMain;
+  @Column(name = "title", nullable = false, length = 50)
+  private String title;
+
+  @Column(name = "description", nullable = false, length = 1000)
+  private String description;
+
+  @Column(name = "time_estimation", length = 20)
+  private String timeEstimation;
+
+  @Column(name = "sharing_message", length = 100)
+  private String sharingMessage;
 
 }

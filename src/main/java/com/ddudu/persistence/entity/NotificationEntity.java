@@ -10,14 +10,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "template_ddudus")
+@Table(name = "notifications")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TemplateTodo extends BaseEntity {
+public class NotificationEntity extends BaseEntity {
+
+  private static final boolean DEFAULT_IS_READ = false;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,19 +26,16 @@ public class TemplateTodo extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "template_id", nullable = false)
-  private Template template;
+  @JoinColumn(name = "receiver_id", nullable = false)
+  private UserEntity receiver;
 
-  @Column(name = "name", length = 50, nullable = false)
-  private String name;
+  @Column(name = "message", nullable = false)
+  private String message;
 
-  @Column(name = "begin_at")
-  private LocalDateTime beginAt;
+  @Column(name = "type", nullable = false, length = 15)
+  private String type;
 
-  @Column(name = "end_at")
-  private LocalDateTime endAt;
-
-  @Column(name = "day_number", nullable = false, columnDefinition = "INT")
-  private int dayNumber;
+  @Column(name = "is_read", nullable = false)
+  private boolean isRead;
 
 }

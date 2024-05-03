@@ -10,13 +10,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "templates")
+@Table(name = "template_ddudus")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Template extends BaseEntity {
+public class TemplateTodoEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,23 +25,19 @@ public class Template extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "goal_id")
-  private GoalEntity goal;
+  @JoinColumn(name = "template_id", nullable = false)
+  private TemplateEntity template;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "created_by", nullable = false)
-  private UserEntity user;
+  @Column(name = "name", length = 50, nullable = false)
+  private String name;
 
-  @Column(name = "title", nullable = false, length = 50)
-  private String title;
+  @Column(name = "begin_at")
+  private LocalDateTime beginAt;
 
-  @Column(name = "description", nullable = false, length = 1000)
-  private String description;
+  @Column(name = "end_at")
+  private LocalDateTime endAt;
 
-  @Column(name = "time_estimation", length = 20)
-  private String timeEstimation;
-
-  @Column(name = "sharing_message", length = 100)
-  private String sharingMessage;
+  @Column(name = "day_number", nullable = false, columnDefinition = "INT")
+  private int dayNumber;
 
 }
