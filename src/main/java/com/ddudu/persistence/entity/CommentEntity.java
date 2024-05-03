@@ -32,7 +32,7 @@ public class CommentEntity extends BaseEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private UserEntity user;
 
-  @Column(name = "content", nullable = false)
-  private String content;
+  @Column(name = "contents", nullable = false)
+  private String contents;
 
 }
