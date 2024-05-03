@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS period_goals
     CONSTRAINT fk_period_goal_user_id FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
--- ACHIEVEMENTS
+-- ACHIEVEMENT
 CREATE TABLE IF NOT EXISTS achievements
 (
     id              BIGINT AUTO_INCREMENT,
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS achievements
     CONSTRAINT pk_achievement_id PRIMARY KEY (id)
 );
 
--- USER ACHIEVEMENTS
+-- USER ACHIEVEMENT
 CREATE TABLE IF NOT EXISTS user_achievements
 (
     id             BIGINT AUTO_INCREMENT,
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS notifications
     CONSTRAINT fk_notification_receiver_id FOREIGN KEY (receiver_id) REFERENCES users (id)
 );
 
--- TEMPLATES
+-- TEMPLATE
 CREATE TABLE IF NOT EXISTS templates
 (
     id              BIGINT AUTO_INCREMENT,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS templates
     CONSTRAINT fk_template_create_by FOREIGN KEY (create_by) REFERENCES users (id)
 );
 
--- TEMPLATE DDUDUS
+-- TEMPLATE DDUDU
 CREATE TABLE IF NOT EXISTS template_ddudus
 (
     id          BIGINT AUTO_INCREMENT,
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS template_ddudus
     CONSTRAINT fk_template_todo_template_id FOREIGN KEY (template_id) REFERENCES templates (id)
 );
 
--- COMMENTS
+-- COMMENT
 CREATE TABLE IF NOT EXISTS comments
 (
     id         BIGINT AUTO_INCREMENT,
