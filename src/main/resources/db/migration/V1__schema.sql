@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS templates
     updated_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT pk_template_id PRIMARY KEY (id),
     CONSTRAINT fk_template_goal_id FOREIGN KEY (goal_id) REFERENCES goals (id),
-    CONSTRAINT fk_template_create_by FOREIGN KEY (create_by) REFERENCES users (id)
+    CONSTRAINT fk_template_create_by FOREIGN KEY (created_by) REFERENCES users (id)
 );
 
 -- TEMPLATE DDUDU
@@ -153,12 +153,12 @@ CREATE TABLE IF NOT EXISTS template_ddudus
 -- COMMENT
 CREATE TABLE IF NOT EXISTS comments
 (
-    id         BIGINT AUTO_INCREMENT,
-    template_id BIGINT      NOT NULL,
-    user_id    BIGINT      NOT NULL,
-    contents   VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id          BIGINT AUTO_INCREMENT,
+    template_id BIGINT       NOT NULL,
+    user_id     BIGINT       NOT NULL,
+    contents    VARCHAR(255) NOT NULL,
+    created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT pk_comment_id PRIMARY KEY (id),
     CONSTRAINT fk_comment_template_id FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE,
     CONSTRAINT fk_comment_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
