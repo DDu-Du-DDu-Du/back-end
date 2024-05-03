@@ -150,6 +150,20 @@ CREATE TABLE IF NOT EXISTS template_ddudus
     CONSTRAINT fk_template_todo_template_id FOREIGN KEY (template_id) REFERENCES templates (id)
 );
 
+-- COMMENTS
+CREATE TABLE IF NOT EXISTS comments
+(
+    id         BIGINT AUTO_INCREMENT,
+    template_id BIGINT      NOT NULL,
+    user_id    BIGINT      NOT NULL,
+    contents   VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_comment_id PRIMARY KEY (id),
+    CONSTRAINT fk_comment_template_id FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE,
+    CONSTRAINT fk_comment_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
