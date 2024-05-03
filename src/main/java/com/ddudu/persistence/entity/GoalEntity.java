@@ -19,11 +19,9 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
-@Table(name = "goal")
-@SQLRestriction("is_deleted = 0")
+@Table(name = "goals")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoalEntity extends BaseEntity {
 
@@ -54,9 +52,9 @@ public class GoalEntity extends BaseEntity {
   public GoalEntity(
       Long id, String name, UserEntity user, GoalStatus status, String color,
       PrivacyType privacyType,
-      LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
+      LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
 
     this.id = id;
     this.name = name;
@@ -76,7 +74,6 @@ public class GoalEntity extends BaseEntity {
         .privacyType(goal.getPrivacyType())
         .createdAt(goal.getCreatedAt())
         .updatedAt(goal.getUpdatedAt())
-        .isDeleted(goal.isDeleted())
         .build();
   }
 
@@ -90,7 +87,6 @@ public class GoalEntity extends BaseEntity {
         .privacyType(privacyType)
         .createdAt(getCreatedAt())
         .updatedAt(getUpdatedAt())
-        .isDeleted(isDeleted())
         .build();
   }
 

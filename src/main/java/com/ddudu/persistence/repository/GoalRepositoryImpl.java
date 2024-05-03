@@ -51,4 +51,9 @@ public class GoalRepositoryImpl implements GoalRepository {
     goalDao.save(GoalEntity.from(goal));
   }
 
+  @Override
+  public void delete(Goal goal) {
+    goalDao.delete(GoalEntity.from(goal));
+  }
+
 }

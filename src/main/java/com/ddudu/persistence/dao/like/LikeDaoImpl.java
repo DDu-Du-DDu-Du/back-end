@@ -23,8 +23,7 @@ public class LikeDaoImpl implements LikeDaoCustom {
     return jpaQueryFactory
         .selectFrom(likeEntity)
         .where(
-            likeEntity.todo.in(todos),
-            likeEntity.isDeleted.eq(false)
+            likeEntity.todo.in(todos)
         )
         .fetch();
   }

@@ -76,13 +76,11 @@ class LikeServiceTest {
       Like like = createLike(other, todo);
 
       // when
-      LikeResponse expected = likeService.toggle(other.getId(), request);
+      likeService.toggle(other.getId(), request);
 
       // then
       Optional<Like> actual = likeRepository.findById(like.getId());
-      assertThat(actual).isPresent();
-      assertThat(expected).extracting("userId", "todoId", "isDeleted")
-          .containsExactly(other.getId(), todo.getId(), true);
+      assertThat(actual).isNotPresent();
     }
 
     @Test
@@ -91,17 +89,14 @@ class LikeServiceTest {
       User other = createUser();
       LikeRequest request = new LikeRequest(other.getId(), todo.getId());
       Like like = createLike(other, todo);
-      like.delete();
-      likeRepository.update(like);
+      likeRepository.delete(like);
 
       // when
       LikeResponse expected = likeService.toggle(other.getId(), request);
 
       // then
-      Optional<Like> actual = likeRepository.findById(like.getId());
-      assertThat(actual).isPresent();
-      assertThat(expected).extracting("userId", "todoId", "isDeleted")
-          .containsExactly(other.getId(), todo.getId(), false);
+      Like actual = likeRepository.findByUserAndTodo(other, todo);
+      assertThat(actual).isNotNull();
     }
 
     @Test
@@ -115,8 +110,8 @@ class LikeServiceTest {
       // then
       Optional<Like> actual = likeRepository.findById(expected.id());
       assertThat(actual).isPresent();
-      assertThat(expected).extracting("userId", "todoId", "isDeleted")
-          .containsExactly(other.getId(), todo.getId(), false);
+      assertThat(expected).extracting("userId", "todoId")
+          .containsExactly(other.getId(), todo.getId());
     }
 
     @Test

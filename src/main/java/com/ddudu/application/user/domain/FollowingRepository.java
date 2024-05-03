@@ -12,8 +12,8 @@ public interface FollowingRepository {
 
   Optional<Following> findById(Long id);
 
-  void delete(Following following);
-
   void update(Following following);
+
+  void delete(Following following);
 
 }

@@ -1,5 +1,7 @@
 package com.ddudu.persistence.entity;
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.application.common.BaseEntity;
 import com.ddudu.application.todo.domain.Todo;
 import com.ddudu.application.todo.domain.TodoStatus;
@@ -18,13 +20,14 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
-@Table(name = "todo")
-@SQLRestriction("is_deleted = 0")
+@Table(name = "ddudus")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TodoEntity extends BaseEntity {
+
+  private static final TodoStatus DEFAULT_STATUS = TodoStatus.UNCOMPLETED;
+  private static final boolean DEFAULT_IS_POSTPONED = false;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,21 +55,25 @@ public class TodoEntity extends BaseEntity {
   @Column(name = "end_at")
   private LocalDateTime endAt;
 
+  @Column(name = "is_postponed", nullable = false, columnDefinition = "TINYINT(1)")
+  private boolean isPostponed;
+
   @Builder
   public TodoEntity(
       Long id, GoalEntity goal, UserEntity user, String name, TodoStatus status,
-      LocalDateTime beginAt,
-      LocalDateTime endAt, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
+      LocalDateTime beginAt, LocalDateTime endAt, Boolean isPostponed, LocalDateTime createdAt,
+      LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
 
     this.id = id;
     this.goal = goal;
     this.user = user;
     this.name = name;
-    this.status = status;
+    this.status = isNull(status) ? DEFAULT_STATUS : status;
     this.beginAt = beginAt;
     this.endAt = endAt;
+    this.isPostponed = isNull(isPostponed) ? DEFAULT_IS_POSTPONED : isPostponed;
   }
 
   public static TodoEntity from(Todo todo) {
@@ -80,7 +87,6 @@ public class TodoEntity extends BaseEntity {
         .endAt(todo.getEndAt())
         .createdAt(todo.getCreatedAt())
         .updatedAt(todo.getUpdatedAt())
-        .isDeleted(todo.isDeleted())
         .build();
   }
 
@@ -95,7 +101,6 @@ public class TodoEntity extends BaseEntity {
         .endAt(endAt)
         .createdAt(getCreatedAt())
         .updatedAt(getUpdatedAt())
-        .isDeleted(isDeleted())
         .build();
   }
 

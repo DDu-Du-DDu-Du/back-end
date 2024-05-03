@@ -19,9 +19,9 @@ public class Following extends BaseDomain {
   @Builder
   public Following(
       Long id, User follower, User followee, FollowingStatus status,
-      LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
+      LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
     validate(follower, followee);
 
     this.id = id;

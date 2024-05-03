@@ -20,10 +20,9 @@ public class Like extends BaseDomain {
 
   @Builder
   public Like(
-      Long id, User user, Todo todo, LocalDateTime createdAt, LocalDateTime updatedAt,
-      Boolean isDeleted
+      Long id, User user, Todo todo, LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
     validate(user, todo);
 
     this.id = id;

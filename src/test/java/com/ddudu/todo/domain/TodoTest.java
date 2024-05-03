@@ -53,8 +53,8 @@ class TodoTest {
 
       // then
       assertThat(todo)
-          .extracting("goal", "user", "name", "status", "isDeleted")
-          .containsExactly(goal, user, name, TodoStatus.UNCOMPLETED, false);
+          .extracting("goal", "user", "name", "status")
+          .containsExactly(goal, user, name, TodoStatus.UNCOMPLETED);
       assertThat(todo).extracting("beginAt")
           .isNotNull();
       assertThat(todo).extracting("endAt")
@@ -77,8 +77,8 @@ class TodoTest {
 
       // then
       assertThat(todo)
-          .extracting("goal", "user", "name", "status", "isDeleted")
-          .containsExactly(goal, user, name, TodoStatus.UNCOMPLETED, false);
+          .extracting("goal", "user", "name", "status")
+          .containsExactly(goal, user, name, TodoStatus.UNCOMPLETED);
       assertThat(todo).extracting("endAt")
           .isNull();
     }

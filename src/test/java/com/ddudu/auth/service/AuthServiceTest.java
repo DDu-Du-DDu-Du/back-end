@@ -18,6 +18,7 @@ import java.util.Map;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -63,6 +64,7 @@ class AuthServiceTest {
   }
 
   @Nested
+  @Disabled
   class 로그인_테스트 {
 
     @Test

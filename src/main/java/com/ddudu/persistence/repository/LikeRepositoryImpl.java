@@ -62,4 +62,9 @@ public class LikeRepositoryImpl implements LikeRepository {
     likeDao.save(LikeEntity.from(like));
   }
 
+  @Override
+  public void delete(Like like) {
+    likeDao.delete(LikeEntity.from(like));
+  }
+
 }

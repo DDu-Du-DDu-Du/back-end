@@ -36,9 +36,9 @@ public class User extends BaseDomain {
       Long id, String optionalUsername, String email, PasswordEncoder passwordEncoder,
       String password, String encryptedPassword,
       String nickname, String introduction, Authority authority, UserStatus status, Options options,
-      LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isDeleted
+      LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
-    super(createdAt, updatedAt, isDeleted);
+    super(createdAt, updatedAt);
     validate(nickname, optionalUsername, introduction);
 
     this.id = id;

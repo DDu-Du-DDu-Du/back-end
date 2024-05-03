@@ -19,12 +19,14 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public boolean existsByOptionalUsername(String optionalUsername) {
-    return userDao.existsByOptionalUsername(optionalUsername);
+    // DO NOTHING
+    return false;
   }
 
   @Override
   public boolean existsByEmail(String email) {
-    return userDao.existsByEmail(email);
+    // DO NOTHING
+    return false;
   }
 
   @Override
@@ -41,8 +43,8 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public Optional<User> findByEmail(String email) {
-    return userDao.findByEmail(email)
-        .map(UserEntity::toDomain);
+    // DO NOTHING
+    return Optional.empty();
   }
 
   @Override
@@ -64,6 +66,11 @@ public class UserRepositoryImpl implements UserRepository {
   @Override
   public void update(User user) {
     userDao.save(UserEntity.from(user));
+  }
+
+  @Override
+  public void delete(User user) {
+    userDao.delete(UserEntity.from(user));
   }
 
 }

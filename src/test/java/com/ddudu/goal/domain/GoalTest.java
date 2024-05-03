@@ -9,7 +9,6 @@ import com.ddudu.application.goal.domain.GoalStatus;
 import com.ddudu.application.goal.domain.PrivacyType;
 import com.ddudu.application.goal.exception.GoalErrorCode;
 import com.ddudu.application.user.domain.User;
-import java.time.LocalDateTime;
 import java.util.List;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,9 +62,9 @@ class GoalTest {
 
       // then
       assertThat(goal)
-          .extracting("name", "user", "status", "color", "privacyType", "isDeleted")
+          .extracting("name", "user", "status", "color", "privacyType")
           .containsExactly(
-              name, user, GoalStatus.IN_PROGRESS, "191919", PrivacyType.PRIVATE, false);
+              name, user, GoalStatus.IN_PROGRESS, "191919", PrivacyType.PRIVATE);
     }
 
     @Test
@@ -80,8 +79,8 @@ class GoalTest {
 
       // then
       assertThat(goal)
-          .extracting("name", "user", "status", "color", "privacyType", "isDeleted")
-          .containsExactly(name, user, GoalStatus.IN_PROGRESS, color, privacyType, false);
+          .extracting("name", "user", "status", "color", "privacyType")
+          .containsExactly(name, user, GoalStatus.IN_PROGRESS, color, privacyType);
     }
 
     @ParameterizedTest
@@ -173,38 +172,6 @@ class GoalTest {
       // then
       assertThat(goal).extracting("name", "status", "color", "privacyType")
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
-    }
-
-  }
-
-  @Nested
-  class 목표_삭제_테스트 {
-
-    @Test
-    void 목표를_삭제_상태로_변경할_수_있다() {
-      // given
-      Goal goal = createGoal();
-
-      // when
-      goal.delete();
-
-      // then
-      assertThat(goal.isDeleted()).isEqualTo(true);
-    }
-
-    @Test
-    void 이미_삭제된_목표를_재삭제_하면_업데이트_시간이_변경되지_않는다() {
-      // given
-      Goal goal = createGoal();
-      goal.delete();
-      LocalDateTime beforeReDelete = goal.getUpdatedAt();
-
-      // when
-      goal.delete();
-
-      // then
-      assertThat(goal.isDeleted()).isEqualTo(true);
-      assertThat(goal.getUpdatedAt()).isEqualTo(beforeReDelete);
     }
 
   }
