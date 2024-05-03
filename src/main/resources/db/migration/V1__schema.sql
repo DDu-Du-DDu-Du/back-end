@@ -164,6 +164,16 @@ CREATE TABLE IF NOT EXISTS comments
     CONSTRAINT fk_comment_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+-- TAG
+CREATE TABLE IF NOT EXISTS tags
+(
+    id          BIGINT AUTO_INCREMENT,
+    template_id BIGINT      NOT NULL,
+    name        VARCHAR(50) NOT NULL,
+    CONSTRAINT pk_tag_id PRIMARY KEY (id),
+    CONSTRAINT fk_tag_template_id FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE
+);
+
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
