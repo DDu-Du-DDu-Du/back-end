@@ -33,6 +33,16 @@ jobs:
           java-version: 17
           distribution: 'corretto'
 
+      - name: Gradle 캐싱
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle
+
       - name: Gradle 셋업
         uses: gradle/actions/setup-gradle@v3
 
@@ -40,7 +50,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: 프로젝트 빌드
-        run: ./gradlew clean build --parallel
+        run: ./gradlew build --parallel
 
       - name: 자코코 리포트 작성
         uses: madrapps/jacoco-report@v1.6.1
