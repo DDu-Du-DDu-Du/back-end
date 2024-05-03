@@ -135,6 +135,21 @@ CREATE TABLE IF NOT EXISTS templates
     CONSTRAINT fk_template_create_by FOREIGN KEY (create_by) REFERENCES users (id)
 );
 
+-- TEMPLATE DDUDUS
+CREATE TABLE IF NOT EXISTS template_ddudus
+(
+    id          BIGINT AUTO_INCREMENT,
+    template_id BIGINT      NOT NULL,
+    name        VARCHAR(50) NOT NULL,
+    begin_at    TIMESTAMP   NULL,
+    end_at      TIMESTAMP   NULL,
+    day_number  INT         NOT NULL,
+    created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_template_ddudus_id PRIMARY KEY (id),
+    CONSTRAINT fk_template_todo_template_id FOREIGN KEY (template_id) REFERENCES templates (id)
+);
+
 -- Likes
 CREATE TABLE IF NOT EXISTS likes
 (
