@@ -6,4 +6,4 @@ ENV SPRING_PROFILE_ACTIVE=${PROFILE}
 ARG JAR=./build/libs/*-SNAPSHOT.jar
 COPY ${JAR} app.jar
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILE_ACTICE}", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILE_ACTIVE}", "-jar", "/app.jar"]
