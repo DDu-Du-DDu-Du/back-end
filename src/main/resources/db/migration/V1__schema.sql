@@ -200,3 +200,14 @@ CREATE TABLE IF NOT EXISTS template_likes
     CONSTRAINT fk_template_like_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
+-- AUTH_PROVIDERS
+create TABLE IF NOT EXISTS auth_providers
+(
+    id                       BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id                  BIGINT       NOT NULL,
+    provider_type            VARCHAR(50)  NOT NULL,
+    provider_id              VARCHAR(100) NULL,
+    created_at               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
