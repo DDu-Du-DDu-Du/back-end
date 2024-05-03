@@ -6,6 +6,18 @@ on:
       env:
         required: true
         type: string
+      task-definition:
+        required: true
+        type: string
+      ecs-container-name:
+        required: true
+        type: string
+      ecs-service:
+        required: true
+        type: string
+      ecs-cluster:
+        required: true
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -79,6 +91,14 @@ jobs:
         id: render-task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: .aws/dev-task-definition.json
-          container-name: ddudu-dev-ecs-container
+          task-definition: ${{ inputs.task-definition }}
+          container-name: ${{ inputs.ecs-container-name }}
           image: ${{ steps.build-docker.outputs.image }}
+
+      - name: ECS Task 실행
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+          service: ${{ inputs.ecs_service }}
+          cluster: ${{ inputs.ecs-cluster }}
+          wait-for-service-stability: true

@@ -10,6 +10,10 @@ jobs:
     uses: ./.github/workflows/cd-pipeline.yaml
     with:
       env: dev
+      task-definition: .aws/dev-task-definition.json
+      ecs-container-name: ddudu-dev-ecs-container
+      ecs-service: ddudu-ecs-service
+      ecs-cluster: ddudu-dev-ecs-cluster
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
