@@ -1,0 +1,14 @@
+name: 개발 서버 배포 자동화
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  dev-deploy:
+    uses: ./.github/workflows/cd-pipeline.yaml
+    with:
+      env: dev
+      access-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+      secret-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
