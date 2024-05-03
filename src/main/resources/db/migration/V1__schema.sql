@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS tags
     CONSTRAINT fk_tag_template_id FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE
 );
 
--- Likes
+-- LIKE
 CREATE TABLE IF NOT EXISTS likes
 (
     id         BIGINT AUTO_INCREMENT,
@@ -185,5 +185,18 @@ CREATE TABLE IF NOT EXISTS likes
     CONSTRAINT pk_like_id PRIMARY KEY (id),
     CONSTRAINT fk_like_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_like_todo_id FOREIGN KEY (todo_id) REFERENCES ddudus (id) ON DELETE CASCADE
+);
+
+-- TEMPLATE LIKE
+CREATE TABLE IF NOT EXISTS template_likes
+(
+    user_id     BIGINT     NOT NULL,
+    template_id BIGINT     NOT NULL,
+    is_liked    TINYINT(1) NOT NULL DEFAULT 1,
+    created_at  TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT pk_template_like_user_template PRIMARY KEY (user_id, template_id),
+    CONSTRAINT fk_template_like_template_id FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE CASCADE,
+    CONSTRAINT fk_template_like_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
