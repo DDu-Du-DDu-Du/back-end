@@ -12,7 +12,7 @@ jobs:
       env: dev
       task-definition: .aws/dev-task-definition.json
       ecs-container-name: ddudu-dev-ecs-container
-      ecs-service: ddudu-ecs-service
+      ecs-service: ddudu-dev-ecs-service
       ecs-cluster: ddudu-dev-ecs-cluster
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
