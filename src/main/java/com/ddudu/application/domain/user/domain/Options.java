@@ -1,6 +1,5 @@
 package com.ddudu.application.domain.user.domain;
 
-import jakarta.persistence.Column;
 import lombok.Getter;
 
 @Getter
@@ -8,7 +7,6 @@ public class Options {
 
   private static final boolean DEFAULT_OFF = false;
 
-  @Column(name = "follows_after_approval", nullable = false)
   private boolean allowingFollowsAfterApproval;
 
   public Options() {

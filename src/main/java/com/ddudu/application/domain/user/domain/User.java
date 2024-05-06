@@ -4,21 +4,22 @@ import static java.util.Objects.isNull;
 
 import com.ddudu.old.auth.domain.authority.Authority;
 import com.ddudu.old.user.exception.UserErrorCode;
-import com.ddudu.presentation.api.exception.DuplicateResourceException;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import io.micrometer.common.util.StringUtils;
 import java.util.Objects;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
   private static final int MAX_NICKNAME_LENGTH = 20;
   private static final int MAX_OPTIONAL_USERNAME_LENGTH = 20;
   private static final int MAX_INTRODUCTION_LENGTH = 50;
 
+  @EqualsAndHashCode.Include
   private final Long id;
   private final String optionalUsername;
   private final String nickname;
@@ -29,15 +30,13 @@ public class User {
 
   @Builder
   public User(
-      Long id, String optionalUsername, String email, PasswordEncoder passwordEncoder,
-      String password, String encryptedPassword,
-      String nickname, String introduction, Authority authority, UserStatus status, Options options
+      Long id, String optionalUsername, String nickname, String introduction, Authority authority,
+      UserStatus status, Options options
   ) {
     validate(nickname, optionalUsername, introduction);
 
     this.id = id;
     this.optionalUsername = optionalUsername;
-
     this.nickname = nickname;
     this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
@@ -45,56 +44,20 @@ public class User {
     this.options = isNull(options) ? new Options() : options;
   }
 
-  public String getEmail() {
-    return email.getAddress();
-  }
-
-  public boolean isSameEmail(String newEmail) {
-    return email.isSame(newEmail);
-  }
-
-  public void applyEmailUpdate(String newEmail) {
-    email = new Email(newEmail);
-  }
-
-  public void applyPasswordUpdate(String newPassword, PasswordEncoder passwordEncoder) {
-    if (password.check(newPassword, passwordEncoder)) {
-      throw new DuplicateResourceException(UserErrorCode.DUPLICATE_EXISTING_PASSWORD);
-    }
-
-    password = new Password(newPassword, passwordEncoder);
-  }
-
-  public void applyProfileUpdate(String nickname, String introduction) {
-    validate(nickname, null, introduction);
-
-    this.nickname = nickname;
-    this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
+  public User applyProfileUpdate(String nickname, String introduction) {
+    return User.builder()
+        .id(this.id)
+        .optionalUsername(this.optionalUsername)
+        .nickname(nickname)
+        .authority(this.authority)
+        .introduction(introduction)
+        .status(this.status)
+        .options(this.options)
+        .build();
   }
 
   public void switchOptions() {
     options.switchOptions();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    User user = (User) o;
-    if (id != null) {
-      return id.equals(user.id);
-    } else {
-      return super.equals(o);
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    return (id != null) ? id.hashCode() : super.hashCode();
   }
 
   private void validate(String nickname, String optionalUsername, String introduction) {
