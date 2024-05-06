@@ -3,12 +3,12 @@ package com.ddudu.like.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.application.common.exception.InvalidParameterException;
-import com.ddudu.application.goal.domain.Goal;
-import com.ddudu.application.like.domain.Like;
-import com.ddudu.application.like.exception.LikeErrorCode;
-import com.ddudu.application.todo.domain.Todo;
-import com.ddudu.application.user.domain.User;
+import com.ddudu.presentation.api.exception.InvalidParameterException;
+import com.ddudu.old.goal.domain.Goal;
+import com.ddudu.old.like.domain.Like;
+import com.ddudu.old.like.exception.LikeErrorCode;
+import com.ddudu.old.todo.domain.Todo;
+import com.ddudu.old.user.domain.User;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;

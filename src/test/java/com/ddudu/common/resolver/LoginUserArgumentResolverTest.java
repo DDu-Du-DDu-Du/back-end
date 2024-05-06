@@ -1,6 +1,6 @@
 package com.ddudu.common.resolver;
 
-import static com.ddudu.application.auth.exception.AuthErrorCode.INVALID_AUTHENTICATION;
+import static com.ddudu.old.auth.exception.AuthErrorCode.INVALID_AUTHENTICATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,11 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-import com.ddudu.application.auth.domain.authority.Authority;
-import com.ddudu.application.auth.jwt.JwtAuthToken;
-import com.ddudu.application.common.annotation.Login;
-import com.ddudu.application.common.exception.InvalidAuthenticationException;
-import com.ddudu.application.common.resolver.LoginUserArgumentResolver;
+import com.ddudu.old.auth.domain.authority.Authority;
+import com.ddudu.old.auth.jwt.JwtAuthToken;
+import com.ddudu.presentation.api.annotation.Login;
+import com.ddudu.presentation.api.exception.InvalidAuthenticationException;
+import com.ddudu.presentation.api.resolver.LoginUserArgumentResolver;
 import java.time.Instant;
 import java.util.Collections;
 import net.datafaker.Faker;

@@ -3,12 +3,12 @@ package com.ddudu.todo.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.ddudu.application.common.exception.InvalidParameterException;
-import com.ddudu.application.goal.domain.Goal;
-import com.ddudu.application.todo.domain.Todo;
-import com.ddudu.application.todo.domain.TodoStatus;
-import com.ddudu.application.todo.exception.TodoErrorCode;
-import com.ddudu.application.user.domain.User;
+import com.ddudu.presentation.api.exception.InvalidParameterException;
+import com.ddudu.old.goal.domain.Goal;
+import com.ddudu.old.todo.domain.Todo;
+import com.ddudu.old.todo.domain.TodoStatus;
+import com.ddudu.old.todo.exception.TodoErrorCode;
+import com.ddudu.old.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import net.datafaker.Faker;

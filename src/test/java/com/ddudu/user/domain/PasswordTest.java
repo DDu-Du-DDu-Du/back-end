@@ -2,7 +2,7 @@ package com.ddudu.user.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.user.domain.Password;
+import com.ddudu.old.user.domain.Password;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;

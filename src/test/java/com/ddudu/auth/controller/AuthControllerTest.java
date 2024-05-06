@@ -9,15 +9,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.application.auth.controller.AuthController;
-import com.ddudu.application.auth.dto.request.LoginRequest;
-import com.ddudu.application.auth.dto.response.LoginResponse;
-import com.ddudu.application.auth.dto.response.MeResponse;
-import com.ddudu.application.auth.exception.AuthErrorCode;
-import com.ddudu.application.auth.service.AuthService;
-import com.ddudu.application.common.exception.BadCredentialsException;
-import com.ddudu.application.common.exception.DataNotFoundException;
-import com.ddudu.persistence.dao.user.UserDao;
+import com.ddudu.presentation.api.controller.AuthController;
+import com.ddudu.old.auth.dto.request.LoginRequest;
+import com.ddudu.old.auth.dto.response.LoginResponse;
+import com.ddudu.old.auth.dto.response.MeResponse;
+import com.ddudu.old.auth.exception.AuthErrorCode;
+import com.ddudu.old.auth.service.AuthService;
+import com.ddudu.presentation.api.exception.BadCredentialsException;
+import com.ddudu.presentation.api.exception.DataNotFoundException;
+import com.ddudu.old.persistence.dao.user.UserDao;
 import com.ddudu.support.ControllerTestSupport;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
