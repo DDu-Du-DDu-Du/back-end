@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.config;
 
-import com.ddudu.old.auth.domain.authority.Authority;
+import com.ddudu.application.domain.user.domain.Authority;
 import com.ddudu.old.auth.jwt.converter.JwtConverter;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;

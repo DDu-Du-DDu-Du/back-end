@@ -2,10 +2,10 @@ package com.ddudu.infrastructure.persistence.entity;
 
 import static java.util.Objects.isNull;
 
+import com.ddudu.application.domain.user.domain.Authority;
 import com.ddudu.application.domain.user.domain.Options;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.UserStatus;
-import com.ddudu.old.auth.domain.authority.Authority;
 import com.ddudu.old.common.BaseEntity;
 import com.ddudu.old.persistence.util.FakeValueGenerator;
 import jakarta.persistence.Column;

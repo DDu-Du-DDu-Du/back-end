@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 
 import com.ddudu.application.domain.user.exception.UserErrorCode;
-import com.ddudu.old.auth.domain.authority.Authority;
 import io.micrometer.common.util.StringUtils;
 import java.util.Objects;
 import lombok.Builder;

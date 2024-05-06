@@ -2,7 +2,7 @@ package com.ddudu.auth.jwt;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.old.auth.domain.authority.Authority;
+import com.ddudu.application.domain.user.domain.Authority;
 import com.ddudu.old.auth.exception.AuthErrorCode;
 import com.ddudu.old.auth.jwt.JwtAuthToken;
 import com.ddudu.presentation.api.exception.InvalidTokenException;

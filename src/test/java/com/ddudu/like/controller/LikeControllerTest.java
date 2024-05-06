@@ -8,16 +8,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.old.auth.domain.authority.Authority;
-import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.presentation.api.exception.ForbiddenException;
+import com.ddudu.application.domain.user.domain.Authority;
 import com.ddudu.old.config.JwtConfig;
-import com.ddudu.presentation.api.controller.LikeController;
 import com.ddudu.old.like.dto.request.LikeRequest;
 import com.ddudu.old.like.dto.response.LikeResponse;
 import com.ddudu.old.like.exception.LikeErrorCode;
 import com.ddudu.old.like.service.LikeService;
 import com.ddudu.presentation.api.config.WebSecurityConfig;
+import com.ddudu.presentation.api.controller.LikeController;
+import com.ddudu.presentation.api.exception.DataNotFoundException;
+import com.ddudu.presentation.api.exception.ForbiddenException;
 import com.ddudu.support.TestProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;

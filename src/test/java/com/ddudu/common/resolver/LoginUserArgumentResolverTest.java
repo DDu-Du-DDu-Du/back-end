@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-import com.ddudu.old.auth.domain.authority.Authority;
+import com.ddudu.application.domain.user.domain.Authority;
 import com.ddudu.old.auth.jwt.JwtAuthToken;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.exception.InvalidAuthenticationException;

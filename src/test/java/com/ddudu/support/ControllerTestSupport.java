@@ -1,6 +1,6 @@
 package com.ddudu.support;
 
-import com.ddudu.old.auth.domain.authority.Authority;
+import com.ddudu.application.domain.user.domain.Authority;
 import com.ddudu.old.config.JwtConfig;
 import com.ddudu.presentation.api.config.WebSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;

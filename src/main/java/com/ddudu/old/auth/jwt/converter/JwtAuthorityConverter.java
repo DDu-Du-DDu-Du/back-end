@@ -1,6 +1,6 @@
 package com.ddudu.old.auth.jwt.converter;
 
-import com.ddudu.old.auth.domain.authority.Authority;
+import com.ddudu.application.domain.user.domain.Authority;
 import com.ddudu.old.auth.exception.AuthErrorCode;
 import com.ddudu.presentation.api.exception.InvalidTokenException;
 import org.springframework.core.convert.converter.Converter;

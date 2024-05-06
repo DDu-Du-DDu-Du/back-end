@@ -1,4 +1,4 @@
-package com.ddudu.old.auth.domain.authority;
+package com.ddudu.application.domain.user.domain;
 
 import org.springframework.security.core.GrantedAuthority;
 
