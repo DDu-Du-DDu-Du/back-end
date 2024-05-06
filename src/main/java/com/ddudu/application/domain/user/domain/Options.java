@@ -1,4 +1,4 @@
-package com.ddudu.old.user.domain;
+package com.ddudu.application.domain.user.domain;
 
 import jakarta.persistence.Column;
 import lombok.Getter;

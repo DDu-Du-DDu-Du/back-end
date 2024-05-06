@@ -1,5 +1,6 @@
 package com.ddudu.old.user.domain;
 
+import com.ddudu.application.domain.user.domain.User;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 

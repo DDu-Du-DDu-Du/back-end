@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.presentation.api.exception.InvalidParameterException;
-import com.ddudu.old.user.domain.Password;
-import com.ddudu.old.user.domain.User;
-import com.ddudu.old.user.domain.User.UserBuilder;
+import com.ddudu.application.domain.user.domain.Password;
+import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.domain.user.domain.User.UserBuilder;
 import com.ddudu.old.user.exception.UserErrorCode;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;

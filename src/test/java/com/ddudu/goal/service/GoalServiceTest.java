@@ -16,7 +16,7 @@ import com.ddudu.old.goal.dto.response.GoalResponse;
 import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.old.goal.exception.GoalErrorCode;
 import com.ddudu.old.goal.service.GoalService;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.user.domain.UserRepository;
 import jakarta.persistence.EntityManager;
 import java.util.List;

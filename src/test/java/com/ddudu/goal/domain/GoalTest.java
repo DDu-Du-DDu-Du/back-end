@@ -8,7 +8,7 @@ import com.ddudu.old.goal.domain.Goal;
 import com.ddudu.old.goal.domain.GoalStatus;
 import com.ddudu.old.goal.domain.PrivacyType;
 import com.ddudu.old.goal.exception.GoalErrorCode;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import java.util.List;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;

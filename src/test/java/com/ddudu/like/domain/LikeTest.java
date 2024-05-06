@@ -8,7 +8,7 @@ import com.ddudu.old.goal.domain.Goal;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.exception.LikeErrorCode;
 import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;

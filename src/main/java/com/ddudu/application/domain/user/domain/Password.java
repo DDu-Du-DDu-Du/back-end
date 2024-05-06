@@ -1,4 +1,4 @@
-package com.ddudu.old.user.domain;
+package com.ddudu.application.domain.user.domain;
 
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import com.ddudu.old.user.exception.UserErrorCode;

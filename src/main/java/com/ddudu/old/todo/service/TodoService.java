@@ -19,7 +19,7 @@ import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.exception.TodoErrorCode;
 import com.ddudu.old.user.domain.FollowingRepository;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.user.domain.UserRepository;
 import jakarta.validation.Valid;
 import java.time.LocalDate;

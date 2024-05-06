@@ -2,7 +2,7 @@ package com.ddudu.old.todo.domain;
 
 import com.ddudu.old.goal.domain.PrivacyType;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

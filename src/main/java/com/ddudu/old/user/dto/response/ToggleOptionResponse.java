@@ -1,7 +1,7 @@
 package com.ddudu.old.user.dto.response;
 
-import com.ddudu.old.user.domain.Options;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.Options;
+import com.ddudu.application.domain.user.domain.User;
 import lombok.Builder;
 
 @Builder

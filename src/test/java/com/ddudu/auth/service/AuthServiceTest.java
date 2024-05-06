@@ -12,7 +12,7 @@ import com.ddudu.old.auth.service.AuthService;
 import com.ddudu.presentation.api.exception.BadCredentialsException;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.InvalidTokenException;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.user.domain.UserRepository;
 import java.util.Map;
 import net.datafaker.Faker;

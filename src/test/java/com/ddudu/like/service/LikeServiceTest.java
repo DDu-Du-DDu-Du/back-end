@@ -17,7 +17,7 @@ import com.ddudu.old.like.exception.LikeErrorCode;
 import com.ddudu.old.like.service.LikeService;
 import com.ddudu.old.todo.domain.Todo;
 import com.ddudu.old.todo.domain.TodoRepository;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.user.domain.UserRepository;
 import java.util.Optional;
 import net.datafaker.Faker;

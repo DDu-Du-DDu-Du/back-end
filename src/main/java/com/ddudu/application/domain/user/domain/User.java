@@ -1,21 +1,19 @@
-package com.ddudu.old.user.domain;
+package com.ddudu.application.domain.user.domain;
 
 import static java.util.Objects.isNull;
 
 import com.ddudu.old.auth.domain.authority.Authority;
-import com.ddudu.old.common.domain.BaseDomain;
+import com.ddudu.old.user.exception.UserErrorCode;
 import com.ddudu.presentation.api.exception.DuplicateResourceException;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
-import com.ddudu.old.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
-import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
-public class User extends BaseDomain {
+public class User {
 
   private static final int MAX_NICKNAME_LENGTH = 20;
   private static final int MAX_OPTIONAL_USERNAME_LENGTH = 20;
@@ -23,28 +21,23 @@ public class User extends BaseDomain {
 
   private final Long id;
   private final String optionalUsername;
-
-  private String nickname;
-  private String introduction;
-  private Authority authority;
-  private UserStatus status;
-  private Options options;
+  private final String nickname;
+  private final String introduction;
+  private final Authority authority;
+  private final UserStatus status;
+  private final Options options;
 
   @Builder
   public User(
       Long id, String optionalUsername, String email, PasswordEncoder passwordEncoder,
       String password, String encryptedPassword,
-      String nickname, String introduction, Authority authority, UserStatus status, Options options,
-      LocalDateTime createdAt, LocalDateTime updatedAt
+      String nickname, String introduction, Authority authority, UserStatus status, Options options
   ) {
-    super(createdAt, updatedAt);
     validate(nickname, optionalUsername, introduction);
 
     this.id = id;
     this.optionalUsername = optionalUsername;
-    this.email = new Email(email);
-    this.password = isNull(encryptedPassword) ? new Password(password, passwordEncoder)
-        : new Password(encryptedPassword);
+
     this.nickname = nickname;
     this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;

@@ -9,7 +9,7 @@ import com.ddudu.old.persistence.entity.LikeEntity;
 import com.ddudu.old.persistence.entity.TodoEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

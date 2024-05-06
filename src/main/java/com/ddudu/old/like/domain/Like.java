@@ -5,7 +5,7 @@ import com.ddudu.presentation.api.exception.InvalidParameterException;
 import com.ddudu.old.like.exception.LikeErrorCode;
 import com.ddudu.old.todo.domain.Todo;
 import com.ddudu.old.todo.domain.TodoStatus;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Builder;

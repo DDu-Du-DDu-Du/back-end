@@ -1,6 +1,6 @@
 package com.ddudu.old.user.dto;
 
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import lombok.Builder;
 
 @Builder

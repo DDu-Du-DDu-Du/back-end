@@ -6,7 +6,7 @@ import static java.util.Objects.isNull;
 import com.ddudu.old.common.domain.BaseDomain;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import com.ddudu.old.goal.exception.GoalErrorCode;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Builder;

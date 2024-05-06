@@ -21,7 +21,7 @@ import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.exception.TodoErrorCode;
 import com.ddudu.old.todo.service.TodoService;
-import com.ddudu.old.user.domain.User;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.old.user.dto.request.FollowRequest;
 import com.ddudu.old.user.service.FollowingService;
