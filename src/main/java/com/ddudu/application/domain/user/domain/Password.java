@@ -1,7 +1,7 @@
 package com.ddudu.application.domain.user.domain;
 
+import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
-import com.ddudu.old.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
 import java.util.regex.Pattern;
 import lombok.Getter;

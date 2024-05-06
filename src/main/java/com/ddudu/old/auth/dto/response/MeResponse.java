@@ -11,7 +11,7 @@ public record MeResponse(Long id, String email, String optionalUsername, String 
         .id(user.getId())
         .email(user.getEmail())
         .nickname(user.getNickname())
-        .optionalUsername(user.getOptionalUsername())
+        .optionalUsername(user.getUsername())
         .build();
   }
 

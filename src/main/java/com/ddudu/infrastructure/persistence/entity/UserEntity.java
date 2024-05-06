@@ -2,12 +2,12 @@ package com.ddudu.infrastructure.persistence.entity;
 
 import static java.util.Objects.isNull;
 
-import com.ddudu.old.auth.domain.authority.Authority;
-import com.ddudu.old.common.BaseEntity;
-import com.ddudu.old.persistence.util.FakeValueGenerator;
 import com.ddudu.application.domain.user.domain.Options;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.UserStatus;
+import com.ddudu.old.auth.domain.authority.Authority;
+import com.ddudu.old.common.BaseEntity;
+import com.ddudu.old.persistence.util.FakeValueGenerator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -95,8 +95,8 @@ public class UserEntity extends BaseEntity {
     return UserEntity.builder()
         .id(user.getId())
         .nickname(user.getNickname())
-        .username(isNull(user.getOptionalUsername()) ? FakeValueGenerator.username()
-            : user.getOptionalUsername())
+        .username(isNull(user.getUsername()) ? FakeValueGenerator.username()
+            : user.getUsername())
         .introduction(user.getIntroduction())
         .authority(user.getAuthority())
         .status(user.getStatus())

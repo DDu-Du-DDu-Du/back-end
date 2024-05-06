@@ -1,4 +1,4 @@
-package com.ddudu.old.user.exception;
+package com.ddudu.application.domain.user.exception;
 
 import com.ddudu.presentation.api.exception.ErrorCode;
 
@@ -6,7 +6,7 @@ public enum UserErrorCode implements ErrorCode {
 
   BLANK_EMAIL(1001, "이메일이 입력되지 않았습니다."),
   BLANK_PASSWORD(1002, "비밀번호가 입력되지 않았습니다."),
-  BLANK_OPTIONAL_USERNAME(1003, "아이디는 공백일 수 없습니다."),
+  BLANK_USERNAME(1003, "아이디는 공백일 수 없습니다."),
   BLANK_NICKNAME(1004, "닉네임이 입력되지 않았습니다."),
   INSUFFICIENT_PASSWORD_LENGTH(1005, "비밀번호가 최소 글자 수보다 작습니다."),
   EXCESSIVE_NICKNAME_LENGTH(1006, "닉네임이 최대 글자 수를 초과했습니다."),

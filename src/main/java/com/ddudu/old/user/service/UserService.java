@@ -2,10 +2,9 @@ package com.ddudu.old.user.service;
 
 import static java.util.Objects.isNull;
 
-import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.presentation.api.exception.DuplicateResourceException;
 import com.ddudu.application.domain.user.domain.Email;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
@@ -19,7 +18,8 @@ import com.ddudu.old.user.dto.response.UpdateEmailResponse;
 import com.ddudu.old.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.old.user.dto.response.UserProfileResponse;
 import com.ddudu.old.user.dto.response.UsersResponse;
-import com.ddudu.old.user.exception.UserErrorCode;
+import com.ddudu.presentation.api.exception.DataNotFoundException;
+import com.ddudu.presentation.api.exception.DuplicateResourceException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

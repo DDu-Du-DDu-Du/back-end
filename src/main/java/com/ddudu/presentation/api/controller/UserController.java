@@ -1,5 +1,6 @@
 package com.ddudu.presentation.api.controller;
 
+import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import com.ddudu.old.user.dto.request.FollowRequest;
@@ -15,7 +16,6 @@ import com.ddudu.old.user.dto.response.UpdateEmailResponse;
 import com.ddudu.old.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.old.user.dto.response.UserProfileResponse;
 import com.ddudu.old.user.dto.response.UsersResponse;
-import com.ddudu.old.user.exception.UserErrorCode;
 import com.ddudu.old.user.service.FollowingService;
 import com.ddudu.old.user.service.UserService;
 import com.ddudu.presentation.api.annotation.Login;

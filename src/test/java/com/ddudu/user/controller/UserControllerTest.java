@@ -18,11 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.presentation.api.exception.BadRequestException;
-import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.presentation.api.exception.DuplicateResourceException;
-import com.ddudu.presentation.api.exception.ForbiddenException;
-import com.ddudu.presentation.api.controller.UserController;
+import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.old.user.domain.FollowingStatus;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
@@ -41,9 +37,13 @@ import com.ddudu.old.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.old.user.dto.response.UserProfileResponse;
 import com.ddudu.old.user.dto.response.UsersResponse;
 import com.ddudu.old.user.exception.FollowingErrorCode;
-import com.ddudu.old.user.exception.UserErrorCode;
 import com.ddudu.old.user.service.FollowingService;
 import com.ddudu.old.user.service.UserService;
+import com.ddudu.presentation.api.controller.UserController;
+import com.ddudu.presentation.api.exception.BadRequestException;
+import com.ddudu.presentation.api.exception.DataNotFoundException;
+import com.ddudu.presentation.api.exception.DuplicateResourceException;
+import com.ddudu.presentation.api.exception.ForbiddenException;
 import com.ddudu.support.ControllerTestSupport;
 import java.util.List;
 import java.util.stream.Stream;

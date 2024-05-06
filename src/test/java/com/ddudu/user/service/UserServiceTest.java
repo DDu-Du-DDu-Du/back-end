@@ -3,15 +3,14 @@ package com.ddudu.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.old.auth.jwt.converter.JwtConverter;
-import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.presentation.api.exception.DuplicateResourceException;
-import com.ddudu.old.user.domain.Following;
-import com.ddudu.old.user.domain.FollowingRepository;
-import com.ddudu.old.user.domain.FollowingStatus;
 import com.ddudu.application.domain.user.domain.Options;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.User.UserBuilder;
+import com.ddudu.application.domain.user.exception.UserErrorCode;
+import com.ddudu.old.auth.jwt.converter.JwtConverter;
+import com.ddudu.old.user.domain.Following;
+import com.ddudu.old.user.domain.FollowingRepository;
+import com.ddudu.old.user.domain.FollowingStatus;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
@@ -24,8 +23,9 @@ import com.ddudu.old.user.dto.response.SignUpResponse;
 import com.ddudu.old.user.dto.response.ToggleOptionResponse;
 import com.ddudu.old.user.dto.response.UserProfileResponse;
 import com.ddudu.old.user.dto.response.UsersResponse;
-import com.ddudu.old.user.exception.UserErrorCode;
 import com.ddudu.old.user.service.UserService;
+import com.ddudu.presentation.api.exception.DataNotFoundException;
+import com.ddudu.presentation.api.exception.DuplicateResourceException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -239,7 +239,7 @@ class UserServiceTest {
               .id())
           .get();
       assertThat(actual
-          .getOptionalUsername()).isEqualTo(optionalUsername);
+          .getUsername()).isEqualTo(optionalUsername);
     }
 
     @Test
@@ -295,7 +295,7 @@ class UserServiceTest {
               .id())
           .get();
       assertThat(actual
-          .getOptionalUsername()).isEqualTo(optionalUsername);
+          .getUsername()).isEqualTo(optionalUsername);
     }
 
     private User createUser(String email, String nickname, String optionalUsername) {
