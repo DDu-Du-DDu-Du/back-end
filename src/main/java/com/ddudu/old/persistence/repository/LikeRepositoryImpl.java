@@ -7,7 +7,7 @@ import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.persistence.dao.like.LikeDao;
 import com.ddudu.old.persistence.entity.LikeEntity;
 import com.ddudu.old.persistence.entity.TodoEntity;
-import com.ddudu.old.persistence.entity.UserEntity;
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.todo.domain.Todo;
 import com.ddudu.old.user.domain.User;
 import java.util.List;

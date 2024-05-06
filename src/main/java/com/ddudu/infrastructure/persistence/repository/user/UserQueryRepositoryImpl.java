@@ -1,10 +1,10 @@
-package com.ddudu.old.persistence.dao.user;
+package com.ddudu.infrastructure.persistence.repository.user;
 
+import static com.ddudu.infrastructure.persistence.entity.QUserEntity.userEntity;
 import static com.ddudu.old.persistence.entity.QFollowingEntity.followingEntity;
-import static com.ddudu.old.persistence.entity.QUserEntity.userEntity;
 
-import com.ddudu.old.persistence.entity.QUserEntity;
-import com.ddudu.old.persistence.entity.UserEntity;
+import com.ddudu.infrastructure.persistence.entity.QUserEntity;
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.user.domain.FollowingStatus;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
@@ -15,11 +15,11 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserDaoImpl implements UserDaoCustom {
+public class UserQueryRepositoryImpl implements UserQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
 
-  public UserDaoImpl(EntityManager em) {
+  public UserQueryRepositoryImpl(EntityManager em) {
     this.jpaQueryFactory = new JPAQueryFactory(em);
   }
 

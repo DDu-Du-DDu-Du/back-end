@@ -1,11 +1,11 @@
-package com.ddudu.old.persistence.dao.user;
+package com.ddudu.infrastructure.persistence.repository.user;
 
-import com.ddudu.old.persistence.entity.UserEntity;
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import java.util.List;
 
-public interface UserDaoCustom {
+public interface UserQueryRepository {
 
   List<UserEntity> findFromFollowingBySearchType(
       UserEntity follower, FollowingSearchType searchType

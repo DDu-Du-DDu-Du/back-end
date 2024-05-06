@@ -1,4 +1,4 @@
-package com.ddudu.old.persistence.entity;
+package com.ddudu.infrastructure.persistence.entity;
 
 import static java.util.Objects.isNull;
 

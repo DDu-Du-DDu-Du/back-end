@@ -1,5 +1,6 @@
 package com.ddudu.old.persistence.entity;
 
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

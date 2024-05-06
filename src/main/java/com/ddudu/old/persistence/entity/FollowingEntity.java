@@ -1,5 +1,6 @@
 package com.ddudu.old.persistence.entity;
 
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.common.BaseEntity;
 import com.ddudu.old.persistence.util.FakeValueGenerator;
 import com.ddudu.old.user.domain.Following;

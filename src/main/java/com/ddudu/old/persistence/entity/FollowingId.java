@@ -1,5 +1,6 @@
 package com.ddudu.old.persistence.entity;
 
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;

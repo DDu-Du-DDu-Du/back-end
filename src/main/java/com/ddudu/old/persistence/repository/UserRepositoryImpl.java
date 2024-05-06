@@ -1,9 +1,8 @@
 package com.ddudu.old.persistence.repository;
 
-import com.ddudu.old.persistence.dao.user.UserDao;
-import com.ddudu.old.persistence.entity.UserEntity;
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
+import com.ddudu.infrastructure.persistence.repository.user.UserRepository;
 import com.ddudu.old.user.domain.User;
-import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import java.util.List;
@@ -13,9 +12,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryImpl implements com.ddudu.old.user.domain.UserRepository {
 
-  private final UserDao userDao;
+  private final UserRepository userRepository;
 
   @Override
   public boolean existsByOptionalUsername(String optionalUsername) {
@@ -31,13 +30,13 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public User save(User user) {
-    return userDao.save(UserEntity.from(user))
+    return userRepository.save(UserEntity.from(user))
         .toDomain();
   }
 
   @Override
   public Optional<User> findById(Long id) {
-    return userDao.findById(id)
+    return userRepository.findById(id)
         .map(UserEntity::toDomain);
   }
 
@@ -49,7 +48,7 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public List<User> findFromFollowingBySearchType(User user, FollowingSearchType searchType) {
-    return userDao.findFromFollowingBySearchType(UserEntity.from(user), searchType)
+    return userRepository.findFromFollowingBySearchType(UserEntity.from(user), searchType)
         .stream()
         .map(UserEntity::toDomain)
         .toList();
@@ -57,7 +56,7 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public List<User> findAllByKeywordAndSearchType(String keyword, UserSearchType searchType) {
-    return userDao.findAllByKeywordAndSearchType(keyword, searchType)
+    return userRepository.findAllByKeywordAndSearchType(keyword, searchType)
         .stream()
         .map(UserEntity::toDomain)
         .toList();
@@ -65,12 +64,12 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public void update(User user) {
-    userDao.save(UserEntity.from(user));
+    userRepository.save(UserEntity.from(user));
   }
 
   @Override
   public void delete(User user) {
-    userDao.delete(UserEntity.from(user));
+    userRepository.delete(UserEntity.from(user));
   }
 
 }

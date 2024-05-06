@@ -17,7 +17,7 @@ import com.ddudu.old.auth.exception.AuthErrorCode;
 import com.ddudu.old.auth.service.AuthService;
 import com.ddudu.presentation.api.exception.BadCredentialsException;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.old.persistence.dao.user.UserDao;
+import com.ddudu.infrastructure.persistence.repository.user.UserRepository;
 import com.ddudu.support.ControllerTestSupport;
 import java.util.stream.Stream;
 import net.datafaker.Faker;
@@ -46,7 +46,7 @@ class AuthControllerTest extends ControllerTestSupport {
   AuthService authService;
 
   @MockBean
-  UserDao userRepository;
+  UserRepository userRepository;
 
   @Nested
   class POST_로그인_API_테스트 {

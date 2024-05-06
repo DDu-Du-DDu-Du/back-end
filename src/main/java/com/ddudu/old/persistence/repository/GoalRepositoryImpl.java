@@ -5,7 +5,7 @@ import com.ddudu.old.goal.domain.GoalRepository;
 import com.ddudu.old.goal.domain.PrivacyType;
 import com.ddudu.old.persistence.dao.goal.GoalDao;
 import com.ddudu.old.persistence.entity.GoalEntity;
-import com.ddudu.old.persistence.entity.UserEntity;
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.user.domain.User;
 import java.util.List;
 import java.util.Optional;
