@@ -1,7 +1,7 @@
 package com.ddudu.application.port.in;
 
-import com.ddudu.application.domain.user.dto.request.SocialRequest;
-import com.ddudu.application.domain.user.dto.response.TokenResponse;
+import com.ddudu.application.domain.authentication.dto.request.SocialRequest;
+import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
 
 public interface SocialLoginUseCase {
 

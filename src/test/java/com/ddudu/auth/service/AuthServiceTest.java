@@ -3,12 +3,12 @@ package com.ddudu.auth.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.application.domain.user.domain.Authority;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.auth.dto.request.LoginRequest;
 import com.ddudu.old.auth.dto.response.LoginResponse;
 import com.ddudu.old.auth.dto.response.MeResponse;
-import com.ddudu.old.auth.exception.AuthErrorCode;
 import com.ddudu.old.auth.service.AuthService;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.BadCredentialsException;

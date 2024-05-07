@@ -1,10 +1,10 @@
 package com.ddudu.application.service;
 
+import com.ddudu.application.domain.authentication.dto.request.SocialRequest;
+import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
+import com.ddudu.application.domain.authentication.service.AuthService;
 import com.ddudu.application.domain.user.domain.AuthProvider;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.domain.user.dto.request.SocialRequest;
-import com.ddudu.application.domain.user.dto.response.TokenResponse;
-import com.ddudu.application.domain.user.service.AuthService;
 import com.ddudu.application.domain.user.service.UserService;
 import com.ddudu.application.port.in.SocialLoginUseCase;
 import com.ddudu.application.port.out.SignUpPort;

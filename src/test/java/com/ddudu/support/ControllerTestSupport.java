@@ -1,7 +1,7 @@
 package com.ddudu.support;
 
+import com.ddudu.application.config.JwtConfig;
 import com.ddudu.application.domain.user.domain.Authority;
-import com.ddudu.old.config.JwtConfig;
 import com.ddudu.presentation.api.config.WebSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayNameGeneration;

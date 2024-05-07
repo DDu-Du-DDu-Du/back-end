@@ -9,15 +9,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.presentation.api.controller.AuthController;
+import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
+import com.ddudu.infrastructure.persistence.repository.user.UserRepository;
 import com.ddudu.old.auth.dto.request.LoginRequest;
 import com.ddudu.old.auth.dto.response.LoginResponse;
 import com.ddudu.old.auth.dto.response.MeResponse;
-import com.ddudu.old.auth.exception.AuthErrorCode;
 import com.ddudu.old.auth.service.AuthService;
+import com.ddudu.presentation.api.controller.AuthController;
 import com.ddudu.presentation.api.exception.BadCredentialsException;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.infrastructure.persistence.repository.user.UserRepository;
 import com.ddudu.support.ControllerTestSupport;
 import java.util.stream.Stream;
 import net.datafaker.Faker;

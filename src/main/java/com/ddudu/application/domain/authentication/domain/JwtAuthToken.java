@@ -1,6 +1,6 @@
-package com.ddudu.old.auth.jwt;
+package com.ddudu.application.domain.authentication.domain;
 
-import com.ddudu.old.auth.exception.AuthErrorCode;
+import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.presentation.api.exception.InvalidTokenException;
 import java.util.Collections;
 import java.util.Objects;

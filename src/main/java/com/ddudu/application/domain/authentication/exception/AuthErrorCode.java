@@ -1,4 +1,4 @@
-package com.ddudu.old.auth.exception;
+package com.ddudu.application.domain.authentication.exception;
 
 import com.ddudu.presentation.api.exception.ErrorCode;
 

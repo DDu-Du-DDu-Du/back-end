@@ -3,11 +3,11 @@ package com.ddudu.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.domain.authentication.service.converter.JwtConverter;
 import com.ddudu.application.domain.user.domain.Options;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.User.UserBuilder;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
-import com.ddudu.old.auth.jwt.converter.JwtConverter;
 import com.ddudu.old.user.domain.Following;
 import com.ddudu.old.user.domain.FollowingRepository;
 import com.ddudu.old.user.domain.FollowingStatus;

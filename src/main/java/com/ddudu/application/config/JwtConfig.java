@@ -1,6 +1,6 @@
-package com.ddudu.old.config;
+package com.ddudu.application.config;
 
-import com.ddudu.old.config.properties.JwtProperties;
+import com.ddudu.application.config.properties.JwtProperties;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.proc.SecurityContext;
 import javax.crypto.SecretKey;

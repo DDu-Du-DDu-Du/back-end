@@ -1,4 +1,4 @@
-package com.ddudu.old.auth.jwt;
+package com.ddudu.application.domain.authentication.service;
 
 import java.time.Duration;
 import java.time.Instant;
