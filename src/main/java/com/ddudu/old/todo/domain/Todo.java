@@ -3,11 +3,11 @@ package com.ddudu.old.todo.domain;
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.common.domain.BaseDomain;
-import com.ddudu.presentation.api.exception.InvalidParameterException;
 import com.ddudu.old.goal.domain.Goal;
 import com.ddudu.old.todo.exception.TodoErrorCode;
-import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Builder;

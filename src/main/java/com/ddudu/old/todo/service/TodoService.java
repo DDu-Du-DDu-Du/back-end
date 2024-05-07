@@ -1,8 +1,6 @@
 package com.ddudu.old.todo.service;
 
-import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.presentation.api.exception.ErrorCode;
-import com.ddudu.presentation.api.exception.ForbiddenException;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.goal.domain.Goal;
 import com.ddudu.old.goal.domain.GoalRepository;
 import com.ddudu.old.goal.domain.PrivacyType;
@@ -19,8 +17,10 @@ import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.exception.TodoErrorCode;
 import com.ddudu.old.user.domain.FollowingRepository;
-import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.user.domain.UserRepository;
+import com.ddudu.presentation.api.exception.DataNotFoundException;
+import com.ddudu.presentation.api.exception.ErrorCode;
+import com.ddudu.presentation.api.exception.ForbiddenException;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
