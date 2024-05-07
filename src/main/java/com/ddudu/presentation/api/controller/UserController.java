@@ -4,16 +4,10 @@ import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import com.ddudu.old.user.dto.request.FollowRequest;
-import com.ddudu.old.user.dto.request.SignUpRequest;
-import com.ddudu.old.user.dto.request.UpdateEmailRequest;
 import com.ddudu.old.user.dto.request.UpdateFollowingRequest;
-import com.ddudu.old.user.dto.request.UpdatePasswordRequest;
 import com.ddudu.old.user.dto.request.UpdateProfileRequest;
 import com.ddudu.old.user.dto.response.FollowingResponse;
-import com.ddudu.old.user.dto.response.SignUpResponse;
 import com.ddudu.old.user.dto.response.ToggleOptionResponse;
-import com.ddudu.old.user.dto.response.UpdateEmailResponse;
-import com.ddudu.old.user.dto.response.UpdatePasswordResponse;
 import com.ddudu.old.user.dto.response.UserProfileResponse;
 import com.ddudu.old.user.dto.response.UsersResponse;
 import com.ddudu.old.user.service.FollowingService;
@@ -52,28 +46,6 @@ public class UserController {
   private final UserService userService;
   private final FollowingService followingService;
 
-  @PostMapping
-  @Operation(summary = "회원가입")
-  @ApiResponse(
-      responseCode = "201",
-      content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = SignUpResponse.class)
-      )
-  )
-  @Deprecated
-  public ResponseEntity<SignUpResponse> signUp(
-      @RequestBody
-      @Valid
-      SignUpRequest request
-  ) {
-    SignUpResponse response = userService.signUp(request);
-    URI uri = URI.create("/api/users/" + response.id());
-
-    return ResponseEntity.created(uri)
-        .body(response);
-  }
-
   @GetMapping("/{id}")
   @Operation(summary = "회원 상세 조회")
   @ApiResponse(
@@ -105,44 +77,6 @@ public class UserController {
       UserSearchType searchType
   ) {
     List<UserProfileResponse> response = userService.search(keyword, searchType);
-
-    return ResponseEntity.ok(response);
-  }
-
-  @PatchMapping("/{id}/email")
-  @Operation(summary = "이메일 변경")
-  @Deprecated
-  public ResponseEntity<UpdateEmailResponse> updateEmail(
-      @Login
-      Long loginId,
-      @PathVariable
-      Long id,
-      @RequestBody
-      @Valid
-      UpdateEmailRequest request
-  ) {
-    checkAuthority(loginId, id);
-
-    UpdateEmailResponse response = userService.updateEmail(id, request);
-
-    return ResponseEntity.ok(response);
-  }
-
-  @PatchMapping("/{id}/password")
-  @Operation(summary = "비밀번호 변경")
-  @Deprecated
-  public ResponseEntity<UpdatePasswordResponse> updatePassword(
-      @Login
-      Long loginId,
-      @PathVariable
-      Long id,
-      @RequestBody
-      @Valid
-      UpdatePasswordRequest request
-  ) {
-    checkAuthority(loginId, id);
-
-    UpdatePasswordResponse response = userService.updatePassword(id, request);
 
     return ResponseEntity.ok(response);
   }
