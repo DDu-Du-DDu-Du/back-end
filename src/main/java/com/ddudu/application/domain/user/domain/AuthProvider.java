@@ -4,12 +4,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.ddudu.application.domain.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class AuthProvider {
 
+  @Getter(AccessLevel.NONE)
   private final ProviderType providerType;
   private final String providerId;
 
@@ -19,6 +21,10 @@ public class AuthProvider {
 
     this.providerType = ProviderType.from(providerType);
     this.providerId = providerId;
+  }
+
+  public String getProviderType() {
+    return providerType.name();
   }
 
   private void validate(String providerId) {

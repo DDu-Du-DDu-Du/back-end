@@ -1,6 +1,5 @@
-package com.ddudu.old.persistence.entity;
+package com.ddudu.infrastructure.persistence.entity;
 
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,11 +10,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "auth_providers")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class AuthProviderEntity {
 
   @Id
