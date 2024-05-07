@@ -32,7 +32,9 @@ class OptionsTest {
   @Test
   void 팔로잉_허락_후_팔로잉_추가_기능을_비활성화한다() {
     // given
-    Options options = new Options(true);
+    Options options = Options.builder()
+        .allowingFollowsAfterApproval(true)
+        .build();
 
     // when
     options.switchOptions();

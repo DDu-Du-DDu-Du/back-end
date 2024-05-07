@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import io.micrometer.common.util.StringUtils;
 import java.util.List;
 import java.util.Objects;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,13 +28,15 @@ public class User {
   private final String introduction;
   private final Authority authority;
   private final UserStatus status;
+  @Getter(AccessLevel.NONE)
   private final Options options;
   private final List<AuthProvider> authProviders;
 
   @Builder
   public User(
       Long id, String username, String nickname, String introduction, Authority authority,
-      UserStatus status, Options options, List<AuthProvider> authProviders
+      UserStatus status, List<AuthProvider> authProviders, Options options,
+      Boolean allowingFollowsAfterApproval, Boolean templateNotification, Boolean dduduNotification
   ) {
     validate(nickname, username, introduction);
 
@@ -43,8 +46,21 @@ public class User {
     this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     this.status = isNull(status) ? UserStatus.ACTIVE : status;
-    this.options = isNull(options) ? new Options() : options;
+    this.options = Objects.nonNull(options) ? options
+        : buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification);
     this.authProviders = isNull(authProviders) ? Lists.newArrayList() : authProviders;
+  }
+
+  public boolean isAllowingFollowsAfterApproval() {
+    return this.options.isAllowingFollowsAfterApproval();
+  }
+
+  public boolean isNotifyingTemplate() {
+    return this.options.isTemplateNotification();
+  }
+
+  public boolean isNotifyingDdudu() {
+    return this.options.isDduduNotification();
   }
 
   public User applyProfileUpdate(String nickname, String introduction) {
@@ -91,6 +107,16 @@ public class User {
         introduction.length() > MAX_INTRODUCTION_LENGTH,
         UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH.name()
     );
+  }
+
+  private Options buildOptions(
+      Boolean allowingFollowsAfterApproval, Boolean templateNotification, Boolean dduduNotification
+  ) {
+    return Options.builder()
+        .allowingFollowsAfterApproval(allowingFollowsAfterApproval)
+        .dduduNotification(dduduNotification)
+        .templateNotification(templateNotification)
+        .build();
   }
 
 }
