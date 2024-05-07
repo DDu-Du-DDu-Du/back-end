@@ -4,7 +4,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 
 import com.ddudu.application.domain.user.exception.UserErrorCode;
+import com.google.common.collect.Lists;
 import io.micrometer.common.util.StringUtils;
+import java.util.List;
 import java.util.Objects;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -26,11 +28,12 @@ public class User {
   private final Authority authority;
   private final UserStatus status;
   private final Options options;
+  private final List<AuthProvider> authProviders;
 
   @Builder
   public User(
       Long id, String username, String nickname, String introduction, Authority authority,
-      UserStatus status, Options options
+      UserStatus status, Options options, List<AuthProvider> authProviders
   ) {
     validate(nickname, username, introduction);
 
@@ -41,6 +44,7 @@ public class User {
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     this.status = isNull(status) ? UserStatus.ACTIVE : status;
     this.options = isNull(options) ? new Options() : options;
+    this.authProviders = isNull(authProviders) ? Lists.newArrayList() : authProviders;
   }
 
   public User applyProfileUpdate(String nickname, String introduction) {

@@ -3,7 +3,6 @@ package com.ddudu.application.domain.user.exception;
 import com.ddudu.presentation.api.exception.ErrorCode;
 
 public enum UserErrorCode implements ErrorCode {
-
   BLANK_EMAIL(1001, "이메일이 입력되지 않았습니다."),
   BLANK_PASSWORD(1002, "비밀번호가 입력되지 않았습니다."),
   BLANK_USERNAME(1003, "아이디는 공백일 수 없습니다."),
@@ -20,7 +19,9 @@ public enum UserErrorCode implements ErrorCode {
   ID_NOT_EXISTING(1014, "해당 아이디를 가진 사용자가 존재하지 않습니다."),
   INVALID_AUTHORITY(1015, "해당 기능에 대한 사용자 권한이 없습니다."),
   DUPLICATE_EXISTING_EMAIL(1016, "기존 이메일과 동일한 이메일입니다."),
-  DUPLICATE_EXISTING_PASSWORD(1017, "기존 비밀번호와 동일한 비밀번호입니다.");
+  DUPLICATE_EXISTING_PASSWORD(1017, "기존 비밀번호와 동일한 비밀번호입니다."),
+  INVALID_PROVIDER_TYPE(1018, "없는 소셜 로그인 공급자입니다."),
+  BLANK_PROVIDER_ID(1019, "존재하지 않는 소셜 유저 아이디입니다.");
 
   private final int code;
   private final String message;
