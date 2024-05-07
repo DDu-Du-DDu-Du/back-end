@@ -28,28 +28,47 @@ repositories {
 }
 
 dependencies {
-    // SpringBoot
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // Driving Adapter (Including Lombok, Spring Boot Test)
+    // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.security:spring-security-oauth2-resource-server'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    // MySql
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+    // Test
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // Application Core (Including Spring Boot Web, Resource Server)
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // Flyway
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-mysql'
+    // Guava
+    implementation 'com.google.guava:guava:33.2.0-jre'
 
     // Faker
     implementation 'net.datafaker:datafaker:2.0.2'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Persistence Adapter
+    // SpringBoot
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // MySql
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Flyway
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
 
     // QueryDSL
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -57,16 +76,7 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-    // Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-
-    // Test
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-
-    // Guava
-    implementation 'com.google.guava:guava:33.2.0-jre'
-
+    // External API Adapter (Including Spring Boot Web)
     // Retry
     implementation 'org.springframework.retry:spring-retry'
 }
