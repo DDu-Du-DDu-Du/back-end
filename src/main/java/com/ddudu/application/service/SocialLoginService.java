@@ -11,11 +11,13 @@ import com.ddudu.application.port.in.SocialLoginUseCase;
 import com.ddudu.application.port.out.SignUpPort;
 import com.ddudu.application.port.out.SocialResourcePort;
 import com.ddudu.application.port.out.UserLoaderPort;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @UseCase
 @RequiredArgsConstructor
+@Transactional
 public class SocialLoginService implements SocialLoginUseCase {
 
   private final AuthDomainService authDomainService;
