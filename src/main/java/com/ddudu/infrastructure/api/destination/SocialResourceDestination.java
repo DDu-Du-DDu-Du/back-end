@@ -13,7 +13,7 @@ public enum SocialResourceDestination {
 
   public static String getDestinationBy(String type) {
     return Arrays.stream(SocialResourceDestination.values())
-        .filter(destination -> type.equals(destination.url))
+        .filter(destination -> type.equals(destination.name()))
         .findFirst()
         .orElseThrow()
         .url;

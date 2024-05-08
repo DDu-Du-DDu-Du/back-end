@@ -18,7 +18,7 @@ public class UserDomainService {
     RandomUserAdjective adjective = RandomUserAdjective.getRandom();
     RandomUserAnimal animal = RandomUserAnimal.getRandom();
     String username = adjective.getUsername() + animal.getUsername() + lowTime;
-    String nickname = adjective.getNickname() + System.lineSeparator() + animal.getNickname();
+    String nickname = adjective.getNickname() + " " + animal.getNickname();
 
     return User.builder()
         .username(username)
