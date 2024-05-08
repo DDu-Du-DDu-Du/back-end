@@ -18,7 +18,7 @@ public class ExternalApiAdapter implements SocialResourcePort {
   public AuthProvider retrieveSocialResource(SocialRequest request) {
     String providerType = request.providerType();
     SocialResource socialResource = socialResourceHandler.requestSocialResource(
-        request.socialToken(), providerType);
+        request.getRawToken(), providerType);
 
     return AuthProvider.builder()
         .providerId(socialResource.socialId())
