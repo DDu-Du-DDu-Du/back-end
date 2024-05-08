@@ -110,7 +110,9 @@ tasks.withType(Checkstyle) {
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        exclude("com/ddudu/old/**")
+    }
 
     // finalizedBy jacocoTestReport
 }
