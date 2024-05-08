@@ -1,6 +1,5 @@
 package com.ddudu.old.user.service;
 
-import com.ddudu.application.domain.user.domain.Options;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.old.user.domain.Following;
@@ -41,9 +40,7 @@ public class FollowingService {
         .follower(follower)
         .followee(followee);
 
-    Options followeeOptions = followee.getOptions();
-
-    if (followeeOptions.isAllowingFollowsAfterApproval()) {
+    if (followee.isAllowingFollowsAfterApproval()) {
       followingBuilder.status(FollowingStatus.REQUESTED);
     }
 

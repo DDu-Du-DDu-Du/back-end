@@ -2,10 +2,10 @@ package com.ddudu.application.service;
 
 import com.ddudu.application.domain.authentication.dto.request.SocialRequest;
 import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
-import com.ddudu.application.domain.authentication.service.AuthService;
+import com.ddudu.application.domain.authentication.service.AuthDomainService;
 import com.ddudu.application.domain.user.domain.AuthProvider;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.domain.user.service.UserService;
+import com.ddudu.application.domain.user.service.UserDomainService;
 import com.ddudu.application.port.in.SocialLoginUseCase;
 import com.ddudu.application.port.out.SignUpPort;
 import com.ddudu.application.port.out.SocialResourcePort;
@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SocialLoginService implements SocialLoginUseCase {
 
-  private final AuthService authService;
-  private final UserService userService;
+  private final AuthDomainService authDomainService;
+  private final UserDomainService userDomainService;
   private final SocialResourcePort socialResourcePort;
   private final UserLoaderPort userLoaderPort;
   private final SignUpPort signUpPort;
@@ -30,7 +30,7 @@ public class SocialLoginService implements SocialLoginUseCase {
     Optional<User> user = userLoaderPort.loadSocialUser(authProvider);
 
     if (user.isPresent()) {
-      String accessToken = authService.createAccessToken(user.get());
+      String accessToken = authDomainService.createAccessToken(user.get());
 
       return new TokenResponse(accessToken);
     }
@@ -39,9 +39,9 @@ public class SocialLoginService implements SocialLoginUseCase {
   }
 
   private TokenResponse signUp(AuthProvider authProvider) {
-    User newUser = userService.create(authProvider);
+    User newUser = userDomainService.create(authProvider);
     User user = signUpPort.create(newUser);
-    String accessToken = authService.createAccessToken(user);
+    String accessToken = authDomainService.createAccessToken(user);
 
     return new TokenResponse(accessToken);
   }
