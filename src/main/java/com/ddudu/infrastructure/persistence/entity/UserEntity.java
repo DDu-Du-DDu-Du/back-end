@@ -29,33 +29,64 @@ public class UserEntity extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "nickname", length = 20, nullable = false)
+  @Column(
+      name = "nickname",
+      length = 20,
+      nullable = false
+  )
   private String nickname;
 
-  @Column(name = "username", length = 20, unique = true)
+  @Column(
+      name = "username",
+      length = 30,
+      unique = true
+  )
   private String username;
 
-  @Column(name = "introduction", length = 50)
+  @Column(
+      name = "introduction",
+      length = 50
+  )
   private String introduction;
 
-  @Column(name = "profile_image_url", length = 1024)
+  @Column(
+      name = "profile_image_url",
+      length = 1024
+  )
   private String profile_image_url;
 
-  @Column(name = "authority", columnDefinition = "VARCHAR", length = 15)
+  @Column(
+      name = "authority",
+      columnDefinition = "VARCHAR",
+      length = 15
+  )
   @Enumerated(EnumType.STRING)
   private Authority authority;
 
-  @Column(name = "status", columnDefinition = "VARCHAR", length = 20)
+  @Column(
+      name = "status",
+      columnDefinition = "VARCHAR",
+      length = 20
+  )
   @Enumerated(EnumType.STRING)
   private UserStatus status;
 
-  @Column(name = "follows_after_approval", nullable = false)
+  @Column(
+      name = "follows_after_approval",
+      nullable = false
+  )
   private boolean allowingFollowsAfterApproval;
 
-  @Column(name = "template_notification", nullable = false)
+  @Column(
+      name = "template_notification",
+      nullable = false
+  )
   private boolean templateNotification;
 
-  @Column(name = "ddudu_notification", nullable = false)
+  @Column(
+      name = "ddudu_notification",
+      nullable = false
+  )
   private boolean dduduNotification;
 
   public static UserEntity from(User user) {

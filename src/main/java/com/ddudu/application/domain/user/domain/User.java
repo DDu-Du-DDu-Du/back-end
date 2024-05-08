@@ -18,7 +18,7 @@ import lombok.Getter;
 public class User {
 
   private static final int MAX_NICKNAME_LENGTH = 20;
-  private static final int MAX_OPTIONAL_USERNAME_LENGTH = 20;
+  public static final int MAX_USERNAME_LENGTH = 30;
   private static final int MAX_INTRODUCTION_LENGTH = 50;
 
   @EqualsAndHashCode.Include
@@ -79,12 +79,9 @@ public class User {
     options.switchOptions();
   }
 
-  private void validate(String nickname, String optionalUsername, String introduction) {
+  private void validate(String nickname, String username, String introduction) {
     validateNickname(nickname);
-
-    if (Objects.nonNull(optionalUsername)) {
-      validateUsername(optionalUsername);
-    }
+    validateUsername(username);
 
     if (Objects.nonNull(introduction)) {
       validateIntroduction(introduction);
@@ -92,19 +89,20 @@ public class User {
   }
 
   private void validateNickname(String nickname) {
-    checkArgument(StringUtils.isBlank(nickname), UserErrorCode.BLANK_NICKNAME.name());
+    checkArgument(StringUtils.isNotBlank(nickname), UserErrorCode.BLANK_NICKNAME.name());
     checkArgument(
-        nickname.length() > MAX_NICKNAME_LENGTH, UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.name());
+        nickname.length() <= MAX_NICKNAME_LENGTH, UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.name());
   }
 
   private void validateUsername(String username) {
+    checkArgument(StringUtils.isNotBlank(username), UserErrorCode.BLANK_USERNAME.name());
     checkArgument(
-        StringUtils.isBlank(username), UserErrorCode.BLANK_USERNAME.name());
+        username.length() <= MAX_USERNAME_LENGTH, UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.name());
   }
 
   private void validateIntroduction(String introduction) {
     checkArgument(
-        introduction.length() > MAX_INTRODUCTION_LENGTH,
+        introduction.length() <= MAX_INTRODUCTION_LENGTH,
         UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH.name()
     );
   }
