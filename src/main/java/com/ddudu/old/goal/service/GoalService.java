@@ -1,8 +1,6 @@
 package com.ddudu.old.goal.service;
 
-import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.presentation.api.exception.ErrorCode;
-import com.ddudu.presentation.api.exception.ForbiddenException;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.goal.domain.Goal;
 import com.ddudu.old.goal.domain.GoalRepository;
 import com.ddudu.old.goal.dto.requset.CreateGoalRequest;
@@ -11,8 +9,10 @@ import com.ddudu.old.goal.dto.response.CreateGoalResponse;
 import com.ddudu.old.goal.dto.response.GoalResponse;
 import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.old.goal.exception.GoalErrorCode;
-import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.user.domain.UserRepository;
+import com.ddudu.presentation.api.exception.DataNotFoundException;
+import com.ddudu.presentation.api.exception.ErrorCode;
+import com.ddudu.presentation.api.exception.ForbiddenException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

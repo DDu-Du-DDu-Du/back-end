@@ -2,10 +2,10 @@ package com.ddudu.old.persistence.dao.goal;
 
 import static com.ddudu.old.persistence.entity.QGoalEntity.goalEntity;
 
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.goal.domain.GoalStatus;
 import com.ddudu.old.goal.domain.PrivacyType;
 import com.ddudu.old.persistence.entity.GoalEntity;
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

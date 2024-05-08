@@ -2,14 +2,14 @@ package com.ddudu.old.persistence.repository;
 
 import static java.util.Objects.isNull;
 
+import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.persistence.dao.like.LikeDao;
 import com.ddudu.old.persistence.entity.LikeEntity;
 import com.ddudu.old.persistence.entity.TodoEntity;
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.application.domain.user.domain.User;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

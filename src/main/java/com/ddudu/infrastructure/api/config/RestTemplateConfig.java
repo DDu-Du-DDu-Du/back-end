@@ -22,7 +22,8 @@ public class RestTemplateConfig {
         .build();
   }
 
-  // TODO: dependencies clash with one in primary adapter (spring web & security). Module separation necessary.
+  // TODO: dependencies clash with one in primary adapter (spring web & security).
+  //  Module separation necessary.
   private ClientHttpResponse retry(
       HttpRequest request, byte[] body, ClientHttpRequestExecution execution
   ) {

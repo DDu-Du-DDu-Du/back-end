@@ -13,9 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
     servers = @Server(url = "/"),
-    info = @Info(
-        title = "뚜두뚜두 API"
-    )
+    info = @Info(title = "뚜두뚜두 API")
 )
 @SecuritySchemes(
     {
