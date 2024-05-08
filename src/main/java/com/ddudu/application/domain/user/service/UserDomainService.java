@@ -1,14 +1,14 @@
 package com.ddudu.application.domain.user.service;
 
+import com.ddudu.application.annotation.DomainService;
 import com.ddudu.application.domain.user.domain.AuthProvider;
 import com.ddudu.application.domain.user.domain.RandomUserAdjective;
 import com.ddudu.application.domain.user.domain.RandomUserAnimal;
 import com.ddudu.application.domain.user.domain.User;
 import java.util.Collections;
 import java.util.UUID;
-import org.springframework.stereotype.Component;
 
-@Component
+@DomainService
 public class UserDomainService {
 
   public User create(AuthProvider authProvider) {

@@ -1,14 +1,14 @@
 package com.ddudu.application.domain.authentication.service;
 
+import com.ddudu.application.annotation.DomainService;
 import com.ddudu.application.config.properties.JwtProperties;
 import com.ddudu.application.domain.user.domain.User;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
+@DomainService
 @RequiredArgsConstructor
 public class AuthDomainService {
 

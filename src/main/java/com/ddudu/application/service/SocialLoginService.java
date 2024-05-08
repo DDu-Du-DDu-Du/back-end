@@ -1,5 +1,6 @@
 package com.ddudu.application.service;
 
+import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.authentication.dto.request.SocialRequest;
 import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
 import com.ddudu.application.domain.authentication.service.AuthDomainService;
@@ -12,9 +13,8 @@ import com.ddudu.application.port.out.SocialResourcePort;
 import com.ddudu.application.port.out.UserLoaderPort;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class SocialLoginService implements SocialLoginUseCase {
 
