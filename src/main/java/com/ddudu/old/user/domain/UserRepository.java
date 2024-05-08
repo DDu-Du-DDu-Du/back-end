@@ -4,9 +4,7 @@ import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface UserRepository {
 
   boolean existsByOptionalUsername(String optionalUsername);
