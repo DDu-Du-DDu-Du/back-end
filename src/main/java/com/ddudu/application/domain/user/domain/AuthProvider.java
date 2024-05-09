@@ -28,7 +28,8 @@ public class AuthProvider {
   }
 
   private void validate(String providerId) {
-    checkArgument(StringUtils.isBlank(providerId), UserErrorCode.BLANK_PROVIDER_ID.getCodeName());
+    checkArgument(
+        StringUtils.isNotBlank(providerId), UserErrorCode.BLANK_PROVIDER_ID.getCodeName());
   }
 
 }

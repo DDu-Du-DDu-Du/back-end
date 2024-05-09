@@ -1,5 +1,6 @@
 package com.ddudu.presentation.api.filter;
 
+import com.google.common.collect.Maps;
 import com.google.common.net.HttpHeaders;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -42,7 +42,7 @@ public class SocialAuthenticationFilter extends OncePerRequestFilter {
 
     public MutableRequest(HttpServletRequest request) {
       super(request);
-      this.customHeader = new HashMap<>();
+      this.customHeader = Maps.newHashMap();
     }
 
     public void setHeader(String name, String value) {
