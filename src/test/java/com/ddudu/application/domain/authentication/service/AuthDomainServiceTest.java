@@ -16,9 +16,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 @SpringJUnitConfig(
-    value = {
-        TestProperties.class, JwtConfig.class, JwtIssuer.class, AuthDomainService.class
-    },
+    value = {TestProperties.class, JwtConfig.class, JwtIssuer.class, AuthDomainService.class},
     initializers = ConfigDataApplicationContextInitializer.class
 )
 @DisplayNameGeneration(ReplaceUnderscores.class)
