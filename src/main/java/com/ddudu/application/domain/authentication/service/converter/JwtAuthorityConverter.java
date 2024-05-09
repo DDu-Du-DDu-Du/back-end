@@ -19,7 +19,7 @@ public class JwtAuthorityConverter implements Converter<Jwt, GrantedAuthority> {
     try {
       return Authority.valueOf(authorityName);
     } catch (NullPointerException e) {
-      throw new IllegalArgumentException(AuthErrorCode.INVALID_TOKEN_AUTHORITY.name());
+      throw new IllegalArgumentException(AuthErrorCode.INVALID_TOKEN_AUTHORITY.getCodeName());
     }
   }
 

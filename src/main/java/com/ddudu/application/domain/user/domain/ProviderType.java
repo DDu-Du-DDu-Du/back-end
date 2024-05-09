@@ -11,6 +11,6 @@ public enum ProviderType {
         .filter(providerType -> value.equals(providerType.name()))
         .findFirst()
         .orElseThrow(
-            () -> new IllegalArgumentException(UserErrorCode.INVALID_PROVIDER_TYPE.name()));
+            () -> new IllegalArgumentException(UserErrorCode.INVALID_PROVIDER_TYPE.getCodeName()));
   }
 }

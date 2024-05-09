@@ -19,7 +19,7 @@ public class JwtAuthToken extends JwtAuthenticationToken {
   }
 
   public long getUserId() {
-    checkArgument(Objects.nonNull(userId), AuthErrorCode.BAD_TOKEN_CONTENT.name());
+    checkArgument(Objects.nonNull(userId), AuthErrorCode.BAD_TOKEN_CONTENT.getCodeName());
 
     return userId;
   }

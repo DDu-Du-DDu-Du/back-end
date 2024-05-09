@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -45,9 +44,7 @@ public class AuthController {
           schema = @Schema(implementation = TokenResponse.class)
       )
   )
-  @SecurityRequirements(
-      @SecurityRequirement(name = "토큰 받아오기")
-  )
+  @SecurityRequirement(name = "카카오에서 토큰 받아오기")
   @Parameter(
       name = "providerType",
       in = ParameterIn.PATH,

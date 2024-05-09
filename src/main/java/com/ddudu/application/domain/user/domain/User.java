@@ -90,21 +90,25 @@ public class User {
   }
 
   private void validateNickname(String nickname) {
-    checkArgument(StringUtils.isNotBlank(nickname), UserErrorCode.BLANK_NICKNAME.getCode());
+    checkArgument(StringUtils.isNotBlank(nickname), UserErrorCode.BLANK_NICKNAME.getCodeName());
     checkArgument(
-        nickname.length() <= MAX_NICKNAME_LENGTH, UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.name());
+        nickname.length() <= MAX_NICKNAME_LENGTH,
+        UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.getCodeName()
+    );
   }
 
   private void validateUsername(String username) {
-    checkArgument(StringUtils.isNotBlank(username), UserErrorCode.BLANK_USERNAME.name());
+    checkArgument(StringUtils.isNotBlank(username), UserErrorCode.BLANK_USERNAME.getCodeName());
     checkArgument(
-        username.length() <= MAX_USERNAME_LENGTH, UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.name());
+        username.length() <= MAX_USERNAME_LENGTH,
+        UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.getCodeName()
+    );
   }
 
   private void validateIntroduction(String introduction) {
     checkArgument(
         introduction.length() <= MAX_INTRODUCTION_LENGTH,
-        UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH.name()
+        UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH.getCodeName()
     );
   }
 

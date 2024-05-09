@@ -16,4 +16,9 @@ public enum AuthErrorCode implements ErrorCode {
   private final int code;
   private final String message;
 
+
+  @Override
+  public String getCodeName() {
+    return this.code + " " + this.name();
+  }
 }

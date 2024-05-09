@@ -26,7 +26,6 @@ public class GlobalExceptionHandler {
   private static final int INVALID_INPUT_TYPE_CODE = 2;
   private static final int INVALID_ENUM_FORMAT_CODE = 3;
   private static final int NOT_YET_HANDLED_EXCEPTION_CODE = 9998;
-  private static final int UNKNOWN_EXCEPTION_CODE = 9999;
 
   private final ErrorCodeParser errorCodeParser;
 
@@ -148,7 +147,8 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponse> handleUnknownException(Exception e) {
     log.error(e.getMessage(), e);
 
-    ErrorResponse response = ErrorResponse.from(UNKNOWN_EXCEPTION_CODE, e.getMessage());
+    ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
+    ErrorResponse response = ErrorResponse.from(errorCode);
 
     return ResponseEntity.internalServerError()
         .body(response);

@@ -3,9 +3,9 @@ package com.ddudu.application.domain.authentication.dto.request;
 import jakarta.validation.constraints.NotBlank;
 
 public record SocialRequest(
-    @NotBlank(message = "BLANK_SOCIAL_TOKEN")
+    @NotBlank(message = "5003 BLANK_SOCIAL_TOKEN")
     String socialToken,
-    @NotBlank(message = "BLANK_PROVIDER_TYPE")
+    @NotBlank(message = "5004 BLANK_PROVIDER_TYPE")
     String providerType
 ) {
 
