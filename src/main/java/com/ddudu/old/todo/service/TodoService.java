@@ -19,7 +19,7 @@ import com.ddudu.old.todo.exception.TodoErrorCode;
 import com.ddudu.old.user.domain.FollowingRepository;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.presentation.api.exception.ErrorCode;
+import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import jakarta.validation.Valid;
 import java.time.LocalDate;

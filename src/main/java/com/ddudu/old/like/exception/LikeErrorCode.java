@@ -1,6 +1,6 @@
 package com.ddudu.old.like.exception;
 
-import com.ddudu.presentation.api.exception.ErrorCode;
+import com.ddudu.application.exception.ErrorCode;
 
 public enum LikeErrorCode implements ErrorCode {
   NULL_USER(7001, "사용자는 반드시 존재해야 합니다."),

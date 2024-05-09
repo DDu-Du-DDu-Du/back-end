@@ -28,6 +28,7 @@ public class User {
   private final String introduction;
   private final Authority authority;
   private final UserStatus status;
+
   @Getter(AccessLevel.NONE)
   private final Options options;
   private final List<AuthProvider> authProviders;
@@ -89,7 +90,7 @@ public class User {
   }
 
   private void validateNickname(String nickname) {
-    checkArgument(StringUtils.isNotBlank(nickname), UserErrorCode.BLANK_NICKNAME.name());
+    checkArgument(StringUtils.isNotBlank(nickname), UserErrorCode.BLANK_NICKNAME.getCode());
     checkArgument(
         nickname.length() <= MAX_NICKNAME_LENGTH, UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.name());
   }

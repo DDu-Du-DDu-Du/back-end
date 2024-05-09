@@ -1,6 +1,6 @@
 package com.ddudu.old.user.exception;
 
-import com.ddudu.presentation.api.exception.ErrorCode;
+import com.ddudu.application.exception.ErrorCode;
 
 public enum FollowingErrorCode implements ErrorCode {
   NULL_FOLLOWER(6001, "팔로워가 반드시 존재해야 합니다."),

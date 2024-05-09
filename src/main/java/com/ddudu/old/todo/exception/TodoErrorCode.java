@@ -1,6 +1,6 @@
 package com.ddudu.old.todo.exception;
 
-import com.ddudu.presentation.api.exception.ErrorCode;
+import com.ddudu.application.exception.ErrorCode;
 
 public enum TodoErrorCode implements ErrorCode {
 

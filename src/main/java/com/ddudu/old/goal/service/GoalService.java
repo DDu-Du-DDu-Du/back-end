@@ -11,7 +11,7 @@ import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.old.goal.exception.GoalErrorCode;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.presentation.api.exception.ErrorCode;
+import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

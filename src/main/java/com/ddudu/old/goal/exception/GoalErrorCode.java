@@ -1,6 +1,6 @@
 package com.ddudu.old.goal.exception;
 
-import com.ddudu.presentation.api.exception.ErrorCode;
+import com.ddudu.application.exception.ErrorCode;
 
 public enum GoalErrorCode implements ErrorCode {
   BLANK_NAME(3001, "목표명은 필수값입니다."),

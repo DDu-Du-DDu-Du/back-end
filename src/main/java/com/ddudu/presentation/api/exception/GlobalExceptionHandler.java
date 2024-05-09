@@ -1,9 +1,11 @@
 package com.ddudu.presentation.api.exception;
 
+import com.ddudu.application.exception.ErrorCode;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,14 +17,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
+  // TODO: minimize custom exceptions in the handler parameters
 
   private static final int INVALID_INPUT_CODE = 1;
   private static final int INVALID_INPUT_TYPE_CODE = 2;
   private static final int INVALID_ENUM_FORMAT_CODE = 3;
   private static final int NOT_YET_HANDLED_EXCEPTION_CODE = 9998;
   private static final int UNKNOWN_EXCEPTION_CODE = 9999;
+
+  private final ErrorCodeParser errorCodeParser;
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<List<ErrorResponse>> handleMethodArgumentNotValidException(
@@ -55,6 +61,17 @@ public class GlobalExceptionHandler {
 
     String message = formatMessageFrom(e);
     ErrorResponse response = ErrorResponse.from(INVALID_ENUM_FORMAT_CODE, message);
+
+    return ResponseEntity.badRequest()
+        .body(response);
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException e) {
+    log.warn(e.getMessage(), e);
+
+    ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
+    ErrorResponse response = ErrorResponse.from(errorCode);
 
     return ResponseEntity.badRequest()
         .body(response);

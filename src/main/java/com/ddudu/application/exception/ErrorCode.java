@@ -1,4 +1,4 @@
-package com.ddudu.presentation.api.exception;
+package com.ddudu.application.exception;
 
 public interface ErrorCode {
 

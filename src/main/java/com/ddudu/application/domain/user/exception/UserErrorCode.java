@@ -1,6 +1,6 @@
 package com.ddudu.application.domain.user.exception;
 
-import com.ddudu.presentation.api.exception.ErrorCode;
+import com.ddudu.application.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

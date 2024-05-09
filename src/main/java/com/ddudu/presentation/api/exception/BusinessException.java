@@ -1,5 +1,6 @@
 package com.ddudu.presentation.api.exception;
 
+import com.ddudu.application.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
