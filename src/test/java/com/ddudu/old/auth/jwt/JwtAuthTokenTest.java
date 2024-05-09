@@ -2,10 +2,10 @@ package com.ddudu.old.auth.jwt;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.application.domain.authentication.domain.JwtAuthToken;
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.application.domain.user.domain.enums.Authority;
 import com.ddudu.presentation.api.exception.InvalidTokenException;
+import com.ddudu.presentation.api.jwt.JwtAuthToken;
 import java.time.Instant;
 import java.util.Collections;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;

@@ -1,9 +1,9 @@
 package com.ddudu.presentation.api.resolver;
 
-import com.ddudu.application.domain.authentication.domain.JwtAuthToken;
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.exception.InvalidAuthenticationException;
+import com.ddudu.presentation.api.jwt.JwtAuthToken;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

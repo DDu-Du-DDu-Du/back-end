@@ -3,7 +3,6 @@ package com.ddudu.old.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.application.domain.authentication.service.converter.JwtConverter;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.old.user.domain.Following;
@@ -18,6 +17,7 @@ import com.ddudu.old.user.dto.response.ToggleOptionResponse;
 import com.ddudu.old.user.dto.response.UserProfileResponse;
 import com.ddudu.old.user.dto.response.UsersResponse;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
+import com.ddudu.presentation.api.jwt.converter.JwtConverter;
 import java.util.List;
 import java.util.Objects;
 import net.datafaker.Faker;
