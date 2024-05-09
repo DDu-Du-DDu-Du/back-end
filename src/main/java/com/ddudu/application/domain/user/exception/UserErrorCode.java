@@ -10,7 +10,7 @@ public enum UserErrorCode implements ErrorCode {
   BLANK_USERNAME(1001, "아이디는 공백일 수 없습니다."),
   BLANK_NICKNAME(1002, "닉네임이 입력되지 않았습니다."),
   EXCESSIVE_NICKNAME_LENGTH(1003, "닉네임이 최대 글자 수를 초과했습니다."),
-  EXCESSIVE_LENGTH(1004, "아이디가 최대 글자 수를 초과했습니다."),
+  EXCESSIVE_USERNAME_LENGTH(1004, "아이디가 최대 글자 수를 초과했습니다."),
   EXCESSIVE_INTRODUCTION_LENGTH(1005, "자기소개가 최대 글자 수를 초과했습니다."),
   DUPLICATE_USERNAME(1006, "이미 존재하는 아이디입니다."),
   INVALID_AUTHENTICATION(1007, "토큰과 사용자의 정보가 일치하지 않습니다."),
