@@ -11,7 +11,7 @@ import java.util.UUID;
 @DomainService
 public class UserDomainService {
 
-  public User create(AuthProvider authProvider) {
+  public User createFirstUser(AuthProvider authProvider) {
     String lowTime = UUID.randomUUID()
         .toString()
         .substring(0, 8);

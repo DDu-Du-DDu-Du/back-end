@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
             scheme = "bearer"
         ),
         @SecurityScheme(
-            name = "토큰 받아오기",
+            name = "카카오에서 토큰 받아오기",
             type = SecuritySchemeType.OAUTH2,
             flows = @OAuthFlows(
                 authorizationCode = @OAuthFlow(

@@ -41,8 +41,8 @@ public class SocialLoginService implements SocialLoginUseCase {
   }
 
   private TokenResponse signUp(AuthProvider authProvider) {
-    User newUser = userDomainService.create(authProvider);
-    User user = signUpPort.create(newUser);
+    User newUser = userDomainService.createFirstUser(authProvider);
+    User user = signUpPort.save(newUser);
     String accessToken = authDomainService.createAccessToken(user);
 
     return new TokenResponse(accessToken);

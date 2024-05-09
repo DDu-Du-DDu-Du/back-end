@@ -4,6 +4,6 @@ import com.ddudu.application.domain.user.domain.User;
 
 public interface SignUpPort {
 
-  User create(User user);
+  User save(User user);
 
 }
