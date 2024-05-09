@@ -1,15 +1,14 @@
 package com.ddudu.application.domain.user.domain;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.isNull;
 
 import com.ddudu.application.domain.user.domain.enums.Authority;
 import com.ddudu.application.domain.user.domain.enums.UserStatus;
 import com.ddudu.application.domain.user.domain.vo.AuthProvider;
 import com.ddudu.application.domain.user.domain.vo.Options;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
-import com.google.common.collect.Lists;
 import io.micrometer.common.util.StringUtils;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import lombok.AccessLevel;
@@ -38,7 +37,7 @@ public class User {
   private final List<AuthProvider> authProviders;
 
   @Builder
-  public User(
+  private User(
       Long id, String username, String nickname, String introduction, Authority authority,
       UserStatus status, List<AuthProvider> authProviders, Options options,
       Boolean allowingFollowsAfterApproval, Boolean templateNotification, Boolean dduduNotification
@@ -50,10 +49,11 @@ public class User {
     this.nickname = nickname;
     this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
-    this.status = isNull(status) ? UserStatus.ACTIVE : status;
-    this.options = Objects.nonNull(options) ? options
-        : buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification);
-    this.authProviders = isNull(authProviders) ? Lists.newArrayList() : authProviders;
+    this.status = Objects.requireNonNullElse(status, UserStatus.ACTIVE);
+    this.options = Objects.requireNonNullElse(
+        options, buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification)
+    );
+    this.authProviders = Objects.requireNonNullElse(authProviders, Collections.emptyList());
   }
 
   public boolean isAllowingFollowsAfterApproval() {
@@ -105,7 +105,7 @@ public class User {
     checkArgument(StringUtils.isNotBlank(username), UserErrorCode.BLANK_USERNAME.getCodeName());
     checkArgument(
         username.length() <= MAX_USERNAME_LENGTH,
-        UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.getCodeName()
+        UserErrorCode.EXCESSIVE_USERNAME_LENGTH.getCodeName()
     );
   }
 
