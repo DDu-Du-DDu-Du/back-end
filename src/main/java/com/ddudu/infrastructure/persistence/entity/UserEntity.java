@@ -56,7 +56,7 @@ public class UserEntity extends BaseEntity {
       name = "profile_image_url",
       length = 1024
   )
-  private String profile_image_url;
+  private String profileImageUrl;
 
   @Column(
       name = "authority",
@@ -100,6 +100,7 @@ public class UserEntity extends BaseEntity {
         .introduction(user.getIntroduction())
         .authority(user.getAuthority())
         .status(user.getStatus())
+        .profileImageUrl(user.getProfileImageUrl())
         .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
         .templateNotification(user.isNotifyingTemplate())
         .dduduNotification(user.isNotifyingDdudu())
@@ -124,6 +125,7 @@ public class UserEntity extends BaseEntity {
         .introduction(introduction)
         .authority(authority)
         .status(status)
+        .profileImageUrl(profileImageUrl)
         .allowingFollowsAfterApproval(allowingFollowsAfterApproval)
         .templateNotification(templateNotification)
         .dduduNotification(dduduNotification);

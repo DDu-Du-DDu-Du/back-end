@@ -23,6 +23,7 @@ public class User {
   private static final int MAX_NICKNAME_LENGTH = 20;
   public static final int MAX_USERNAME_LENGTH = 30;
   private static final int MAX_INTRODUCTION_LENGTH = 50;
+  private static final int MAX_URL_LENGTH = 1024;
 
   @EqualsAndHashCode.Include
   private final Long id;
@@ -31,6 +32,7 @@ public class User {
   private final String introduction;
   private final Authority authority;
   private final UserStatus status;
+  private final String profileImageUrl;
 
   @Getter(AccessLevel.NONE)
   private final Options options;
@@ -39,10 +41,10 @@ public class User {
   @Builder
   private User(
       Long id, String username, String nickname, String introduction, Authority authority,
-      UserStatus status, List<AuthProvider> authProviders, Options options,
+      UserStatus status, String profileImageUrl, List<AuthProvider> authProviders, Options options,
       Boolean allowingFollowsAfterApproval, Boolean templateNotification, Boolean dduduNotification
   ) {
-    validate(nickname, username, introduction);
+    validate(nickname, username, introduction, profileImageUrl);
 
     this.id = id;
     this.username = username;
@@ -50,6 +52,7 @@ public class User {
     this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
     this.status = Objects.requireNonNullElse(status, UserStatus.ACTIVE);
+    this.profileImageUrl = profileImageUrl;
     this.options = Objects.requireNonNullElse(
         options, buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification)
     );
@@ -76,6 +79,7 @@ public class User {
         .authority(this.authority)
         .introduction(introduction)
         .status(this.status)
+        .profileImageUrl(this.profileImageUrl)
         .options(this.options)
         .build();
   }
@@ -84,12 +88,18 @@ public class User {
     options.switchOptions();
   }
 
-  private void validate(String nickname, String username, String introduction) {
+  private void validate(
+      String nickname, String username, String introduction, String profileImageUrl
+  ) {
     validateNickname(nickname);
     validateUsername(username);
 
     if (Objects.nonNull(introduction)) {
       validateIntroduction(introduction);
+    }
+
+    if (Objects.nonNull(profileImageUrl)) {
+      validateUrl(profileImageUrl);
     }
   }
 
@@ -113,6 +123,13 @@ public class User {
     checkArgument(
         introduction.length() <= MAX_INTRODUCTION_LENGTH,
         UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH.getCodeName()
+    );
+  }
+
+  private void validateUrl(String url) {
+    checkArgument(
+        url.length() <= MAX_URL_LENGTH,
+        UserErrorCode.EXCESSIVE_PROFILE_IMAGE_URL_LENGTH.getCodeName()
     );
   }
 

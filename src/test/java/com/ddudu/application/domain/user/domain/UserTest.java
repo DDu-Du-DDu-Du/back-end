@@ -139,6 +139,23 @@ class UserTest {
           .withMessage(UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH.getCodeName());
     }
 
+    @Test
+    void 프로필_사진_링크가_1024자를_넘으면_생성을_실패한다() {
+      // given
+      String over1024 = UserFixture.getRandomFixedSentence(1025);
+      UserBuilder builder = User.builder()
+          .username(username)
+          .nickname(nickname)
+          .profileImageUrl(over1024);
+
+      // when
+      ThrowingCallable build = builder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(build)
+          .withMessage(UserErrorCode.EXCESSIVE_PROFILE_IMAGE_URL_LENGTH.getCodeName());
+    }
+
   }
 
 }

@@ -17,7 +17,8 @@ public enum UserErrorCode implements ErrorCode {
   ID_NOT_EXISTING(1008, "해당 아이디를 가진 사용자가 존재하지 않습니다."),
   INVALID_AUTHORITY(1009, "해당 기능에 대한 사용자 권한이 없습니다."),
   INVALID_PROVIDER_TYPE(1010, "없는 소셜 로그인 공급자입니다."),
-  BLANK_PROVIDER_ID(1011, "존재하지 않는 소셜 유저 아이디입니다.");
+  BLANK_PROVIDER_ID(1011, "존재하지 않는 소셜 유저 아이디입니다."),
+  EXCESSIVE_PROFILE_IMAGE_URL_LENGTH(1012, "프로필 사진 URL이 최대 글자 수를 초과했습니다.");
 
   private final int code;
   private final String message;
