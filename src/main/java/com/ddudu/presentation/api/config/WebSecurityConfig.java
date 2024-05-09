@@ -1,8 +1,8 @@
 package com.ddudu.presentation.api.config;
 
-import com.ddudu.application.domain.authentication.service.converter.JwtConverter;
 import com.ddudu.application.domain.user.domain.enums.Authority;
 import com.ddudu.presentation.api.filter.SocialAuthenticationFilter;
+import com.ddudu.presentation.api.jwt.converter.JwtConverter;
 import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

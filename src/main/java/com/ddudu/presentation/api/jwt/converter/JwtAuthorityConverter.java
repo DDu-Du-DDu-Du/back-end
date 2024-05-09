@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.authentication.service.converter;
+package com.ddudu.presentation.api.jwt.converter;
 
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.application.domain.user.domain.enums.Authority;

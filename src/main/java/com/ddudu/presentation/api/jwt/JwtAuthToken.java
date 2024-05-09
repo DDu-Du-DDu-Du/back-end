@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.authentication.domain;
+package com.ddudu.presentation.api.jwt;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

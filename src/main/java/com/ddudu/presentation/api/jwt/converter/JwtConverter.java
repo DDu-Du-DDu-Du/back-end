@@ -1,6 +1,6 @@
-package com.ddudu.application.domain.authentication.service.converter;
+package com.ddudu.presentation.api.jwt.converter;
 
-import com.ddudu.application.domain.authentication.domain.JwtAuthToken;
+import com.ddudu.presentation.api.jwt.JwtAuthToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
