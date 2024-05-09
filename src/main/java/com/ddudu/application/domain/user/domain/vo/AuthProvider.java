@@ -17,7 +17,7 @@ public class AuthProvider {
   private final String providerId;
 
   @Builder
-  public AuthProvider(String providerType, String providerId) {
+  private AuthProvider(String providerType, String providerId) {
     validate(providerId);
 
     this.providerType = ProviderType.from(providerType);
