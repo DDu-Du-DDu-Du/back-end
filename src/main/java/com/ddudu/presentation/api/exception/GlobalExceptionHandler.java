@@ -1,5 +1,6 @@
 package com.ddudu.presentation.api.exception;
 
+import com.ddudu.application.exception.DefaultErrorCode;
 import com.ddudu.application.exception.ErrorCode;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Arrays;
@@ -71,6 +72,10 @@ public class GlobalExceptionHandler {
 
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
     ErrorResponse response = ErrorResponse.from(errorCode);
+
+    if (errorCode instanceof DefaultErrorCode) {
+      return handleUnexpected(response);
+    }
 
     return ResponseEntity.badRequest()
         .body(response);
@@ -149,6 +154,13 @@ public class GlobalExceptionHandler {
 
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
     ErrorResponse response = ErrorResponse.from(errorCode);
+
+    return ResponseEntity.internalServerError()
+        .body(response);
+  }
+
+  private ResponseEntity<ErrorResponse> handleUnexpected(ErrorResponse response) {
+    log.error("Exception is extremely unexpected: {}", response.message());
 
     return ResponseEntity.internalServerError()
         .body(response);
