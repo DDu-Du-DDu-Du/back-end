@@ -18,12 +18,16 @@ import lombok.NoArgsConstructor;
 public class UserFixture extends BaseFixture {
 
   public static User createRandomUserWithId() {
-    return createRandomUser(getRandomId(), null, null, null, null, null);
+    return createRandomUser(getRandomId(), null, null, null, null, null, null);
+  }
+
+  public static User createRandomSocialUser(AuthProvider authProvider) {
+    return createRandomUser(getRandomId(), null, authProvider, null, null, null, null);
   }
 
   public static User createRandomUser(
-      long id, String introduction, Options options, Boolean allowingFollowsAfterApproval,
-      Boolean templateNotification, Boolean dduduNotification
+      long id, String introduction, AuthProvider authProvider, Options options,
+      Boolean allowingFollowsAfterApproval, Boolean templateNotification, Boolean dduduNotification
   ) {
     String lowTime = UUID.randomUUID()
         .toString()
@@ -39,7 +43,8 @@ public class UserFixture extends BaseFixture {
         .username(username)
         .introduction(introduction)
         .authority(Authority.NORMAL)
-        .authProviders(Collections.singletonList(createRandomAuthProvider()))
+        .authProviders(Collections.singletonList(
+            Objects.nonNull(authProvider) ? authProvider : createRandomAuthProvider()))
         .status(UserStatus.ACTIVE)
         .options(options)
         .allowingFollowsAfterApproval(
