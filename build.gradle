@@ -115,7 +115,7 @@ test {
         exclude("com/ddudu/old/**")
     }
 
-    // finalizedBy jacocoTestReport
+    finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
@@ -148,7 +148,10 @@ jacocoTestCoverageVerification {
                 minimum = 0.50
             }
 
-            includes = ['*.service.*']
+            includes = [
+                    '*.application.service.*',
+                    '*.application.*.service.*'
+            ]
 
             excludes = ["*.Q*"]
         }
