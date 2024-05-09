@@ -21,7 +21,6 @@ public class AuthDomainService {
     claims.put("user", user.getId());
     claims.put("auth", user.getAuthority());
 
-    System.out.println(claims);
     return jwtIssuer.issue(claims, Duration.ofMinutes(jwtProperties.getExpiredAfter()));
   }
 
