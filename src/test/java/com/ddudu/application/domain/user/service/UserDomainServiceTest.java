@@ -2,8 +2,8 @@ package com.ddudu.application.domain.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.domain.user.domain.AuthProvider;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.domain.user.domain.vo.AuthProvider;
 import com.ddudu.fixture.UserFixture;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;

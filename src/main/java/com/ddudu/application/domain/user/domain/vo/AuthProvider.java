@@ -1,7 +1,8 @@
-package com.ddudu.application.domain.user.domain;
+package com.ddudu.application.domain.user.domain.vo;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.ddudu.application.domain.user.domain.enums.ProviderType;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
 import io.micrometer.common.util.StringUtils;
 import lombok.AccessLevel;

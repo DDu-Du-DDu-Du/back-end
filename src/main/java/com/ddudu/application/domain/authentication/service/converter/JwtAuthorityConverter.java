@@ -1,7 +1,7 @@
 package com.ddudu.application.domain.authentication.service.converter;
 
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
-import com.ddudu.application.domain.user.domain.Authority;
+import com.ddudu.application.domain.user.domain.enums.Authority;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;

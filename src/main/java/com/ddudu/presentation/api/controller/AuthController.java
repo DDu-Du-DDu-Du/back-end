@@ -2,7 +2,7 @@ package com.ddudu.presentation.api.controller;
 
 import com.ddudu.application.domain.authentication.dto.request.SocialRequest;
 import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
-import com.ddudu.application.domain.user.domain.ProviderType;
+import com.ddudu.application.domain.user.domain.enums.ProviderType;
 import com.ddudu.application.port.in.SocialLoginUseCase;
 import com.ddudu.old.auth.dto.response.MeResponse;
 import com.ddudu.old.auth.service.AuthService;

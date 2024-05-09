@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.authentication.domain.JwtAuthToken;
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
-import com.ddudu.application.domain.user.domain.Authority;
+import com.ddudu.application.domain.user.domain.enums.Authority;
 import com.ddudu.presentation.api.exception.InvalidTokenException;
 import java.time.Instant;
 import java.util.Collections;

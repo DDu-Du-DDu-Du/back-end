@@ -9,7 +9,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.ddudu.application.domain.authentication.domain.JwtAuthToken;
-import com.ddudu.application.domain.user.domain.Authority;
+import com.ddudu.application.domain.user.domain.enums.Authority;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.exception.InvalidAuthenticationException;
 import com.ddudu.presentation.api.resolver.LoginUserArgumentResolver;

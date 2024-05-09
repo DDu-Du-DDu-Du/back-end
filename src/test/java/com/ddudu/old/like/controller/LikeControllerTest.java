@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.application.config.JwtConfig;
-import com.ddudu.application.domain.user.domain.Authority;
+import com.ddudu.application.domain.user.domain.enums.Authority;
 import com.ddudu.old.like.dto.request.LikeRequest;
 import com.ddudu.old.like.dto.response.LikeResponse;
 import com.ddudu.old.like.exception.LikeErrorCode;

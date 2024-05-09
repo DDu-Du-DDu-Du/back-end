@@ -1,7 +1,7 @@
 package com.ddudu.infrastructure.persistence.adapter;
 
-import com.ddudu.application.domain.user.domain.AuthProvider;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.domain.user.domain.vo.AuthProvider;
 import com.ddudu.application.port.out.SignUpPort;
 import com.ddudu.application.port.out.UserLoaderPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;

@@ -3,6 +3,10 @@ package com.ddudu.application.domain.user.domain;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 
+import com.ddudu.application.domain.user.domain.enums.Authority;
+import com.ddudu.application.domain.user.domain.enums.UserStatus;
+import com.ddudu.application.domain.user.domain.vo.AuthProvider;
+import com.ddudu.application.domain.user.domain.vo.Options;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.google.common.collect.Lists;
 import io.micrometer.common.util.StringUtils;

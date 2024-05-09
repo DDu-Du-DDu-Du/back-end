@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.user.domain;
+package com.ddudu.application.domain.user.domain.enums;
 
 import com.ddudu.application.domain.user.exception.UserErrorCode;
 import java.util.Arrays;

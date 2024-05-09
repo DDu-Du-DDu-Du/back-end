@@ -2,7 +2,7 @@ package com.ddudu.old.user.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.domain.user.domain.Options;
+import com.ddudu.application.domain.user.domain.vo.Options;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;

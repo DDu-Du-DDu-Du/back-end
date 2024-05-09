@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.user.domain;
+package com.ddudu.application.domain.user.domain.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 

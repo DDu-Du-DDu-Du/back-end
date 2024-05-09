@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.user.domain;
+package com.ddudu.application.domain.user.domain.vo;
 
 import java.util.Objects;
 import lombok.Builder;

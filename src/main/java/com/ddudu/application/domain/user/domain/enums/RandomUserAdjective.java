@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.user.domain;
+package com.ddudu.application.domain.user.domain.enums;
 
 import java.util.Random;
 import lombok.Getter;
