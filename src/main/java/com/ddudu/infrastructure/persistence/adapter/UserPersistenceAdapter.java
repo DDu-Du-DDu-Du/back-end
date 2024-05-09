@@ -9,6 +9,7 @@ import com.ddudu.infrastructure.persistence.entity.AuthProviderEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.auth.AuthProviderRepository;
 import com.ddudu.infrastructure.persistence.repository.user.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -20,9 +21,19 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
   private final AuthProviderRepository authProviderRepository;
 
   @Override
-  public User create(User user) {
-    return userRepository.save(UserEntity.from(user))
-        .toDomain();
+  public User save(User user) {
+    List<AuthProvider> authProviders = user.getAuthProviders();
+    UserEntity savedUser = userRepository.save(UserEntity.from(user));
+
+    if (!authProviders.isEmpty()) {
+      List<AuthProvider> savedProviders = authProviders.stream()
+          .map(provider -> saveAuthProvider(provider, savedUser))
+          .toList();
+
+      return savedUser.toDomainWith(savedProviders);
+    }
+
+    return savedUser.toDomain();
   }
 
   @Override
@@ -39,6 +50,13 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
         .toDomain();
 
     return Optional.of(user);
+  }
+
+  private AuthProvider saveAuthProvider(AuthProvider authProvider, UserEntity user) {
+    AuthProviderEntity entity = AuthProviderEntity.from(authProvider, user);
+
+    return authProviderRepository.save(entity)
+        .toDomain();
   }
 
 }

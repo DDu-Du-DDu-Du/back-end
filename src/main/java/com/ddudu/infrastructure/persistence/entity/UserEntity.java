@@ -1,7 +1,9 @@
 package com.ddudu.infrastructure.persistence.entity;
 
+import com.ddudu.application.domain.user.domain.AuthProvider;
 import com.ddudu.application.domain.user.domain.Authority;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.domain.user.domain.User.UserBuilder;
 import com.ddudu.application.domain.user.domain.UserStatus;
 import com.ddudu.old.common.BaseEntity;
 import jakarta.persistence.Column;
@@ -12,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +22,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class UserEntity extends BaseEntity {
 
   @Id
@@ -104,6 +107,16 @@ public class UserEntity extends BaseEntity {
   }
 
   public User toDomain() {
+    return buildUser().build();
+  }
+
+  public User toDomainWith(List<AuthProvider> authProviders) {
+    return buildUser()
+        .authProviders(authProviders)
+        .build();
+  }
+
+  private UserBuilder buildUser() {
     return User.builder()
         .id(id)
         .username(username)
@@ -113,8 +126,7 @@ public class UserEntity extends BaseEntity {
         .status(status)
         .allowingFollowsAfterApproval(allowingFollowsAfterApproval)
         .templateNotification(templateNotification)
-        .dduduNotification(dduduNotification)
-        .build();
+        .dduduNotification(dduduNotification);
   }
 
 }
