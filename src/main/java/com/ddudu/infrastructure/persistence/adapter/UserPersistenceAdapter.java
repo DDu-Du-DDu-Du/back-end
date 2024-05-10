@@ -25,15 +25,11 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
     List<AuthProvider> authProviders = user.getAuthProviders();
     UserEntity savedUser = userRepository.save(UserEntity.from(user));
 
-    if (!authProviders.isEmpty()) {
-      List<AuthProvider> savedProviders = authProviders.stream()
-          .map(provider -> saveAuthProvider(provider, savedUser))
-          .toList();
+    List<AuthProvider> savedProviders = authProviders.stream()
+        .map(provider -> saveAuthProvider(provider, savedUser))
+        .toList();
 
-      return savedUser.toDomainWith(savedProviders);
-    }
-
-    return savedUser.toDomain();
+    return savedUser.toDomainWith(savedProviders);
   }
 
   @Override
