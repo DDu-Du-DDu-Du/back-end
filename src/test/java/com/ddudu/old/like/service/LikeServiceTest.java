@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.like.dto.request.LikeRequest;
@@ -46,7 +47,7 @@ class LikeServiceTest {
   UserRepository userRepository;
 
   @Autowired
-  GoalRepository goalRepository;
+  OldGoalRepository goalRepository;
 
   @Autowired
   TodoRepository todoRepository;

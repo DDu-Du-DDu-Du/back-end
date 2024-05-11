@@ -8,6 +8,7 @@ import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.old.goal.dto.response.GoalResponse;
 import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
@@ -41,7 +42,7 @@ class GoalServiceTest {
   private GoalService goalService;
 
   @Autowired
-  private GoalRepository goalRepository;
+  private OldGoalRepository goalRepository;
 
   @Autowired
   private UserRepository userRepository;
