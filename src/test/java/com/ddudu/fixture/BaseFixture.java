@@ -19,6 +19,11 @@ public class BaseFixture {
         .maxLengthSentence(maxLength);
   }
 
+  public static String getRandomSentence(int minLength, int maxLength) {
+    return faker.lorem()
+        .characters(minLength, maxLength);
+  }
+
   public static String getRandomFixedSentence(int length) {
     return faker.lorem()
         .characters(length);
