@@ -2,9 +2,11 @@ package com.ddudu.application.domain.authentication.service;
 
 import com.ddudu.application.annotation.DomainService;
 import com.ddudu.application.config.properties.JwtProperties;
+import com.ddudu.application.domain.authentication.domain.RefreshToken;
 import com.ddudu.application.domain.user.domain.User;
 import com.google.common.collect.Maps;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +24,18 @@ public class AuthDomainService {
     claims.put("auth", user.getAuthority());
 
     return jwtIssuer.issue(claims, Duration.ofMinutes(jwtProperties.getExpiredAfter()));
+  }
+
+  public RefreshToken createRefreshToken(User user, Integer family) {
+    Long userId = user.getId();
+    Map<String, Object> claim = Collections.singletonMap("sub", userId);
+    String tokenValue = jwtIssuer.issue(claim, Duration.ZERO);
+
+    return RefreshToken.builder()
+        .family(family)
+        .userId(userId)
+        .tokenValue(tokenValue)
+        .build();
   }
 
 }
