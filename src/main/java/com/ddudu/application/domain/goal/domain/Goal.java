@@ -8,7 +8,6 @@ import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.domain.vo.Color;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -73,17 +72,17 @@ public class Goal {
 
   private void validateName(String name) {
     if (isBlank(name)) {
-      throw new InvalidParameterException(GoalErrorCode.BLANK_NAME);
+      throw new IllegalArgumentException(GoalErrorCode.BLANK_NAME.getCodeName());
     }
 
     if (name.length() > MAX_NAME_LENGTH) {
-      throw new InvalidParameterException(GoalErrorCode.EXCESSIVE_NAME_LENGTH);
+      throw new IllegalArgumentException(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
     }
   }
 
   private void validateUser(User user) {
     if (isNull(user)) {
-      throw new IllegalArgumentException("사용자는 필수값입니다.");
+      throw new IllegalArgumentException(GoalErrorCode.NULL_USER.getCodeName());
     }
   }
 
