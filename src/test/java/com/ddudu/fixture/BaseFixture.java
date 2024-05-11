@@ -49,4 +49,10 @@ public class BaseFixture {
         .nextLong(min, max);
   }
 
+  public static String getRandomColor() {
+    return faker.color()
+        .hex()
+        .substring(1);
+  }
+
 }
