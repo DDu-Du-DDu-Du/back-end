@@ -1,8 +1,8 @@
 package com.ddudu.support;
 
-import com.ddudu.application.auth.domain.authority.Authority;
 import com.ddudu.application.config.JwtConfig;
-import com.ddudu.application.config.WebSecurityConfig;
+import com.ddudu.application.domain.user.domain.enums.Authority;
+import com.ddudu.presentation.api.config.WebSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
