@@ -3,17 +3,14 @@ package com.ddudu.old.goal.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.old.goal.domain.Goal;
-import com.ddudu.old.goal.domain.GoalRepository;
-import com.ddudu.old.goal.domain.GoalStatus;
-import com.ddudu.old.goal.domain.PrivacyType;
-import com.ddudu.old.goal.dto.requset.CreateGoalRequest;
 import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.old.goal.dto.response.CreateGoalResponse;
 import com.ddudu.old.goal.dto.response.GoalResponse;
 import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
-import com.ddudu.old.goal.exception.GoalErrorCode;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.ForbiddenException;
@@ -29,8 +26,6 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,99 +63,6 @@ class GoalServiceTest {
         .hex()
         .substring(1);
     privacyType = provideRandomPrivacy();
-  }
-
-  @Nested
-  class 목표_생성_테스트 {
-
-    @Test
-    void 목표명_색상_공개_설정을_입력해_목표_생성에_성공한다() {
-      // when
-      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
-      CreateGoalResponse expected = goalService.create(user.getId(), request);
-
-      // then
-      Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual.get()).extracting("name", "color", "privacyType")
-          .containsExactly(expected.name(), expected.color(), privacyType);
-    }
-
-    @Test
-    void 목표_생성_시_ID가_자동_생성된다() {
-      // given
-      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
-
-      // when
-      CreateGoalResponse expected = goalService.create(user.getId(), request);
-
-      // then
-      Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual.get()
-          .getId()).isNotNull();
-    }
-
-    @Test
-    void 목표_생성_시_목표_상태는_IN_PROGRESS가_된다() {
-      // given
-      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
-
-      // when
-      CreateGoalResponse expected = goalService.create(user.getId(), request);
-
-      // then
-      Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual.get()
-          .getStatus()).isEqualTo(GoalStatus.IN_PROGRESS);
-    }
-
-    @ParameterizedTest(name = "유효하지 않은 색상 : {0}")
-    @NullAndEmptySource
-    void 색상을_설정하지_않거나_빈_문자열이면_기본값이_적용된다(String invalidColor) {
-      // given
-      String defaultColor = "191919";
-
-      CreateGoalRequest request = new CreateGoalRequest(
-          name, invalidColor, privacyType);
-
-      // when
-      CreateGoalResponse expected = goalService.create(user.getId(), request);
-
-      // then
-      Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual.get()
-          .getColor()).isEqualTo(defaultColor);
-    }
-
-    @Test
-    void 보기_설정을_설정하지_않으면_PRIVATE이_적용된다() {
-      // given
-      PrivacyType defaultPrivacyType = PrivacyType.PRIVATE;
-      CreateGoalRequest request = new CreateGoalRequest(name, color, null);
-
-      // when
-      CreateGoalResponse expected = goalService.create(user.getId(), request);
-
-      // then
-      Optional<Goal> actual = goalRepository.findById(expected.id());
-      assertThat(actual.get()
-          .getPrivacyType()).isEqualTo(defaultPrivacyType);
-    }
-
-    @Test
-    void 사용자ID가_유효하지_않으면_예외가_발생한다() {
-      // given
-      Long invalidUserId = faker.random()
-          .nextLong();
-      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
-
-      // when
-      ThrowingCallable create = () -> goalService.create(invalidUserId, request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(GoalErrorCode.USER_NOT_EXISTING.getMessage());
-    }
-
   }
 
   @Nested

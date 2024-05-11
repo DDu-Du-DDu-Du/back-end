@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.old.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.old.like.exception.LikeErrorCode;
 import com.ddudu.old.todo.domain.Todo;
 import com.ddudu.presentation.api.exception.InvalidParameterException;

@@ -1,10 +1,12 @@
-package com.ddudu.old.goal.domain;
+package com.ddudu.application.domain.goal.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.old.goal.exception.GoalErrorCode;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.util.List;
 import net.datafaker.Faker;
