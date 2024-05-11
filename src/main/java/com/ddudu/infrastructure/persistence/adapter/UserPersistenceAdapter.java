@@ -1,13 +1,17 @@
 package com.ddudu.infrastructure.persistence.adapter;
 
+import com.ddudu.application.domain.authentication.domain.RefreshToken;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.vo.AuthProvider;
 import com.ddudu.application.port.out.SignUpPort;
+import com.ddudu.application.port.out.TokenManipulationPort;
 import com.ddudu.application.port.out.UserLoaderPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.AuthProviderEntity;
+import com.ddudu.infrastructure.persistence.entity.RefreshTokenEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.auth.AuthProviderRepository;
+import com.ddudu.infrastructure.persistence.repository.token.RefreshTokenRepository;
 import com.ddudu.infrastructure.persistence.repository.user.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +19,11 @@ import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
 @RequiredArgsConstructor
-public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
+public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort, TokenManipulationPort {
 
   private final UserRepository userRepository;
   private final AuthProviderRepository authProviderRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
 
   @Override
   public User save(User user) {
@@ -53,6 +58,21 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
 
     return authProviderRepository.save(entity)
         .toDomain();
+  }
+
+  @Override
+  public Integer getNextFamilyOfUser(Long userId) {
+    Optional<RefreshTokenEntity> lastFamily = refreshTokenRepository.getLastFamilyByUserId(
+        userId);
+
+    return lastFamily.map(refreshTokenEntity -> refreshTokenEntity
+            .getFamily() + 1)
+        .orElse(1);
+  }
+
+  @Override
+  public void save(RefreshToken refreshToken) {
+    refreshTokenRepository.save(RefreshTokenEntity.from(refreshToken));
   }
 
 }

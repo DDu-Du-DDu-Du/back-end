@@ -6,6 +6,6 @@ public interface TokenManipulationPort {
 
   Integer getNextFamilyOfUser(Long userId);
 
-  RefreshToken save(RefreshToken refreshToken);
+  void save(RefreshToken refreshToken);
 
 }
