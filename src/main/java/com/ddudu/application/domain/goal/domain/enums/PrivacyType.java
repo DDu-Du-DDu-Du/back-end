@@ -9,10 +9,13 @@ public enum PrivacyType {
   PUBLIC;
 
   public static PrivacyType from(String value) {
-    String upperCaseValue = value.toUpperCase();
-
+    if (value == null) {
+      return PrivacyType.PRIVATE;
+    }
+    
     return Arrays.stream(PrivacyType.values())
-        .filter(providerType -> upperCaseValue.equals(providerType.name()))
+        .filter(providerType -> value.toUpperCase()
+            .equals(providerType.name()))
         .findFirst()
         .orElseThrow(
             () -> new IllegalArgumentException(GoalErrorCode.INVALID_PRIVACY_TYPE.getCodeName()));
