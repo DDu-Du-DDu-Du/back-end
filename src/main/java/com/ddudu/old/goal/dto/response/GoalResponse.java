@@ -1,8 +1,8 @@
 package com.ddudu.old.goal.dto.response;
 
-import com.ddudu.old.goal.domain.Goal;
-import com.ddudu.old.goal.domain.GoalStatus;
-import com.ddudu.old.goal.domain.PrivacyType;
+import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import lombok.Builder;
 
 @Builder

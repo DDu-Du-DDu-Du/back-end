@@ -1,10 +1,9 @@
-package com.ddudu.old.persistence.entity;
+package com.ddudu.infrastructure.persistence.entity;
 
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
+import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.old.common.BaseEntity;
-import com.ddudu.old.goal.domain.Goal;
-import com.ddudu.old.goal.domain.GoalStatus;
-import com.ddudu.old.goal.domain.PrivacyType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -73,8 +72,6 @@ public class GoalEntity extends BaseEntity {
         .status(goal.getStatus())
         .color(goal.getColor())
         .privacyType(goal.getPrivacyType())
-        .createdAt(goal.getCreatedAt())
-        .updatedAt(goal.getUpdatedAt())
         .build();
   }
 
@@ -86,8 +83,6 @@ public class GoalEntity extends BaseEntity {
         .status(status)
         .color(color)
         .privacyType(privacyType)
-        .createdAt(getCreatedAt())
-        .updatedAt(getUpdatedAt())
         .build();
   }
 

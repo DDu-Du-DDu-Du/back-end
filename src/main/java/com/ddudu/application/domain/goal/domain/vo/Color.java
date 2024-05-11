@@ -1,8 +1,8 @@
-package com.ddudu.old.goal.domain;
+package com.ddudu.application.domain.goal.domain.vo;
 
 import static io.micrometer.common.util.StringUtils.isBlank;
 
-import com.ddudu.old.goal.exception.GoalErrorCode;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.util.regex.Pattern;
 import lombok.Getter;

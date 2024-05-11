@@ -1,37 +1,42 @@
-package com.ddudu.old.goal.domain;
+package com.ddudu.application.domain.goal.domain;
 
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.domain.vo.Color;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.old.common.domain.BaseDomain;
-import com.ddudu.old.goal.exception.GoalErrorCode;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
-import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
-public class Goal extends BaseDomain {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Goal {
 
   private static final GoalStatus DEFAULT_STATUS = GoalStatus.IN_PROGRESS;
   private static final PrivacyType DEFAULT_PRIVACY_TYPE = PrivacyType.PRIVATE;
   private static final int MAX_NAME_LENGTH = 50;
 
+  @EqualsAndHashCode.Include
   private Long id;
   private String name;
   private User user;
   private GoalStatus status = DEFAULT_STATUS;
-  private Color color;
   private PrivacyType privacyType;
+
+  @Getter(AccessLevel.NONE)
+  private Color color;
 
   @Builder
   public Goal(
-      Long id, String name, User user, GoalStatus status, String color, PrivacyType privacyType,
-      LocalDateTime createdAt, LocalDateTime updatedAt
+      Long id, String name, User user, GoalStatus status, String color, PrivacyType privacyType
   ) {
-    super(createdAt, updatedAt);
     validate(name, user);
 
     this.id = id;
@@ -59,27 +64,6 @@ public class Goal extends BaseDomain {
 
   public boolean isCreatedByUser(Long userId) {
     return Objects.deepEquals(this.user.getId(), userId);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Goal goal = (Goal) o;
-    if (id != null) {
-      return id.equals(goal.id);
-    } else {
-      return super.equals(o);
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    return (id != null) ? id.hashCode() : super.hashCode();
   }
 
   private void validate(String name, User user) {

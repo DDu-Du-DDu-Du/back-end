@@ -1,7 +1,7 @@
 package com.ddudu.old.goal.dto.requset;
 
-import com.ddudu.old.goal.domain.GoalStatus;
-import com.ddudu.old.goal.domain.PrivacyType;
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

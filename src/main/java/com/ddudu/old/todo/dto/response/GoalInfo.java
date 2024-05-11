@@ -1,6 +1,6 @@
 package com.ddudu.old.todo.dto.response;
 
-import com.ddudu.old.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.Goal;
 import lombok.Builder;
 
 @Builder
