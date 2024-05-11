@@ -1,13 +1,15 @@
 package com.ddudu.presentation.api.controller;
 
-import com.ddudu.old.goal.dto.requset.CreateGoalRequest;
+import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
+import com.ddudu.application.domain.goal.dto.response.CreateGoalResponse;
+import com.ddudu.application.port.in.CreateGoalUseCase;
 import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.old.goal.dto.response.CreateGoalResponse;
 import com.ddudu.old.goal.dto.response.GoalResponse;
 import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.annotation.Login;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GoalController {
 
   private static final String GOALS_BASE_PATH = "/api/goals/";
+  private final CreateGoalUseCase createGoalUseCase;
 
   private final GoalService goalService;
 
@@ -47,15 +50,15 @@ public class GoalController {
           schema = @Schema(implementation = CreateGoalResponse.class)
       )
   )
-  @Deprecated
   public ResponseEntity<CreateGoalResponse> create(
       @Login
+      @Parameter(hidden = true)
       Long userId,
       @RequestBody
       @Valid
       CreateGoalRequest request
   ) {
-    CreateGoalResponse response = goalService.create(userId, request);
+    CreateGoalResponse response = createGoalUseCase.create(userId, request);
     URI uri = URI.create(GOALS_BASE_PATH + response.id());
 
     return ResponseEntity.created(uri)
