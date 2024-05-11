@@ -48,6 +48,20 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
     return Optional.of(user);
   }
 
+  @Override
+  public Optional<User> findById(Long id) {
+    Optional<UserEntity> userEntity = userRepository.findById(id);
+
+    if (userEntity.isEmpty()) {
+      return Optional.empty();
+    }
+
+    User user = userEntity.get()
+        .toDomain();
+
+    return Optional.of(user);
+  }
+
   private AuthProvider saveAuthProvider(AuthProvider authProvider, UserEntity user) {
     AuthProviderEntity entity = AuthProviderEntity.from(authProvider, user);
 
