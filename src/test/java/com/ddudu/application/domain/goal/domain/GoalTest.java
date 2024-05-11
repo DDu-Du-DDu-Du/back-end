@@ -7,9 +7,10 @@ import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.presentation.api.exception.InvalidParameterException;
+import com.ddudu.fixture.BaseFixture;
+import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.UserFixture;
 import java.util.List;
-import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -24,8 +25,6 @@ import org.junit.jupiter.params.provider.NullSource;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalTest {
 
-  static final Faker faker = new Faker();
-
   User user;
   String name;
   String color;
@@ -33,22 +32,14 @@ class GoalTest {
 
   @BeforeEach
   void setUp() {
-    user = createUser();
-    name = faker.lorem()
-        .word();
-    color = faker.color()
-        .hex()
-        .substring(1);
-    privacyType = PrivacyType.PUBLIC;
+    user = UserFixture.createRandomUserWithId();
+    name = BaseFixture.getRandomSentenceWithMax(50);
+    color = GoalFixture.getRandomColor();
+    privacyType = GoalFixture.getRandomPrivacyType();
   }
 
   @Nested
   class 목표_생성_테스트 {
-
-    private static List<String> provide51Letters() {
-      String longString = "a".repeat(51);
-      return List.of(longString);
-    }
 
     @Test
     void 목표를_생성할_수_있다() {
@@ -90,7 +81,7 @@ class GoalTest {
           .user(invalidUser)
           .build())
           .isInstanceOf(IllegalArgumentException.class)
-          .hasMessage("사용자는 필수값입니다.");
+          .hasMessage(GoalErrorCode.NULL_USER.getCodeName());
     }
 
     @ParameterizedTest
@@ -101,20 +92,20 @@ class GoalTest {
           .name(invalidName)
           .user(user)
           .build())
-          .isInstanceOf(InvalidParameterException.class)
-          .hasMessage(GoalErrorCode.BLANK_NAME.getMessage());
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessage(GoalErrorCode.BLANK_NAME.getCodeName());
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
-    @MethodSource("provide51Letters")
+    @MethodSource("getLongerThan50Characters")
     void 목표명은_50자를_초과할_수_없다(String longName) {
       // when then
       assertThatThrownBy(() -> Goal.builder()
           .name(longName)
           .user(user)
           .build())
-          .isInstanceOf(InvalidParameterException.class)
-          .hasMessage(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getMessage());
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessage(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
     }
 
     @ParameterizedTest
@@ -135,7 +126,7 @@ class GoalTest {
     @Test
     void 색상_코드는_6자리_16진수_포맷을_따라야_한다() {
       // given
-      String invalidColor = "19191!";
+      String invalidColor = GoalFixture.getRandomFixedSentence(6);
 
       // when then
       assertThatThrownBy(() ->
@@ -145,9 +136,13 @@ class GoalTest {
               .color(invalidColor)
               .build()
       )
-          .isInstanceOf(InvalidParameterException.class)
-          .hasMessage(GoalErrorCode.INVALID_COLOR_FORMAT.getMessage());
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessage(GoalErrorCode.INVALID_COLOR_FORMAT.getCodeName());
 
+    }
+
+    private static List<String> getLongerThan50Characters() {
+      return List.of(BaseFixture.getRandomSentence(50, 100));
     }
 
   }
@@ -158,11 +153,11 @@ class GoalTest {
     @Test
     void 목표명_색상_상태_공개_설정을_수정_할_수_있다() {
       // given
-      Goal goal = createGoal();
-      String changedName = "데브 코스";
-      String changedColor = "999999";
-      GoalStatus changedStatus = GoalStatus.DONE;
-      PrivacyType changedPrivacyType = PrivacyType.PUBLIC;
+      Goal goal = GoalFixture.createRandomGoal();
+      String changedName = GoalFixture.getRandomSentenceWithMax(50);
+      String changedColor = GoalFixture.getRandomColor();
+      GoalStatus changedStatus = GoalFixture.getRandomGoalStatus();
+      PrivacyType changedPrivacyType = GoalFixture.getRandomPrivacyType();
 
       // when
       goal.applyGoalUpdates(changedName, changedStatus, changedColor, changedPrivacyType);
@@ -172,27 +167,6 @@ class GoalTest {
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 
-  }
-
-  private User createUser() {
-    String email = faker.internet()
-        .emailAddress();
-    String password = faker.internet()
-        .password(8, 40, true, true, true);
-    String nickname = faker.oscarMovie()
-        .character();
-
-    return User.builder()
-        .build();
-  }
-
-  private Goal createGoal() {
-    return Goal.builder()
-        .name(name)
-        .user(user)
-        .color(color)
-        .privacyType(PrivacyType.PRIVATE)
-        .build();
   }
 
 }
