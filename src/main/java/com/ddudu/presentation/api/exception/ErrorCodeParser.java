@@ -1,10 +1,10 @@
 package com.ddudu.presentation.api.exception;
 
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.application.exception.DefaultErrorCode;
 import com.ddudu.application.exception.ErrorCode;
-import com.ddudu.old.goal.exception.GoalErrorCode;
 import com.ddudu.old.like.exception.LikeErrorCode;
 import com.ddudu.old.todo.exception.TodoErrorCode;
 import com.ddudu.old.user.exception.FollowingErrorCode;
