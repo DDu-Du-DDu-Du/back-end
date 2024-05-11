@@ -52,7 +52,7 @@ public class SocialLoginService implements SocialLoginUseCase {
 
     tokenManipulationPort.save(refreshToken);
 
-    return new TokenResponse(accessToken, refreshToken.getHashedToken());
+    return new TokenResponse(accessToken, refreshToken.getTokenValue());
   }
 
 }
