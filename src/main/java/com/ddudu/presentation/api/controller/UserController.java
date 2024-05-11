@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.controller;
 
-import com.ddudu.application.domain.user.exception.UserErrorCode;
+import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import com.ddudu.old.user.dto.request.FollowRequest;
@@ -234,7 +234,7 @@ public class UserController {
 
   private void checkAuthority(Long loginId, Long id) {
     if (!Objects.equals(loginId, id)) {
-      throw new ForbiddenException(UserErrorCode.INVALID_AUTHORITY);
+      throw new ForbiddenException(AuthErrorCode.INVALID_AUTHORITY);
     }
   }
 
