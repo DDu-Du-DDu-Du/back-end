@@ -1,6 +1,6 @@
-package com.ddudu.old.goal.dto.response;
+package com.ddudu.application.domain.goal.dto.response;
 
-import com.ddudu.old.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.Goal;
 import lombok.Builder;
 
 @Builder
