@@ -1,11 +1,11 @@
-package com.ddudu.old.persistence.dao.goal;
+package com.ddudu.infrastructure.persistence.repository.goal;
 
-import static com.ddudu.old.persistence.entity.QGoalEntity.goalEntity;
+import static com.ddudu.infrastructure.persistence.entity.QGoalEntity.goalEntity;
 
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
-import com.ddudu.old.goal.domain.GoalStatus;
-import com.ddudu.old.goal.domain.PrivacyType;
-import com.ddudu.old.persistence.entity.GoalEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -13,11 +13,11 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class GoalDaoImpl implements GoalDaoCustom {
+public class GoalQueryRepositoryImpl implements GoalQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
 
-  public GoalDaoImpl(EntityManager em) {
+  public GoalQueryRepositoryImpl(EntityManager em) {
     this.jpaQueryFactory = new JPAQueryFactory(em);
   }
 

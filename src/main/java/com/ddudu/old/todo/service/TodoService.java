@@ -1,9 +1,10 @@
 package com.ddudu.old.todo.service;
 
+import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.old.goal.domain.Goal;
-import com.ddudu.old.goal.domain.GoalRepository;
-import com.ddudu.old.goal.domain.PrivacyType;
+import com.ddudu.application.exception.ErrorCode;
+import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.Todo;
@@ -19,7 +20,6 @@ import com.ddudu.old.todo.exception.TodoErrorCode;
 import com.ddudu.old.user.domain.FollowingRepository;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -43,7 +43,7 @@ import org.springframework.validation.annotation.Validated;
 public class TodoService {
 
   private final TodoRepository todoRepository;
-  private final GoalRepository goalRepository;
+  private final OldGoalRepository oldGoalRepository;
   private final UserRepository userRepository;
   private final FollowingRepository followingRepository;
   private final LikeRepository likeRepository;
@@ -81,7 +81,7 @@ public class TodoService {
     User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
     User user = determineUser(loginId, userId, loginUser);
 
-    List<Goal> goals = goalRepository.findAllByUserAndPrivacyTypes(
+    List<Goal> goals = oldGoalRepository.findAllByUserAndPrivacyTypes(
         user, determinePrivacyTypes(loginUser, user));
 
     List<Todo> todos = todoRepository.findTodosByDate(
@@ -201,7 +201,7 @@ public class TodoService {
   }
 
   private Goal findGoal(Long goalId, ErrorCode errorCode) {
-    return goalRepository.findById(goalId)
+    return oldGoalRepository.findById(goalId)
         .orElseThrow(() -> new DataNotFoundException(errorCode));
   }
 

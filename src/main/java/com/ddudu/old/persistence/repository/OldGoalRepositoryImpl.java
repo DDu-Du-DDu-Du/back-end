@@ -1,12 +1,12 @@
 package com.ddudu.old.persistence.repository;
 
+import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
-import com.ddudu.old.goal.domain.Goal;
-import com.ddudu.old.goal.domain.GoalRepository;
-import com.ddudu.old.goal.domain.PrivacyType;
-import com.ddudu.old.persistence.dao.goal.GoalDao;
-import com.ddudu.old.persistence.entity.GoalEntity;
+import com.ddudu.infrastructure.persistence.repository.goal.GoalRepository;
+import com.ddudu.old.goal.domain.OldGoalRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class GoalRepositoryImpl implements GoalRepository {
+public class OldGoalRepositoryImpl implements OldGoalRepository {
 
-  private final GoalDao goalDao;
+  private final GoalRepository goalDao;
 
   @Override
   public Goal save(Goal goal) {
