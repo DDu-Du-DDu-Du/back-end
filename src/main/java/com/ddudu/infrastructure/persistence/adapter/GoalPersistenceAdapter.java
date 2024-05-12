@@ -2,6 +2,7 @@ package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.port.out.DeleteGoalPort;
 import com.ddudu.application.port.out.GoalLoaderPort;
 import com.ddudu.application.port.out.SaveGoalPort;
 import com.ddudu.application.port.out.UpdateGoalPort;
@@ -15,7 +16,8 @@ import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
 @RequiredArgsConstructor
-public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, UpdateGoalPort {
+public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, UpdateGoalPort,
+    DeleteGoalPort {
 
   private final GoalRepository goalRepository;
 
@@ -43,6 +45,11 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   public Goal update(Goal goal) {
     return goalRepository.save(GoalEntity.from(goal))
         .toDomain();
+  }
+
+  @Override
+  public void delete(Goal goal) {
+    goalRepository.delete(GoalEntity.from(goal));
   }
 
 }
