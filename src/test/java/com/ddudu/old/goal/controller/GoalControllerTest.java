@@ -15,10 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.old.goal.dto.response.GoalResponse;
-import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.controller.GoalController;
 import com.ddudu.presentation.api.exception.DataNotFoundException;

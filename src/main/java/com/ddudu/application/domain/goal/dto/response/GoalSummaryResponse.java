@@ -1,4 +1,4 @@
-package com.ddudu.old.goal.dto.response;
+package com.ddudu.application.domain.goal.dto.response;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import lombok.Builder;

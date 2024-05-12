@@ -1,13 +1,13 @@
 package com.ddudu.old.goal.service;
 
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.old.goal.dto.response.GoalResponse;
-import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.ForbiddenException;
