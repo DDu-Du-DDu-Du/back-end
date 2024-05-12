@@ -10,6 +10,7 @@ import com.ddudu.application.port.out.GoalLoaderPort;
 import com.ddudu.application.port.out.UserLoaderPort;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -44,7 +45,7 @@ public class RetrieveGoalService implements RetrieveGoalUseCase {
 
   private void checkAuthority(User user, Goal goal) {
     if (!goal.isCreatedBy(user.getId())) {
-      throw new EntityNotFoundException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
+      throw new AccessDeniedException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
     }
   }
 
