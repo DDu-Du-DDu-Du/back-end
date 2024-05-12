@@ -2,17 +2,19 @@ package com.ddudu.presentation.api.controller;
 
 import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
 import com.ddudu.application.domain.goal.dto.response.CreateGoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.CreateGoalUseCase;
 import com.ddudu.application.port.in.RetrieveAllGoalsUseCase;
+import com.ddudu.application.port.in.RetrieveGoalUseCase;
 import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.old.goal.dto.response.GoalResponse;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,6 +46,7 @@ public class GoalController {
   private static final String GOALS_BASE_PATH = "/api/goals/";
   private final CreateGoalUseCase createGoalUseCase;
   private final RetrieveAllGoalsUseCase retrieveAllGoalsUseCase;
+  private final RetrieveGoalUseCase retrieveGoalUseCase;
 
   private final GoalService goalService;
 
@@ -105,14 +108,15 @@ public class GoalController {
           schema = @Schema(implementation = GoalResponse.class)
       )
   )
-  @Deprecated
+  @Parameter(name = "id", description = "조회할 목표의 식별자", in = ParameterIn.PATH)
   public ResponseEntity<GoalResponse> getById(
       @Login
+      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id
   ) {
-    GoalResponse response = goalService.findById(loginId, id);
+    GoalResponse response = retrieveGoalUseCase.getById(loginId, id);
 
     return ResponseEntity.ok(response);
   }
@@ -126,6 +130,7 @@ public class GoalController {
           array = @ArraySchema(schema = @Schema(implementation = GoalSummaryResponse.class))
       )
   )
+  @Parameter(name = "userId", description = "조회할 목표의 소유자", in = ParameterIn.QUERY)
   public ResponseEntity<List<GoalSummaryResponse>> getAllByUser(
       @Login
       @Parameter(hidden = true)
@@ -133,7 +138,6 @@ public class GoalController {
       @RequestParam
       Long userId
   ) {
-
     checkAuthority(loginId, userId);
     List<GoalSummaryResponse> response = retrieveAllGoalsUseCase.findAllByUser(userId);
 
