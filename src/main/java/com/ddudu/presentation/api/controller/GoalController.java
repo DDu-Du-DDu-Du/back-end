@@ -2,14 +2,18 @@ package com.ddudu.presentation.api.controller;
 
 import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
 import com.ddudu.application.domain.goal.dto.response.CreateGoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.CreateGoalUseCase;
+import com.ddudu.application.port.in.RetrieveAllGoalsUseCase;
 import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.old.goal.dto.response.GoalResponse;
-import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.annotation.Login;
+import com.ddudu.presentation.api.exception.ForbiddenException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +43,7 @@ public class GoalController {
 
   private static final String GOALS_BASE_PATH = "/api/goals/";
   private final CreateGoalUseCase createGoalUseCase;
+  private final RetrieveAllGoalsUseCase retrieveAllGoalsUseCase;
 
   private final GoalService goalService;
 
@@ -117,17 +123,19 @@ public class GoalController {
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalSummaryResponse.class)
+          array = @ArraySchema(schema = @Schema(implementation = GoalSummaryResponse.class))
       )
   )
-  @Deprecated
   public ResponseEntity<List<GoalSummaryResponse>> getAllByUser(
       @Login
+      @Parameter(hidden = true)
       Long loginId,
       @RequestParam
       Long userId
   ) {
-    List<GoalSummaryResponse> response = goalService.findAllByUser(loginId, userId);
+
+    checkAuthority(loginId, userId);
+    List<GoalSummaryResponse> response = retrieveAllGoalsUseCase.findAllByUser(userId);
 
     return ResponseEntity.ok(response);
   }
@@ -152,6 +160,12 @@ public class GoalController {
 
     return ResponseEntity.noContent()
         .build();
+  }
+
+  private void checkAuthority(Long loginId, Long id) {
+    if (!Objects.equals(loginId, id)) {
+      throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
+    }
   }
 
 }
