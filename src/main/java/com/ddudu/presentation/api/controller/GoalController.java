@@ -7,10 +7,10 @@ import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.CreateGoalUseCase;
+import com.ddudu.application.port.in.DeleteGoalUseCase;
 import com.ddudu.application.port.in.RetrieveAllGoalsUseCase;
 import com.ddudu.application.port.in.RetrieveGoalUseCase;
 import com.ddudu.application.port.in.UpdateGoalUseCase;
-import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,12 +45,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class GoalController {
 
   private static final String GOALS_BASE_PATH = "/api/goals/";
+
   private final CreateGoalUseCase createGoalUseCase;
   private final RetrieveAllGoalsUseCase retrieveAllGoalsUseCase;
   private final RetrieveGoalUseCase retrieveGoalUseCase;
   private final UpdateGoalUseCase updateGoalUseCase;
-
-  private final GoalService goalService;
+  private final DeleteGoalUseCase deleteGoalUseCase;
 
   @PostMapping
   @Operation(summary = "목표 생성")
@@ -156,14 +156,15 @@ public class GoalController {
   @ApiResponse(
       responseCode = "204"
   )
-  @Deprecated
+  @Parameter(name = "id", description = "삭제할 목표의 식별자", in = ParameterIn.PATH)
   public ResponseEntity<Void> delete(
       @Login
+      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id
   ) {
-    goalService.delete(loginId, id);
+    deleteGoalUseCase.delete(loginId, id);
 
     return ResponseEntity.noContent()
         .build();
