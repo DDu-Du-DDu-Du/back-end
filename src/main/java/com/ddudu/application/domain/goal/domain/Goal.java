@@ -61,8 +61,8 @@ public class Goal {
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
   }
 
-  public boolean isCreatedByUser(Long userId) {
-    return Objects.deepEquals(this.user.getId(), userId);
+  public boolean isCreatedBy(Long userId) {
+    return Objects.equals(this.user.getId(), userId);
   }
 
   private void validate(String name, User user) {

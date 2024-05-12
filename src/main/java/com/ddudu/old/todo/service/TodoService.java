@@ -217,7 +217,7 @@ public class TodoService {
   }
 
   private void checkGoalPermission(Long userId, Goal goal) {
-    if (!goal.isCreatedByUser(userId)) {
+    if (!goal.isCreatedBy(userId)) {
       throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
     }
   }

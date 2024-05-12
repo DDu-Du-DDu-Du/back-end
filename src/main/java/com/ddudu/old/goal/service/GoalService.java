@@ -72,7 +72,7 @@ public class GoalService {
   }
 
   private void checkPermission(Long loginId, Goal goal) {
-    if (!goal.isCreatedByUser(loginId)) {
+    if (!goal.isCreatedBy(loginId)) {
       throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
     }
   }
