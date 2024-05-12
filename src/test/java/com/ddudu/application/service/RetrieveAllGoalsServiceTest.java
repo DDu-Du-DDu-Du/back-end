@@ -71,8 +71,7 @@ class RetrieveAllGoalsServiceTest {
           .containsExactly(goals.get(i)
               .getId(), goals.get(i)
               .getName(), goals.get(i)
-              .getStatus()
-              .name(), goals.get(i)
+              .getStatus(), goals.get(i)
               .getColor());
     }
   }

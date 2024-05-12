@@ -237,7 +237,7 @@ class GoalControllerTest extends ControllerTestSupport {
       GoalSummaryResponse goalSummaryResponse = GoalSummaryResponse.builder()
           .id(goalId)
           .name(name)
-          .status(GoalStatus.IN_PROGRESS.name())
+          .status(GoalStatus.IN_PROGRESS)
           .color(color)
           .build();
 
