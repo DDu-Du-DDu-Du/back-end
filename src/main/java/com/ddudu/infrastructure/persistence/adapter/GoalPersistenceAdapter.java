@@ -4,6 +4,7 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.GoalLoaderPort;
 import com.ddudu.application.port.out.SaveGoalPort;
+import com.ddudu.application.port.out.UpdateGoalPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
@@ -14,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
 @RequiredArgsConstructor
-public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort {
+public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, UpdateGoalPort {
 
   private final GoalRepository goalRepository;
 
@@ -36,6 +37,12 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort {
         .stream()
         .map(GoalEntity::toDomain)
         .toList();
+  }
+
+  @Override
+  public Goal update(Goal goal) {
+    return goalRepository.save(GoalEntity.from(goal))
+        .toDomain();
   }
 
 }
