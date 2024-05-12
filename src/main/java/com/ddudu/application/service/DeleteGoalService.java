@@ -5,8 +5,8 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.DeleteGoalUseCase;
+import com.ddudu.application.port.out.DeleteGoalPort;
 import com.ddudu.application.port.out.GoalLoaderPort;
-import com.ddudu.application.port.out.UpdateGoalPort;
 import com.ddudu.application.port.out.UserLoaderPort;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class DeleteGoalService implements DeleteGoalUseCase {
 
   private final UserLoaderPort userLoaderPort;
   private final GoalLoaderPort goalLoaderPort;
-  private final UpdateGoalPort updateGoalPort;
+  private final DeleteGoalPort deleteGoalPort;
 
   @Override
   public void delete(Long userId, Long id) {
@@ -28,7 +28,8 @@ public class DeleteGoalService implements DeleteGoalUseCase {
     Goal goal = findGoal(id);
 
     checkAuthority(user, goal);
-    // TODO: 목표 삭제
+
+    deleteGoalPort.delete(goal);
   }
 
   private User findUser(Long userId) {
