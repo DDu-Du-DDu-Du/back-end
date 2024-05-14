@@ -27,13 +27,12 @@ public class AuthDomainService {
   }
 
   public RefreshToken createRefreshToken(User user, Integer family) {
-    Long userId = user.getId();
-    Map<String, Object> claim = Collections.singletonMap("sub", userId);
+    String userFamily = user.getId() + " " + family;
+    Map<String, Object> claim = Collections.singletonMap("sub", userFamily);
     String tokenValue = jwtIssuer.issue(claim, Duration.ZERO);
 
     return RefreshToken.builder()
-        .family(family)
-        .userId(userId)
+        .userFamilyValue(userFamily)
         .tokenValue(tokenValue)
         .build();
   }
