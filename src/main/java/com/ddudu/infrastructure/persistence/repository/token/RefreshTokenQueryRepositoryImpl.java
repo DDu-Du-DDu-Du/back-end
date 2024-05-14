@@ -20,8 +20,8 @@ public class RefreshTokenQueryRepositoryImpl implements RefreshTokenQueryReposit
   @Override
   public Optional<RefreshTokenEntity> getLastFamilyByUserId(Long userId) {
     return jpaQueryFactory.selectFrom(refreshTokenEntity)
-        .where(refreshTokenEntity.userId.eq(userId))
-        .orderBy(refreshTokenEntity.family.desc())
+        .where(refreshTokenEntity.refreshTokenId.userId.eq(userId))
+        .orderBy(refreshTokenEntity.refreshTokenId.family.desc())
         .limit(1)
         .stream()
         .findFirst();
