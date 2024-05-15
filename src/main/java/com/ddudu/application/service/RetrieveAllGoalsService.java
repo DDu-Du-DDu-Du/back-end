@@ -7,8 +7,8 @@ import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.RetrieveAllGoalsUseCase;
 import com.ddudu.application.port.out.GoalLoaderPort;
 import com.ddudu.application.port.out.UserLoaderPort;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +33,11 @@ public class RetrieveAllGoalsService implements RetrieveAllGoalsUseCase {
   private User findUser(Long userId) {
     return userLoaderPort.findById(userId)
         .orElseThrow(
-            () -> new EntityNotFoundException(GoalErrorCode.USER_NOT_EXISTING.getCodeName()));
+            () -> new MissingResourceException(
+                GoalErrorCode.USER_NOT_EXISTING.getCodeName(),
+                User.class.getName(),
+                userId.toString()
+            ));
   }
 
 }
