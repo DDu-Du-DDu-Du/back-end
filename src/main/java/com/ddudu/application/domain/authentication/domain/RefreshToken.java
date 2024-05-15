@@ -4,19 +4,26 @@ import com.ddudu.application.domain.authentication.domain.vo.UserFamily;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode
 public class RefreshToken {
+
+  @EqualsAndHashCode.Exclude
+  private final Long id;
 
   @Getter(AccessLevel.NONE)
   private final UserFamily userFamily;
   private final String tokenValue;
 
   @Builder
-  private RefreshToken(String tokenValue, UserFamily userFamily, String userFamilyValue) {
+  private RefreshToken(Long id, String tokenValue, UserFamily userFamily, Long userId, int family) {
+    this.id = id;
     this.userFamily = Objects.requireNonNullElseGet(userFamily, () -> UserFamily.builder()
-        .userFamilyValue(userFamilyValue)
+        .userId(userId)
+        .family(family)
         .build());
     this.tokenValue = tokenValue;
   }
@@ -27,6 +34,14 @@ public class RefreshToken {
 
   public int getFamily() {
     return userFamily.getFamily();
+  }
+
+  public boolean isMostRecentInFamily(Long id) {
+    return Objects.equals(this.id, id);
+  }
+
+  public boolean hasSameTokenValue(String tokenValue) {
+    return this.tokenValue.equals(tokenValue);
   }
 
 }
