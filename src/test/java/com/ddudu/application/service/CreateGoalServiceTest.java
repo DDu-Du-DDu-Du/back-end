@@ -18,8 +18,8 @@ import com.ddudu.application.port.out.UserLoaderPort;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.MissingResourceException;
 import java.util.Optional;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -145,7 +145,7 @@ class CreateGoalServiceTest {
     ThrowingCallable create = () -> createGoalService.create(invalidUserId, request);
 
     // then
-    assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(create)
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(create)
         .withMessage(GoalErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
