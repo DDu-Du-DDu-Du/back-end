@@ -10,10 +10,8 @@ import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.UpdateGoalUseCase;
 import com.ddudu.application.port.out.GoalLoaderPort;
 import com.ddudu.application.port.out.UpdateGoalPort;
-import com.ddudu.application.port.out.UserLoaderPort;
-import jakarta.persistence.EntityNotFoundException;
+import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -21,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UpdateGoalService implements UpdateGoalUseCase {
 
-  private final UserLoaderPort userLoaderPort;
   private final GoalLoaderPort goalLoaderPort;
   private final UpdateGoalPort updateGoalPort;
 
@@ -44,12 +41,16 @@ public class UpdateGoalService implements UpdateGoalUseCase {
   private Goal findGoal(Long id) {
     return goalLoaderPort.findById(id)
         .orElseThrow(
-            () -> new EntityNotFoundException(GoalErrorCode.ID_NOT_EXISTING.getCodeName()));
+            () -> new MissingResourceException(
+                GoalErrorCode.ID_NOT_EXISTING.getCodeName(),
+                Goal.class.getName(),
+                String.valueOf(id)
+            ));
   }
 
   private void checkAuthority(Long userId, Goal goal) {
     if (!goal.isCreatedBy(userId)) {
-      throw new AccessDeniedException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
+      throw new SecurityException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
     }
   }
 
