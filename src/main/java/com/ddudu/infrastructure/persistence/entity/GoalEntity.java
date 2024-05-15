@@ -86,4 +86,14 @@ public class GoalEntity extends BaseEntity {
         .build();
   }
 
+  public GoalEntity update(Goal goal) {
+    this.name = goal.getName();
+    this.user = UserEntity.from(goal.getUser());
+    this.status = goal.getStatus();
+    this.color = goal.getColor();
+    this.privacyType = goal.getPrivacyType();
+
+    return this;
+  }
+
 }

@@ -9,6 +9,7 @@ import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.goal.GoalRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,12 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
 
   @Override
   public Goal update(Goal goal) {
-    return goalRepository.save(GoalEntity.from(goal))
-        .toDomain();
+    GoalEntity goalEntity = goalRepository.findById(goal.getId())
+        .orElseThrow(() -> new EntityNotFoundException("3004 ID_NOT_EXISTING"));
+
+    goalEntity.update(goal);
+
+    return goalEntity.toDomain();
   }
 
 }
