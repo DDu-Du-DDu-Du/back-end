@@ -10,8 +10,8 @@ import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.CreateGoalUseCase;
 import com.ddudu.application.port.out.SaveGoalPort;
 import com.ddudu.application.port.out.UserLoaderPort;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 
 @UseCase
@@ -35,7 +35,11 @@ public class CreateGoalService implements CreateGoalUseCase {
   private User findUser(Long userId) {
     return userLoaderPort.findById(userId)
         .orElseThrow(
-            () -> new EntityNotFoundException(GoalErrorCode.USER_NOT_EXISTING.getCodeName()));
+            () -> new MissingResourceException(
+                GoalErrorCode.USER_NOT_EXISTING.getCodeName(),
+                User.class.getName(),
+                userId.toString()
+            ));
   }
 
 }
