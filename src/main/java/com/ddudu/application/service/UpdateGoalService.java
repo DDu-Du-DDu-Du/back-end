@@ -31,14 +31,14 @@ public class UpdateGoalService implements UpdateGoalUseCase {
 
     checkAuthority(userId, goal);
 
-    goal.applyGoalUpdates(
+    Goal updated = goal.applyGoalUpdates(
         request.name(),
         GoalStatus.from(request.status()),
         request.color(),
         PrivacyType.from(request.privacyType())
     );
 
-    return GoalResponse.from(updateGoalPort.update(goal));
+    return GoalResponse.from(updateGoalPort.update(updated));
   }
 
   private Goal findGoal(Long id) {
