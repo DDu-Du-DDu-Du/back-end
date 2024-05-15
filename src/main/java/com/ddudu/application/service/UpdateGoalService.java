@@ -7,7 +7,6 @@ import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
-import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.UpdateGoalUseCase;
 import com.ddudu.application.port.out.GoalLoaderPort;
 import com.ddudu.application.port.out.UpdateGoalPort;
@@ -28,10 +27,9 @@ public class UpdateGoalService implements UpdateGoalUseCase {
 
   @Override
   public GoalResponse update(Long userId, Long id, UpdateGoalRequest request) {
-    User user = findUser(userId);
     Goal goal = findGoal(id);
 
-    checkAuthority(user, goal);
+    checkAuthority(userId, goal);
 
     goal.applyGoalUpdates(
         request.name(),
@@ -43,20 +41,14 @@ public class UpdateGoalService implements UpdateGoalUseCase {
     return GoalResponse.from(updateGoalPort.update(goal));
   }
 
-  private User findUser(Long userId) {
-    return userLoaderPort.findById(userId)
-        .orElseThrow(
-            () -> new EntityNotFoundException(GoalErrorCode.USER_NOT_EXISTING.getCodeName()));
-  }
-
   private Goal findGoal(Long id) {
     return goalLoaderPort.findById(id)
         .orElseThrow(
             () -> new EntityNotFoundException(GoalErrorCode.ID_NOT_EXISTING.getCodeName()));
   }
 
-  private void checkAuthority(User user, Goal goal) {
-    if (!goal.isCreatedBy(user.getId())) {
+  private void checkAuthority(Long userId, Goal goal) {
+    if (!goal.isCreatedBy(userId)) {
       throw new AccessDeniedException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
     }
   }
