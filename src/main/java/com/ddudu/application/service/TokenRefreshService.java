@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional
+@Transactional(dontRollbackOn = UnsupportedOperationException.class)
 public class TokenRefreshService implements TokenRefreshUseCase {
 
   private final TokenLoaderPort tokenLoaderPort;
@@ -50,6 +50,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
 
     return new TokenResponse(accessToken, newRefreshToken.getTokenValue());
   }
+
 
   private void validateNotUsed(List<RefreshToken> tokenFamily, RefreshToken refreshToken) {
     if (tokenFamily.size() == 1) {
