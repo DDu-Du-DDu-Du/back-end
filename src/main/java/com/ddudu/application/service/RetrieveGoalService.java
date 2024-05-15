@@ -4,7 +4,6 @@ import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
-import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.RetrieveGoalUseCase;
 import com.ddudu.application.port.out.GoalLoaderPort;
 import com.ddudu.application.port.out.UserLoaderPort;
@@ -23,18 +22,11 @@ public class RetrieveGoalService implements RetrieveGoalUseCase {
 
   @Override
   public GoalResponse getById(Long userId, Long id) {
-    User user = findUser(userId);
     Goal goal = findGoal(id);
 
-    checkAuthority(user, goal);
+    checkAuthority(userId, goal);
 
     return GoalResponse.from(goal);
-  }
-
-  private User findUser(Long userId) {
-    return userLoaderPort.findById(userId)
-        .orElseThrow(
-            () -> new EntityNotFoundException(GoalErrorCode.USER_NOT_EXISTING.getCodeName()));
   }
 
   private Goal findGoal(Long id) {
