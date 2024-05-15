@@ -1,7 +1,6 @@
 package com.ddudu.old.goal.service;
 
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
@@ -36,7 +35,6 @@ public class GoalService {
 
     goal.applyGoalUpdates(
         request.name(),
-        GoalStatus.from(request.status()),
         request.color(),
         PrivacyType.from(request.privacyType())
     );

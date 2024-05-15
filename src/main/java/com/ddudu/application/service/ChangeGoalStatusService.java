@@ -2,11 +2,11 @@ package com.ddudu.application.service;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
-import com.ddudu.application.port.in.UpdateGoalUseCase;
+import com.ddudu.application.port.in.ChangeGoalStatusUseCase;
 import com.ddudu.application.port.out.GoalLoaderPort;
 import com.ddudu.application.port.out.UpdateGoalPort;
 import java.util.MissingResourceException;
@@ -16,22 +16,18 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class UpdateGoalService implements UpdateGoalUseCase {
+public class ChangeGoalStatusService implements ChangeGoalStatusUseCase {
 
   private final GoalLoaderPort goalLoaderPort;
   private final UpdateGoalPort updateGoalPort;
 
   @Override
-  public GoalResponse update(Long userId, Long id, UpdateGoalRequest request) {
+  public GoalResponse changeStatus(Long userId, Long id, ChangeGoalStatusRequest request) {
     Goal goal = findGoal(id);
 
     checkAuthority(userId, goal);
 
-    Goal updated = goal.applyGoalUpdates(
-        request.name(),
-        request.color(),
-        PrivacyType.from(request.privacyType())
-    );
+    Goal updated = goal.changeStatus(GoalStatus.from(request.status()));
 
     return GoalResponse.from(updateGoalPort.update(updated));
   }

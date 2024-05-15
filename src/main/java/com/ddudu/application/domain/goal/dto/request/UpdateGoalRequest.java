@@ -8,8 +8,6 @@ public record UpdateGoalRequest(
     @NotBlank(message = "3001 BLANK_NAME")
     @Size(max = 50, message = "3002 EXCESSIVE_NAME_LENGTH")
     String name,
-    @NotNull(message = "3005 NULL_STATUS")
-    String status,
     @NotBlank(message = "3006 BLANK_COLOR")
     @Size(max = 6, message = "3003 INVALID_COLOR_FORMAT")
     String color,
