@@ -3,12 +3,15 @@ package com.ddudu.application.domain.authentication.service;
 import com.ddudu.application.annotation.DomainService;
 import com.ddudu.application.config.properties.JwtProperties;
 import com.ddudu.application.domain.authentication.domain.RefreshToken;
+import com.ddudu.application.domain.authentication.domain.vo.UserFamily;
 import com.ddudu.application.domain.user.domain.User;
 import com.google.common.collect.Maps;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 @DomainService
 @RequiredArgsConstructor
@@ -16,6 +19,7 @@ public class AuthDomainService {
 
   private final JwtProperties jwtProperties;
   private final JwtIssuer jwtIssuer;
+  private final JwtDecoder jwtDecoder;
 
   public String createAccessToken(User user) {
     Map<String, Object> claims = Maps.newHashMap();
@@ -27,13 +31,28 @@ public class AuthDomainService {
   }
 
   public RefreshToken createRefreshToken(User user, Integer family) {
-    String userFamily = user.getId() + " " + family;
-    Map<String, Object> claim = Collections.singletonMap("sub", userFamily);
+    UserFamily userFamily = UserFamily.builder()
+        .userId(user.getId())
+        .family(family)
+        .build();
+    Map<String, Object> claim = Collections.singletonMap("sub", userFamily.getUserFamilyValue());
     String tokenValue = jwtIssuer.issue(claim, Duration.ZERO);
 
     return RefreshToken.builder()
-        .userFamilyValue(userFamily)
         .tokenValue(tokenValue)
+        .userFamily(userFamily)
+        .build();
+  }
+
+  public RefreshToken decodeRequestRefreshToken(String refreshToken) {
+    Jwt jwt = jwtDecoder.decode(refreshToken);
+    UserFamily userFamily = UserFamily.builderWithString()
+        .userFamilyValue(jwt.getClaimAsString("sub"))
+        .buildWithString();
+
+    return RefreshToken.builder()
+        .userFamily(userFamily)
+        .tokenValue(refreshToken)
         .build();
   }
 
