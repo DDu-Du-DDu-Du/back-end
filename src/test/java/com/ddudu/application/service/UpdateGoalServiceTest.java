@@ -16,8 +16,8 @@ import com.ddudu.application.port.out.UserLoaderPort;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.MissingResourceException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -25,7 +25,6 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.access.AccessDeniedException;
 
 @SpringBootTest
 @Transactional
@@ -88,7 +87,7 @@ class UpdateGoalServiceTest {
     ThrowingCallable update = () -> updateGoalService.update(userId, invalidId, request);
 
     // then
-    assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(update)
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(update)
         .withMessage(GoalErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
@@ -102,7 +101,7 @@ class UpdateGoalServiceTest {
         anotherUser.getId(), goal.getId(), request);
 
     // then
-    assertThatExceptionOfType(AccessDeniedException.class).isThrownBy(update)
+    assertThatExceptionOfType(SecurityException.class).isThrownBy(update)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
