@@ -1,9 +1,11 @@
 package com.ddudu.presentation.api.controller;
 
 import com.ddudu.application.domain.authentication.dto.request.SocialRequest;
+import com.ddudu.application.domain.authentication.dto.request.TokenRefreshRequest;
 import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
 import com.ddudu.application.domain.user.domain.enums.ProviderType;
 import com.ddudu.application.port.in.SocialLoginUseCase;
+import com.ddudu.application.port.in.TokenRefreshUseCase;
 import com.ddudu.old.auth.dto.response.MeResponse;
 import com.ddudu.old.auth.service.AuthService;
 import com.ddudu.presentation.api.annotation.Login;
@@ -22,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
   private final SocialLoginUseCase socialLoginUseCase;
+  private final TokenRefreshUseCase tokenRefreshUseCase;
   private final AuthService authService;
 
   @PostMapping("/login/{providerType}")
@@ -62,6 +66,24 @@ public class AuthController {
   ) {
     SocialRequest request = new SocialRequest(socialToken, providerType);
     TokenResponse response = socialLoginUseCase.login(request);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/token")
+  @Operation(summary = "토큰 갱신")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = TokenResponse.class)
+      )
+  )
+  public ResponseEntity<TokenResponse> refresh(
+      @RequestBody
+      TokenRefreshRequest request
+  ) {
+    TokenResponse response = tokenRefreshUseCase.refresh(request);
 
     return ResponseEntity.ok(response);
   }
