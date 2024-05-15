@@ -7,9 +7,8 @@ import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.RetrieveGoalUseCase;
 import com.ddudu.application.port.out.GoalLoaderPort;
 import com.ddudu.application.port.out.UserLoaderPort;
-import jakarta.persistence.EntityNotFoundException;
+import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -32,12 +31,13 @@ public class RetrieveGoalService implements RetrieveGoalUseCase {
   private Goal findGoal(Long id) {
     return goalLoaderPort.findById(id)
         .orElseThrow(
-            () -> new EntityNotFoundException(GoalErrorCode.ID_NOT_EXISTING.getCodeName()));
+            () -> new MissingResourceException(
+                GoalErrorCode.ID_NOT_EXISTING.getCodeName(), Goal.class.getName(), id.toString()));
   }
 
-  private void checkAuthority(User user, Goal goal) {
-    if (!goal.isCreatedBy(user.getId())) {
-      throw new AccessDeniedException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
+  private void checkAuthority(Long userId, Goal goal) {
+    if (!goal.isCreatedBy(userId)) {
+      throw new SecurityException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
     }
   }
 
