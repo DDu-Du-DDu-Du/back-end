@@ -3,8 +3,10 @@ package com.ddudu.infrastructure.persistence.entity;
 import com.ddudu.application.domain.authentication.domain.RefreshToken;
 import com.ddudu.old.common.BaseEntity;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,8 +22,21 @@ import lombok.NoArgsConstructor;
 @Getter
 public class RefreshTokenEntity extends BaseEntity {
 
-  @EmbeddedId
-  private RefreshTokenId refreshTokenId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(
+      name = "user_id",
+      nullable = false
+  )
+  private Long userId;
+
+  @Column(
+      name = "family",
+      nullable = false
+  )
+  private int family;
 
   @Column(
       name = "token_value",
@@ -31,23 +46,20 @@ public class RefreshTokenEntity extends BaseEntity {
 
   public static RefreshTokenEntity from(RefreshToken refreshToken) {
     return RefreshTokenEntity.builder()
+        .id(refreshToken.getId())
         .tokenValue(refreshToken.getTokenValue())
-        .refreshTokenId(RefreshTokenId.builder()
-            .userId(refreshToken.getUserId())
-            .family(refreshToken.getFamily())
-            .build())
+        .family(refreshToken.getFamily())
+        .userId(refreshToken.getUserId())
         .build();
   }
 
   public RefreshToken toDomain() {
     return RefreshToken.builder()
+        .id(id)
         .tokenValue(tokenValue)
-        .userFamily(refreshTokenId.toDomain())
+        .family(family)
+        .userId(userId)
         .build();
-  }
-
-  public int getFamily() {
-    return refreshTokenId.getFamily();
   }
 
 }

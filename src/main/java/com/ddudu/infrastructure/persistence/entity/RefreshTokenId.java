@@ -28,9 +28,19 @@ public class RefreshTokenId {
   )
   private int family;
 
+  public static RefreshTokenId from(String userFamilyValue) {
+    String[] userFamily = userFamilyValue.split("-");
+
+    return RefreshTokenId.builder()
+        .userId(Long.parseLong(userFamily[0]))
+        .family(Integer.parseInt(userFamily[1]))
+        .build();
+  }
+
   public UserFamily toDomain() {
     return UserFamily.builder()
-        .userFamilyValue(userId + " " + family)
+        .userId(userId)
+        .family(family)
         .build();
   }
 
