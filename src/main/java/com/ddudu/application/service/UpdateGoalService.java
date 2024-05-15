@@ -2,6 +2,8 @@ package com.ddudu.application.service;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
@@ -31,7 +33,12 @@ public class UpdateGoalService implements UpdateGoalUseCase {
 
     checkAuthority(user, goal);
 
-    goal.applyGoalUpdates(request.name(), request.status(), request.color(), request.privacyType());
+    goal.applyGoalUpdates(
+        request.name(),
+        GoalStatus.from(request.status()),
+        request.color(),
+        PrivacyType.from(request.privacyType())
+    );
 
     return GoalResponse.from(updateGoalPort.update(goal));
   }

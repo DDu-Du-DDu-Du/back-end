@@ -204,7 +204,7 @@ class GoalServiceTest {
       Goal goal = createGoal(user, name);
       Long loginId = user.getId();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          changedName, changedStatus, changedColor, changedPrivacyType);
+          changedName, changedStatus.name(), changedColor, changedPrivacyType.name());
 
       // when
       goalService.update(loginId, goal.getId(), request);
@@ -224,7 +224,7 @@ class GoalServiceTest {
       Long invalidId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          changedName, changedStatus, changedColor, changedPrivacyType);
+          changedName, changedStatus.name(), changedColor, changedPrivacyType.name());
 
       // when
       ThrowingCallable update = () -> goalService.update(user.getId(), invalidId, request);
@@ -241,7 +241,7 @@ class GoalServiceTest {
       Long invalidLoginId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          changedName, changedStatus, changedColor, changedPrivacyType);
+          changedName, changedStatus.name(), changedColor, changedPrivacyType.name());
 
       // when
       ThrowingCallable update = () -> goalService.update(invalidLoginId, goal.getId(), request);

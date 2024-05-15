@@ -64,7 +64,7 @@ class UpdateGoalServiceTest {
     newStatus = GoalFixture.getRandomGoalStatus();
     newColor = BaseFixture.getRandomColor();
     newPrivacyType = GoalFixture.getRandomPrivacyType();
-    request = new UpdateGoalRequest(newName, newStatus, newColor, newPrivacyType);
+    request = new UpdateGoalRequest(newName, newStatus.name(), newColor, newPrivacyType.name());
   }
 
   @Test
