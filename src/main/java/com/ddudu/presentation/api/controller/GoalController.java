@@ -86,7 +86,7 @@ public class GoalController {
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalResponse.class)
+          schema = @Schema(implementation = GoalIdResponse.class)
       )
   )
   @Parameter(name = "id", description = "수정할 목표의 식별자", in = ParameterIn.PATH)
@@ -112,7 +112,7 @@ public class GoalController {
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalResponse.class)
+          schema = @Schema(implementation = GoalIdResponse.class)
       )
   )
   @Parameter(name = "id", description = "상태를 변경할 목표의 식별자", in = ParameterIn.PATH)
