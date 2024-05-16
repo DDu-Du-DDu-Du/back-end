@@ -13,7 +13,7 @@ import com.ddudu.application.port.out.TokenManipulationPort;
 import com.ddudu.application.port.out.UserLoaderPort;
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 
 @UseCase
@@ -40,7 +40,9 @@ public class TokenRefreshService implements TokenRefreshUseCase {
     validateNotUsed(tokenFamily, currentRefreshToken);
 
     User user = userLoaderPort.loadUserById(decoded.getUserId())
-        .orElseThrow(() -> new NoSuchElementException(AuthErrorCode.USER_NOT_FOUND.getCodeName()));
+        .orElseThrow(() -> new MissingResourceException(AuthErrorCode.USER_NOT_FOUND.getCodeName(),
+            User.class.getCanonicalName(), String.valueOf(decoded.getUserId())
+        ));
 
     String accessToken = authDomainService.createAccessToken(user);
     RefreshToken newRefreshToken = authDomainService.createRefreshToken(

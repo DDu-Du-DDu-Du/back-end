@@ -5,7 +5,7 @@ import com.ddudu.application.exception.ErrorCode;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.MissingResourceException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,8 +97,8 @@ public class GlobalExceptionHandler {
         .body(response);
   }
 
-  @ExceptionHandler(NoSuchElementException.class)
-  public ResponseEntity<ErrorResponse> handleNotFound(NoSuchElementException e) {
+  @ExceptionHandler(MissingResourceException.class)
+  public ResponseEntity<ErrorResponse> handleNotFound(MissingResourceException e) {
     log.warn(e.getMessage(), e);
 
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
