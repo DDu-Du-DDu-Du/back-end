@@ -1,16 +1,18 @@
 package com.ddudu.presentation.api.controller;
 
+import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
 import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
 import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
-import com.ddudu.application.domain.goal.dto.response.CreateGoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
-import com.ddudu.application.port.in.CreateGoalUseCase;
 import com.ddudu.application.port.in.DeleteGoalUseCase;
-import com.ddudu.application.port.in.RetrieveAllGoalsUseCase;
-import com.ddudu.application.port.in.RetrieveGoalUseCase;
-import com.ddudu.application.port.in.UpdateGoalUseCase;
+import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
+import com.ddudu.application.port.in.goal.CreateGoalUseCase;
+import com.ddudu.application.port.in.goal.RetrieveAllGoalsUseCase;
+import com.ddudu.application.port.in.goal.RetrieveGoalUseCase;
+import com.ddudu.application.port.in.goal.UpdateGoalUseCase;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -50,6 +53,7 @@ public class GoalController {
   private final RetrieveAllGoalsUseCase retrieveAllGoalsUseCase;
   private final RetrieveGoalUseCase retrieveGoalUseCase;
   private final UpdateGoalUseCase updateGoalUseCase;
+  private final ChangeGoalStatusUseCase changeGoalStatusUseCase;
   private final DeleteGoalUseCase deleteGoalUseCase;
 
   @PostMapping
@@ -58,10 +62,10 @@ public class GoalController {
       responseCode = "201",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = CreateGoalResponse.class)
+          schema = @Schema(implementation = GoalIdResponse.class)
       )
   )
-  public ResponseEntity<CreateGoalResponse> create(
+  public ResponseEntity<GoalIdResponse> create(
       @Login
       @Parameter(hidden = true)
       Long userId,
@@ -69,7 +73,7 @@ public class GoalController {
       @Valid
       CreateGoalRequest request
   ) {
-    CreateGoalResponse response = createGoalUseCase.create(userId, request);
+    GoalIdResponse response = createGoalUseCase.create(userId, request);
     URI uri = URI.create(GOALS_BASE_PATH + response.id());
 
     return ResponseEntity.created(uri)
@@ -86,7 +90,7 @@ public class GoalController {
       )
   )
   @Parameter(name = "id", description = "수정할 목표의 식별자", in = ParameterIn.PATH)
-  public ResponseEntity<GoalResponse> update(
+  public ResponseEntity<GoalIdResponse> update(
       @Login
       @Parameter(hidden = true)
       Long loginId,
@@ -96,7 +100,33 @@ public class GoalController {
       @Valid
       UpdateGoalRequest request
   ) {
-    GoalResponse response = updateGoalUseCase.update(loginId, id, request);
+    GoalIdResponse response = updateGoalUseCase.update(loginId, id, request);
+
+    return ResponseEntity.ok()
+        .body(response);
+  }
+
+  @PatchMapping("/{id}")
+  @Operation(summary = "목표 상태 변경")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = GoalResponse.class)
+      )
+  )
+  @Parameter(name = "id", description = "상태를 변경할 목표의 식별자", in = ParameterIn.PATH)
+  public ResponseEntity<GoalIdResponse> changeStatus(
+      @Login
+      @Parameter(hidden = true)
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      @Valid
+      ChangeGoalStatusRequest request
+  ) {
+    GoalIdResponse response = changeGoalStatusUseCase.changeStatus(loginId, id, request);
 
     return ResponseEntity.ok()
         .body(response);

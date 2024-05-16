@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
@@ -30,6 +31,7 @@ class GoalDomainServiceTest {
     String name;
     String privacyType;
     String color;
+    CreateGoalRequest request;
 
     @BeforeEach
     void setUp() {
@@ -38,12 +40,13 @@ class GoalDomainServiceTest {
       privacyType = GoalFixture.getRandomPrivacyType()
           .name();
       color = BaseFixture.getRandomColor();
+      request = new CreateGoalRequest(name, color, privacyType);
     }
 
     @Test
     void 목표를_생성한다() {
       // when
-      Goal actual = goalDomainService.create(user, name, privacyType, color);
+      Goal actual = goalDomainService.create(user, request);
 
       // then
       assertThat(actual).extracting("user", "name", "privacyType", "color")

@@ -7,17 +7,18 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.port.out.GoalLoaderPort;
-import com.ddudu.application.port.out.SaveGoalPort;
+import com.ddudu.application.port.out.goal.GoalLoaderPort;
+import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.SignUpPort;
 import com.ddudu.application.port.out.UserLoaderPort;
+import com.ddudu.application.service.goal.RetrieveAllGoalsService;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.Comparator;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.stream.IntStream;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,7 +87,7 @@ class RetrieveAllGoalsServiceTest {
         invalidLoginId);
 
     // then
-    assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(findAllByUser)
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(findAllByUser)
         .withMessage(GoalErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 

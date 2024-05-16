@@ -1,14 +1,14 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.goal;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.port.in.RetrieveAllGoalsUseCase;
-import com.ddudu.application.port.out.GoalLoaderPort;
+import com.ddudu.application.port.in.goal.RetrieveAllGoalsUseCase;
+import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.UserLoaderPort;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +33,11 @@ public class RetrieveAllGoalsService implements RetrieveAllGoalsUseCase {
   private User findUser(Long userId) {
     return userLoaderPort.findById(userId)
         .orElseThrow(
-            () -> new EntityNotFoundException(GoalErrorCode.USER_NOT_EXISTING.getCodeName()));
+            () -> new MissingResourceException(
+                GoalErrorCode.USER_NOT_EXISTING.getCodeName(),
+                User.class.getName(),
+                userId.toString()
+            ));
   }
 
 }

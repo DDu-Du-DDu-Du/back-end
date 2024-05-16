@@ -1,6 +1,7 @@
 package com.ddudu.old.goal.service;
 
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
@@ -33,7 +34,10 @@ public class GoalService {
     checkPermission(loginId, goal);
 
     goal.applyGoalUpdates(
-        request.name(), request.status(), request.color(), request.privacyType());
+        request.name(),
+        request.color(),
+        PrivacyType.from(request.privacyType())
+    );
 
     oldGoalRepository.update(goal);
 

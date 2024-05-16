@@ -151,20 +151,20 @@ class GoalTest {
   class 목표_수정_테스트 {
 
     @Test
-    void 목표명_색상_상태_공개_설정을_수정_할_수_있다() {
+    void 목표명_색상_공개_설정을_수정_할_수_있다() {
       // given
       Goal goal = GoalFixture.createRandomGoal();
       String changedName = GoalFixture.getRandomSentenceWithMax(50);
       String changedColor = GoalFixture.getRandomColor();
-      GoalStatus changedStatus = GoalFixture.getRandomGoalStatus();
       PrivacyType changedPrivacyType = GoalFixture.getRandomPrivacyType();
 
       // when
-      goal.applyGoalUpdates(changedName, changedStatus, changedColor, changedPrivacyType);
+      Goal updated = goal.applyGoalUpdates(
+          changedName, changedColor, changedPrivacyType);
 
       // then
-      assertThat(goal).extracting("name", "status", "color", "privacyType")
-          .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
+      assertThat(updated).extracting("name", "color", "privacyType")
+          .containsExactly(changedName, changedColor, changedPrivacyType);
     }
 
   }

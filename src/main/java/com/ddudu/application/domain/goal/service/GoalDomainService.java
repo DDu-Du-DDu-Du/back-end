@@ -3,6 +3,7 @@ package com.ddudu.application.domain.goal.service;
 import com.ddudu.application.annotation.DomainService;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
 import com.ddudu.application.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
@@ -10,12 +11,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GoalDomainService {
 
-  public Goal create(User user, String name, String privacyType, String color) {
+  public Goal create(User user, CreateGoalRequest request) {
     return Goal.builder()
         .user(user)
-        .name(name)
-        .privacyType(PrivacyType.from(privacyType))
-        .color(color)
+        .name(request.name())
+        .privacyType(PrivacyType.from(request.privacyType()))
+        .color(request.color())
         .build();
   }
 
