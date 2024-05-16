@@ -8,8 +8,8 @@ import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.goal.service.GoalDomainService;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.goal.CreateGoalUseCase;
-import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.UserLoaderPort;
+import com.ddudu.application.port.out.goal.SaveGoalPort;
 import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +26,7 @@ public class CreateGoalService implements CreateGoalUseCase {
   @Override
   public GoalIdResponse create(Long userId, CreateGoalRequest request) {
     User user = findUser(userId);
-    Goal goal = goalDomainService.create(
-        user, request.name(), request.privacyType(), request.color());
+    Goal goal = goalDomainService.create(user, request);
 
     return GoalIdResponse.from(saveGoalPort.save(goal));
   }
