@@ -15,10 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
+import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
-import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.old.goal.dto.response.GoalResponse;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.controller.GoalController;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
@@ -237,7 +237,7 @@ class GoalControllerTest extends ControllerTestSupport {
       GoalSummaryResponse goalSummaryResponse = GoalSummaryResponse.builder()
           .id(goalId)
           .name(name)
-          .status(GoalStatus.IN_PROGRESS.name())
+          .status(GoalStatus.IN_PROGRESS)
           .color(color)
           .build();
 
@@ -264,7 +264,7 @@ class GoalControllerTest extends ControllerTestSupport {
       Long goalId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          name, GoalStatus.IN_PROGRESS, color, privacyType);
+          name, GoalStatus.IN_PROGRESS.name(), color, privacyType.name());
       GoalResponse response = new GoalResponse(
           goalId, name, GoalStatus.IN_PROGRESS, color, privacyType);
 
@@ -367,7 +367,7 @@ class GoalControllerTest extends ControllerTestSupport {
       Long invalidId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          name, GoalStatus.IN_PROGRESS, color, privacyType);
+          name, GoalStatus.IN_PROGRESS.name(), color, privacyType.name());
 
       given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
@@ -396,7 +396,7 @@ class GoalControllerTest extends ControllerTestSupport {
       Long goalId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          name, GoalStatus.IN_PROGRESS, color, privacyType);
+          name, GoalStatus.IN_PROGRESS.name(), color, privacyType.name());
 
       given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willThrow(new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY));
@@ -433,29 +433,37 @@ class GoalControllerTest extends ControllerTestSupport {
 
       return Stream.of(
           Arguments.of(
-              "목표가 공백", new UpdateGoalRequest(blank, validGoalStatus, validColor, validPrivacyType),
+              "목표가 공백", new UpdateGoalRequest(blank, validGoalStatus.name(), validColor,
+                  validPrivacyType.name()
+              ),
               "목표가 입력되지 않았습니다."
           ),
           Arguments.of(
               "목표가 " + over50,
-              new UpdateGoalRequest(over50, validGoalStatus, validColor, validPrivacyType),
+              new UpdateGoalRequest(
+                  over50, validGoalStatus.name(), validColor, validPrivacyType.name()),
               "목표는 최대 50자 입니다."
           ),
           Arguments.of(
-              "목표 상태가 null", new UpdateGoalRequest(validName, null, validColor, validPrivacyType),
+              "목표 상태가 null",
+              new UpdateGoalRequest(validName, null, validColor, validPrivacyType.name()),
               "목표 상태가 입력되지 않았습니다."
           ),
           Arguments.of(
-              "색상이 null", new UpdateGoalRequest(validName, validGoalStatus, null, validPrivacyType),
+              "색상이 null", new UpdateGoalRequest(validName, validGoalStatus.name(), null,
+                  validPrivacyType.name()
+              ),
               "색상이 입력되지 않았습니다."
           ),
           Arguments.of(
               "색상이 " + over6,
-              new UpdateGoalRequest(validName, validGoalStatus, over6, validPrivacyType),
+              new UpdateGoalRequest(
+                  validName, validGoalStatus.name(), over6, validPrivacyType.name()),
               "색상 코드는 6자리 16진수입니다."
           ),
           Arguments.of(
-              "공개 설정이 null ", new UpdateGoalRequest(validName, validGoalStatus, validColor, null),
+              "공개 설정이 null ",
+              new UpdateGoalRequest(validName, validGoalStatus.name(), validColor, null),
               "공개 설정이 입력되지 않았습니다."
           )
       );
