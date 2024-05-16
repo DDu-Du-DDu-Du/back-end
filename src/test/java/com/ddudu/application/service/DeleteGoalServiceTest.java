@@ -13,8 +13,12 @@ import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.service.goal.DeleteGoalService;
 import com.ddudu.fixture.BaseFixture;
+import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
+import com.ddudu.old.todo.domain.Todo;
+import com.ddudu.old.todo.domain.TodoRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
 import java.util.Optional;
@@ -49,6 +53,12 @@ class DeleteGoalServiceTest {
   @Autowired
   DeleteGoalPort deleteGoalPort;
 
+  @Autowired
+  TodoRepository todoRepository;
+
+  @Autowired
+  EntityManager entityManager;
+
   Long userId;
   Goal goal;
 
@@ -67,6 +77,20 @@ class DeleteGoalServiceTest {
     // then
     Optional<Goal> foundAfterDeleted = goalLoaderPort.findById(goal.getId());
     assertThat(foundAfterDeleted).isEmpty();
+  }
+
+  @Test
+  void 목표_삭제_시_해당_목표의_뚜두도_삭제된다() {
+    //given
+    Todo todo = DduduFixture.createRandomDduduWithGoal(goal);
+    todo = todoRepository.save(todo);
+
+    //when
+    deleteGoalService.delete(userId, goal.getId());
+    flushAndClear();
+
+    //then
+    assertThat(todoRepository.findById(todo.getId())).isEmpty();
   }
 
   @Test
@@ -103,6 +127,11 @@ class DeleteGoalServiceTest {
   private Goal createAndSaveGoal(User user) {
     Goal goal = GoalFixture.createRandomGoalWithUser(user);
     return saveGoalPort.save(goal);
+  }
+
+  private void flushAndClear() {
+    entityManager.flush();
+    entityManager.clear();
   }
 
 }
