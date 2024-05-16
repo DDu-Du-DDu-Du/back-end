@@ -62,9 +62,6 @@ public class TokenRefreshService implements TokenRefreshUseCase {
         .findFirst()
         .get();
 
-    System.out.println(mostRecent);
-    System.out.println(refreshToken.getId());
-
     if (!refreshToken.isMostRecentInFamily(mostRecent)) {
       tokenManipulationPort.deleteAllFamily(tokenFamily);
 
