@@ -6,17 +6,17 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.port.out.GoalLoaderPort;
-import com.ddudu.application.port.out.SaveGoalPort;
 import com.ddudu.application.port.out.SignUpPort;
 import com.ddudu.application.port.out.UserLoaderPort;
 import com.ddudu.application.port.out.goal.DeleteGoalPort;
+import com.ddudu.application.port.out.goal.GoalLoaderPort;
+import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.service.goal.DeleteGoalService;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import java.util.MissingResourceException;
 import java.util.Optional;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,6 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.access.AccessDeniedException;
 
 @SpringBootTest
 @Transactional
@@ -79,7 +78,7 @@ class DeleteGoalServiceTest {
     ThrowingCallable delete = () -> deleteGoalService.delete(userId, invalidId);
 
     // then
-    assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(delete)
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(delete)
         .withMessage(GoalErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
@@ -92,7 +91,7 @@ class DeleteGoalServiceTest {
     ThrowingCallable delete = () -> deleteGoalService.delete(anotherUser.getId(), goal.getId());
 
     // then
-    assertThatExceptionOfType(AccessDeniedException.class).isThrownBy(delete)
+    assertThatExceptionOfType(SecurityException.class).isThrownBy(delete)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
