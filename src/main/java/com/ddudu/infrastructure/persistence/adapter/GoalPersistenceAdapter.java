@@ -54,7 +54,10 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
 
   @Override
   public void delete(Goal goal) {
-    goalRepository.delete(GoalEntity.from(goal));
+    GoalEntity goalEntity = goalRepository.findById(goal.getId())
+        .orElseThrow(EntityNotFoundException::new);
+
+    goalRepository.delete(goalEntity);
   }
 
 }
