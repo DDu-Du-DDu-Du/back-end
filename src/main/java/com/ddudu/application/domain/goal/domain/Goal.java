@@ -51,7 +51,7 @@ public final class Goal {
   }
 
   public Goal applyGoalUpdates(
-      String name, GoalStatus status, String color, PrivacyType privacyType
+      String name, String color, PrivacyType privacyType
   ) {
     validateName(name);
 
@@ -61,6 +61,17 @@ public final class Goal {
         .user(user)
         .status(status)
         .color(color)
+        .privacyType(privacyType)
+        .build();
+  }
+
+  public Goal changeStatus(GoalStatus status) {
+    return Goal.builder()
+        .id(id)
+        .name(name)
+        .user(user)
+        .status(status)
+        .color(color.getCode())
         .privacyType(privacyType)
         .build();
   }
