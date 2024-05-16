@@ -4,14 +4,11 @@ import com.ddudu.application.domain.authentication.domain.vo.UserFamily;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
-@EqualsAndHashCode
 public class RefreshToken {
 
-  @EqualsAndHashCode.Exclude
   private final Long id;
 
   @Getter(AccessLevel.NONE)
@@ -36,7 +33,7 @@ public class RefreshToken {
     return userFamily.getFamily();
   }
 
-  public boolean isMostRecentInFamily(Long id) {
+  public boolean hasSameId(Long id) {
     return Objects.equals(this.id, id);
   }
 

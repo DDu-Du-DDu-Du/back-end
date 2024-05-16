@@ -2,6 +2,7 @@ package com.ddudu.application.service;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.authentication.domain.RefreshToken;
+import com.ddudu.application.domain.authentication.domain.vo.UserFamily;
 import com.ddudu.application.domain.authentication.dto.request.TokenRefreshRequest;
 import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
@@ -28,31 +29,37 @@ public class TokenRefreshService implements TokenRefreshUseCase {
 
   @Override
   public TokenResponse refresh(TokenRefreshRequest request) {
-    RefreshToken decoded = authDomainService.decodeRequestRefreshToken(request.refreshToken());
-    List<RefreshToken> tokenFamily = tokenLoaderPort.loadByUserFamily(
-        decoded.getUserId(), decoded.getFamily());
+    List<RefreshToken> tokenFamily = getTokenFamilyOf(request.refreshToken());
     RefreshToken currentRefreshToken = tokenFamily.stream()
-        .filter(token -> token.hasSameTokenValue(decoded.getTokenValue()))
+        .filter(token -> token.hasSameTokenValue(request.refreshToken()))
         .findFirst()
         .orElseThrow(() -> new UnsupportedOperationException(
             AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName()));
 
     validateNotUsed(tokenFamily, currentRefreshToken);
 
-    User user = userLoaderPort.loadUserById(decoded.getUserId())
-        .orElseThrow(() -> new MissingResourceException(AuthErrorCode.USER_NOT_FOUND.getCodeName(),
-            User.class.getCanonicalName(), String.valueOf(decoded.getUserId())
+    User user = userLoaderPort.loadUserById(currentRefreshToken.getUserId())
+        .orElseThrow(() -> new MissingResourceException(
+            AuthErrorCode.USER_NOT_FOUND.getCodeName(),
+            User.class.getCanonicalName(),
+            String.valueOf(currentRefreshToken.getUserId())
         ));
 
     String accessToken = authDomainService.createAccessToken(user);
     RefreshToken newRefreshToken = authDomainService.createRefreshToken(
-        user, decoded.getFamily());
+        user, currentRefreshToken.getFamily());
 
     tokenManipulationPort.save(newRefreshToken);
 
     return new TokenResponse(accessToken, newRefreshToken.getTokenValue());
   }
 
+  private List<RefreshToken> getTokenFamilyOf(String refreshToken) {
+    UserFamily decoded = authDomainService.decodeRefreshToken(refreshToken);
+
+    return tokenLoaderPort.loadByUserFamily(
+        decoded.getUserId(), decoded.getFamily());
+  }
 
   private void validateNotUsed(List<RefreshToken> tokenFamily, RefreshToken refreshToken) {
     if (tokenFamily.size() == 1) {
@@ -64,7 +71,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
         .findFirst()
         .get();
 
-    if (!refreshToken.isMostRecentInFamily(mostRecent)) {
+    if (!refreshToken.hasSameId(mostRecent)) {
       tokenManipulationPort.deleteAllFamily(tokenFamily);
 
       throw new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());

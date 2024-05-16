@@ -5,11 +5,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import java.util.Objects;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
-@EqualsAndHashCode
 public class UserFamily {
 
   private final Long userId;

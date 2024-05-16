@@ -44,16 +44,11 @@ public class AuthDomainService {
         .build();
   }
 
-  public RefreshToken decodeRequestRefreshToken(String refreshToken) {
+  public UserFamily decodeRefreshToken(String refreshToken) {
     Jwt jwt = jwtDecoder.decode(refreshToken);
-    UserFamily userFamily = UserFamily.builderWithString()
+    return UserFamily.builderWithString()
         .userFamilyValue(jwt.getClaimAsString("sub"))
         .buildWithString();
-
-    return RefreshToken.builder()
-        .userFamily(userFamily)
-        .tokenValue(refreshToken)
-        .build();
   }
 
 }
