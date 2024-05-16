@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -78,6 +79,17 @@ public class GlobalExceptionHandler {
     }
 
     return ResponseEntity.badRequest()
+        .body(response);
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
+    log.warn(e.getMessage(), e);
+
+    ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
+    ErrorResponse response = ErrorResponse.from(errorCode);
+
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
         .body(response);
   }
 

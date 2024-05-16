@@ -9,25 +9,20 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.old.goal.domain.GoalStatus;
-import com.ddudu.old.goal.domain.PrivacyType;
-import com.ddudu.old.goal.dto.requset.CreateGoalRequest;
-import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.old.goal.dto.response.CreateGoalResponse;
-import com.ddudu.old.goal.dto.response.GoalResponse;
-import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
-import com.ddudu.old.goal.exception.GoalErrorCode;
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
+import com.ddudu.application.domain.goal.dto.response.GoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.controller.GoalController;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.ForbiddenException;
-import com.ddudu.presentation.api.exception.InvalidParameterException;
 import com.ddudu.support.ControllerTestSupport;
 import java.util.List;
 import java.util.stream.Stream;
@@ -69,159 +64,6 @@ class GoalControllerTest extends ControllerTestSupport {
         .hex()
         .substring(1);
     privacyType = provideRandomPrivacy();
-  }
-
-  @Nested
-  class POST_목표_생성_API_테스트 {
-
-    static final String PATH = "/api/goals";
-
-    @Test
-    void 목표_생성에_성공하면_201_Created_응답을_반환한다() throws Exception {
-      // given
-      Long goalId = faker.random()
-          .nextLong();
-      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
-      CreateGoalResponse response = new CreateGoalResponse(goalId, name, color);
-
-      given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
-          .willReturn(response);
-
-      // when
-      ResultActions actions = mockMvc.perform(post(PATH)
-          .header(AUTHORIZATION, token)
-          .content(objectMapper.writeValueAsString(request))
-          .contentType(MediaType.APPLICATION_JSON));
-
-      // then
-      actions.andExpect(status().isCreated())
-          .andExpect(header().string("location", PATH + "/" + goalId))
-          .andExpect(jsonPath("$.id").value(response.id()))
-          .andExpect(jsonPath("$.name").value(response.name()))
-          .andExpect(jsonPath("$.color").value(response.color()));
-    }
-
-    @ParameterizedTest(name = "{0}일 때, {2}를 응답한다.")
-    @MethodSource("provideCreateGoalRequestAndString")
-    void 유효하지_않은_요청이면_400_Bad_Request를_반환한다(String cause, CreateGoalRequest request, String message)
-        throws Exception {
-      // when
-      ResultActions actions = mockMvc.perform(post(PATH)
-          .header(AUTHORIZATION, token)
-          .content(objectMapper.writeValueAsString(request))
-          .contentType(MediaType.APPLICATION_JSON));
-
-      // then
-      actions.andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.[0].code", is(1)))
-          .andExpect(jsonPath("$.[0].message", is(message)));
-    }
-
-    @Test
-    void 유효하지_않은_공개_설정이_입력된_경우_Bad_Request_응답을_반환한다() throws Exception {
-      // given
-      String invalidRequestJson = """
-          {
-              "name": "dev course",
-              "color": "191919",
-              "privacyType": "INVALID_TYPE"
-          }
-          """;
-
-      // when
-      ResultActions action = mockMvc.perform(post(PATH).header(AUTHORIZATION, token)
-          .content(invalidRequestJson)
-          .contentType(MediaType.APPLICATION_JSON));
-
-      // then
-      action.andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.code")
-              .value(3))
-          .andExpect(jsonPath("$.message")
-              .value(containsString("PrivacyType는 [PRIVATE, FOLLOWER, PUBLIC] 중 하나여야 합니다.")));
-    }
-
-    @Test
-    void 색상이_16진수_포맷이_아니면_400_Bad_Request를_반환한다() throws Exception {
-      // given
-      String invalidColor = faker.lorem()
-          .characters(1, 5, true, true);
-      CreateGoalRequest request = new CreateGoalRequest(name, invalidColor, privacyType);
-
-      given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
-          .willThrow(new InvalidParameterException(GoalErrorCode.INVALID_COLOR_FORMAT));
-
-      // when
-      ResultActions action = mockMvc.perform(post(PATH)
-          .header(AUTHORIZATION, token)
-          .content(objectMapper.writeValueAsString(request))
-          .contentType(MediaType.APPLICATION_JSON));
-
-      // then
-      action
-          .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.code")
-              .value(GoalErrorCode.INVALID_COLOR_FORMAT.getCode()))
-          .andExpect(jsonPath("$.message")
-              .value(containsString(GoalErrorCode.INVALID_COLOR_FORMAT.getMessage())));
-    }
-
-    @Test
-    void 로그인_사용자_정보가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
-      // given
-      CreateGoalRequest request = new CreateGoalRequest(name, color, privacyType);
-      Long anotherUserId = faker.random()
-          .nextLong();
-      String invalidToken = createBearerToken(anotherUserId);
-
-      given(goalService.create(anyLong(), any(CreateGoalRequest.class)))
-          .willThrow(new DataNotFoundException(GoalErrorCode.USER_NOT_EXISTING));
-
-      // when
-      ResultActions action = mockMvc.perform(post(PATH)
-          .header(AUTHORIZATION, invalidToken)
-          .content(objectMapper.writeValueAsString(request))
-          .contentType(MediaType.APPLICATION_JSON));
-
-      // then
-      action
-          .andExpect(status().isNotFound())
-          .andExpect(jsonPath("$.code")
-              .value(GoalErrorCode.USER_NOT_EXISTING.getCode()))
-          .andExpect(jsonPath("$.message")
-              .value(containsString(GoalErrorCode.USER_NOT_EXISTING.getMessage())));
-    }
-
-    private static Stream<Arguments> provideCreateGoalRequestAndString() {
-      String validName = faker.lorem()
-          .word();
-      String validColor = faker.color()
-          .hex()
-          .substring(1);
-      PrivacyType validPrivacyType = provideRandomPrivacy();
-
-      String blank = " ";
-      String over50 = faker.lorem()
-          .characters(51);
-      String over6 = faker.lorem()
-          .characters(7);
-
-      return Stream.of(
-          Arguments.of(
-              "목표가 공백", new CreateGoalRequest(blank, validColor, validPrivacyType),
-              "목표가 입력되지 않았습니다."
-          ),
-          Arguments.of(
-              "목표가 " + over50, new CreateGoalRequest(over50, validColor, validPrivacyType),
-              "목표는 최대 50자 입니다."
-          ),
-          Arguments.of(
-              "색상이 " + over6, new CreateGoalRequest(validName, over6, validPrivacyType),
-              "색상 코드는 6자리 16진수입니다."
-          )
-      );
-    }
-
   }
 
   @Nested
@@ -395,7 +237,7 @@ class GoalControllerTest extends ControllerTestSupport {
       GoalSummaryResponse goalSummaryResponse = GoalSummaryResponse.builder()
           .id(goalId)
           .name(name)
-          .status(GoalStatus.IN_PROGRESS.name())
+          .status(GoalStatus.IN_PROGRESS)
           .color(color)
           .build();
 
@@ -422,7 +264,7 @@ class GoalControllerTest extends ControllerTestSupport {
       Long goalId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          name, GoalStatus.IN_PROGRESS, color, privacyType);
+          name, color, privacyType.name());
       GoalResponse response = new GoalResponse(
           goalId, name, GoalStatus.IN_PROGRESS, color, privacyType);
 
@@ -525,7 +367,7 @@ class GoalControllerTest extends ControllerTestSupport {
       Long invalidId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          name, GoalStatus.IN_PROGRESS, color, privacyType);
+          name, color, privacyType.name());
 
       given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willThrow(new DataNotFoundException(GoalErrorCode.ID_NOT_EXISTING));
@@ -554,7 +396,7 @@ class GoalControllerTest extends ControllerTestSupport {
       Long goalId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          name, GoalStatus.IN_PROGRESS, color, privacyType);
+          name, color, privacyType.name());
 
       given(goalService.update(anyLong(), anyLong(), any(UpdateGoalRequest.class)))
           .willThrow(new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY));
@@ -591,29 +433,32 @@ class GoalControllerTest extends ControllerTestSupport {
 
       return Stream.of(
           Arguments.of(
-              "목표가 공백", new UpdateGoalRequest(blank, validGoalStatus, validColor, validPrivacyType),
+              "목표가 공백", new UpdateGoalRequest(blank, validColor,
+                  validPrivacyType.name()
+              ),
               "목표가 입력되지 않았습니다."
           ),
           Arguments.of(
               "목표가 " + over50,
-              new UpdateGoalRequest(over50, validGoalStatus, validColor, validPrivacyType),
+              new UpdateGoalRequest(
+                  over50, validColor, validPrivacyType.name()),
               "목표는 최대 50자 입니다."
           ),
           Arguments.of(
-              "목표 상태가 null", new UpdateGoalRequest(validName, null, validColor, validPrivacyType),
-              "목표 상태가 입력되지 않았습니다."
-          ),
-          Arguments.of(
-              "색상이 null", new UpdateGoalRequest(validName, validGoalStatus, null, validPrivacyType),
+              "색상이 null", new UpdateGoalRequest(validName, null,
+                  validPrivacyType.name()
+              ),
               "색상이 입력되지 않았습니다."
           ),
           Arguments.of(
               "색상이 " + over6,
-              new UpdateGoalRequest(validName, validGoalStatus, over6, validPrivacyType),
+              new UpdateGoalRequest(
+                  validName, over6, validPrivacyType.name()),
               "색상 코드는 6자리 16진수입니다."
           ),
           Arguments.of(
-              "공개 설정이 null ", new UpdateGoalRequest(validName, validGoalStatus, validColor, null),
+              "공개 설정이 null ",
+              new UpdateGoalRequest(validName, validColor, null),
               "공개 설정이 입력되지 않았습니다."
           )
       );

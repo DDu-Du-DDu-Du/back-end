@@ -1,8 +1,8 @@
 package com.ddudu.old.persistence.repository;
 
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
-import com.ddudu.old.goal.domain.PrivacyType;
 import com.ddudu.old.persistence.dao.todo.TodoDao;
 import com.ddudu.old.persistence.entity.TodoEntity;
 import com.ddudu.old.todo.domain.Todo;

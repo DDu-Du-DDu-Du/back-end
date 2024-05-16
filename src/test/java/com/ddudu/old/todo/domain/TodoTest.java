@@ -3,8 +3,8 @@ package com.ddudu.old.todo.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.old.goal.domain.Goal;
 import com.ddudu.old.todo.exception.TodoErrorCode;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.time.LocalDateTime;
