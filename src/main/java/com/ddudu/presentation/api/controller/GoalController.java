@@ -1,6 +1,7 @@
 package com.ddudu.presentation.api.controller;
 
 import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
+import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
 import com.ddudu.application.domain.goal.dto.response.CreateGoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
@@ -8,7 +9,7 @@ import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.CreateGoalUseCase;
 import com.ddudu.application.port.in.RetrieveAllGoalsUseCase;
 import com.ddudu.application.port.in.RetrieveGoalUseCase;
-import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
+import com.ddudu.application.port.in.UpdateGoalUseCase;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.exception.ForbiddenException;
@@ -47,6 +48,7 @@ public class GoalController {
   private final CreateGoalUseCase createGoalUseCase;
   private final RetrieveAllGoalsUseCase retrieveAllGoalsUseCase;
   private final RetrieveGoalUseCase retrieveGoalUseCase;
+  private final UpdateGoalUseCase updateGoalUseCase;
 
   private final GoalService goalService;
 
@@ -83,9 +85,10 @@ public class GoalController {
           schema = @Schema(implementation = GoalResponse.class)
       )
   )
-  @Deprecated
+  @Parameter(name = "id", description = "수정할 목표의 식별자", in = ParameterIn.PATH)
   public ResponseEntity<GoalResponse> update(
       @Login
+      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id,
@@ -93,7 +96,7 @@ public class GoalController {
       @Valid
       UpdateGoalRequest request
   ) {
-    GoalResponse response = goalService.update(loginId, id, request);
+    GoalResponse response = updateGoalUseCase.update(loginId, id, request);
 
     return ResponseEntity.ok()
         .body(response);

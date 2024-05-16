@@ -6,12 +6,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.goal.domain.OldGoalRepository;
-import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.ForbiddenException;
@@ -204,7 +204,7 @@ class GoalServiceTest {
       Goal goal = createGoal(user, name);
       Long loginId = user.getId();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          changedName, changedStatus, changedColor, changedPrivacyType);
+          changedName, changedStatus.name(), changedColor, changedPrivacyType.name());
 
       // when
       goalService.update(loginId, goal.getId(), request);
@@ -224,7 +224,7 @@ class GoalServiceTest {
       Long invalidId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          changedName, changedStatus, changedColor, changedPrivacyType);
+          changedName, changedStatus.name(), changedColor, changedPrivacyType.name());
 
       // when
       ThrowingCallable update = () -> goalService.update(user.getId(), invalidId, request);
@@ -241,7 +241,7 @@ class GoalServiceTest {
       Long invalidLoginId = faker.random()
           .nextLong();
       UpdateGoalRequest request = new UpdateGoalRequest(
-          changedName, changedStatus, changedColor, changedPrivacyType);
+          changedName, changedStatus.name(), changedColor, changedPrivacyType.name());
 
       // when
       ThrowingCallable update = () -> goalService.update(invalidLoginId, goal.getId(), request);

@@ -160,10 +160,11 @@ class GoalTest {
       PrivacyType changedPrivacyType = GoalFixture.getRandomPrivacyType();
 
       // when
-      goal.applyGoalUpdates(changedName, changedStatus, changedColor, changedPrivacyType);
+      Goal updated = goal.applyGoalUpdates(
+          changedName, changedStatus, changedColor, changedPrivacyType);
 
       // then
-      assertThat(goal).extracting("name", "status", "color", "privacyType")
+      assertThat(updated).extracting("name", "status", "color", "privacyType")
           .containsExactly(changedName, changedStatus, changedColor, changedPrivacyType);
     }
 

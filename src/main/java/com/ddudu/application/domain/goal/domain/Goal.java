@@ -16,21 +16,21 @@ import lombok.Getter;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Goal {
+public final class Goal {
 
   private static final GoalStatus DEFAULT_STATUS = GoalStatus.IN_PROGRESS;
   private static final PrivacyType DEFAULT_PRIVACY_TYPE = PrivacyType.PRIVATE;
   private static final int MAX_NAME_LENGTH = 50;
 
   @EqualsAndHashCode.Include
-  private Long id;
-  private String name;
-  private User user;
-  private GoalStatus status = DEFAULT_STATUS;
-  private PrivacyType privacyType;
+  private final Long id;
+  private final String name;
+  private final User user;
+  private final GoalStatus status;
+  private final PrivacyType privacyType;
 
   @Getter(AccessLevel.NONE)
-  private Color color;
+  private final Color color;
 
   @Builder
   public Goal(
@@ -50,15 +50,19 @@ public class Goal {
     return color.getCode();
   }
 
-  public void applyGoalUpdates(
+  public Goal applyGoalUpdates(
       String name, GoalStatus status, String color, PrivacyType privacyType
   ) {
     validateName(name);
 
-    this.name = name;
-    this.status = status;
-    this.color = new Color(color);
-    this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
+    return Goal.builder()
+        .id(id)
+        .name(name)
+        .user(user)
+        .status(status)
+        .color(color)
+        .privacyType(privacyType)
+        .build();
   }
 
   public boolean isCreatedBy(Long userId) {
