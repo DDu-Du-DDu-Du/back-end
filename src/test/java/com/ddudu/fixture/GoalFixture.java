@@ -3,6 +3,7 @@ package com.ddudu.fixture;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +28,15 @@ public class GoalFixture extends BaseFixture {
     return Goal.builder()
         .name(getRandomSentenceWithMax(50))
         .user(UserFixture.createRandomUserWithId())
+        .color(getRandomColor())
+        .privacyType(getRandomPrivacyType())
+        .build();
+  }
+
+  public static Goal createRandomGoalWithUser(User user) {
+    return Goal.builder()
+        .name(getRandomSentenceWithMax(50))
+        .user(user)
         .color(getRandomColor())
         .privacyType(getRandomPrivacyType())
         .build();
