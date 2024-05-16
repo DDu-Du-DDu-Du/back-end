@@ -2,7 +2,7 @@ package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.port.out.DeleteGoalPort;
+import com.ddudu.application.port.out.goal.DeleteGoalPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.goal.UpdateGoalPort;

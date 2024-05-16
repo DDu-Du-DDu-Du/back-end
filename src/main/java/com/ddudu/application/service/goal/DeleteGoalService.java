@@ -1,4 +1,4 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.goal;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
