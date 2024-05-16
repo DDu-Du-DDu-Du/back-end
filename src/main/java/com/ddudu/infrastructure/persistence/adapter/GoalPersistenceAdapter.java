@@ -2,9 +2,9 @@ package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.port.out.GoalLoaderPort;
-import com.ddudu.application.port.out.SaveGoalPort;
-import com.ddudu.application.port.out.UpdateGoalPort;
+import com.ddudu.application.port.out.goal.GoalLoaderPort;
+import com.ddudu.application.port.out.goal.SaveGoalPort;
+import com.ddudu.application.port.out.goal.UpdateGoalPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;

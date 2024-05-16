@@ -1,4 +1,4 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.goal;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
@@ -7,8 +7,8 @@ import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.goal.service.GoalDomainService;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.port.in.CreateGoalUseCase;
-import com.ddudu.application.port.out.SaveGoalPort;
+import com.ddudu.application.port.in.goal.CreateGoalUseCase;
+import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.UserLoaderPort;
 import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;

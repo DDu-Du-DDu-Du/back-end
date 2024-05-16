@@ -1,14 +1,14 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.goal;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
+import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
 import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
-import com.ddudu.application.port.in.UpdateGoalUseCase;
-import com.ddudu.application.port.out.GoalLoaderPort;
-import com.ddudu.application.port.out.UpdateGoalPort;
+import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
+import com.ddudu.application.port.out.goal.GoalLoaderPort;
+import com.ddudu.application.port.out.goal.UpdateGoalPort;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,22 +16,18 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional
-public class UpdateGoalService implements UpdateGoalUseCase {
+public class ChangeGoalStatusService implements ChangeGoalStatusUseCase {
 
   private final GoalLoaderPort goalLoaderPort;
   private final UpdateGoalPort updateGoalPort;
 
   @Override
-  public GoalIdResponse update(Long userId, Long id, UpdateGoalRequest request) {
+  public GoalIdResponse changeStatus(Long userId, Long id, ChangeGoalStatusRequest request) {
     Goal goal = findGoal(id);
 
     checkAuthority(userId, goal);
 
-    Goal updated = goal.applyGoalUpdates(
-        request.name(),
-        request.color(),
-        PrivacyType.from(request.privacyType())
-    );
+    Goal updated = goal.changeStatus(GoalStatus.from(request.status()));
 
     return GoalIdResponse.from(updateGoalPort.update(updated));
   }
