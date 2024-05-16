@@ -3,7 +3,7 @@ package com.ddudu.presentation.api.controller;
 import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
 import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
 import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
-import com.ddudu.application.domain.goal.dto.response.CreateGoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
@@ -62,10 +62,10 @@ public class GoalController {
       responseCode = "201",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = CreateGoalResponse.class)
+          schema = @Schema(implementation = GoalIdResponse.class)
       )
   )
-  public ResponseEntity<CreateGoalResponse> create(
+  public ResponseEntity<GoalIdResponse> create(
       @Login
       @Parameter(hidden = true)
       Long userId,
@@ -73,7 +73,7 @@ public class GoalController {
       @Valid
       CreateGoalRequest request
   ) {
-    CreateGoalResponse response = createGoalUseCase.create(userId, request);
+    GoalIdResponse response = createGoalUseCase.create(userId, request);
     URI uri = URI.create(GOALS_BASE_PATH + response.id());
 
     return ResponseEntity.created(uri)
@@ -90,7 +90,7 @@ public class GoalController {
       )
   )
   @Parameter(name = "id", description = "수정할 목표의 식별자", in = ParameterIn.PATH)
-  public ResponseEntity<GoalResponse> update(
+  public ResponseEntity<GoalIdResponse> update(
       @Login
       @Parameter(hidden = true)
       Long loginId,
@@ -100,7 +100,7 @@ public class GoalController {
       @Valid
       UpdateGoalRequest request
   ) {
-    GoalResponse response = updateGoalUseCase.update(loginId, id, request);
+    GoalIdResponse response = updateGoalUseCase.update(loginId, id, request);
 
     return ResponseEntity.ok()
         .body(response);
@@ -116,7 +116,7 @@ public class GoalController {
       )
   )
   @Parameter(name = "id", description = "상태를 변경할 목표의 식별자", in = ParameterIn.PATH)
-  public ResponseEntity<GoalResponse> changeStatus(
+  public ResponseEntity<GoalIdResponse> changeStatus(
       @Login
       @Parameter(hidden = true)
       Long loginId,
@@ -126,7 +126,7 @@ public class GoalController {
       @Valid
       ChangeGoalStatusRequest request
   ) {
-    GoalResponse response = changeGoalStatusUseCase.changeStatus(loginId, id, request);
+    GoalIdResponse response = changeGoalStatusUseCase.changeStatus(loginId, id, request);
 
     return ResponseEntity.ok()
         .body(response);

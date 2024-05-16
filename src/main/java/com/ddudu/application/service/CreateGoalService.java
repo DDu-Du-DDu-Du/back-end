@@ -3,7 +3,7 @@ package com.ddudu.application.service;
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
-import com.ddudu.application.domain.goal.dto.response.CreateGoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.goal.service.GoalDomainService;
 import com.ddudu.application.domain.user.domain.User;
@@ -24,12 +24,12 @@ public class CreateGoalService implements CreateGoalUseCase {
   private final SaveGoalPort saveGoalPort;
 
   @Override
-  public CreateGoalResponse create(Long userId, CreateGoalRequest request) {
+  public GoalIdResponse create(Long userId, CreateGoalRequest request) {
     User user = findUser(userId);
     Goal goal = goalDomainService.create(
         user, request.name(), request.privacyType(), request.color());
 
-    return CreateGoalResponse.from(saveGoalPort.save(goal));
+    return GoalIdResponse.from(saveGoalPort.save(goal));
   }
 
   private User findUser(Long userId) {

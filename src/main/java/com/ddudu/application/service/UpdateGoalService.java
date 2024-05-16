@@ -4,7 +4,7 @@ import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
-import com.ddudu.application.domain.goal.dto.response.GoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.UpdateGoalUseCase;
 import com.ddudu.application.port.out.GoalLoaderPort;
@@ -22,7 +22,7 @@ public class UpdateGoalService implements UpdateGoalUseCase {
   private final UpdateGoalPort updateGoalPort;
 
   @Override
-  public GoalResponse update(Long userId, Long id, UpdateGoalRequest request) {
+  public GoalIdResponse update(Long userId, Long id, UpdateGoalRequest request) {
     Goal goal = findGoal(id);
 
     checkAuthority(userId, goal);
@@ -33,7 +33,7 @@ public class UpdateGoalService implements UpdateGoalUseCase {
         PrivacyType.from(request.privacyType())
     );
 
-    return GoalResponse.from(updateGoalPort.update(updated));
+    return GoalIdResponse.from(updateGoalPort.update(updated));
   }
 
   private Goal findGoal(Long id) {

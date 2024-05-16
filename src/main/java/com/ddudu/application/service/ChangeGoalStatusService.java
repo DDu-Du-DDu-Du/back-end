@@ -4,7 +4,7 @@ import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
-import com.ddudu.application.domain.goal.dto.response.GoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.ChangeGoalStatusUseCase;
 import com.ddudu.application.port.out.GoalLoaderPort;
@@ -22,14 +22,14 @@ public class ChangeGoalStatusService implements ChangeGoalStatusUseCase {
   private final UpdateGoalPort updateGoalPort;
 
   @Override
-  public GoalResponse changeStatus(Long userId, Long id, ChangeGoalStatusRequest request) {
+  public GoalIdResponse changeStatus(Long userId, Long id, ChangeGoalStatusRequest request) {
     Goal goal = findGoal(id);
 
     checkAuthority(userId, goal);
 
     Goal updated = goal.changeStatus(GoalStatus.from(request.status()));
 
-    return GoalResponse.from(updateGoalPort.update(updated));
+    return GoalIdResponse.from(updateGoalPort.update(updated));
   }
 
   private Goal findGoal(Long id) {

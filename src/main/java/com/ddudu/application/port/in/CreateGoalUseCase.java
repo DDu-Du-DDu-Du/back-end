@@ -1,10 +1,10 @@
 package com.ddudu.application.port.in;
 
 import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
-import com.ddudu.application.domain.goal.dto.response.CreateGoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 
 public interface CreateGoalUseCase {
 
-  CreateGoalResponse create(Long userId, CreateGoalRequest request);
+  GoalIdResponse create(Long userId, CreateGoalRequest request);
 
 }

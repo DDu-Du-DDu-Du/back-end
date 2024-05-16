@@ -7,7 +7,7 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
-import com.ddudu.application.domain.goal.dto.response.CreateGoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.goal.service.GoalDomainService;
 import com.ddudu.application.domain.user.domain.User;
@@ -73,7 +73,7 @@ class CreateGoalServiceTest {
   @Test
   void 목표명_색상_공개_설정을_입력해_목표_생성에_성공한다() {
     // when
-    CreateGoalResponse expected = createGoalService.create(userId, request);
+    GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
     Optional<Goal> actual = goalLoaderPort.findById(expected.id());
@@ -84,7 +84,7 @@ class CreateGoalServiceTest {
   @Test
   void 목표_생성_시_ID가_자동_생성된다() {
     // when
-    CreateGoalResponse expected = createGoalService.create(userId, request);
+    GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
     Optional<Goal> actual = goalLoaderPort.findById(expected.id());
@@ -95,7 +95,7 @@ class CreateGoalServiceTest {
   @Test
   void 목표_생성_시_목표_상태는_IN_PROGRESS가_된다() {
     // when
-    CreateGoalResponse expected = createGoalService.create(userId, request);
+    GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
     Optional<Goal> actual = goalLoaderPort.findById(expected.id());
@@ -113,7 +113,7 @@ class CreateGoalServiceTest {
         name, invalidColor, privacyType.name());
 
     // when
-    CreateGoalResponse expected = createGoalService.create(userId, request);
+    GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
     Optional<Goal> actual = goalLoaderPort.findById(expected.id());
@@ -128,7 +128,7 @@ class CreateGoalServiceTest {
     CreateGoalRequest request = new CreateGoalRequest(name, color, null);
 
     // when
-    CreateGoalResponse expected = createGoalService.create(userId, request);
+    GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
     Optional<Goal> actual = goalLoaderPort.findById(expected.id());
