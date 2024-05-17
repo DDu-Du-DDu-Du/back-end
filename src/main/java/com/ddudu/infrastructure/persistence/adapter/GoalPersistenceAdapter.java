@@ -56,11 +56,8 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
 
   @Override
   public void deleteWithDdudus(Goal goal) {
-    GoalEntity goalEntity = goalRepository.findById(goal.getId())
-        .orElseThrow(EntityNotFoundException::new);
-
-    dduduRepository.deleteAllByGoal(goalEntity);
-    goalRepository.delete(goalEntity);
+    dduduRepository.deleteAllByGoal(GoalEntity.from(goal));
+    goalRepository.delete(GoalEntity.from(goal));
   }
 
 }
