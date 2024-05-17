@@ -50,13 +50,13 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
   }
 
   @Override
-  public Optional<User> loadUserById(Long userId) {
+  public Optional<User> loadFullUser(Long userId) {
     return userRepository.fetchFullUserById(userId)
         .map(FullUser::toDomain);
   }
 
   @Override
-  public Optional<User> findById(Long id) {
+  public Optional<User> loadMinimalUser(Long id) {
     return userRepository.findById(id)
         .map(UserEntity::toDomain);
   }
