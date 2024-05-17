@@ -1,6 +1,5 @@
 package com.ddudu.old.resolver;
 
-import static com.ddudu.application.domain.authentication.exception.AuthErrorCode.INVALID_AUTHENTICATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.application.domain.user.domain.enums.Authority;
 import com.ddudu.presentation.api.annotation.Login;
-import com.ddudu.presentation.api.exception.InvalidAuthenticationException;
 import com.ddudu.presentation.api.jwt.JwtAuthToken;
 import com.ddudu.presentation.api.resolver.LoginUserArgumentResolver;
 import java.time.Instant;
@@ -100,8 +99,8 @@ class LoginUserArgumentResolverTest {
     ThrowingCallable resolveArgument = () -> loginResolver.resolveArgument(null, null, null, null);
 
     // then
-    assertThatThrownBy(resolveArgument).isInstanceOf(InvalidAuthenticationException.class)
-        .hasMessage(INVALID_AUTHENTICATION.getMessage());
+    assertThatThrownBy(resolveArgument).isInstanceOf(UnsupportedOperationException.class)
+        .hasMessage(AuthErrorCode.BAD_TOKEN_CONTENT.getCodeName());
   }
 
   private static Jwt createJWT() {

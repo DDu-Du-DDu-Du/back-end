@@ -9,7 +9,6 @@ import java.util.MissingResourceException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -119,19 +118,6 @@ public class GlobalExceptionHandler {
     ErrorResponse response = ErrorResponse.from(e);
 
     return ResponseEntity.badRequest()
-        .body(response);
-  }
-
-  @ExceptionHandler(InvalidAuthenticationException.class)
-  public ResponseEntity<ErrorResponse> handleUnauthorizedException(
-      InvalidAuthenticationException e
-  ) {
-    log.warn(e.getMessage(), e);
-
-    ErrorResponse response = ErrorResponse.from(e);
-
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-        .header(HttpHeaders.WWW_AUTHENTICATE, "Bearer")
         .body(response);
   }
 
