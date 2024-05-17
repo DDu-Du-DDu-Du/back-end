@@ -41,7 +41,7 @@ public class Ddudu {
     this.user = user;
     this.name = name;
     this.status = Objects.requireNonNullElse(status, DEFAULT_STATUS);
-    this.isPostPoned = isPostPoned;
+    this.isPostPoned = Objects.requireNonNullElse(isPostPoned, false);
     this.beginAt = Objects.requireNonNullElse(beginAt, LocalDateTime.now());
     this.endAt = endAt;
   }
@@ -88,17 +88,9 @@ public class Ddudu {
   }
 
   private void validate(Goal goal, User user, String name) {
-    validateGoal(goal);
-    validateUser(user);
-    validateTodo(name);
-  }
-
-  private void validateGoal(Goal goal) {
     checkArgument(Objects.nonNull(goal), DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
-  }
-
-  private void validateUser(User user) {
     checkArgument(Objects.nonNull(user), DduduErrorCode.NULL_USER.getCodeName());
+    validateTodo(name);
   }
 
   private void validateTodo(String name) {

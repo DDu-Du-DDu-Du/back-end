@@ -1,7 +1,10 @@
 package com.ddudu.fixture;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.user.domain.User;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -9,10 +12,23 @@ import lombok.NoArgsConstructor;
 public class DduduFixture extends BaseFixture {
 
   public static Ddudu createRandomDduduWithGoal(Goal goal) {
+    return createDdudu(
+        getRandomId(), goal, goal.getUser(), getRandomSentenceWithMax(50), null, null, null, false);
+  }
+
+  public static Ddudu createDdudu(
+      Long id, Goal goal, User user, String name, DduduStatus dduduStatus, LocalDateTime beginAt,
+      LocalDateTime endAt, Boolean isPostPoned
+  ) {
     return Ddudu.builder()
-        .name(getRandomSentenceWithMax(50))
+        .id(id)
         .goal(goal)
-        .user(goal.getUser())
+        .user(user)
+        .name(name)
+        .isPostPoned(isPostPoned)
+        .status(dduduStatus)
+        .beginAt(beginAt)
+        .endAt(endAt)
         .build();
   }
 
