@@ -18,6 +18,10 @@ on:
       ecs-cluster:
         required: true
         type: string
+      alimi:
+        required: false
+        default: false
+        type: boolean
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -102,3 +106,24 @@ jobs:
           service: ${{ inputs.ecs-service }}
           cluster: ${{ inputs.ecs-cluster }}
           wait-for-service-stability: true
+
+      - name: 배포 성공 알리미
+        uses: slackapi/slack-github-action@v1.24.0
+        if: inputs.alimi && success()
+        with:
+          payload: |
+            {
+              "text": "🎊${{ inputs.env }} 서버 업데이트 있습니다🎊",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "**🚀${{ github.event.pull_request.title }}🌠**\nPR 링크: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_ALIMI_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

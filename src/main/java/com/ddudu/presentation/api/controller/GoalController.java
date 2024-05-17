@@ -7,12 +7,12 @@ import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
+import com.ddudu.application.port.in.DeleteGoalUseCase;
 import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
 import com.ddudu.application.port.in.goal.CreateGoalUseCase;
 import com.ddudu.application.port.in.goal.RetrieveAllGoalsUseCase;
 import com.ddudu.application.port.in.goal.RetrieveGoalUseCase;
 import com.ddudu.application.port.in.goal.UpdateGoalUseCase;
-import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,13 +48,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class GoalController {
 
   private static final String GOALS_BASE_PATH = "/api/goals/";
+
   private final CreateGoalUseCase createGoalUseCase;
   private final RetrieveAllGoalsUseCase retrieveAllGoalsUseCase;
   private final RetrieveGoalUseCase retrieveGoalUseCase;
   private final UpdateGoalUseCase updateGoalUseCase;
   private final ChangeGoalStatusUseCase changeGoalStatusUseCase;
-
-  private final GoalService goalService;
+  private final DeleteGoalUseCase deleteGoalUseCase;
 
   @PostMapping
   @Operation(summary = "목표 생성")
@@ -67,7 +67,6 @@ public class GoalController {
   )
   public ResponseEntity<GoalIdResponse> create(
       @Login
-      @Parameter(hidden = true)
       Long userId,
       @RequestBody
       @Valid
@@ -86,13 +85,16 @@ public class GoalController {
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalResponse.class)
+          schema = @Schema(implementation = GoalIdResponse.class)
       )
   )
-  @Parameter(name = "id", description = "수정할 목표의 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "수정할 목표의 식별자",
+      in = ParameterIn.PATH
+  )
   public ResponseEntity<GoalIdResponse> update(
       @Login
-      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id,
@@ -112,13 +114,16 @@ public class GoalController {
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalResponse.class)
+          schema = @Schema(implementation = GoalIdResponse.class)
       )
   )
-  @Parameter(name = "id", description = "상태를 변경할 목표의 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "상태를 변경할 목표의 식별자",
+      in = ParameterIn.PATH
+  )
   public ResponseEntity<GoalIdResponse> changeStatus(
       @Login
-      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id,
@@ -141,10 +146,13 @@ public class GoalController {
           schema = @Schema(implementation = GoalResponse.class)
       )
   )
-  @Parameter(name = "id", description = "조회할 목표의 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "조회할 목표의 식별자",
+      in = ParameterIn.PATH
+  )
   public ResponseEntity<GoalResponse> getById(
       @Login
-      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id
@@ -163,10 +171,13 @@ public class GoalController {
           array = @ArraySchema(schema = @Schema(implementation = GoalSummaryResponse.class))
       )
   )
-  @Parameter(name = "userId", description = "조회할 목표의 소유자", in = ParameterIn.QUERY)
+  @Parameter(
+      name = "userId",
+      description = "조회할 목표의 소유자",
+      in = ParameterIn.QUERY
+  )
   public ResponseEntity<List<GoalSummaryResponse>> getAllByUser(
       @Login
-      @Parameter(hidden = true)
       Long loginId,
       @RequestParam
       Long userId
@@ -186,14 +197,15 @@ public class GoalController {
   @ApiResponse(
       responseCode = "204"
   )
-  @Deprecated
+  @Parameter(name = "id", description = "삭제할 목표의 식별자", in = ParameterIn.PATH)
   public ResponseEntity<Void> delete(
       @Login
+      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id
   ) {
-    goalService.delete(loginId, id);
+    deleteGoalUseCase.delete(loginId, id);
 
     return ResponseEntity.noContent()
         .build();

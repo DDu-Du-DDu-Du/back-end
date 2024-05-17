@@ -1,8 +1,9 @@
-package com.ddudu.old.persistence.dao.todo;
+package com.ddudu.infrastructure.persistence.repository.ddudu;
 
 import static com.ddudu.old.persistence.entity.QTodoEntity.todoEntity;
 
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.persistence.entity.TodoEntity;
 import com.ddudu.old.todo.domain.TodoStatus;
@@ -18,11 +19,11 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TodoDaoImpl implements TodoDaoCustom {
+public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
 
-  public TodoDaoImpl(EntityManager em) {
+  public DduduQueryRepositoryImpl(EntityManager em) {
     this.jpaQueryFactory = new JPAQueryFactory(em);
   }
 
@@ -91,6 +92,14 @@ public class TodoDaoImpl implements TodoDaoCustom {
                 .intValue())
             .build())
         .toList();
+  }
+
+  @Override
+  public void deleteAllByGoal(GoalEntity goal) {
+    jpaQueryFactory
+        .delete(todoEntity)
+        .where(todoEntity.goal.eq(goal))
+        .execute();
   }
 
 }
