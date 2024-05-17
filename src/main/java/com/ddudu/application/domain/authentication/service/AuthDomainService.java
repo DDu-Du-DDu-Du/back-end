@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 @DomainService
@@ -35,7 +36,8 @@ public class AuthDomainService {
         .userId(user.getId())
         .family(family)
         .build();
-    Map<String, Object> claim = Collections.singletonMap("sub", userFamily.getUserFamilyValue());
+    Map<String, Object> claim = Collections.singletonMap(
+        JwtClaimNames.SUB, userFamily.getUserFamilyValue());
     String tokenValue = jwtIssuer.issue(claim, Duration.ZERO);
 
     return RefreshToken.builder()
@@ -47,7 +49,7 @@ public class AuthDomainService {
   public UserFamily decodeRefreshToken(String refreshToken) {
     Jwt jwt = jwtDecoder.decode(refreshToken);
     return UserFamily.builderWithString()
-        .userFamilyValue(jwt.getClaimAsString("sub"))
+        .userFamilyValue(jwt.getClaimAsString(JwtClaimNames.SUB))
         .buildWithString();
   }
 
