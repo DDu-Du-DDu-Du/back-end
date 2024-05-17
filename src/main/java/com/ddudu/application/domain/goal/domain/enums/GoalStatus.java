@@ -1,6 +1,8 @@
 package com.ddudu.application.domain.goal.domain.enums;
 
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import java.util.Arrays;
 
@@ -9,7 +11,7 @@ public enum GoalStatus {
   DONE;
 
   public static GoalStatus from(String value) {
-    if (value == null) {
+    if (isNull(value)) {
       return GoalStatus.IN_PROGRESS;
     }
 
