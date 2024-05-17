@@ -1,6 +1,8 @@
 package com.ddudu.presentation.api.controller;
 
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
+import com.ddudu.application.domain.user.dto.MeResponse;
+import com.ddudu.application.port.in.user.GetMyInfoUseCase;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import com.ddudu.old.user.dto.request.FollowRequest;
@@ -43,8 +45,28 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "회원 관련 API")
 public class UserController {
 
+  private final GetMyInfoUseCase getMyInfoUseCase;
   private final UserService userService;
   private final FollowingService followingService;
+
+  @GetMapping("/me")
+  @Operation(summary = "내 정보 조회")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = MeResponse.class)
+      )
+  )
+  public ResponseEntity<MeResponse> validateToken(
+      @Login
+      Long loginId
+  ) {
+    MeResponse response = getMyInfoUseCase.getMyInfo(loginId);
+
+    return ResponseEntity.ok(response);
+  }
+
 
   @GetMapping("/{id}")
   @Operation(summary = "회원 상세 조회")

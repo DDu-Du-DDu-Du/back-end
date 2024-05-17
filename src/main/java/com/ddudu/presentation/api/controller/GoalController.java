@@ -67,7 +67,6 @@ public class GoalController {
   )
   public ResponseEntity<GoalIdResponse> create(
       @Login
-      @Parameter(hidden = true)
       Long userId,
       @RequestBody
       @Valid
@@ -89,10 +88,13 @@ public class GoalController {
           schema = @Schema(implementation = GoalResponse.class)
       )
   )
-  @Parameter(name = "id", description = "수정할 목표의 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "수정할 목표의 식별자",
+      in = ParameterIn.PATH
+  )
   public ResponseEntity<GoalIdResponse> update(
       @Login
-      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id,
@@ -115,10 +117,13 @@ public class GoalController {
           schema = @Schema(implementation = GoalResponse.class)
       )
   )
-  @Parameter(name = "id", description = "상태를 변경할 목표의 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "상태를 변경할 목표의 식별자",
+      in = ParameterIn.PATH
+  )
   public ResponseEntity<GoalIdResponse> changeStatus(
       @Login
-      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id,
@@ -141,10 +146,13 @@ public class GoalController {
           schema = @Schema(implementation = GoalResponse.class)
       )
   )
-  @Parameter(name = "id", description = "조회할 목표의 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "조회할 목표의 식별자",
+      in = ParameterIn.PATH
+  )
   public ResponseEntity<GoalResponse> getById(
       @Login
-      @Parameter(hidden = true)
       Long loginId,
       @PathVariable
       Long id
@@ -163,10 +171,13 @@ public class GoalController {
           array = @ArraySchema(schema = @Schema(implementation = GoalSummaryResponse.class))
       )
   )
-  @Parameter(name = "userId", description = "조회할 목표의 소유자", in = ParameterIn.QUERY)
+  @Parameter(
+      name = "userId",
+      description = "조회할 목표의 소유자",
+      in = ParameterIn.QUERY
+  )
   public ResponseEntity<List<GoalSummaryResponse>> getAllByUser(
       @Login
-      @Parameter(hidden = true)
       Long loginId,
       @RequestParam
       Long userId
