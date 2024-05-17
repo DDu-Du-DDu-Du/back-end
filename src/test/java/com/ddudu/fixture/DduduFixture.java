@@ -25,7 +25,7 @@ public class DduduFixture extends BaseFixture {
         .goal(goal)
         .user(user)
         .name(name)
-        .isPostPoned(isPostPoned)
+        .isPostponed(isPostPoned)
         .status(dduduStatus)
         .beginAt(beginAt)
         .endAt(endAt)

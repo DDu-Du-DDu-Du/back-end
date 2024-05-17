@@ -25,13 +25,13 @@ public class Ddudu {
   private final User user;
   private final String name;
   private final DduduStatus status;
-  private final boolean isPostPoned;
+  private final boolean isPostponed;
   private final LocalDateTime beginAt;
   private final LocalDateTime endAt;
 
   @Builder
   private Ddudu(
-      Long id, Goal goal, User user, String name, Boolean isPostPoned, DduduStatus status,
+      Long id, Goal goal, User user, String name, Boolean isPostponed, DduduStatus status,
       LocalDateTime beginAt, LocalDateTime endAt
   ) {
     validate(goal, user, name);
@@ -41,7 +41,7 @@ public class Ddudu {
     this.user = user;
     this.name = name;
     this.status = Objects.requireNonNullElse(status, DEFAULT_STATUS);
-    this.isPostPoned = Objects.requireNonNullElse(isPostPoned, false);
+    this.isPostponed = Objects.requireNonNullElse(isPostponed, false);
     this.beginAt = Objects.requireNonNullElse(beginAt, LocalDateTime.now());
     this.endAt = endAt;
   }
@@ -55,7 +55,7 @@ public class Ddudu {
         .user(user)
         .name(name)
         .status(this.status)
-        .isPostPoned(this.isPostPoned)
+        .isPostponed(this.isPostponed)
         .beginAt(beginAt)
         .endAt(this.endAt)
         .build();
@@ -67,7 +67,7 @@ public class Ddudu {
         .goal(this.goal)
         .user(this.user)
         .name(this.name)
-        .isPostPoned(this.isPostPoned)
+        .isPostponed(this.isPostponed)
         .beginAt(this.beginAt);
 
     if (this.status == DduduStatus.UNCOMPLETED) {

@@ -81,7 +81,7 @@ public class DduduEntity extends BaseEntity {
         .user(UserEntity.from(ddudu.getUser()))
         .name(ddudu.getName())
         .status(ddudu.getStatus())
-        .isPostponed(ddudu.isPostPoned())
+        .isPostponed(ddudu.isPostponed())
         .beginAt(ddudu.getBeginAt())
         .endAt(ddudu.getEndAt())
         .build();
@@ -94,7 +94,7 @@ public class DduduEntity extends BaseEntity {
         .user(user.toDomain())
         .name(name)
         .status(status)
-        .isPostPoned(isPostponed)
+        .isPostponed(isPostponed)
         .beginAt(beginAt)
         .endAt(endAt)
         .build();
