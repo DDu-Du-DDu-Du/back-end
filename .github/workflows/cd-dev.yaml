@@ -17,7 +17,7 @@ jobs:
       ecs-container-name: ddudu-dev-ecs-container
       ecs-service: ddudu-dev-ecs-service
       ecs-cluster: ddudu-dev-ecs-cluster
-      alimi: true
+      alimi-enabled: ${{ contains(toJson(github.event.pull_request.labels.*.name), 'feature') }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
