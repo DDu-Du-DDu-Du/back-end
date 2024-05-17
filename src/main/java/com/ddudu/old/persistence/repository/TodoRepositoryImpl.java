@@ -3,7 +3,7 @@ package com.ddudu.old.persistence.repository;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
-import com.ddudu.old.persistence.dao.todo.TodoDao;
+import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import com.ddudu.old.persistence.entity.TodoEntity;
 import com.ddudu.old.todo.domain.Todo;
 import com.ddudu.old.todo.domain.TodoRepository;
@@ -18,17 +18,17 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class TodoRepositoryImpl implements TodoRepository {
 
-  private final TodoDao todoDao;
+  private final DduduRepository dduduRepository;
 
   @Override
   public Todo save(Todo todo) {
-    return todoDao.save(TodoEntity.from(todo))
+    return dduduRepository.save(TodoEntity.from(todo))
         .toDomain();
   }
 
   @Override
   public Optional<Todo> findById(Long id) {
-    return todoDao.findById(id)
+    return dduduRepository.findById(id)
         .map(TodoEntity::toDomain);
   }
 
@@ -36,7 +36,7 @@ public class TodoRepositoryImpl implements TodoRepository {
   public List<Todo> findTodosByDate(
       LocalDateTime startDate, LocalDateTime endDate, User user
   ) {
-    return todoDao.findTodosByDate(startDate, endDate, UserEntity.from(user))
+    return dduduRepository.findTodosByDate(startDate, endDate, UserEntity.from(user))
         .stream()
         .map(TodoEntity::toDomain)
         .toList();
@@ -46,17 +46,18 @@ public class TodoRepositoryImpl implements TodoRepository {
   public List<TodoCompletionResponse> findTodosCompletion(
       LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
   ) {
-    return todoDao.findTodosCompletion(startDate, endDate, UserEntity.from(user), privacyTypes);
+    return dduduRepository.findTodosCompletion(
+        startDate, endDate, UserEntity.from(user), privacyTypes);
   }
 
   @Override
   public void update(Todo todo) {
-    todoDao.save(TodoEntity.from(todo));
+    dduduRepository.save(TodoEntity.from(todo));
   }
 
   @Override
   public void delete(Todo todo) {
-    todoDao.delete(TodoEntity.from(todo));
+    dduduRepository.delete(TodoEntity.from(todo));
   }
 
 }
