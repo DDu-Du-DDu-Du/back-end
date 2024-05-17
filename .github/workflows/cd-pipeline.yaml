@@ -29,6 +29,8 @@ on:
         required: true
       SUBMODULES_SECRET:
         required: true
+      SLACK_WEBHOOK_URL:
+        required: false
 
 permissions:
   contents: read

@@ -1,12 +1,15 @@
 name: 개발 서버 배포 자동화
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
 
 jobs:
   dev-deploy:
+    if: github.event.pull_request.merged == true
     uses: ./.github/workflows/cd-pipeline.yaml
     with:
       env: dev
@@ -19,3 +22,4 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
       SUBMODULES_SECRET: ${{ secrets.SUBMODULES_SECRET }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_ALIMI_WEBHOOK_URL }}
