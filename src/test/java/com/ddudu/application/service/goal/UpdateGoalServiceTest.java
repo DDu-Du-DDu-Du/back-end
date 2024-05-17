@@ -113,5 +113,4 @@ class UpdateGoalServiceTest {
     return saveGoalPort.save(goal);
   }
 
-
 }
