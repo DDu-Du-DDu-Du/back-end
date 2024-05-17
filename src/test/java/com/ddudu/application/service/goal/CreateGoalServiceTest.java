@@ -1,4 +1,4 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.goal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
@@ -15,7 +15,6 @@ import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.application.service.goal.CreateGoalService;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;

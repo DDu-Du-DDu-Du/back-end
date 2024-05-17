@@ -1,18 +1,17 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.goal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
-import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.application.service.goal.ChangeGoalStatusService;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
@@ -29,10 +28,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class ChangeGoalStatusServiceTest {
+class UpdateGoalServiceTest {
 
   @Autowired
-  ChangeGoalStatusService changeGoalStatusService;
+  UpdateGoalService updateGoalService;
 
   @Autowired
   UserLoaderPort userLoaderPort;
@@ -48,27 +47,32 @@ class ChangeGoalStatusServiceTest {
 
   Long userId;
   Goal goal;
-  ChangeGoalStatusRequest request;
-  GoalStatus newStatus;
+  UpdateGoalRequest request;
+  String newName;
+  String newColor;
+  PrivacyType newPrivacyType;
 
   @BeforeEach
   void setUp() {
     User user = createAndSaveUser();
     userId = user.getId();
     goal = createAndSaveGoal(user);
-    newStatus = GoalFixture.getRandomGoalStatus();
-    request = new ChangeGoalStatusRequest(newStatus.name());
+    newName = BaseFixture.getRandomSentenceWithMax(50);
+    newColor = BaseFixture.getRandomColor();
+    newPrivacyType = GoalFixture.getRandomPrivacyType();
+    request = new UpdateGoalRequest(newName, newColor, newPrivacyType.name());
   }
 
   @Test
-  void 목표_상태를_변경할_수_있다() {
+  void 목표를_수정_할_수_있다() {
     // when
-    changeGoalStatusService.changeStatus(userId, goal.getId(), request);
+    updateGoalService.update(userId, goal.getId(), request);
 
     // then
     Goal actual = goalLoaderPort.findById(goal.getId())
         .get();
-    assertThat(actual.getStatus()).isEqualTo(newStatus);
+    assertThat(actual).extracting("name", "color", "privacyType")
+        .containsExactly(newName, newColor, newPrivacyType);
   }
 
   @Test
@@ -77,8 +81,7 @@ class ChangeGoalStatusServiceTest {
     Long invalidId = BaseFixture.getRandomId();
 
     // when
-    ThrowingCallable update = () -> changeGoalStatusService.changeStatus(
-        userId, invalidId, request);
+    ThrowingCallable update = () -> updateGoalService.update(userId, invalidId, request);
 
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(update)
@@ -91,7 +94,7 @@ class ChangeGoalStatusServiceTest {
     User anotherUser = createAndSaveUser();
 
     // when
-    ThrowingCallable update = () -> changeGoalStatusService.changeStatus(
+    ThrowingCallable update = () -> updateGoalService.update(
         anotherUser.getId(), goal.getId(), request);
 
     // then
@@ -109,5 +112,6 @@ class ChangeGoalStatusServiceTest {
     Goal goal = GoalFixture.createRandomGoalWithUser(user);
     return saveGoalPort.save(goal);
   }
+
 
 }
