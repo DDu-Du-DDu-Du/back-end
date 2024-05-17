@@ -10,16 +10,15 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class GoalQueryRepositoryImpl implements GoalQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
-
-  public GoalQueryRepositoryImpl(EntityManager em) {
-    this.jpaQueryFactory = new JPAQueryFactory(em);
-  }
+  private final EntityManager entityManager;
 
   @Override
   public List<GoalEntity> findAllByUser(UserEntity user) {
@@ -46,6 +45,19 @@ public class GoalQueryRepositoryImpl implements GoalQueryRepository {
         .selectFrom(goalEntity)
         .where(whereClause)
         .fetch();
+  }
+
+  @Override
+  public void update(GoalEntity goal) {
+    jpaQueryFactory
+        .update(goalEntity)
+        .set(
+            List.of(goalEntity.name, goalEntity.status, goalEntity.color, goalEntity.privacyType),
+            List.of(goal.getName(), goal.getStatus(), goal.getColor(), goal.getPrivacyType())
+        )
+        .execute();
+
+    entityManager.clear();
   }
 
 }
