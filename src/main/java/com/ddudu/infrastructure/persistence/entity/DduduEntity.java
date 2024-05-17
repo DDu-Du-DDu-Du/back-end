@@ -16,12 +16,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ddudus")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class DduduEntity extends BaseEntity {
 
   @Id
@@ -70,21 +73,6 @@ public class DduduEntity extends BaseEntity {
       nullable = false
   )
   private boolean isPostponed;
-
-  @Builder
-  public DduduEntity(
-      Long id, GoalEntity goal, UserEntity user, String name, DduduStatus status,
-      LocalDateTime beginAt, LocalDateTime endAt, Boolean isPostponed
-  ) {
-    this.id = id;
-    this.goal = goal;
-    this.user = user;
-    this.name = name;
-    this.status = status;
-    this.beginAt = beginAt;
-    this.endAt = endAt;
-    this.isPostponed = isPostponed;
-  }
 
   public static DduduEntity from(Ddudu ddudu) {
     return DduduEntity.builder()
