@@ -2,11 +2,11 @@ package com.ddudu.infrastructure.persistence.repository.ddudu;
 
 import static com.ddudu.old.persistence.entity.QTodoEntity.todoEntity;
 
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
-import com.ddudu.old.persistence.entity.TodoEntity;
-import com.ddudu.old.todo.domain.TodoStatus;
+import com.ddudu.old.persistence.entity.DduduEntity;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
@@ -28,7 +28,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   @Override
-  public List<TodoEntity> findTodosByDate(
+  public List<DduduEntity> findTodosByDate(
       LocalDateTime startDate, LocalDateTime endDate, UserEntity user
   ) {
     return jpaQueryFactory
@@ -60,7 +60,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         Long.class,
         "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
         todoEntity.status,
-        TodoStatus.UNCOMPLETED,
+        DduduStatus.UNCOMPLETED,
         todoEntity.id
     );
 

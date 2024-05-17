@@ -11,7 +11,7 @@ public record LikeResponse(Long id, Long userId, Long todoId, Boolean isDeleted)
         .id(like.getId())
         .userId(like.getUser()
             .getId())
-        .todoId(like.getTodo()
+        .todoId(like.getDdudu()
             .getId())
         .build();
   }

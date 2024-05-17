@@ -16,8 +16,8 @@ import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.todo.domain.TodoRepository;
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.old.todo.domain.OldTodoRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
@@ -54,7 +54,7 @@ class DeleteGoalServiceTest {
   DeleteGoalPort deleteGoalPort;
 
   @Autowired
-  TodoRepository todoRepository;
+  OldTodoRepository oldTodoRepository;
 
   @Autowired
   EntityManager entityManager;
@@ -82,15 +82,15 @@ class DeleteGoalServiceTest {
   @Test
   void 목표_삭제_시_해당_목표의_뚜두도_삭제된다() {
     //given
-    Todo todo = DduduFixture.createRandomDduduWithGoal(goal);
-    todo = todoRepository.save(todo);
+    Ddudu ddudu = DduduFixture.createRandomDduduWithGoal(goal);
+    ddudu = oldTodoRepository.save(ddudu);
 
     //when
     deleteGoalService.delete(userId, goal.getId());
     flushAndClear();
 
     //then
-    assertThat(todoRepository.findById(todo.getId())).isEmpty();
+    assertThat(oldTodoRepository.findById(ddudu.getId())).isEmpty();
   }
 
   @Test

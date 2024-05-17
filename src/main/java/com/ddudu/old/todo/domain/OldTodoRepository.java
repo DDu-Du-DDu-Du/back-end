@@ -1,5 +1,6 @@
 package com.ddudu.old.todo.domain;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -9,20 +10,20 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TodoRepository {
+public interface OldTodoRepository {
 
-  Todo save(Todo todo);
+  Ddudu save(Ddudu ddudu);
 
-  Optional<Todo> findById(Long id);
+  Optional<Ddudu> findById(Long id);
 
-  List<Todo> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, User user);
+  List<Ddudu> findTodosByDate(LocalDateTime startDate, LocalDateTime endDate, User user);
 
   List<TodoCompletionResponse> findTodosCompletion(
       LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
   );
 
-  void update(Todo todo);
+  void update(Ddudu ddudu);
 
-  void delete(Todo todo);
+  void delete(Ddudu ddudu);
 
 }

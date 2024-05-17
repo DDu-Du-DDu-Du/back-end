@@ -2,11 +2,11 @@ package com.ddudu.old.persistence.entity;
 
 import static java.util.Objects.isNull;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.common.BaseEntity;
-import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.todo.domain.TodoStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,9 +26,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "ddudus")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TodoEntity extends BaseEntity {
+public class DduduEntity extends BaseEntity {
 
-  private static final TodoStatus DEFAULT_STATUS = TodoStatus.UNCOMPLETED;
+  private static final DduduStatus DEFAULT_STATUS = DduduStatus.UNCOMPLETED;
   private static final boolean DEFAULT_IS_POSTPONED = false;
 
   @Id
@@ -37,37 +37,53 @@ public class TodoEntity extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "goal_id", nullable = false)
+  @JoinColumn(
+      name = "goal_id",
+      nullable = false
+  )
   private GoalEntity goal;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private UserEntity user;
 
-  @Column(name = "name", length = 50, nullable = false)
+  @Column(
+      name = "name",
+      length = 50,
+      nullable = false
+  )
   private String name;
 
-  @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
+  @Column(
+      name = "status",
+      nullable = false,
+      columnDefinition = "VARCHAR",
+      length = 20
+  )
   @Enumerated(EnumType.STRING)
-  private TodoStatus status;
+  private DduduStatus status;
 
-  @Column(name = "begin_at", nullable = false)
+  @Column(
+      name = "begin_at",
+      nullable = false
+  )
   private LocalDateTime beginAt;
 
   @Column(name = "end_at")
   private LocalDateTime endAt;
 
-  @Column(name = "is_postponed", nullable = false, columnDefinition = "TINYINT(1)")
+  @Column(
+      name = "is_postponed",
+      nullable = false,
+      columnDefinition = "TINYINT(1)"
+  )
   private boolean isPostponed;
 
   @Builder
-  public TodoEntity(
-      Long id, GoalEntity goal, UserEntity user, String name, TodoStatus status,
-      LocalDateTime beginAt, LocalDateTime endAt, Boolean isPostponed, LocalDateTime createdAt,
-      LocalDateTime updatedAt
+  public DduduEntity(
+      Long id, GoalEntity goal, UserEntity user, String name, DduduStatus status,
+      LocalDateTime beginAt, LocalDateTime endAt, Boolean isPostponed
   ) {
-    super(createdAt, updatedAt);
-
     this.id = id;
     this.goal = goal;
     this.user = user;
@@ -78,22 +94,20 @@ public class TodoEntity extends BaseEntity {
     this.isPostponed = isNull(isPostponed) ? DEFAULT_IS_POSTPONED : isPostponed;
   }
 
-  public static TodoEntity from(Todo todo) {
-    return TodoEntity.builder()
-        .id(todo.getId())
-        .goal(GoalEntity.from(todo.getGoal()))
-        .user(UserEntity.from(todo.getUser()))
-        .name(todo.getName())
-        .status(todo.getStatus())
-        .beginAt(todo.getBeginAt())
-        .endAt(todo.getEndAt())
-        .createdAt(todo.getCreatedAt())
-        .updatedAt(todo.getUpdatedAt())
+  public static DduduEntity from(Ddudu ddudu) {
+    return DduduEntity.builder()
+        .id(ddudu.getId())
+        .goal(GoalEntity.from(ddudu.getGoal()))
+        .user(UserEntity.from(ddudu.getUser()))
+        .name(ddudu.getName())
+        .status(ddudu.getStatus())
+        .beginAt(ddudu.getBeginAt())
+        .endAt(ddudu.getEndAt())
         .build();
   }
 
-  public Todo toDomain() {
-    return Todo.builder()
+  public Ddudu toDomain() {
+    return Ddudu.builder()
         .id(id)
         .goal(goal.toDomain())
         .user(user.toDomain())
@@ -101,8 +115,6 @@ public class TodoEntity extends BaseEntity {
         .status(status)
         .beginAt(beginAt)
         .endAt(endAt)
-        .createdAt(getCreatedAt())
-        .updatedAt(getUpdatedAt())
         .build();
   }
 

@@ -1,12 +1,12 @@
-package com.ddudu.old.todo.domain;
+package com.ddudu.application.domain.ddudu.domain;
 
 import static io.micrometer.common.util.StringUtils.isBlank;
 import static java.util.Objects.isNull;
 
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.old.common.domain.BaseDomain;
-import com.ddudu.old.todo.exception.TodoErrorCode;
+import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -14,25 +14,24 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class Todo extends BaseDomain {
+public class Ddudu {
 
-  private static final TodoStatus DEFAULT_STATUS = TodoStatus.UNCOMPLETED;
+  private static final DduduStatus DEFAULT_STATUS = DduduStatus.UNCOMPLETED;
   private static final int MAX_NAME_LENGTH = 50;
 
   private Long id;
   private Goal goal;
   private User user;
   private String name;
-  private TodoStatus status;
+  private DduduStatus status;
   private LocalDateTime beginAt;
   private LocalDateTime endAt;
 
   @Builder
-  public Todo(
-      Long id, Goal goal, User user, String name, TodoStatus status, LocalDateTime beginAt,
-      LocalDateTime endAt, LocalDateTime createdAt, LocalDateTime updatedAt
+  public Ddudu(
+      Long id, Goal goal, User user, String name, DduduStatus status, LocalDateTime beginAt,
+      LocalDateTime endAt
   ) {
-    super(createdAt, updatedAt);
     validate(goal, user, name);
 
     this.id = id;
@@ -53,11 +52,11 @@ public class Todo extends BaseDomain {
   }
 
   public void switchStatus() {
-    if (this.status == TodoStatus.UNCOMPLETED) {
-      this.status = TodoStatus.COMPLETE;
+    if (this.status == DduduStatus.UNCOMPLETED) {
+      this.status = DduduStatus.COMPLETE;
       this.endAt = LocalDateTime.now();
     } else {
-      this.status = TodoStatus.UNCOMPLETED;
+      this.status = DduduStatus.UNCOMPLETED;
       this.endAt = null;
     }
   }
@@ -74,9 +73,9 @@ public class Todo extends BaseDomain {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Todo todo = (Todo) o;
+    Ddudu ddudu = (Ddudu) o;
     if (id != null) {
-      return id.equals(todo.id);
+      return id.equals(ddudu.id);
     } else {
       return super.equals(o);
     }

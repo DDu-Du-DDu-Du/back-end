@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.ddudu.old.todo.domain.TodoStatus;
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.GoalInfo;
@@ -24,7 +24,7 @@ import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoInfo;
 import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
-import com.ddudu.old.todo.exception.TodoErrorCode;
+import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.controller.TodoController;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
@@ -52,7 +52,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(TodoController.class)
-class TodoControllerTest extends ControllerTestSupport {
+class DduduControllerTest extends ControllerTestSupport {
 
   static final Faker faker = new Faker();
 
@@ -940,7 +940,7 @@ class TodoControllerTest extends ControllerTestSupport {
     return TodoInfo.builder()
         .id(1L)
         .name("할 일 조회 기능 구현")
-        .status(TodoStatus.UNCOMPLETED)
+        .status(DduduStatus.UNCOMPLETED)
         .build();
   }
 

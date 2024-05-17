@@ -1,9 +1,10 @@
 package com.ddudu.old.like.service;
 
-import static com.ddudu.old.todo.domain.TodoStatus.COMPLETE;
+import static com.ddudu.application.domain.ddudu.domain.enums.DduduStatus.COMPLETE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
@@ -13,8 +14,7 @@ import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.like.dto.request.LikeRequest;
 import com.ddudu.old.like.dto.response.LikeResponse;
 import com.ddudu.old.like.exception.LikeErrorCode;
-import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.todo.domain.TodoRepository;
+import com.ddudu.old.todo.domain.OldTodoRepository;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.ForbiddenException;
@@ -50,17 +50,17 @@ class LikeServiceTest {
   OldGoalRepository goalRepository;
 
   @Autowired
-  TodoRepository todoRepository;
+  OldTodoRepository oldTodoRepository;
 
   User user;
   Goal goal;
-  Todo todo;
+  Ddudu ddudu;
 
   @BeforeEach
   void setUp() {
     user = createUser();
     goal = createGoal(user);
-    todo = createCompletedTodo(user, goal);
+    ddudu = createCompletedTodo(user, goal);
   }
 
   @Nested
@@ -70,8 +70,8 @@ class LikeServiceTest {
     void 좋아요_취소를_성공한다() {
       // given
       User other = createUser();
-      LikeRequest request = new LikeRequest(other.getId(), todo.getId());
-      Like like = createLike(other, todo);
+      LikeRequest request = new LikeRequest(other.getId(), ddudu.getId());
+      Like like = createLike(other, ddudu);
 
       // when
       likeService.toggle(other.getId(), request);
@@ -85,22 +85,22 @@ class LikeServiceTest {
     void 취소한_좋아요를_다시_좋아요할_수_있다() {
       // given
       User other = createUser();
-      LikeRequest request = new LikeRequest(other.getId(), todo.getId());
-      Like like = createLike(other, todo);
+      LikeRequest request = new LikeRequest(other.getId(), ddudu.getId());
+      Like like = createLike(other, ddudu);
       likeRepository.delete(like);
 
       // when
       LikeResponse expected = likeService.toggle(other.getId(), request);
 
       // then
-      Like actual = likeRepository.findByUserAndTodo(other, todo);
+      Like actual = likeRepository.findByUserAndTodo(other, ddudu);
       assertThat(actual).isNotNull();
     }
 
     @Test
     void 좋아요한_이력이_없으면_좋아요를_생성한다() {
       User other = createUser();
-      LikeRequest request = new LikeRequest(other.getId(), todo.getId());
+      LikeRequest request = new LikeRequest(other.getId(), ddudu.getId());
 
       // when
       LikeResponse expected = likeService.toggle(other.getId(), request);
@@ -109,14 +109,14 @@ class LikeServiceTest {
       Optional<Like> actual = likeRepository.findById(expected.id());
       assertThat(actual).isPresent();
       assertThat(expected).extracting("userId", "todoId")
-          .containsExactly(other.getId(), todo.getId());
+          .containsExactly(other.getId(), ddudu.getId());
     }
 
     @Test
     void 로그인한_사용자가_좋아요할_사용자와_다르면_좋아요_토글을_실패한다() {
       // given
       User other = createUser();
-      LikeRequest request = new LikeRequest(user.getId(), todo.getId());
+      LikeRequest request = new LikeRequest(user.getId(), ddudu.getId());
 
       // when
       ThrowingCallable toggle = () -> likeService.toggle(other.getId(), request);
@@ -131,7 +131,7 @@ class LikeServiceTest {
       // given
       Long invalidUserId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      LikeRequest request = new LikeRequest(invalidUserId, todo.getId());
+      LikeRequest request = new LikeRequest(invalidUserId, ddudu.getId());
 
       // when
       ThrowingCallable toggle = () -> likeService.toggle(invalidUserId, request);
@@ -186,24 +186,24 @@ class LikeServiceTest {
     return goalRepository.save(goal);
   }
 
-  private Todo createCompletedTodo(User user, Goal goal) {
+  private Ddudu createCompletedTodo(User user, Goal goal) {
     String name = faker.lorem()
         .word();
 
-    Todo todo = Todo.builder()
+    Ddudu ddudu = Ddudu.builder()
         .name(name)
         .user(user)
         .goal(goal)
         .status(COMPLETE)
         .build();
 
-    return todoRepository.save(todo);
+    return oldTodoRepository.save(ddudu);
   }
 
-  private Like createLike(User user, Todo todo) {
+  private Like createLike(User user, Ddudu ddudu) {
     Like like = Like.builder()
         .user(user)
-        .todo(todo)
+        .todo(ddudu)
         .build();
 
     return likeRepository.save(like);

@@ -1,4 +1,4 @@
-package com.ddudu.old.todo.exception;
+package com.ddudu.application.domain.ddudu.exception;
 
 import com.ddudu.application.exception.ErrorCode;
 

@@ -3,9 +3,11 @@ package com.ddudu.old.todo.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.old.todo.exception.TodoErrorCode;
+import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +22,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class TodoTest {
+class DduduTest {
 
   static final Faker faker = new Faker();
 
@@ -42,19 +44,19 @@ class TodoTest {
       String name = "Todo 엔티티 테스트 코드 짜기";
 
       // when
-      Todo todo = Todo.builder()
+      Ddudu ddudu = Ddudu.builder()
           .name(name)
           .goal(goal)
           .user(user)
           .build();
 
       // then
-      assertThat(todo)
+      assertThat(ddudu)
           .extracting("goal", "user", "name", "status")
-          .containsExactly(goal, user, name, TodoStatus.UNCOMPLETED);
-      assertThat(todo).extracting("beginAt")
+          .containsExactly(goal, user, name, DduduStatus.UNCOMPLETED);
+      assertThat(ddudu).extracting("beginAt")
           .isNotNull();
-      assertThat(todo).extracting("endAt")
+      assertThat(ddudu).extracting("endAt")
           .isNull();
     }
 
@@ -65,7 +67,7 @@ class TodoTest {
       LocalDateTime beginAt = LocalDateTime.of(2023, 12, 25, 0, 0);
 
       // when
-      Todo todo = Todo.builder()
+      Ddudu ddudu = Ddudu.builder()
           .name(name)
           .goal(goal)
           .user(user)
@@ -73,17 +75,17 @@ class TodoTest {
           .build();
 
       // then
-      assertThat(todo)
+      assertThat(ddudu)
           .extracting("goal", "user", "name", "status")
-          .containsExactly(goal, user, name, TodoStatus.UNCOMPLETED);
-      assertThat(todo).extracting("endAt")
+          .containsExactly(goal, user, name, DduduStatus.UNCOMPLETED);
+      assertThat(ddudu).extracting("endAt")
           .isNull();
     }
 
     @Test
     void 목표_없이는_할_일을_생성할_수_없다() {
       // when then
-      assertThatThrownBy(() -> Todo.builder()
+      assertThatThrownBy(() -> Ddudu.builder()
           .name("Todo 엔티티 테스트 코드 짜기")
           .build())
           .isInstanceOf(InvalidParameterException.class)
@@ -94,7 +96,7 @@ class TodoTest {
     @NullAndEmptySource
     void 할_일은_필수값이며_빈_문자열일_수_없다(String invalidName) {
       // when then
-      assertThatThrownBy(() -> Todo.builder()
+      assertThatThrownBy(() -> Ddudu.builder()
           .name(invalidName)
           .goal(goal)
           .user(user)
@@ -107,7 +109,7 @@ class TodoTest {
     @MethodSource("provideLongString")
     void 할_일_생성_시_할_일의_내용은_50자를_초과할_수_없다(String longName) {
       // when then
-      assertThatThrownBy(() -> Todo.builder()
+      assertThatThrownBy(() -> Ddudu.builder()
           .name(longName)
           .goal(goal)
           .user(user)
