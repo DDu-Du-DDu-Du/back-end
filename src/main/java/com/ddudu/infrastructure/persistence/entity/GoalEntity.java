@@ -18,10 +18,12 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "goals")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoalEntity extends BaseEntity {
 
