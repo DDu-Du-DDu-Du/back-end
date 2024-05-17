@@ -145,7 +145,7 @@ class GoalTest {
     }
 
     private static List<String> getLongerThan50Characters() {
-      return List.of(BaseFixture.getRandomSentence(50, 100));
+      return List.of(BaseFixture.getRandomSentence(51, 100));
     }
 
   }
