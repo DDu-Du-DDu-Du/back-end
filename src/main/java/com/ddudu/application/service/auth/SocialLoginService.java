@@ -1,4 +1,4 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.auth;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.authentication.domain.RefreshToken;
@@ -8,11 +8,11 @@ import com.ddudu.application.domain.authentication.service.AuthDomainService;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.vo.AuthProvider;
 import com.ddudu.application.domain.user.service.UserDomainService;
-import com.ddudu.application.port.in.SocialLoginUseCase;
-import com.ddudu.application.port.out.SignUpPort;
-import com.ddudu.application.port.out.SocialResourcePort;
-import com.ddudu.application.port.out.TokenManipulationPort;
-import com.ddudu.application.port.out.UserLoaderPort;
+import com.ddudu.application.port.in.auth.SocialLoginUseCase;
+import com.ddudu.application.port.out.auth.SignUpPort;
+import com.ddudu.application.port.out.auth.SocialResourcePort;
+import com.ddudu.application.port.out.auth.TokenManipulationPort;
+import com.ddudu.application.port.out.user.UserLoaderPort;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

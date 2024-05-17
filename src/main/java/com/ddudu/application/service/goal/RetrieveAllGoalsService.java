@@ -6,7 +6,7 @@ import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.goal.RetrieveAllGoalsUseCase;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
-import com.ddudu.application.port.out.UserLoaderPort;
+import com.ddudu.application.port.out.user.UserLoaderPort;
 import java.util.List;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;

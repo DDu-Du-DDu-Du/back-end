@@ -1,4 +1,4 @@
-package com.ddudu.application.port.out;
+package com.ddudu.application.port.out.user;
 
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.vo.AuthProvider;

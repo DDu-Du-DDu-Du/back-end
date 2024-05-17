@@ -1,4 +1,4 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.auth;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.authentication.domain.RefreshToken;
@@ -8,10 +8,10 @@ import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.application.domain.authentication.service.AuthDomainService;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.port.in.TokenRefreshUseCase;
-import com.ddudu.application.port.out.TokenLoaderPort;
-import com.ddudu.application.port.out.TokenManipulationPort;
-import com.ddudu.application.port.out.UserLoaderPort;
+import com.ddudu.application.port.in.auth.TokenRefreshUseCase;
+import com.ddudu.application.port.out.auth.TokenLoaderPort;
+import com.ddudu.application.port.out.auth.TokenManipulationPort;
+import com.ddudu.application.port.out.user.UserLoaderPort;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.MissingResourceException;

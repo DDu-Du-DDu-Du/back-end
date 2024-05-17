@@ -1,8 +1,8 @@
 package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.authentication.domain.RefreshToken;
-import com.ddudu.application.port.out.TokenLoaderPort;
-import com.ddudu.application.port.out.TokenManipulationPort;
+import com.ddudu.application.port.out.auth.TokenLoaderPort;
+import com.ddudu.application.port.out.auth.TokenManipulationPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.RefreshTokenEntity;
 import com.ddudu.infrastructure.persistence.repository.token.RefreshTokenRepository;
