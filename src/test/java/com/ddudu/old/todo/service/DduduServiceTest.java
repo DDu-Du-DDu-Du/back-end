@@ -57,7 +57,7 @@ class DduduServiceTest {
   OldTodoRepository oldTodoRepository;
 
   @Autowired
-  OldGoalRepository goalRepository;
+  OldGoalRepository oldGoalRepository;
 
   @Autowired
   UserRepository userRepository;
@@ -743,7 +743,7 @@ class DduduServiceTest {
         .user(user)
         .build();
 
-    return goalRepository.save(goal);
+    return oldGoalRepository.save(goal);
   }
 
   private Ddudu createTodo(String name, Goal goal, User user) {
@@ -773,7 +773,7 @@ class DduduServiceTest {
   private Like createLike(User user, Ddudu ddudu) {
     Like like = Like.builder()
         .user(user)
-        .todo(ddudu)
+        .ddudu(ddudu)
         .build();
     return likeRepository.save(like);
   }

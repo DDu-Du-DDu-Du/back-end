@@ -1,6 +1,6 @@
 package com.ddudu.infrastructure.persistence.repository.ddudu;
 
-import static com.ddudu.old.persistence.entity.QTodoEntity.todoEntity;
+import static com.ddudu.infrastructure.persistence.entity.QDduduEntity.dduduEntity;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -32,14 +32,14 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
       LocalDateTime startDate, LocalDateTime endDate, UserEntity user
   ) {
     return jpaQueryFactory
-        .selectFrom(todoEntity)
-        .join(todoEntity.goal)
+        .selectFrom(dduduEntity)
+        .join(dduduEntity.goal)
         .fetchJoin()
         .where(
-            todoEntity.beginAt.between(startDate, endDate),
-            todoEntity.user.eq(user)
+            dduduEntity.beginAt.between(startDate, endDate),
+            dduduEntity.user.eq(user)
         )
-        .orderBy(todoEntity.status.desc(), todoEntity.endAt.asc())
+        .orderBy(dduduEntity.status.desc(), dduduEntity.endAt.asc())
         .fetch();
   }
 
@@ -49,19 +49,19 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
       List<PrivacyType> privacyTypes
   ) {
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
-        LocalDate.class, "{0}", todoEntity.beginAt);
+        LocalDate.class, "{0}", dduduEntity.beginAt);
 
     NumberTemplate<Long> totalTodosTemplate = Expressions.numberTemplate(
         Long.class,
-        "COUNT({0})", todoEntity.id
+        "COUNT({0})", dduduEntity.id
     );
 
     NumberTemplate<Long> uncompletedTodosTemplate = Expressions.numberTemplate(
         Long.class,
         "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
-        todoEntity.status,
+        dduduEntity.status,
         DduduStatus.UNCOMPLETED,
-        todoEntity.id
+        dduduEntity.id
     );
 
     return jpaQueryFactory
@@ -73,12 +73,12 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
             uncompletedTodosTemplate
                 .as("uncompletedTodos")
         )
-        .from(todoEntity)
+        .from(dduduEntity)
         .where(
-            todoEntity.beginAt.goe(startDate),
-            todoEntity.beginAt.lt(endDate),
-            todoEntity.user.eq(user),
-            todoEntity.goal.privacyType.in(privacyTypes)
+            dduduEntity.beginAt.goe(startDate),
+            dduduEntity.beginAt.lt(endDate),
+            dduduEntity.user.eq(user),
+            dduduEntity.goal.privacyType.in(privacyTypes)
         )
         .groupBy(dateTemplate)
         .fetch()
@@ -97,8 +97,8 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   @Override
   public void deleteAllByGoal(GoalEntity goal) {
     jpaQueryFactory
-        .delete(todoEntity)
-        .where(todoEntity.goal.eq(goal))
+        .delete(dduduEntity)
+        .where(dduduEntity.goal.eq(goal))
         .execute();
   }
 

@@ -47,7 +47,7 @@ class LikeServiceTest {
   UserRepository userRepository;
 
   @Autowired
-  OldGoalRepository goalRepository;
+  OldGoalRepository oldGoalRepository;
 
   @Autowired
   OldTodoRepository oldTodoRepository;
@@ -183,7 +183,7 @@ class LikeServiceTest {
         .privacyType(PrivacyType.PUBLIC)
         .build();
 
-    return goalRepository.save(goal);
+    return oldGoalRepository.save(goal);
   }
 
   private Ddudu createCompletedTodo(User user, Goal goal) {
@@ -203,7 +203,7 @@ class LikeServiceTest {
   private Like createLike(User user, Ddudu ddudu) {
     Like like = Like.builder()
         .user(user)
-        .todo(ddudu)
+        .ddudu(ddudu)
         .build();
 
     return likeRepository.save(like);

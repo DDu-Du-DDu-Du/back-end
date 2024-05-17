@@ -3,10 +3,10 @@ package com.ddudu.old.like.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.like.exception.LikeErrorCode;
-import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -39,7 +39,7 @@ class LikeTest {
     void 사용자가_NULL이면_좋아요_생성을_실패한다() {
       // when
       ThrowingCallable construct = () -> Like.builder()
-          .todo(ddudu)
+          .ddudu(ddudu)
           .build();
 
       //then
@@ -64,7 +64,7 @@ class LikeTest {
       // when
       ThrowingCallable construct = () -> Like.builder()
           .user(user)
-          .todo(ddudu)
+          .ddudu(ddudu)
           .build();
 
       //then
@@ -80,7 +80,7 @@ class LikeTest {
       // when
       ThrowingCallable construct = () -> Like.builder()
           .user(other)
-          .todo(ddudu)
+          .ddudu(ddudu)
           .build();
 
       // then
@@ -97,7 +97,7 @@ class LikeTest {
       // when
       Like like = Like.builder()
           .user(other)
-          .todo(ddudu)
+          .ddudu(ddudu)
           .build();
 
       // then
