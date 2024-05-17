@@ -17,7 +17,6 @@ import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import com.ddudu.old.todo.domain.Todo;
 import com.ddudu.old.todo.domain.TodoRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
 import java.util.Optional;
@@ -55,9 +54,6 @@ class DeleteGoalServiceTest {
   @Autowired
   TodoRepository todoRepository;
 
-  @Autowired
-  EntityManager entityManager;
-
   Long userId;
   Goal goal;
 
@@ -86,7 +82,6 @@ class DeleteGoalServiceTest {
 
     //when
     deleteGoalService.delete(userId, goal.getId());
-    flushAndClear();
 
     //then
     assertThat(todoRepository.findById(todo.getId())).isEmpty();
@@ -126,11 +121,6 @@ class DeleteGoalServiceTest {
   private Goal createAndSaveGoal(User user) {
     Goal goal = GoalFixture.createRandomGoalWithUser(user);
     return saveGoalPort.save(goal);
-  }
-
-  private void flushAndClear() {
-    entityManager.flush();
-    entityManager.clear();
   }
 
 }
