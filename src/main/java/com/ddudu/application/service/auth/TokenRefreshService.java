@@ -38,7 +38,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
 
     validateNotUsed(tokenFamily, currentRefreshToken);
 
-    User user = userLoaderPort.loadUserById(currentRefreshToken.getUserId())
+    User user = userLoaderPort.loadFullUser(currentRefreshToken.getUserId())
         .orElseThrow(() -> new MissingResourceException(
             AuthErrorCode.USER_NOT_FOUND.getCodeName(),
             User.class.getCanonicalName(),

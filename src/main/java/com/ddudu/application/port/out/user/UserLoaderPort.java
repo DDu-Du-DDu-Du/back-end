@@ -8,8 +8,8 @@ public interface UserLoaderPort {
 
   Optional<User> loadSocialUser(AuthProvider authProvider);
 
-  Optional<User> loadUserById(Long userId);
+  Optional<User> loadFullUser(Long userId);
 
-  Optional<User> findById(Long id);
+  Optional<User> loadMinimalUser(Long id);
 
 }

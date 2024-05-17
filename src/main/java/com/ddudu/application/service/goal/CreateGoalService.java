@@ -32,7 +32,7 @@ public class CreateGoalService implements CreateGoalUseCase {
   }
 
   private User findUser(Long userId) {
-    return userLoaderPort.findById(userId)
+    return userLoaderPort.loadMinimalUser(userId)
         .orElseThrow(
             () -> new MissingResourceException(
                 GoalErrorCode.USER_NOT_EXISTING.getCodeName(),
