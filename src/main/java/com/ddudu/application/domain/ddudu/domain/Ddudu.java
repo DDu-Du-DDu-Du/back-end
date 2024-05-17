@@ -1,36 +1,38 @@
 package com.ddudu.application.domain.ddudu.domain;
 
-import static io.micrometer.common.util.StringUtils.isBlank;
-import static java.util.Objects.isNull;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
+import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
-import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Ddudu {
 
   private static final DduduStatus DEFAULT_STATUS = DduduStatus.UNCOMPLETED;
   private static final int MAX_NAME_LENGTH = 50;
 
-  private Long id;
-  private Goal goal;
-  private User user;
-  private String name;
-  private DduduStatus status;
-  private LocalDateTime beginAt;
-  private LocalDateTime endAt;
+  @EqualsAndHashCode.Include
+  private final Long id;
+  private final Goal goal;
+  private final User user;
+  private final String name;
+  private final DduduStatus status;
+  private final boolean isPostPoned;
+  private final LocalDateTime beginAt;
+  private final LocalDateTime endAt;
 
   @Builder
-  public Ddudu(
-      Long id, Goal goal, User user, String name, DduduStatus status, LocalDateTime beginAt,
-      LocalDateTime endAt
+  private Ddudu(
+      Long id, Goal goal, User user, String name, Boolean isPostPoned, DduduStatus status,
+      LocalDateTime beginAt, LocalDateTime endAt
   ) {
     validate(goal, user, name);
 
@@ -38,52 +40,51 @@ public class Ddudu {
     this.goal = goal;
     this.user = user;
     this.name = name;
-    this.status = isNull(status) ? DEFAULT_STATUS : status;
-    this.beginAt = isNull(beginAt) ? LocalDateTime.now() : beginAt;
-    this.endAt = isNull(endAt) ? null : endAt;
+    this.status = Objects.requireNonNullElse(status, DEFAULT_STATUS);
+    this.isPostPoned = isPostPoned;
+    this.beginAt = Objects.requireNonNullElse(beginAt, LocalDateTime.now());
+    this.endAt = endAt;
   }
 
-  public void applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
+  public Ddudu applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
     validate(goal, user, name);
 
-    this.goal = goal;
-    this.name = name;
-    this.beginAt = beginAt;
+    return Ddudu.builder()
+        .id(this.id)
+        .goal(goal)
+        .user(user)
+        .name(name)
+        .status(this.status)
+        .isPostPoned(this.isPostPoned)
+        .beginAt(beginAt)
+        .endAt(this.endAt)
+        .build();
   }
 
-  public void switchStatus() {
+  public Ddudu switchStatus() {
+    DduduBuilder dduduBuilder = Ddudu.builder()
+        .id(this.id)
+        .goal(this.goal)
+        .user(this.user)
+        .name(this.name)
+        .isPostPoned(this.isPostPoned)
+        .beginAt(this.beginAt);
+
     if (this.status == DduduStatus.UNCOMPLETED) {
-      this.status = DduduStatus.COMPLETE;
-      this.endAt = LocalDateTime.now();
-    } else {
-      this.status = DduduStatus.UNCOMPLETED;
-      this.endAt = null;
+      return dduduBuilder
+          .status(DduduStatus.COMPLETE)
+          .endAt(LocalDateTime.now())
+          .build();
     }
+
+    return dduduBuilder
+        .status(DduduStatus.UNCOMPLETED)
+        .endAt(null)
+        .build();
   }
 
   public boolean isCreatedByUser(Long userId) {
-    return Objects.deepEquals(this.user.getId(), userId);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Ddudu ddudu = (Ddudu) o;
-    if (id != null) {
-      return id.equals(ddudu.id);
-    } else {
-      return super.equals(o);
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    return (id != null) ? id.hashCode() : super.hashCode();
+    return Objects.equals(this.user.getId(), userId);
   }
 
   private void validate(Goal goal, User user, String name) {
@@ -93,25 +94,17 @@ public class Ddudu {
   }
 
   private void validateGoal(Goal goal) {
-    if (isNull(goal)) {
-      throw new InvalidParameterException(TodoErrorCode.NULL_GOAL_VALUE);
-    }
+    checkArgument(Objects.nonNull(goal), TodoErrorCode.NULL_GOAL_VALUE.getCodeName());
   }
 
   private void validateUser(User user) {
-    if (isNull(user)) {
-      throw new IllegalArgumentException("사용자는 필수값입니다.");
-    }
+    checkArgument(Objects.nonNull(user), "사용자는 필수값입니다.");
   }
 
   private void validateTodo(String name) {
-    if (isBlank(name)) {
-      throw new InvalidParameterException(TodoErrorCode.BLANK_NAME);
-    }
-
-    if (name.length() > MAX_NAME_LENGTH) {
-      throw new InvalidParameterException(TodoErrorCode.EXCESSIVE_NAME_LENGTH);
-    }
+    checkArgument(!name.isBlank(), TodoErrorCode.BLANK_NAME.getCodeName());
+    checkArgument(
+        name.length() <= MAX_NAME_LENGTH, TodoErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
   }
 
 }
