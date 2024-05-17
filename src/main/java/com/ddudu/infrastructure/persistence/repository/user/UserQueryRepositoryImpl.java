@@ -1,27 +1,28 @@
 package com.ddudu.infrastructure.persistence.repository.user;
 
+import static com.ddudu.infrastructure.persistence.entity.QAuthProviderEntity.authProviderEntity;
 import static com.ddudu.infrastructure.persistence.entity.QUserEntity.userEntity;
 import static com.ddudu.old.persistence.entity.QFollowingEntity.followingEntity;
 
+import com.ddudu.infrastructure.persistence.dto.FullUser;
 import com.ddudu.infrastructure.persistence.entity.QUserEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.user.domain.FollowingStatus;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class UserQueryRepositoryImpl implements UserQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
-
-  public UserQueryRepositoryImpl(EntityManager em) {
-    this.jpaQueryFactory = new JPAQueryFactory(em);
-  }
 
   @Override
   public List<UserEntity> findAllByKeywordAndSearchType(
@@ -61,6 +62,23 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
         .from(followingEntity)
         .where(whereClause)
         .fetch();
+  }
+
+  @Override
+  public Optional<FullUser> fetchFullUserById(Long id) {
+    return jpaQueryFactory.select(userEntity, authProviderEntity)
+        .from(userEntity)
+        .join(authProviderEntity)
+        .on(authProviderEntity.user.eq(userEntity))
+        .where(userEntity.id.eq(id))
+        .transform(
+            GroupBy.groupBy(userEntity)
+                .as(GroupBy.list(authProviderEntity))
+        )
+        .entrySet()
+        .stream()
+        .map(entry -> new FullUser(entry.getKey(), entry.getValue()))
+        .findFirst();
   }
 
 }

@@ -126,7 +126,10 @@ class GoalTest {
     @Test
     void 색상_코드는_6자리_16진수_포맷을_따라야_한다() {
       // given
-      String invalidColor = GoalFixture.getRandomFixedSentence(6);
+      String specialCharacters = "`~!@#$%^&*()_+-=[]{};':\"<>?,./|\\";
+      char specialChar = specialCharacters.charAt(
+          GoalFixture.getRandomInt(0, specialCharacters.length() - 1));
+      String invalidColor = GoalFixture.getRandomFixedSentence(5) + specialChar;
 
       // when then
       assertThatThrownBy(() ->

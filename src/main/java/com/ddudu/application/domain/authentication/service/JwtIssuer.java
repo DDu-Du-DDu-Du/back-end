@@ -28,8 +28,11 @@ public class JwtIssuer {
         .build();
     JwtClaimsSet.Builder claimSet = JwtClaimsSet.builder()
         .issuedAt(now)
-        .expiresAt(now.plus(expirationDuration))
         .issuer(issuer);
+
+    if (!expirationDuration.isZero()) {
+      claimSet.expiresAt(now.plus(expirationDuration));
+    }
 
     claims.forEach(claimSet::claim);
 
