@@ -9,6 +9,7 @@ import com.ddudu.application.port.out.goal.UpdateGoalPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
+import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import com.ddudu.infrastructure.persistence.repository.goal.GoalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -21,6 +22,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
     DeleteGoalPort {
 
   private final GoalRepository goalRepository;
+  private final DduduRepository dduduRepository;
 
   @Override
   public Goal save(Goal goal) {
@@ -53,10 +55,11 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public void delete(Goal goal) {
+  public void deleteWithDdudus(Goal goal) {
     GoalEntity goalEntity = goalRepository.findById(goal.getId())
         .orElseThrow(EntityNotFoundException::new);
 
+    dduduRepository.deleteAllByGoal(goalEntity);
     goalRepository.delete(goalEntity);
   }
 

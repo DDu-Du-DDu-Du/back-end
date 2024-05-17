@@ -4,7 +4,6 @@ import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.DeleteGoalUseCase;
-import com.ddudu.application.port.out.DeleteDduduPort;
 import com.ddudu.application.port.out.goal.DeleteGoalPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import java.util.MissingResourceException;
@@ -18,7 +17,6 @@ public class DeleteGoalService implements DeleteGoalUseCase {
 
   private final GoalLoaderPort goalLoaderPort;
   private final DeleteGoalPort deleteGoalPort;
-  private final DeleteDduduPort deleteDduduPort;
 
   @Override
   public void delete(Long userId, Long id) {
@@ -26,8 +24,7 @@ public class DeleteGoalService implements DeleteGoalUseCase {
 
     checkAuthority(userId, goal);
 
-    deleteDduduPort.deleteAllByGoal(goal);
-    deleteGoalPort.delete(goal);
+    deleteGoalPort.deleteWithDdudus(goal);
   }
 
   private Goal findGoal(Long id) {
