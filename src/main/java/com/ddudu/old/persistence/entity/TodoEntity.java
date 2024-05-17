@@ -2,6 +2,7 @@ package com.ddudu.old.persistence.entity;
 
 import static java.util.Objects.isNull;
 
+import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.common.BaseEntity;
 import com.ddudu.old.todo.domain.Todo;

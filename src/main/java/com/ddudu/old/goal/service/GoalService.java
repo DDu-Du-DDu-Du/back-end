@@ -1,17 +1,16 @@
 package com.ddudu.old.goal.service;
 
+import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
+import com.ddudu.application.domain.goal.dto.response.GoalResponse;
+import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.old.goal.domain.Goal;
-import com.ddudu.old.goal.domain.GoalRepository;
-import com.ddudu.old.goal.dto.requset.CreateGoalRequest;
-import com.ddudu.old.goal.dto.requset.UpdateGoalRequest;
-import com.ddudu.old.goal.dto.response.CreateGoalResponse;
-import com.ddudu.old.goal.dto.response.GoalResponse;
-import com.ddudu.old.goal.dto.response.GoalSummaryResponse;
-import com.ddudu.old.goal.exception.GoalErrorCode;
+import com.ddudu.application.exception.ErrorCode;
+import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
-import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,24 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GoalService {
 
-  private final GoalRepository goalRepository;
+  private final OldGoalRepository oldGoalRepository;
   private final UserRepository userRepository;
-
-  @Transactional
-  public CreateGoalResponse create(
-      Long userId, CreateGoalRequest request
-  ) {
-    User user = findUser(userId, GoalErrorCode.USER_NOT_EXISTING);
-
-    Goal goal = Goal.builder()
-        .name(request.name())
-        .user(user)
-        .color(request.color())
-        .privacyType(request.privacyType())
-        .build();
-
-    return CreateGoalResponse.from(goalRepository.save(goal));
-  }
 
   @Transactional
   public GoalResponse update(
@@ -51,9 +34,12 @@ public class GoalService {
     checkPermission(loginId, goal);
 
     goal.applyGoalUpdates(
-        request.name(), request.status(), request.color(), request.privacyType());
+        request.name(),
+        request.color(),
+        PrivacyType.from(request.privacyType())
+    );
 
-    goalRepository.update(goal);
+    oldGoalRepository.update(goal);
 
     return GoalResponse.from(goal);
   }
@@ -73,7 +59,7 @@ public class GoalService {
 
     User user = findUser(userId, GoalErrorCode.USER_NOT_EXISTING);
 
-    List<Goal> goals = goalRepository.findAllByUser(user);
+    List<Goal> goals = oldGoalRepository.findAllByUser(user);
 
     return goals.stream()
         .map(GoalSummaryResponse::from)
@@ -82,15 +68,15 @@ public class GoalService {
 
   @Transactional
   public void delete(Long loginId, Long id) {
-    goalRepository.findById(id)
+    oldGoalRepository.findById(id)
         .ifPresent(goal -> {
           checkPermission(loginId, goal);
-          goalRepository.delete(goal);
+          oldGoalRepository.delete(goal);
         });
   }
 
   private void checkPermission(Long loginId, Goal goal) {
-    if (!goal.isCreatedByUser(loginId)) {
+    if (!goal.isCreatedBy(loginId)) {
       throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
     }
   }
@@ -101,7 +87,7 @@ public class GoalService {
   }
 
   private Goal findGoal(Long goalId, ErrorCode errorCode) {
-    return goalRepository.findById(goalId)
+    return oldGoalRepository.findById(goalId)
         .orElseThrow(() -> new DataNotFoundException(errorCode));
   }
 

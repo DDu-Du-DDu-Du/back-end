@@ -2,6 +2,7 @@ package com.ddudu.old.user.service;
 
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
+import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.user.domain.Following;
 import com.ddudu.old.user.domain.Following.FollowingBuilder;
 import com.ddudu.old.user.domain.FollowingRepository;
@@ -13,7 +14,6 @@ import com.ddudu.old.user.dto.response.FollowingResponse;
 import com.ddudu.old.user.exception.FollowingErrorCode;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.DuplicateResourceException;
-import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

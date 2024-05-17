@@ -10,4 +10,6 @@ public interface UserLoaderPort {
 
   Optional<User> loadUserById(Long userId);
 
+  Optional<User> findById(Long id);
+
 }
