@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
@@ -11,14 +13,12 @@ import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoInfo;
 import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
-import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.old.user.dto.request.FollowRequest;
 import com.ddudu.old.user.service.FollowingService;
@@ -123,7 +123,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -138,7 +138,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(TodoErrorCode.GOAL_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.GOAL_NOT_EXISTING.getMessage());
     }
 
   }
@@ -173,7 +173,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findById)
-          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -189,7 +189,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findById)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
@@ -303,7 +303,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findAllByDate)
-          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -319,7 +319,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findAllByDate)
-          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
@@ -376,7 +376,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
-          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -393,7 +393,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
     @Test
@@ -408,7 +408,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
-          .withMessage(TodoErrorCode.GOAL_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.GOAL_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -423,7 +423,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
@@ -458,7 +458,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateStatus)
-          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -474,7 +474,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateStatus)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
@@ -567,7 +567,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findWeeklyCompletions)
-          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -583,7 +583,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findWeeklyCompletions)
-          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -674,7 +674,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findMonthlyCompletions)
-          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -690,7 +690,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findMonthlyCompletions)
-          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
@@ -732,7 +732,7 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(delete)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }

@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -89,7 +89,7 @@ class DduduTest {
           .name("Todo 엔티티 테스트 코드 짜기")
           .build())
           .isInstanceOf(InvalidParameterException.class)
-          .hasMessage(TodoErrorCode.NULL_GOAL_VALUE.getMessage());
+          .hasMessage(DduduErrorCode.NULL_GOAL_VALUE.getMessage());
     }
 
     @ParameterizedTest
@@ -102,7 +102,7 @@ class DduduTest {
           .user(user)
           .build())
           .isInstanceOf(InvalidParameterException.class)
-          .hasMessage(TodoErrorCode.BLANK_NAME.getMessage());
+          .hasMessage(DduduErrorCode.BLANK_NAME.getMessage());
     }
 
     @ParameterizedTest(name = "{index}. {0}은 50자를 초과한다.")
@@ -115,7 +115,7 @@ class DduduTest {
           .user(user)
           .build())
           .isInstanceOf(InvalidParameterException.class)
-          .hasMessage(TodoErrorCode.EXCESSIVE_NAME_LENGTH.getMessage());
+          .hasMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getMessage());
     }
 
     private static List<String> provideLongString() {

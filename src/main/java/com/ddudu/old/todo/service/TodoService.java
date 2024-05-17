@@ -1,6 +1,7 @@
 package com.ddudu.old.todo.service;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
@@ -16,7 +17,6 @@ import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoInfo;
 import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
-import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
 import com.ddudu.old.user.domain.FollowingRepository;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
@@ -54,8 +54,8 @@ public class TodoService {
       @Valid
       CreateTodoRequest request
   ) {
-    User user = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
-    Goal goal = findGoal(request.goalId(), TodoErrorCode.GOAL_NOT_EXISTING);
+    User user = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
+    Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);
 
     checkGoalPermission(loginId, goal);
 
@@ -70,7 +70,7 @@ public class TodoService {
   }
 
   public TodoResponse findById(Long loginId, Long id) {
-    Ddudu ddudu = findTodo(id, TodoErrorCode.ID_NOT_EXISTING);
+    Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, ddudu);
 
@@ -78,7 +78,7 @@ public class TodoService {
   }
 
   public List<TodoListResponse> findAllByDate(Long loginId, Long userId, LocalDate date) {
-    User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+    User loginUser = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
     User user = determineUser(loginId, userId, loginUser);
 
     List<Goal> goals = oldGoalRepository.findAllByUserAndPrivacyTypes(
@@ -105,7 +105,7 @@ public class TodoService {
   public List<TodoCompletionResponse> findWeeklyCompletions(
       Long loginId, Long userId, LocalDate date
   ) {
-    User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+    User loginUser = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
     User user = determineUser(loginId, userId, loginUser);
 
     LocalDateTime startDate = date.atStartOfDay();
@@ -117,7 +117,7 @@ public class TodoService {
   public List<TodoCompletionResponse> findMonthlyCompletions(
       Long loginId, Long userId, YearMonth yearMonth
   ) {
-    User loginUser = findUser(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING);
+    User loginUser = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
     User user = determineUser(loginId, userId, loginUser);
 
     LocalDateTime startDate = yearMonth.atDay(1)
@@ -129,11 +129,11 @@ public class TodoService {
 
   @Transactional
   public TodoInfo update(Long loginId, Long id, UpdateTodoRequest request) {
-    Ddudu ddudu = findTodo(id, TodoErrorCode.ID_NOT_EXISTING);
+    Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, ddudu);
 
-    Goal goal = findGoal(request.goalId(), TodoErrorCode.GOAL_NOT_EXISTING);
+    Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);
 
     checkGoalPermission(loginId, goal);
 
@@ -146,7 +146,7 @@ public class TodoService {
 
   @Transactional
   public void updateStatus(Long loginId, Long id) {
-    Ddudu ddudu = findTodo(id, TodoErrorCode.ID_NOT_EXISTING);
+    Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
 
     checkPermission(loginId, ddudu);
 
@@ -192,7 +192,7 @@ public class TodoService {
       return loginUser;
     }
 
-    return findUser(userId, TodoErrorCode.USER_NOT_EXISTING);
+    return findUser(userId, DduduErrorCode.USER_NOT_EXISTING);
   }
 
   private User findUser(Long userId, ErrorCode errorCode) {
@@ -212,13 +212,13 @@ public class TodoService {
 
   private void checkPermission(Long loginId, Ddudu ddudu) {
     if (!ddudu.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+      throw new ForbiddenException(DduduErrorCode.INVALID_AUTHORITY);
     }
   }
 
   private void checkGoalPermission(Long userId, Goal goal) {
     if (!goal.isCreatedBy(userId)) {
-      throw new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY);
+      throw new ForbiddenException(DduduErrorCode.INVALID_AUTHORITY);
     }
   }
 

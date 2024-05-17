@@ -1,12 +1,12 @@
 package com.ddudu.presentation.api.exception;
 
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.application.exception.DefaultErrorCode;
 import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.like.exception.LikeErrorCode;
-import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
 import com.ddudu.old.user.exception.FollowingErrorCode;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class ErrorCodeParser {
 
     return switch (code.charAt(0)) {
       case '1' -> UserErrorCode.valueOf(name);
-      case '2' -> TodoErrorCode.valueOf(name);
+      case '2' -> DduduErrorCode.valueOf(name);
       case '3' -> GoalErrorCode.valueOf(name);
       case '5' -> AuthErrorCode.valueOf(name);
       case '6' -> FollowingErrorCode.valueOf(name);

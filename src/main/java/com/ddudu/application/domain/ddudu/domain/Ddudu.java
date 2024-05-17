@@ -3,7 +3,7 @@ package com.ddudu.application.domain.ddudu.domain;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
-import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
 import java.time.LocalDateTime;
@@ -94,17 +94,17 @@ public class Ddudu {
   }
 
   private void validateGoal(Goal goal) {
-    checkArgument(Objects.nonNull(goal), TodoErrorCode.NULL_GOAL_VALUE.getCodeName());
+    checkArgument(Objects.nonNull(goal), DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
   }
 
   private void validateUser(User user) {
-    checkArgument(Objects.nonNull(user), "사용자는 필수값입니다.");
+    checkArgument(Objects.nonNull(user), DduduErrorCode.NULL_USER.getCodeName());
   }
 
   private void validateTodo(String name) {
-    checkArgument(!name.isBlank(), TodoErrorCode.BLANK_NAME.getCodeName());
+    checkArgument(!name.isBlank(), DduduErrorCode.BLANK_NAME.getCodeName());
     checkArgument(
-        name.length() <= MAX_NAME_LENGTH, TodoErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+        name.length() <= MAX_NAME_LENGTH, DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
   }
 
 }

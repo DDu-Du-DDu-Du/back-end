@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.GoalInfo;
@@ -24,7 +25,6 @@ import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoInfo;
 import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
-import com.ddudu.application.domain.ddudu.exception.TodoErrorCode;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.controller.TodoController;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
@@ -164,7 +164,7 @@ class DduduControllerTest extends ControllerTestSupport {
       CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
 
       given(todoService.create(anyLong(), any(CreateTodoRequest.class))).willThrow(
-          new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY));
+          new ForbiddenException(DduduErrorCode.INVALID_AUTHORITY));
 
       // when
       ResultActions actions = mockMvc.perform(post(PATH)
@@ -174,8 +174,8 @@ class DduduControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code", is(TodoErrorCode.INVALID_AUTHORITY.getCode())))
-          .andExpect(jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
+          .andExpect(jsonPath("$.code", is(DduduErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(DduduErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
     @Test
@@ -186,7 +186,7 @@ class DduduControllerTest extends ControllerTestSupport {
       CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
 
       given(todoService.create(anyLong(), any(CreateTodoRequest.class))).willThrow(
-          new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+          new DataNotFoundException(DduduErrorCode.USER_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(post(PATH)
@@ -196,8 +196,8 @@ class DduduControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isNotFound())
-          .andExpect(jsonPath("$.code", is(TodoErrorCode.USER_NOT_EXISTING.getCode())))
-          .andExpect(jsonPath("$.message", is(TodoErrorCode.USER_NOT_EXISTING.getMessage())));
+          .andExpect(jsonPath("$.code", is(DduduErrorCode.USER_NOT_EXISTING.getCode())))
+          .andExpect(jsonPath("$.message", is(DduduErrorCode.USER_NOT_EXISTING.getMessage())));
     }
 
     @Test
@@ -208,7 +208,7 @@ class DduduControllerTest extends ControllerTestSupport {
       CreateTodoRequest request = new CreateTodoRequest(invalidGoalId, name, beginAt);
 
       given(todoService.create(anyLong(), any(CreateTodoRequest.class))).willThrow(
-          new DataNotFoundException(TodoErrorCode.GOAL_NOT_EXISTING));
+          new DataNotFoundException(DduduErrorCode.GOAL_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(post(PATH)
@@ -218,8 +218,8 @@ class DduduControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isNotFound())
-          .andExpect(jsonPath("$.code", is(TodoErrorCode.GOAL_NOT_EXISTING.getCode())))
-          .andExpect(jsonPath("$.message", is(TodoErrorCode.GOAL_NOT_EXISTING.getMessage())));
+          .andExpect(jsonPath("$.code", is(DduduErrorCode.GOAL_NOT_EXISTING.getCode())))
+          .andExpect(jsonPath("$.message", is(DduduErrorCode.GOAL_NOT_EXISTING.getMessage())));
     }
 
   }
@@ -264,7 +264,7 @@ class DduduControllerTest extends ControllerTestSupport {
       Long id = faker.random()
           .nextLong(Long.MAX_VALUE);
 
-      willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
+      willThrow(new ForbiddenException(DduduErrorCode.INVALID_AUTHORITY))
           .given(todoService)
           .findById(anyLong(), anyLong());
 
@@ -276,9 +276,9 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isForbidden())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.INVALID_AUTHORITY.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.INVALID_AUTHORITY.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
     @Test
@@ -289,7 +289,7 @@ class DduduControllerTest extends ControllerTestSupport {
           .nextLong(Long.MAX_VALUE);
 
       given(todoService.findById(anyLong(), anyLong())).willThrow(
-          new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
+          new DataNotFoundException(DduduErrorCode.ID_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(get(PATH, id)
@@ -299,9 +299,9 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isNotFound())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.ID_NOT_EXISTING.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.ID_NOT_EXISTING.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.ID_NOT_EXISTING.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.ID_NOT_EXISTING.getMessage())));
     }
 
   }
@@ -409,7 +409,7 @@ class DduduControllerTest extends ControllerTestSupport {
       String invalidToken = createBearerToken(invalidLonginId);
 
       given(todoService.findAllByDate(anyLong(), anyLong(), any())).willThrow(
-          new DataNotFoundException(TodoErrorCode.LOGIN_USER_NOT_EXISTING));
+          new DataNotFoundException(DduduErrorCode.LOGIN_USER_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(get(PATH)
@@ -419,16 +419,16 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isNotFound())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage())));
     }
 
     @Test
     void 일별_할_일_조회할_사용자_ID가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
       given(todoService.findAllByDate(anyLong(), anyLong(), any())).willThrow(
-          new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+          new DataNotFoundException(DduduErrorCode.USER_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(get(PATH)
@@ -438,9 +438,9 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isNotFound())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.USER_NOT_EXISTING.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.USER_NOT_EXISTING.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.USER_NOT_EXISTING.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.USER_NOT_EXISTING.getMessage())));
     }
 
   }
@@ -521,7 +521,7 @@ class DduduControllerTest extends ControllerTestSupport {
       String invalidToken = createBearerToken(invalidLonginId);
 
       given(todoService.findWeeklyCompletions(anyLong(), anyLong(), any())).willThrow(
-          new DataNotFoundException(TodoErrorCode.LOGIN_USER_NOT_EXISTING));
+          new DataNotFoundException(DduduErrorCode.LOGIN_USER_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(get(WEEKLY_PATH)
@@ -531,16 +531,16 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isNotFound())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage())));
     }
 
     @Test
     void 주간_달성률_조회할_사용자_ID가_유효하지_않으면_404_Not_Found를_반환한다() throws Exception {
       // given
       given(todoService.findWeeklyCompletions(anyLong(), anyLong(), any())).willThrow(
-          new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING));
+          new DataNotFoundException(DduduErrorCode.USER_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(get(WEEKLY_PATH)
@@ -550,9 +550,9 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isNotFound())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.USER_NOT_EXISTING.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.USER_NOT_EXISTING.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.USER_NOT_EXISTING.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.USER_NOT_EXISTING.getMessage())));
     }
 
     @Test
@@ -631,7 +631,7 @@ class DduduControllerTest extends ControllerTestSupport {
 
       given(
           todoService.findMonthlyCompletions(anyLong(), anyLong(), any(YearMonth.class))).willThrow(
-          new DataNotFoundException(TodoErrorCode.LOGIN_USER_NOT_EXISTING));
+          new DataNotFoundException(DduduErrorCode.LOGIN_USER_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(get(MONTHLY_PATH)
@@ -641,9 +641,9 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isNotFound())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage())));
     }
 
     @Test
@@ -651,7 +651,7 @@ class DduduControllerTest extends ControllerTestSupport {
       // given
       given(
           todoService.findMonthlyCompletions(anyLong(), anyLong(), any(YearMonth.class))).willThrow(
-          new DataNotFoundException(TodoErrorCode.USER_NOT_EXISTING)
+          new DataNotFoundException(DduduErrorCode.USER_NOT_EXISTING)
       );
 
       // when
@@ -662,9 +662,9 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isNotFound())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.USER_NOT_EXISTING.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.USER_NOT_EXISTING.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.USER_NOT_EXISTING.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.USER_NOT_EXISTING.getMessage())));
     }
 
   }
@@ -775,7 +775,7 @@ class DduduControllerTest extends ControllerTestSupport {
       UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
 
       given(todoService.update(anyLong(), anyLong(), any(UpdateTodoRequest.class)))
-          .willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY));
+          .willThrow(new ForbiddenException(DduduErrorCode.INVALID_AUTHORITY));
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, todoId)
@@ -785,8 +785,8 @@ class DduduControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code", is(TodoErrorCode.INVALID_AUTHORITY.getCode())))
-          .andExpect(jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
+          .andExpect(jsonPath("$.code", is(DduduErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(DduduErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
     @Test
@@ -798,7 +798,7 @@ class DduduControllerTest extends ControllerTestSupport {
       UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
 
       given(todoService.update(anyLong(), anyLong(), any(UpdateTodoRequest.class)))
-          .willThrow(new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING));
+          .willThrow(new DataNotFoundException(DduduErrorCode.ID_NOT_EXISTING));
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, invalidId)
@@ -808,8 +808,8 @@ class DduduControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isNotFound())
-          .andExpect(jsonPath("$.code", is(TodoErrorCode.ID_NOT_EXISTING.getCode())))
-          .andExpect(jsonPath("$.message", is(TodoErrorCode.ID_NOT_EXISTING.getMessage())));
+          .andExpect(jsonPath("$.code", is(DduduErrorCode.ID_NOT_EXISTING.getCode())))
+          .andExpect(jsonPath("$.message", is(DduduErrorCode.ID_NOT_EXISTING.getMessage())));
     }
 
   }
@@ -844,7 +844,7 @@ class DduduControllerTest extends ControllerTestSupport {
       Long id = faker.random()
           .nextLong(Long.MAX_VALUE);
 
-      willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
+      willThrow(new ForbiddenException(DduduErrorCode.INVALID_AUTHORITY))
           .given(todoService)
           .updateStatus(anyLong(), anyLong());
 
@@ -856,9 +856,9 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isForbidden())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.INVALID_AUTHORITY.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.INVALID_AUTHORITY.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
 
@@ -869,7 +869,7 @@ class DduduControllerTest extends ControllerTestSupport {
       Long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
 
-      willThrow(new DataNotFoundException(TodoErrorCode.ID_NOT_EXISTING))
+      willThrow(new DataNotFoundException(DduduErrorCode.ID_NOT_EXISTING))
           .given(todoService)
           .updateStatus(anyLong(), anyLong());
 
@@ -910,7 +910,7 @@ class DduduControllerTest extends ControllerTestSupport {
       // given
       String token = createBearerToken(userId);
 
-      willThrow(new ForbiddenException(TodoErrorCode.INVALID_AUTHORITY))
+      willThrow(new ForbiddenException(DduduErrorCode.INVALID_AUTHORITY))
           .given(todoService)
           .delete(anyLong(), anyLong());
 
@@ -922,9 +922,9 @@ class DduduControllerTest extends ControllerTestSupport {
       // then
       actions.andExpect(status().isForbidden())
           .andExpect(
-              jsonPath("$.code", is(TodoErrorCode.INVALID_AUTHORITY.getCode())))
+              jsonPath("$.code", is(DduduErrorCode.INVALID_AUTHORITY.getCode())))
           .andExpect(
-              jsonPath("$.message", is(TodoErrorCode.INVALID_AUTHORITY.getMessage())));
+              jsonPath("$.message", is(DduduErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
   }
