@@ -1,11 +1,7 @@
-package com.ddudu.old.persistence.entity;
-
-import static java.util.Objects.isNull;
+package com.ddudu.infrastructure.persistence.entity;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
-import com.ddudu.infrastructure.persistence.entity.GoalEntity;
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,9 +23,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "ddudus")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DduduEntity extends BaseEntity {
-
-  private static final DduduStatus DEFAULT_STATUS = DduduStatus.UNCOMPLETED;
-  private static final boolean DEFAULT_IS_POSTPONED = false;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,8 +67,7 @@ public class DduduEntity extends BaseEntity {
 
   @Column(
       name = "is_postponed",
-      nullable = false,
-      columnDefinition = "TINYINT(1)"
+      nullable = false
   )
   private boolean isPostponed;
 
@@ -88,10 +80,10 @@ public class DduduEntity extends BaseEntity {
     this.goal = goal;
     this.user = user;
     this.name = name;
-    this.status = isNull(status) ? DEFAULT_STATUS : status;
+    this.status = status;
     this.beginAt = beginAt;
     this.endAt = endAt;
-    this.isPostponed = isNull(isPostponed) ? DEFAULT_IS_POSTPONED : isPostponed;
+    this.isPostponed = isPostponed;
   }
 
   public static DduduEntity from(Ddudu ddudu) {
