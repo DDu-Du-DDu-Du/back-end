@@ -13,8 +13,7 @@ public class Color {
   private static final Pattern HEX_COLOR_CODE_PATTERN = Pattern.compile(
       "^[0-9A-Fa-f]{" + HEX_COLOR_CODE_LENGTH + "}$");
   private static final String DEFAULT_COLOR_CODE = "191919";
-
-  private String code;
+  private final String code;
 
   public Color(String code) {
     this.code = confirmCode(code);
