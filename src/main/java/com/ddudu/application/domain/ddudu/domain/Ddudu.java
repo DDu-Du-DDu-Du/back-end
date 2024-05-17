@@ -6,6 +6,7 @@ import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
+import io.micrometer.common.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Builder;
@@ -34,7 +35,7 @@ public class Ddudu {
       Long id, Goal goal, User user, String name, Boolean isPostponed, DduduStatus status,
       LocalDateTime beginAt, LocalDateTime endAt
   ) {
-    validate(goal, user, name);
+    validate(goal, user, name, beginAt, endAt);
 
     this.id = id;
     this.goal = goal;
@@ -47,8 +48,6 @@ public class Ddudu {
   }
 
   public Ddudu applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
-    validate(goal, user, name);
-
     return Ddudu.builder()
         .id(this.id)
         .goal(goal)
@@ -87,16 +86,28 @@ public class Ddudu {
     return Objects.equals(this.user.getId(), userId);
   }
 
-  private void validate(Goal goal, User user, String name) {
+  private void validate(
+      Goal goal, User user, String name, LocalDateTime beginAt, LocalDateTime endAt
+  ) {
     checkArgument(Objects.nonNull(goal), DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
     checkArgument(Objects.nonNull(user), DduduErrorCode.NULL_USER.getCodeName());
     validateTodo(name);
+    validatePeriod(beginAt, endAt);
   }
 
   private void validateTodo(String name) {
-    checkArgument(!name.isBlank(), DduduErrorCode.BLANK_NAME.getCodeName());
+    checkArgument(StringUtils.isNotBlank(name), DduduErrorCode.BLANK_NAME.getCodeName());
     checkArgument(
         name.length() <= MAX_NAME_LENGTH, DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+  }
+
+  private void validatePeriod(LocalDateTime beginAt, LocalDateTime endAt) {
+    if (Objects.isNull(beginAt) || Objects.isNull(endAt)) {
+      return;
+    }
+
+    checkArgument(
+        !beginAt.isAfter(endAt), DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
   }
 
 }

@@ -16,7 +16,8 @@ public enum DduduErrorCode implements ErrorCode {
   USER_NOT_EXISTING(2006, "사용자 아이디가 존재하지 않습니다."),
   INVALID_AUTHORITY(2007, "해당 기능에 대한 사용자 권한이 없습니다."),
   LOGIN_USER_NOT_EXISTING(2008, "로그인 아이디가 존재하지 않습니다."),
-  NULL_USER(2009, "사용자는 필수값입니다.");
+  NULL_USER(2009, "사용자는 필수값입니다."),
+  UNABLE_TO_FINISH_BEFORE_BEGIN(2010, "종료 시간은 시작 시간보다 뒤여야 합니다.");
 
   private final int code;
   private final String message;
