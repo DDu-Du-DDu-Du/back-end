@@ -5,6 +5,7 @@ import com.ddudu.application.exception.ErrorCode;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -82,14 +82,33 @@ public class GlobalExceptionHandler {
         .body(response);
   }
 
-  @ExceptionHandler(AccessDeniedException.class)
-  public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
+  @ExceptionHandler(UnsupportedOperationException.class)
+  public ResponseEntity<ErrorResponse> handleUnauthorized(UnsupportedOperationException e) {
     log.warn(e.getMessage(), e);
 
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
     ErrorResponse response = ErrorResponse.from(errorCode);
 
-    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+    if (errorCode instanceof DefaultErrorCode) {
+      return handleUnexpected(response);
+    }
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body(response);
+  }
+
+  @ExceptionHandler(MissingResourceException.class)
+  public ResponseEntity<ErrorResponse> handleNotFound(MissingResourceException e) {
+    log.warn(e.getMessage(), e);
+
+    ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
+    ErrorResponse response = ErrorResponse.from(errorCode);
+
+    if (errorCode instanceof DefaultErrorCode) {
+      return handleUnexpected(response);
+    }
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(response);
   }
 

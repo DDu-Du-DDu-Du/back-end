@@ -110,8 +110,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
-      - name: 빌드 실패 테스트 리포트 작성
+      - name: 테스트 리포트 작성
         uses: mikepenz/action-junit-report@v4
-        if: failure()
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'

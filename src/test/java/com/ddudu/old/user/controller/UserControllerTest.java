@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
 import com.ddudu.old.user.domain.FollowingStatus;
 import com.ddudu.old.user.domain.UserSearchType;
@@ -277,7 +278,7 @@ class UserControllerTest extends ControllerTestSupport {
       UpdateProfileRequest request = new UpdateProfileRequest(nickname, introduction);
 
       given(userService.updateProfile(anyLong(), any(UpdateProfileRequest.class)))
-          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
+          .willThrow(new ForbiddenException(AuthErrorCode.INVALID_AUTHORITY));
 
       // when
       ResultActions actions = mockMvc.perform(put(PATH, userId)
@@ -287,8 +288,8 @@ class UserControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code", is(UserErrorCode.INVALID_AUTHORITY.getCode())))
-          .andExpect(jsonPath("$.message", is(UserErrorCode.INVALID_AUTHORITY.getMessage())));
+          .andExpect(jsonPath("$.code", is(AuthErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(AuthErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
   }
@@ -331,7 +332,7 @@ class UserControllerTest extends ControllerTestSupport {
     void 로그인한_사용자가_요청된_사용자와_다를_경우_403_Forbidden을_반환한다() throws Exception {
       // given
       given(userService.switchOption(anyLong()))
-          .willThrow(new ForbiddenException(UserErrorCode.INVALID_AUTHORITY));
+          .willThrow(new ForbiddenException(AuthErrorCode.INVALID_AUTHORITY));
 
       // when
       ResultActions actions = mockMvc.perform(patch(PATH, userId)
@@ -339,9 +340,9 @@ class UserControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code").value(UserErrorCode.INVALID_AUTHORITY.getCode()))
+          .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_AUTHORITY.getCode()))
           .andExpect(
-              jsonPath("$.message").value(UserErrorCode.INVALID_AUTHORITY.getMessage()));
+              jsonPath("$.message").value(AuthErrorCode.INVALID_AUTHORITY.getMessage()));
     }
 
     @Test
@@ -419,8 +420,8 @@ class UserControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code").value(UserErrorCode.INVALID_AUTHORITY.getCode()))
-          .andExpect(jsonPath("$.message").value(UserErrorCode.INVALID_AUTHORITY.getMessage()));
+          .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_AUTHORITY.getCode()))
+          .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_AUTHORITY.getMessage()));
     }
 
     @ParameterizedTest(name = "조회 대상: {0}")
@@ -723,8 +724,8 @@ class UserControllerTest extends ControllerTestSupport {
 
       // then
       actions.andExpect(status().isForbidden())
-          .andExpect(jsonPath("$.code", is(UserErrorCode.INVALID_AUTHORITY.getCode())))
-          .andExpect(jsonPath("$.message", is(UserErrorCode.INVALID_AUTHORITY.getMessage())));
+          .andExpect(jsonPath("$.code", is(AuthErrorCode.INVALID_AUTHORITY.getCode())))
+          .andExpect(jsonPath("$.message", is(AuthErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
     @Test

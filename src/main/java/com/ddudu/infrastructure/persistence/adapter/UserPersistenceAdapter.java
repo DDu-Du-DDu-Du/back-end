@@ -2,9 +2,10 @@ package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.vo.AuthProvider;
-import com.ddudu.application.port.out.SignUpPort;
-import com.ddudu.application.port.out.UserLoaderPort;
+import com.ddudu.application.port.out.auth.SignUpPort;
+import com.ddudu.application.port.out.user.UserLoaderPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
+import com.ddudu.infrastructure.persistence.dto.FullUser;
 import com.ddudu.infrastructure.persistence.entity.AuthProviderEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.auth.AuthProviderRepository;
@@ -46,6 +47,12 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
         .toDomain();
 
     return Optional.of(user);
+  }
+
+  @Override
+  public Optional<User> loadUserById(Long userId) {
+    return userRepository.fetchFullUserById(userId)
+        .map(FullUser::toDomain);
   }
 
   @Override
