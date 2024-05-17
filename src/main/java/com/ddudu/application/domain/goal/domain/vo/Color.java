@@ -1,5 +1,6 @@
 package com.ddudu.application.domain.goal.domain.vo;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static io.micrometer.common.util.StringUtils.isBlank;
 
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
@@ -30,12 +31,8 @@ public class Color {
   }
 
   private void validate(String code) {
-    boolean matches = HEX_COLOR_CODE_PATTERN.matcher(code)
-        .matches();
-
-    if (!matches) {
-      throw new IllegalArgumentException(GoalErrorCode.INVALID_COLOR_FORMAT.getCodeName());
-    }
+    checkArgument(HEX_COLOR_CODE_PATTERN.matcher(code)
+        .matches(), GoalErrorCode.INVALID_COLOR_FORMAT.getCodeName());
   }
 
 }

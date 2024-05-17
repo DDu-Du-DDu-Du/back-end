@@ -1,7 +1,9 @@
 package com.ddudu.application.domain.goal.domain;
 
-import static io.micrometer.common.util.StringUtils.isBlank;
+import static com.google.common.base.Preconditions.checkArgument;
+import static io.micrometer.common.util.StringUtils.isNotBlank;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -86,19 +88,13 @@ public final class Goal {
   }
 
   private void validateName(String name) {
-    if (isBlank(name)) {
-      throw new IllegalArgumentException(GoalErrorCode.BLANK_NAME.getCodeName());
-    }
-
-    if (name.length() > MAX_NAME_LENGTH) {
-      throw new IllegalArgumentException(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
-    }
+    checkArgument(isNotBlank(name), GoalErrorCode.BLANK_NAME.getCodeName());
+    checkArgument(
+        name.length() <= MAX_NAME_LENGTH, GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
   }
 
   private void validateUser(User user) {
-    if (isNull(user)) {
-      throw new IllegalArgumentException(GoalErrorCode.NULL_USER.getCodeName());
-    }
+    checkArgument(nonNull(user), GoalErrorCode.NULL_USER.getCodeName());
   }
 
 }
