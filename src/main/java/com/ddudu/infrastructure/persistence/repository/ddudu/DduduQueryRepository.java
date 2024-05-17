@@ -1,6 +1,7 @@
 package com.ddudu.infrastructure.persistence.repository.ddudu;
 
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.persistence.entity.TodoEntity;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -15,5 +16,7 @@ public interface DduduQueryRepository {
       LocalDateTime startDate, LocalDateTime endDate, UserEntity user,
       List<PrivacyType> privacyTypes
   );
+
+  void deleteAllByGoal(GoalEntity goal);
 
 }

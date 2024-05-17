@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DduduRepository extends JpaRepository<TodoEntity, Long>, DduduQueryRepository {
 
-  void deleteAllByGoal(GoalEntity goal);
-
   List<TodoEntity> findAllByGoal(GoalEntity goalEntity);
 
 }

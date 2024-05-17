@@ -3,6 +3,7 @@ package com.ddudu.infrastructure.persistence.repository.ddudu;
 import static com.ddudu.old.persistence.entity.QTodoEntity.todoEntity;
 
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.persistence.entity.TodoEntity;
 import com.ddudu.old.todo.domain.TodoStatus;
@@ -91,6 +92,14 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
                 .intValue())
             .build())
         .toList();
+  }
+
+  @Override
+  public void deleteAllByGoal(GoalEntity goal) {
+    jpaQueryFactory
+        .delete(todoEntity)
+        .where(todoEntity.goal.eq(goal))
+        .execute();
   }
 
 }
