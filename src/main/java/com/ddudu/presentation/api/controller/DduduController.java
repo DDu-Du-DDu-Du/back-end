@@ -1,5 +1,7 @@
 package com.ddudu.presentation.api.controller;
 
+import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
+import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -38,8 +40,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/todos")
 @RequiredArgsConstructor
 @Tag(name = "뚜두 관련 API")
-public class TodoController {
+public class DduduController {
 
+  private final PeriodSetupUseCase periodSetupUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -157,7 +160,10 @@ public class TodoController {
       Long loginId,
       @RequestParam(required = false)
       Long userId,
-      @RequestParam(value = "date", required = false)
+      @RequestParam(
+          value = "date",
+          required = false
+      )
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
@@ -224,6 +230,21 @@ public class TodoController {
       Long id
   ) {
     todoService.delete(loginId, id);
+
+    return ResponseEntity.noContent()
+        .build();
+  }
+
+  @PutMapping("/{id}/period")
+  public ResponseEntity<Void> setUpPeriod(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      PeriodSetupRequest request
+  ) {
+    periodSetupUseCase.setUpPeriod(loginId, id, request);
 
     return ResponseEntity.noContent()
         .build();
