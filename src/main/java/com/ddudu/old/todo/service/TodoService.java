@@ -72,8 +72,6 @@ public class TodoService {
   public TodoResponse findById(Long loginId, Long id) {
     Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
 
-    checkPermission(loginId, ddudu);
-
     return TodoResponse.from(ddudu);
   }
 
@@ -131,8 +129,6 @@ public class TodoService {
   public TodoInfo update(Long loginId, Long id, UpdateTodoRequest request) {
     Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
 
-    checkPermission(loginId, ddudu);
-
     Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);
 
     checkGoalPermission(loginId, goal);
@@ -148,8 +144,6 @@ public class TodoService {
   public void updateStatus(Long loginId, Long id) {
     Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
 
-    checkPermission(loginId, ddudu);
-
     ddudu.switchStatus();
 
     oldTodoRepository.update(ddudu);
@@ -159,7 +153,6 @@ public class TodoService {
   public void delete(Long loginId, Long id) {
     oldTodoRepository.findById(id)
         .ifPresent(todo -> {
-          checkPermission(loginId, todo);
           oldTodoRepository.delete(todo);
         });
   }
@@ -208,12 +201,6 @@ public class TodoService {
   private Ddudu findTodo(Long todoId, ErrorCode errorCode) {
     return oldTodoRepository.findById(todoId)
         .orElseThrow(() -> new DataNotFoundException(errorCode));
-  }
-
-  private void checkPermission(Long loginId, Ddudu ddudu) {
-    if (!ddudu.isCreatedByUser(loginId)) {
-      throw new ForbiddenException(DduduErrorCode.INVALID_AUTHORITY);
-    }
   }
 
   private void checkGoalPermission(Long userId, Goal goal) {
