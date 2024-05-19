@@ -12,20 +12,17 @@ import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
-
-  public DduduQueryRepositoryImpl(EntityManager em) {
-    this.jpaQueryFactory = new JPAQueryFactory(em);
-  }
 
   @Override
   public List<DduduEntity> findTodosByDate(
