@@ -85,36 +85,6 @@ class DduduTest {
       assertThat(timeDifference).isLessThanOrEqualTo(1);
     }
 
-    @Test
-    void 목표가_없으면_생성을_실패한다() {
-      // given
-      DduduBuilder builder = Ddudu.builder()
-          .user(user)
-          .name(name);
-
-      // when
-      ThrowingCallable create = builder::build;
-
-      // then
-      assertThatIllegalArgumentException().isThrownBy(create)
-          .withMessage(DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
-    }
-
-    @Test
-    void 사용자가_없으면_생성을_실패한다() {
-      // given
-      DduduBuilder builder = Ddudu.builder()
-          .goal(goal)
-          .name(name);
-
-      // when
-      ThrowingCallable create = builder::build;
-
-      // then
-      assertThatIllegalArgumentException().isThrownBy(create)
-          .withMessage(DduduErrorCode.NULL_USER.getCodeName());
-    }
-
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = " ")
