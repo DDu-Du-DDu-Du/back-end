@@ -47,43 +47,58 @@ public class Ddudu {
     this.endAt = endAt;
   }
 
+  public void checkAuthority(Long loginId) {
+    if (!isCreatedByUser(loginId)) {
+      throw new SecurityException(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
+  }
+
+  public Ddudu setUpPeriod(LocalDateTime beginAt, LocalDateTime endAt) {
+    DduduBuilder builder = getFullBuilder();
+
+    if (Objects.nonNull(beginAt)) {
+      builder.beginAt(beginAt);
+    }
+
+    if (Objects.nonNull(endAt)) {
+      builder.endAt(endAt);
+    }
+
+    return builder.build();
+  }
+
   public Ddudu applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
-    return Ddudu.builder()
-        .id(this.id)
+    return getFullBuilder()
         .goal(goal)
-        .user(user)
         .name(name)
-        .status(this.status)
-        .isPostponed(this.isPostponed)
         .beginAt(beginAt)
-        .endAt(this.endAt)
         .build();
   }
 
   public Ddudu switchStatus() {
-    DduduBuilder dduduBuilder = Ddudu.builder()
-        .id(this.id)
-        .goal(this.goal)
-        .user(this.user)
-        .name(this.name)
-        .isPostponed(this.isPostponed)
-        .beginAt(this.beginAt);
-
     if (this.status == DduduStatus.UNCOMPLETED) {
-      return dduduBuilder
+      return getFullBuilder()
           .status(DduduStatus.COMPLETE)
           .endAt(LocalDateTime.now())
           .build();
     }
 
-    return dduduBuilder
+    return getFullBuilder()
         .status(DduduStatus.UNCOMPLETED)
         .endAt(null)
         .build();
   }
 
-  public boolean isCreatedByUser(Long userId) {
-    return Objects.equals(this.user.getId(), userId);
+  private DduduBuilder getFullBuilder() {
+    return Ddudu.builder()
+        .id(this.id)
+        .goal(this.goal)
+        .user(this.user)
+        .name(this.name)
+        .status(this.status)
+        .isPostponed(this.isPostponed)
+        .beginAt(this.beginAt)
+        .endAt(this.endAt);
   }
 
   private void validate(
@@ -108,6 +123,10 @@ public class Ddudu {
 
     checkArgument(
         !beginAt.isAfter(endAt), DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
+  }
+
+  private boolean isCreatedByUser(Long userId) {
+    return Objects.equals(this.user.getId(), userId);
   }
 
 }
