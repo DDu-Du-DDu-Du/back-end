@@ -90,14 +90,20 @@ public class DduduEntity extends BaseEntity {
   public Ddudu toDomain() {
     return Ddudu.builder()
         .id(id)
-        .goal(goal.toDomain())
-        .user(user.toDomain())
         .name(name)
         .status(status)
         .isPostponed(isPostponed)
         .beginAt(beginAt)
         .endAt(endAt)
         .build();
+  }
+
+  public void update(Ddudu ddudu) {
+    this.name = ddudu.getName();
+    this.status = ddudu.getStatus();
+    this.isPostponed = ddudu.isPostponed();
+    this.beginAt = ddudu.getBeginAt();
+    this.endAt = ddudu.getEndAt();
   }
 
 }
