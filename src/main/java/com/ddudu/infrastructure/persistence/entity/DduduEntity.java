@@ -90,8 +90,6 @@ public class DduduEntity extends BaseEntity {
   public Ddudu toDomain() {
     return Ddudu.builder()
         .id(id)
-        .goal(goal.toDomain())
-        .user(user.toDomain())
         .name(name)
         .status(status)
         .isPostponed(isPostponed)

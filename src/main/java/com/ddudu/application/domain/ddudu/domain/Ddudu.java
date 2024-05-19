@@ -35,7 +35,7 @@ public class Ddudu {
       Long id, Goal goal, User user, String name, Boolean isPostponed, DduduStatus status,
       LocalDateTime beginAt, LocalDateTime endAt
   ) {
-    validate(goal, user, name, beginAt, endAt);
+    validate(name, beginAt, endAt);
 
     this.id = id;
     this.goal = goal;
@@ -86,11 +86,7 @@ public class Ddudu {
     return Objects.equals(this.user.getId(), userId);
   }
 
-  private void validate(
-      Goal goal, User user, String name, LocalDateTime beginAt, LocalDateTime endAt
-  ) {
-    checkArgument(Objects.nonNull(goal), DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
-    checkArgument(Objects.nonNull(user), DduduErrorCode.NULL_USER.getCodeName());
+  private void validate(String name, LocalDateTime beginAt, LocalDateTime endAt) {
     validateTodo(name);
     validatePeriod(beginAt, endAt);
   }
