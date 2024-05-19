@@ -7,7 +7,6 @@ import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
-import com.ddudu.infrastructure.persistence.repository.goal.GoalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort, SaveDduduPort {
 
   private final DduduRepository dduduRepository;
-  private final GoalRepository goalRepository;
 
   @Override
   public Ddudu getDduduOrElseThrow(Long id, String message) {
