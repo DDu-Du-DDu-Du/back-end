@@ -6,11 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import com.ddudu.application.domain.ddudu.domain.Ddudu.DduduBuilder;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
-import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.fixture.DduduFixture;
-import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.UserFixture;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,14 +21,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class DduduTest {
 
-  Goal goal;
-  User user;
+  Long goalId;
+  Long userId;
   String name;
 
   @BeforeEach
   void setUp() {
-    goal = GoalFixture.createRandomGoal();
-    user = UserFixture.createRandomUserWithId();
+    goalId = DduduFixture.getRandomId();
+    userId = DduduFixture.getRandomId();
     name = DduduFixture.getRandomSentenceWithMax(50);
   }
 
@@ -41,8 +38,8 @@ class DduduTest {
 
     // when
     Ddudu ddudu = Ddudu.builder()
-        .goalId(goal.getId())
-        .userId(user.getId())
+        .goalId(goalId)
+        .userId(userId)
         .name(name)
         .status(DduduStatus.COMPLETE)
         .isPostponed(true)
@@ -58,14 +55,15 @@ class DduduTest {
 
     // when
     Ddudu ddudu = Ddudu.builder()
-        .goalId(goal.getId())
-        .userId(user.getId())
+        .goalId(goalId)
+        .userId(userId)
         .name(name)
         .build();
 
     // then
     assertThat(ddudu.getStatus()).isEqualTo(DduduStatus.UNCOMPLETED);
     assertThat(ddudu.isPostponed()).isFalse();
+    assertThat(ddudu.getScheduledOn()).isEqualTo(LocalDate.now());
   }
 
   @ParameterizedTest
@@ -74,8 +72,8 @@ class DduduTest {
   void 이름이_빈_값이면_생성을_실패한다(String blankName) {
     // given
     DduduBuilder builder = Ddudu.builder()
-        .goalId(goal.getId())
-        .userId(user.getId())
+        .goalId(goalId)
+        .userId(userId)
         .name(blankName);
 
     // when
@@ -91,8 +89,8 @@ class DduduTest {
     // given
     String over50 = DduduFixture.getRandomSentence(51, 100);
     DduduBuilder builder = Ddudu.builder()
-        .goalId(goal.getId())
-        .userId(user.getId())
+        .goalId(goalId)
+        .userId(userId)
         .name(over50);
 
     // when
@@ -104,11 +102,41 @@ class DduduTest {
   }
 
   @Test
+  void 목표가_없으면_생성을_실패한다() {
+    // given
+    DduduBuilder builder = Ddudu.builder()
+        .userId(userId)
+        .name(name);
+
+    // when
+    ThrowingCallable create = builder::build;
+
+    // then
+    assertThatIllegalArgumentException().isThrownBy(create)
+        .withMessage(DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+  }
+
+  @Test
+  void 사용자가_없으면_생성을_실패한다() {
+    // given
+    DduduBuilder builder = Ddudu.builder()
+        .goalId(goalId)
+        .name(name);
+
+    // when
+    ThrowingCallable create = builder::build;
+
+    // then
+    assertThatIllegalArgumentException().isThrownBy(create)
+        .withMessage(DduduErrorCode.NULL_USER.getCodeName());
+  }
+
+  @Test
   void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
     // given
     DduduBuilder builder = Ddudu.builder()
-        .goalId(goal.getId())
-        .userId(user.getId())
+        .goalId(goalId)
+        .userId(userId)
         .name(name)
         .beginAt(LocalTime.now()
             .plusMinutes(1))
