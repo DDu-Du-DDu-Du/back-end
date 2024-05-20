@@ -22,8 +22,8 @@ public class DduduFixture extends BaseFixture {
   ) {
     return Ddudu.builder()
         .id(id)
-        .goal(goal)
-        .user(user)
+        .goalId(goal.getId())
+        .userId(user.getId())
         .name(name)
         .isPostponed(isPostPoned)
         .status(dduduStatus)

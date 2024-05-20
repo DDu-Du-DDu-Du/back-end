@@ -22,24 +22,30 @@ public class Ddudu {
 
   @EqualsAndHashCode.Include
   private final Long id;
-  private final Goal goal;
-  private final User user;
+  private final Long goalId;
+  private final Long userId;
   private final String name;
   private final DduduStatus status;
   private final boolean isPostponed;
   private final LocalDateTime beginAt;
   private final LocalDateTime endAt;
 
+  // TODO: delete below fields after migration as left for avoidance of compile errors
+  private final Goal goal = null;
+  private final User user = null;
+
   @Builder
   private Ddudu(
-      Long id, Goal goal, User user, String name, Boolean isPostponed, DduduStatus status,
-      LocalDateTime beginAt, LocalDateTime endAt
+      Long id, Long goalId, Long userId, String name, Boolean isPostponed, DduduStatus status,
+      LocalDateTime beginAt, LocalDateTime endAt,
+      // TODO: delete below fields after migration as left for avoidance of compile errors
+      Goal goal, User user
   ) {
     validate(name, beginAt, endAt);
 
     this.id = id;
-    this.goal = goal;
-    this.user = user;
+    this.goalId = goalId;
+    this.userId = userId;
     this.name = name;
     this.status = Objects.requireNonNullElse(status, DEFAULT_STATUS);
     this.isPostponed = Objects.requireNonNullElse(isPostponed, false);
@@ -50,8 +56,8 @@ public class Ddudu {
   public Ddudu applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
     return Ddudu.builder()
         .id(this.id)
-        .goal(goal)
-        .user(user)
+        .goalId(goal.getId())
+        .userId(this.userId)
         .name(name)
         .status(this.status)
         .isPostponed(this.isPostponed)
@@ -63,8 +69,8 @@ public class Ddudu {
   public Ddudu switchStatus() {
     DduduBuilder dduduBuilder = Ddudu.builder()
         .id(this.id)
-        .goal(this.goal)
-        .user(this.user)
+        .goalId(this.goalId)
+        .userId(this.userId)
         .name(this.name)
         .isPostponed(this.isPostponed)
         .beginAt(this.beginAt);
@@ -83,7 +89,7 @@ public class Ddudu {
   }
 
   public boolean isCreatedByUser(Long userId) {
-    return Objects.equals(this.user.getId(), userId);
+    return Objects.equals(this.userId, userId);
   }
 
   private void validate(String name, LocalDateTime beginAt, LocalDateTime endAt) {

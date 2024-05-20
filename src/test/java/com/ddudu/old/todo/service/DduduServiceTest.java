@@ -367,8 +367,7 @@ class DduduServiceTest {
       // given
       Long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      Long goalId = ddudu.getGoal()
-          .getId();
+      Long goalId = ddudu.getGoalId();
       UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
 
       // when
@@ -384,8 +383,7 @@ class DduduServiceTest {
       // given
       Long invalidUserId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      Long goalId = ddudu.getGoal()
-          .getId();
+      Long goalId = ddudu.getGoalId();
       UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
 
       // when

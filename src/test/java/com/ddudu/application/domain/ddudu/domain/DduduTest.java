@@ -42,8 +42,8 @@ class DduduTest {
 
     // when
     Ddudu ddudu = Ddudu.builder()
-        .goal(goal)
-        .user(user)
+        .goalId(goal.getId())
+        .userId(user.getId())
         .name(name)
         .status(DduduStatus.COMPLETE)
         .isPostponed(true)
@@ -59,8 +59,8 @@ class DduduTest {
 
     // when
     Ddudu ddudu = Ddudu.builder()
-        .goal(goal)
-        .user(user)
+        .goalId(goal.getId())
+        .userId(user.getId())
         .name(name)
         .build();
 
@@ -80,8 +80,8 @@ class DduduTest {
   void 이름이_빈_값이면_생성을_실패한다(String blankName) {
     // given
     DduduBuilder builder = Ddudu.builder()
-        .goal(goal)
-        .user(user)
+        .goalId(goal.getId())
+        .userId(user.getId())
         .name(blankName);
 
     // when
@@ -97,8 +97,8 @@ class DduduTest {
     // given
     String over50 = DduduFixture.getRandomSentence(51, 100);
     DduduBuilder builder = Ddudu.builder()
-        .goal(goal)
-        .user(user)
+        .goalId(goal.getId())
+        .userId(user.getId())
         .name(over50);
 
     // when
@@ -113,8 +113,8 @@ class DduduTest {
   void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
     // given
     DduduBuilder builder = Ddudu.builder()
-        .goal(goal)
-        .user(user)
+        .goalId(goal.getId())
+        .userId(user.getId())
         .name(name)
         .beginAt(LocalDateTime.now()
             .plusMinutes(1))
