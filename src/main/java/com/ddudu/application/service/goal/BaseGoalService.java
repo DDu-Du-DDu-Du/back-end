@@ -8,10 +8,8 @@ import com.ddudu.application.port.out.user.UserLoaderPort;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 class BaseGoalService {
 
