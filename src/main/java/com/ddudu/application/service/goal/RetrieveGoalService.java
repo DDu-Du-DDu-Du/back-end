@@ -18,8 +18,7 @@ public class RetrieveGoalService implements RetrieveGoalUseCase {
   public GoalResponse getById(Long userId, Long id) {
     Goal goal = baseGoalService.findGoal(id);
 
-    baseGoalService.checkGoalOwnership(userId, goal);
-
+    goal.validateGoalCreator(userId);
     return GoalResponse.from(goal);
   }
 

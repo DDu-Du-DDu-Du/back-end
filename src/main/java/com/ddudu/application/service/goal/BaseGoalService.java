@@ -38,10 +38,4 @@ class BaseGoalService {
             ));
   }
 
-  void checkGoalOwnership(Long userId, Goal goal) {
-    if (!goal.isCreatedBy(userId)) {
-      throw new SecurityException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
-    }
-  }
-
 }

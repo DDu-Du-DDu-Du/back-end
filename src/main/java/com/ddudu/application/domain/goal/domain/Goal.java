@@ -78,6 +78,12 @@ public final class Goal {
         .build();
   }
 
+  public void validateGoalCreator(Long userId) {
+    if (!isCreatedBy(userId)) {
+      throw new SecurityException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
+  }
+
   public boolean isCreatedBy(Long userId) {
     return Objects.equals(this.user.getId(), userId);
   }

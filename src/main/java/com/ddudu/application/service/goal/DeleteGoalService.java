@@ -19,7 +19,7 @@ public class DeleteGoalService implements DeleteGoalUseCase {
   public void delete(Long userId, Long id) {
     Goal goal = baseGoalService.findGoal(id);
 
-    baseGoalService.checkGoalOwnership(userId, goal);
+    goal.validateGoalCreator(userId);
     deleteGoalPort.deleteWithDdudus(goal);
   }
 

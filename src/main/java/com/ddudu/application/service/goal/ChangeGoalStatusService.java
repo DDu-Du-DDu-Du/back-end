@@ -21,8 +21,8 @@ public class ChangeGoalStatusService implements ChangeGoalStatusUseCase {
   @Override
   public GoalIdResponse changeStatus(Long userId, Long id, ChangeGoalStatusRequest request) {
     Goal goal = baseGoalService.findGoal(id);
-
-    baseGoalService.checkGoalOwnership(userId, goal);
+ 
+    goal.validateGoalCreator(userId);
 
     Goal updated = goal.changeStatus(GoalStatus.from(request.status()));
 

@@ -22,7 +22,7 @@ public class UpdateGoalService implements UpdateGoalUseCase {
   public GoalIdResponse update(Long userId, Long id, UpdateGoalRequest request) {
     Goal goal = baseGoalService.findGoal(id);
 
-    baseGoalService.checkGoalOwnership(userId, goal);
+    goal.validateGoalCreator(userId);
 
     Goal updated = goal.applyGoalUpdates(
         request.name(),
