@@ -11,6 +11,4 @@ public interface GoalQueryRepository {
 
   List<GoalEntity> findAllByUserAndPrivacyTypes(UserEntity user, List<PrivacyType> privacyTypes);
 
-  void update(GoalEntity goal);
-
 }
