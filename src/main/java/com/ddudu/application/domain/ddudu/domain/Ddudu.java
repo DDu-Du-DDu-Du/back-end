@@ -29,7 +29,7 @@ public class Ddudu {
   private final String name;
   private final DduduStatus status;
   private final boolean isPostponed;
-  private final LocalDate plannedOn;
+  private final LocalDate scheduledOn;
   private final LocalTime beginAt;
   private final LocalTime endAt;
 
@@ -40,11 +40,11 @@ public class Ddudu {
   @Builder
   private Ddudu(
       Long id, Long goalId, Long userId, String name, Boolean isPostponed, DduduStatus status,
-      LocalDate plannedOn, LocalTime beginAt, LocalTime endAt,
+      LocalDate scheduledOn, LocalTime beginAt, LocalTime endAt,
       // TODO: delete below fields after migration as left for avoidance of compile errors
       Goal goal, User user
   ) {
-    validate(name, beginAt, endAt);
+    validate(goalId, userId, name, beginAt, endAt);
 
     this.id = id;
     this.goalId = goalId;
@@ -52,7 +52,7 @@ public class Ddudu {
     this.name = name;
     this.status = Objects.requireNonNullElse(status, DEFAULT_STATUS);
     this.isPostponed = Objects.requireNonNullElse(isPostponed, false);
-    this.plannedOn = plannedOn;
+    this.scheduledOn = Objects.requireNonNullElse(scheduledOn, LocalDate.now());
     this.beginAt = beginAt;
     this.endAt = endAt;
   }
@@ -96,7 +96,11 @@ public class Ddudu {
     return Objects.equals(this.userId, userId);
   }
 
-  private void validate(String name, LocalTime beginAt, LocalTime endAt) {
+  private void validate(
+      Long goalId, Long userId, String name, LocalTime beginAt, LocalTime endAt
+  ) {
+    checkArgument(Objects.nonNull(goalId), DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+    checkArgument(Objects.nonNull(userId), DduduErrorCode.NULL_USER.getCodeName());
     validateTodo(name);
     validatePeriod(beginAt, endAt);
   }
