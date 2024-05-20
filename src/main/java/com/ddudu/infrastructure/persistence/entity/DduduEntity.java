@@ -60,8 +60,8 @@ public class DduduEntity extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private DduduStatus status;
 
-  @Column(name = "planned_on")
-  private LocalDate plannedOn;
+  @Column(name = "scheduled_on")
+  private LocalDate scheduledOn;
 
   @Column(name = "begin_at")
   private LocalTime beginAt;
@@ -87,14 +87,17 @@ public class DduduEntity extends BaseEntity {
         .name(ddudu.getName())
         .status(ddudu.getStatus())
         .isPostponed(ddudu.isPostponed())
-//        .beginAt(ddudu.getBeginAt())
-//        .endAt(ddudu.getEndAt())
+        .scheduledOn(ddudu.getScheduledOn())
+        .beginAt(ddudu.getBeginAt())
+        .endAt(ddudu.getEndAt())
         .build();
   }
 
   public Ddudu toDomain() {
     return Ddudu.builder()
         .id(id)
+        .userId(user.getId())
+        .goalId(goal.getId())
         .name(name)
         .status(status)
         .isPostponed(isPostponed)
