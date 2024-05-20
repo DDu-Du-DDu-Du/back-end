@@ -7,7 +7,9 @@ import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
 import io.micrometer.common.util.StringUtils;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -27,8 +29,9 @@ public class Ddudu {
   private final String name;
   private final DduduStatus status;
   private final boolean isPostponed;
-  private final LocalDateTime beginAt;
-  private final LocalDateTime endAt;
+  private final LocalDate plannedOn;
+  private final LocalTime beginAt;
+  private final LocalTime endAt;
 
   // TODO: delete below fields after migration as left for avoidance of compile errors
   private final Goal goal = null;
@@ -37,7 +40,7 @@ public class Ddudu {
   @Builder
   private Ddudu(
       Long id, Long goalId, Long userId, String name, Boolean isPostponed, DduduStatus status,
-      LocalDateTime beginAt, LocalDateTime endAt,
+      LocalDate plannedOn, LocalTime beginAt, LocalTime endAt,
       // TODO: delete below fields after migration as left for avoidance of compile errors
       Goal goal, User user
   ) {
@@ -49,7 +52,8 @@ public class Ddudu {
     this.name = name;
     this.status = Objects.requireNonNullElse(status, DEFAULT_STATUS);
     this.isPostponed = Objects.requireNonNullElse(isPostponed, false);
-    this.beginAt = Objects.requireNonNullElse(beginAt, LocalDateTime.now());
+    this.plannedOn = plannedOn;
+    this.beginAt = beginAt;
     this.endAt = endAt;
   }
 
@@ -61,7 +65,7 @@ public class Ddudu {
         .name(name)
         .status(this.status)
         .isPostponed(this.isPostponed)
-        .beginAt(beginAt)
+        .beginAt(LocalTime.from(beginAt))
         .endAt(this.endAt)
         .build();
   }
@@ -78,7 +82,7 @@ public class Ddudu {
     if (this.status == DduduStatus.UNCOMPLETED) {
       return dduduBuilder
           .status(DduduStatus.COMPLETE)
-          .endAt(LocalDateTime.now())
+          .endAt(LocalTime.now())
           .build();
     }
 
@@ -92,7 +96,7 @@ public class Ddudu {
     return Objects.equals(this.userId, userId);
   }
 
-  private void validate(String name, LocalDateTime beginAt, LocalDateTime endAt) {
+  private void validate(String name, LocalTime beginAt, LocalTime endAt) {
     validateTodo(name);
     validatePeriod(beginAt, endAt);
   }
@@ -103,7 +107,7 @@ public class Ddudu {
         name.length() <= MAX_NAME_LENGTH, DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
   }
 
-  private void validatePeriod(LocalDateTime beginAt, LocalDateTime endAt) {
+  private void validatePeriod(LocalTime beginAt, LocalTime endAt) {
     if (Objects.isNull(beginAt) || Objects.isNull(endAt)) {
       return;
     }

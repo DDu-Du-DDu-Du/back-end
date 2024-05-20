@@ -11,8 +11,7 @@ import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalTime;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -65,13 +64,8 @@ class DduduTest {
         .build();
 
     // then
-    long timeDifference = LocalDateTime.now()
-        .toEpochSecond(ZoneOffset.UTC) - ddudu.getBeginAt()
-        .toEpochSecond(ZoneOffset.UTC);
-
     assertThat(ddudu.getStatus()).isEqualTo(DduduStatus.UNCOMPLETED);
     assertThat(ddudu.isPostponed()).isFalse();
-    assertThat(timeDifference).isLessThanOrEqualTo(1);
   }
 
   @ParameterizedTest
@@ -116,9 +110,9 @@ class DduduTest {
         .goalId(goal.getId())
         .userId(user.getId())
         .name(name)
-        .beginAt(LocalDateTime.now()
+        .beginAt(LocalTime.now()
             .plusMinutes(1))
-        .endAt(LocalDateTime.now());
+        .endAt(LocalTime.now());
 
     // when
     ThrowingCallable create = builder::build;

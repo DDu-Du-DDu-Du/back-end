@@ -63,7 +63,7 @@ public class TodoService {
         .name(request.name())
         .goal(goal)
         .user(user)
-        .beginAt(request.beginAt())
+        .beginAt(LocalTime.from(request.beginAt()))
         .build();
 
     return TodoInfo.from(oldTodoRepository.save(ddudu));

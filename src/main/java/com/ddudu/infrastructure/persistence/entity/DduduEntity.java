@@ -14,7 +14,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,14 +60,14 @@ public class DduduEntity extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private DduduStatus status;
 
-  @Column(
-      name = "begin_at",
-      nullable = false
-  )
-  private LocalDateTime beginAt;
+  @Column(name = "planned_on")
+  private LocalDate plannedOn;
+
+  @Column(name = "begin_at")
+  private LocalTime beginAt;
 
   @Column(name = "end_at")
-  private LocalDateTime endAt;
+  private LocalTime endAt;
 
   @Column(
       name = "is_postponed",
@@ -86,8 +87,8 @@ public class DduduEntity extends BaseEntity {
         .name(ddudu.getName())
         .status(ddudu.getStatus())
         .isPostponed(ddudu.isPostponed())
-        .beginAt(ddudu.getBeginAt())
-        .endAt(ddudu.getEndAt())
+//        .beginAt(ddudu.getBeginAt())
+//        .endAt(ddudu.getEndAt())
         .build();
   }
 
