@@ -14,6 +14,7 @@ jobs:
     with:
       env: dev
       task-definition: .aws/dev-task-definition.json
+      ecr-registry-alias: y6p8j3t3
       ecs-container-name: ddudu-dev-ecs-container
       ecs-service: ddudu-dev-ecs-service
       ecs-cluster: ddudu-dev-ecs-cluster
