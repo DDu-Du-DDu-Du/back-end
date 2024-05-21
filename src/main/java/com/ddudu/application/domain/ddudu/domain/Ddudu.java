@@ -106,6 +106,7 @@ public class Ddudu {
         .userId(this.userId)
         .name(this.name)
         .status(this.status)
+        .scheduledOn(this.scheduledOn)
         .isPostponed(this.isPostponed)
         .beginAt(this.beginAt)
         .endAt(this.endAt);
