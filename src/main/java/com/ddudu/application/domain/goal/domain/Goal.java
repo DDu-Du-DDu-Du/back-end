@@ -3,6 +3,7 @@ package com.ddudu.application.domain.goal.domain;
 import static com.google.common.base.Preconditions.checkArgument;
 import static io.micrometer.common.util.StringUtils.isNotBlank;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -101,7 +102,7 @@ public final class Goal {
   }
 
   private void validateUser(User user, Long userId) {
-    checkArgument(!isNull(user) || !isNull(userId), GoalErrorCode.NULL_USER.getCodeName());
+    checkArgument(nonNull(user) || nonNull(userId), GoalErrorCode.NULL_USER.getCodeName());
     checkArgument(
         isNull(user) || isNull(userId) || user.getId()
             .equals(userId), GoalErrorCode.TWO_OWNERS.getCodeName()
