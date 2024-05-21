@@ -17,7 +17,7 @@ import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.MissingResourceException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,8 +63,8 @@ class DduduPeriodSetupServiceTest {
   @Test
   void 뚜두_시작_및_종료시간을_설정한다() {
     // given
-    LocalDateTime now = LocalDateTime.now();
-    PeriodSetupRequest request = new PeriodSetupRequest(now, now.plusDays(1));
+    LocalTime now = LocalTime.now();
+    PeriodSetupRequest request = new PeriodSetupRequest(now, now.plusHours(1));
 
     // when
     dduduPeriodSetupService.setUpPeriod(user.getId(), ddudu.getId(), request);
@@ -74,14 +74,14 @@ class DduduPeriodSetupServiceTest {
     Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
 
     assertThat(actual.getBeginAt()).isEqualTo(now);
-    assertThat(actual.getEndAt()).isEqualTo(now.plusDays(1));
+    assertThat(actual.getEndAt()).isEqualTo(now.plusHours(1));
   }
 
   @Test
   void 뚜두가_없으면_시간_설정을_실패한다() {
     // given
-    LocalDateTime now = LocalDateTime.now();
-    PeriodSetupRequest request = new PeriodSetupRequest(now, now.plusDays(1));
+    LocalTime now = LocalTime.now();
+    PeriodSetupRequest request = new PeriodSetupRequest(now, now.plusHours(1));
     long invalidId = DduduFixture.getRandomId();
 
     // when

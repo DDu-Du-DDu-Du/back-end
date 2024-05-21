@@ -1,7 +1,7 @@
 package com.ddudu.application.domain.ddudu.dto.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
-public record PeriodSetupRequest(LocalDateTime beginAt, LocalDateTime endAt) {
+public record PeriodSetupRequest(LocalTime beginAt, LocalTime endAt) {
 
 }

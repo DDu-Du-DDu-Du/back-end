@@ -47,14 +47,14 @@ class DduduTest {
     void 뚜두_생성을_성공한다() {
       // given
 
-    // when
-    Ddudu ddudu = Ddudu.builder()
-        .goalId(goalId)
-        .userId(userId)
-        .name(name)
-        .status(DduduStatus.COMPLETE)
-        .isPostponed(true)
-        .build();
+      // when
+      Ddudu ddudu = Ddudu.builder()
+          .goalId(goalId)
+          .userId(userId)
+          .name(name)
+          .status(DduduStatus.COMPLETE)
+          .isPostponed(true)
+          .build();
 
       // then
       assertThat(ddudu).isNotNull();
@@ -112,46 +112,46 @@ class DduduTest {
           .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
     }
 
-  @Test
-  void 목표가_없으면_생성을_실패한다() {
-    // given
-    DduduBuilder builder = Ddudu.builder()
-        .userId(userId)
-        .name(name);
+    @Test
+    void 목표가_없으면_생성을_실패한다() {
+      // given
+      DduduBuilder builder = Ddudu.builder()
+          .userId(userId)
+          .name(name);
 
-    // when
-    ThrowingCallable create = builder::build;
+      // when
+      ThrowingCallable create = builder::build;
 
-    // then
-    assertThatIllegalArgumentException().isThrownBy(create)
-        .withMessage(DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
-  }
+      // then
+      assertThatIllegalArgumentException().isThrownBy(create)
+          .withMessage(DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+    }
 
-  @Test
-  void 사용자가_없으면_생성을_실패한다() {
-    // given
-    DduduBuilder builder = Ddudu.builder()
-        .goalId(goalId)
-        .name(name);
+    @Test
+    void 사용자가_없으면_생성을_실패한다() {
+      // given
+      DduduBuilder builder = Ddudu.builder()
+          .goalId(goalId)
+          .name(name);
 
-    // when
-    ThrowingCallable create = builder::build;
+      // when
+      ThrowingCallable create = builder::build;
 
-    // then
-    assertThatIllegalArgumentException().isThrownBy(create)
-        .withMessage(DduduErrorCode.NULL_USER.getCodeName());
-  }
+      // then
+      assertThatIllegalArgumentException().isThrownBy(create)
+          .withMessage(DduduErrorCode.NULL_USER.getCodeName());
+    }
 
-  @Test
-  void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
-    // given
-    DduduBuilder builder = Ddudu.builder()
-        .goalId(goalId)
-        .userId(userId)
-        .name(name)
-        .beginAt(LocalTime.now()
-            .plusMinutes(1))
-        .endAt(LocalTime.now());
+    @Test
+    void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
+      // given
+      DduduBuilder builder = Ddudu.builder()
+          .goalId(goalId)
+          .userId(userId)
+          .name(name)
+          .beginAt(LocalTime.now()
+              .plusMinutes(1))
+          .endAt(LocalTime.now());
 
       // when
       ThrowingCallable create = builder::build;
@@ -166,11 +166,13 @@ class DduduTest {
   @Nested
   class 권한_테스트 {
 
+    Long userId;
     Ddudu ddudu;
 
     @BeforeEach
     void setUp() {
-      ddudu = DduduFixture.createRandomDduduWithGoal(goal);
+      userId = DduduFixture.getRandomId();
+      ddudu = DduduFixture.createRandomDduduWithReference(DduduFixture.getRandomId(), userId);
     }
 
     @Test
@@ -178,7 +180,7 @@ class DduduTest {
       // given
 
       // when
-      ThrowingCallable check = () -> ddudu.checkAuthority(user.getId());
+      ThrowingCallable check = () -> ddudu.checkAuthority(userId);
 
       // then
       assertThatNoException().isThrownBy(check);
@@ -206,7 +208,9 @@ class DduduTest {
 
     @BeforeEach
     void setUp() {
-      ddudu = DduduFixture.createRandomDduduWithGoal(goal);
+      long userId = DduduFixture.getRandomId();
+      long goalId = DduduFixture.getRandomId();
+      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId);
     }
 
     @Test
