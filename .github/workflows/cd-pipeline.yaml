@@ -95,7 +95,6 @@ jobs:
       - name: Docker 이미지 빌드 후 배포
         id: build-docker
         env:
-
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REGISTRY_ALIAS: ${{ inputs.ecr-registry-alias }}
           REPOSITORY: ddudu-ecr
