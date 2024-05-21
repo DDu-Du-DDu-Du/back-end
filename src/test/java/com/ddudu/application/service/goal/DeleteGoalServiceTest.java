@@ -53,13 +53,13 @@ class DeleteGoalServiceTest {
 
   @Autowired
   TodoRepository todoRepository;
-
+  User user;
   Long userId;
   Goal goal;
 
   @BeforeEach
   void setUp() {
-    User user = createAndSaveUser();
+    user = createAndSaveUser();
     userId = user.getId();
     goal = createAndSaveGoal(user);
   }
@@ -77,7 +77,7 @@ class DeleteGoalServiceTest {
   @Test
   void 목표_삭제_시_해당_목표의_뚜두도_삭제된다() {
     //given
-    Todo todo = DduduFixture.createRandomDduduWithGoal(goal);
+    Todo todo = DduduFixture.createRandomDduduWithGoal(goal, user);
     todo = todoRepository.save(todo);
 
     //when

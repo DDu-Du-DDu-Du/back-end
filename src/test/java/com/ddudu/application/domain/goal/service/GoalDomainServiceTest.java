@@ -49,8 +49,8 @@ class GoalDomainServiceTest {
       Goal actual = goalDomainService.create(user, request);
 
       // then
-      assertThat(actual).extracting("user", "name", "privacyType", "color")
-          .containsExactly(user, name, PrivacyType.from(privacyType), color);
+      assertThat(actual).extracting("userId", "name", "privacyType", "color")
+          .containsExactly(user.getId(), name, PrivacyType.from(privacyType), color);
     }
 
   }

@@ -3,7 +3,6 @@ package com.ddudu.application.domain.goal.domain;
 import static com.google.common.base.Preconditions.checkArgument;
 import static io.micrometer.common.util.StringUtils.isNotBlank;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -27,7 +26,7 @@ public final class Goal {
   @EqualsAndHashCode.Include
   private final Long id;
   private final String name;
-  private final User user;
+  private final Long userId;
   private final GoalStatus status;
   private final PrivacyType privacyType;
 
@@ -36,13 +35,14 @@ public final class Goal {
 
   @Builder
   public Goal(
-      Long id, String name, User user, GoalStatus status, String color, PrivacyType privacyType
+      Long id, String name, Long userId, GoalStatus status, String color, PrivacyType privacyType,
+      User user
   ) {
-    validate(name, user);
+    validate(name, user, userId);
 
     this.id = id;
     this.name = name;
-    this.user = user;
+    this.userId = isNull(user) ? userId : user.getId();
     this.status = isNull(status) ? DEFAULT_STATUS : status;
     this.color = new Color(color);
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
@@ -60,7 +60,7 @@ public final class Goal {
     return Goal.builder()
         .id(id)
         .name(name)
-        .user(user)
+        .userId(userId)
         .status(status)
         .color(color)
         .privacyType(privacyType)
@@ -71,7 +71,7 @@ public final class Goal {
     return Goal.builder()
         .id(id)
         .name(name)
-        .user(user)
+        .userId(userId)
         .status(status)
         .color(color.getCode())
         .privacyType(privacyType)
@@ -85,12 +85,12 @@ public final class Goal {
   }
 
   public boolean isCreatedBy(Long userId) {
-    return Objects.equals(this.user.getId(), userId);
+    return Objects.equals(this.userId, userId);
   }
 
-  private void validate(String name, User user) {
+  private void validate(String name, User user, Long userId) {
     validateName(name);
-    validateUser(user);
+    validateUser(user, userId);
   }
 
   private void validateName(String name) {
@@ -99,8 +99,13 @@ public final class Goal {
         name.length() <= MAX_NAME_LENGTH, GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
   }
 
-  private void validateUser(User user) {
-    checkArgument(nonNull(user), GoalErrorCode.NULL_USER.getCodeName());
+  private void validateUser(User user, Long userId) {
+    checkArgument(!isNull(user) || !isNull(userId), GoalErrorCode.NULL_USER.getCodeName());
+    checkArgument(
+        isNull(user) || isNull(userId) || user.getId()
+            .equals(userId), GoalErrorCode.TWO_OWNERS.getCodeName()
+    );
+    checkArgument(userId > 0, GoalErrorCode.NOT_POSITIVE_USER_ID.getCodeName());
   }
 
 }

@@ -18,10 +18,12 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -104,6 +106,12 @@ public class UserEntity extends BaseEntity {
         .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
         .templateNotification(user.isNotifyingTemplate())
         .dduduNotification(user.isNotifyingDdudu())
+        .build();
+  }
+
+  public static UserEntity withOnlyId(Long userId) {
+    return UserEntity.builder()
+        .id(userId)
         .build();
   }
 
