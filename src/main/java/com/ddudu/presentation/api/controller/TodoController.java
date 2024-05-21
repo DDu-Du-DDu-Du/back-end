@@ -8,7 +8,7 @@ import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.annotation.Login;
-import com.ddudu.presentation.api.doc.TodoControllerDoc;
+import com.ddudu.presentation.api.doc.DduduControllerDoc;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.DayOfWeek;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/todos")
 @RequiredArgsConstructor
-public class TodoController implements TodoControllerDoc {
+public class TodoController implements DduduControllerDoc {
 
   private final TodoService todoService;
 

@@ -18,7 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 @Tag(name = "뚜두 관련 API")
-public interface TodoControllerDoc {
+public interface DduduControllerDoc {
 
   @Operation(summary = "뚜두 생성")
   @ApiResponse(
