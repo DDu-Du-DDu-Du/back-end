@@ -36,6 +36,7 @@ public final class Goal {
   @Builder
   public Goal(
       Long id, String name, Long userId, GoalStatus status, String color, PrivacyType privacyType,
+      // TODO : remove this after all migration as left for avoidance of compile errors
       User user
   ) {
     validate(name, user, userId);
