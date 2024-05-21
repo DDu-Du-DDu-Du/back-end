@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "goals")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class GoalEntity extends BaseEntity {
