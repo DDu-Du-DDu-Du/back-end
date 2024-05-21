@@ -9,6 +9,9 @@ on:
       task-definition:
         required: true
         type: string
+      ecr-registry-alias:
+        required: true
+        type: string
       ecs-container-name:
         required: true
         type: string
@@ -83,18 +86,21 @@ jobs:
       - name: ECR 로그인
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registry-type: public
 
       - name: Docker 이미지 빌드 후 배포
         id: build-docker
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY_ALIAS: ${{ inputs.ecr-registry-alias }}
           REPOSITORY: ddudu-ecr
           IMAGE_TAG: ${{ github.sha }}
           PROFILE: ${{ inputs.env }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg PROFILE=$PROFILE .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG --build-arg PROFILE=$PROFILE .
+          docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+          echo "image=$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: ECS Task Definition 생성
         id: render-task-definition
