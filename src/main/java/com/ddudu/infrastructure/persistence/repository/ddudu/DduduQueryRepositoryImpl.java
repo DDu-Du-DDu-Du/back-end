@@ -14,6 +14,7 @@ import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -33,7 +34,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .join(dduduEntity.goal)
         .fetchJoin()
         .where(
-            dduduEntity.beginAt.between(startDate, endDate),
+            dduduEntity.beginAt.between(LocalTime.from(startDate), LocalTime.from(endDate)),
             dduduEntity.user.eq(user)
         )
         .orderBy(dduduEntity.status.desc(), dduduEntity.endAt.asc())
@@ -72,8 +73,8 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         )
         .from(dduduEntity)
         .where(
-            dduduEntity.beginAt.goe(startDate),
-            dduduEntity.beginAt.lt(endDate),
+            dduduEntity.beginAt.goe(LocalTime.from(startDate)),
+            dduduEntity.beginAt.lt(LocalTime.from(endDate)),
             dduduEntity.user.eq(user),
             dduduEntity.goal.privacyType.in(privacyTypes)
         )

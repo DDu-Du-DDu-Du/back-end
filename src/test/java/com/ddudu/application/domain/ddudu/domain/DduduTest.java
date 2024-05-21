@@ -8,13 +8,9 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import com.ddudu.application.domain.ddudu.domain.Ddudu.DduduBuilder;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
-import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.fixture.DduduFixture;
-import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.UserFixture;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -28,13 +24,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class DduduTest {
 
-  Goal goal;
-  User user;
+  Long goalId;
+  Long userId;
 
   @BeforeEach
   void setUp() {
-    user = UserFixture.createRandomUserWithId();
-    goal = GoalFixture.createRandomGoalWithUser(user);
+    goalId = DduduFixture.getRandomId();
+    userId = DduduFixture.getRandomId();
   }
 
   @Nested
@@ -51,14 +47,14 @@ class DduduTest {
     void 뚜두_생성을_성공한다() {
       // given
 
-      // when
-      Ddudu ddudu = Ddudu.builder()
-          .goal(goal)
-          .user(user)
-          .name(name)
-          .status(DduduStatus.COMPLETE)
-          .isPostponed(true)
-          .build();
+    // when
+    Ddudu ddudu = Ddudu.builder()
+        .goalId(goalId)
+        .userId(userId)
+        .name(name)
+        .status(DduduStatus.COMPLETE)
+        .isPostponed(true)
+        .build();
 
       // then
       assertThat(ddudu).isNotNull();
@@ -70,19 +66,15 @@ class DduduTest {
 
       // when
       Ddudu ddudu = Ddudu.builder()
-          .goal(goal)
-          .user(user)
+          .goalId(goalId)
+          .userId(userId)
           .name(name)
           .build();
 
       // then
-      long timeDifference = LocalDateTime.now()
-          .toEpochSecond(ZoneOffset.UTC) - ddudu.getBeginAt()
-          .toEpochSecond(ZoneOffset.UTC);
-
       assertThat(ddudu.getStatus()).isEqualTo(DduduStatus.UNCOMPLETED);
       assertThat(ddudu.isPostponed()).isFalse();
-      assertThat(timeDifference).isLessThanOrEqualTo(1);
+      assertThat(ddudu.getScheduledOn()).isEqualTo(LocalDate.now());
     }
 
     @ParameterizedTest
@@ -91,8 +83,8 @@ class DduduTest {
     void 이름이_빈_값이면_생성을_실패한다(String blankName) {
       // given
       DduduBuilder builder = Ddudu.builder()
-          .goal(goal)
-          .user(user)
+          .goalId(goalId)
+          .userId(userId)
           .name(blankName);
 
       // when
@@ -108,8 +100,8 @@ class DduduTest {
       // given
       String over50 = DduduFixture.getRandomSentence(51, 100);
       DduduBuilder builder = Ddudu.builder()
-          .goal(goal)
-          .user(user)
+          .goalId(goalId)
+          .userId(userId)
           .name(over50);
 
       // when
@@ -120,16 +112,46 @@ class DduduTest {
           .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
     }
 
-    @Test
-    void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
-      // given
-      DduduBuilder builder = Ddudu.builder()
-          .goal(goal)
-          .user(user)
-          .name(name)
-          .beginAt(LocalDateTime.now()
-              .plusMinutes(1))
-          .endAt(LocalDateTime.now());
+  @Test
+  void 목표가_없으면_생성을_실패한다() {
+    // given
+    DduduBuilder builder = Ddudu.builder()
+        .userId(userId)
+        .name(name);
+
+    // when
+    ThrowingCallable create = builder::build;
+
+    // then
+    assertThatIllegalArgumentException().isThrownBy(create)
+        .withMessage(DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+  }
+
+  @Test
+  void 사용자가_없으면_생성을_실패한다() {
+    // given
+    DduduBuilder builder = Ddudu.builder()
+        .goalId(goalId)
+        .name(name);
+
+    // when
+    ThrowingCallable create = builder::build;
+
+    // then
+    assertThatIllegalArgumentException().isThrownBy(create)
+        .withMessage(DduduErrorCode.NULL_USER.getCodeName());
+  }
+
+  @Test
+  void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
+    // given
+    DduduBuilder builder = Ddudu.builder()
+        .goalId(goalId)
+        .userId(userId)
+        .name(name)
+        .beginAt(LocalTime.now()
+            .plusMinutes(1))
+        .endAt(LocalTime.now());
 
       // when
       ThrowingCallable create = builder::build;
@@ -190,10 +212,10 @@ class DduduTest {
     @Test
     void 기간_설정을_성공한다() {
       // given
-      LocalDateTime now = LocalDateTime.now();
+      LocalTime now = LocalTime.now();
 
       // when
-      Ddudu actual = ddudu.setUpPeriod(now, now.plusDays(1));
+      Ddudu actual = ddudu.setUpPeriod(now, now.plusHours(1));
 
       // then
       assertThat(actual)
@@ -204,14 +226,14 @@ class DduduTest {
           .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
           .hasFieldOrPropertyWithValue("goal", ddudu.getGoal())
           .hasFieldOrPropertyWithValue("beginAt", now)
-          .hasFieldOrPropertyWithValue("endAt", now.plusDays(1));
+          .hasFieldOrPropertyWithValue("endAt", now.plusHours(1));
     }
 
     @Test
     void 시작_시간만_설정할_수_있다() {
       // given
-      LocalDateTime now = LocalDateTime.now();
-      LocalDateTime expectedEndTime = ddudu.getEndAt();
+      LocalTime now = LocalTime.now();
+      LocalTime expectedEndTime = ddudu.getEndAt();
 
       // when
       Ddudu actual = ddudu.setUpPeriod(now, null);
@@ -224,8 +246,8 @@ class DduduTest {
     @Test
     void 종료_시간만_설정할_수_있다() {
       // given
-      LocalDateTime now = LocalDateTime.now();
-      LocalDateTime expectedBeginAt = ddudu.getBeginAt();
+      LocalTime now = LocalTime.now();
+      LocalTime expectedBeginAt = ddudu.getBeginAt();
 
       // when
       Ddudu actual = ddudu.setUpPeriod(null, now);

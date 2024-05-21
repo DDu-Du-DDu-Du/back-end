@@ -4,7 +4,7 @@ import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -17,15 +17,15 @@ public class DduduFixture extends BaseFixture {
   }
 
   public static Ddudu createDdudu(
-      Long id, Goal goal, User user, String name, DduduStatus dduduStatus, LocalDateTime beginAt,
-      LocalDateTime endAt, Boolean isPostPoned
+      Long id, Goal goal, User user, String name, DduduStatus dduduStatus, LocalTime beginAt,
+      LocalTime endAt, Boolean isPostponed
   ) {
     return Ddudu.builder()
         .id(id)
-        .goal(goal)
-        .user(user)
+        .goalId(goal.getId())
+        .userId(user.getId())
         .name(name)
-        .isPostponed(isPostPoned)
+        .isPostponed(isPostponed)
         .status(dduduStatus)
         .beginAt(beginAt)
         .endAt(endAt)

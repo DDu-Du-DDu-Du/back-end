@@ -18,11 +18,13 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "goals")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class GoalEntity extends BaseEntity {
 
   @Id
@@ -30,21 +32,43 @@ public class GoalEntity extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "name", nullable = false, length = 50)
+  @Column(
+      name = "name",
+      nullable = false,
+      length = 50
+  )
   private String name;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
+  @JoinColumn(
+      name = "user_id",
+      nullable = false
+  )
   private UserEntity user;
 
-  @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
+  @Column(
+      name = "status",
+      nullable = false,
+      columnDefinition = "VARCHAR",
+      length = 20
+  )
   @Enumerated(EnumType.STRING)
   private GoalStatus status;
 
-  @Column(name = "color", nullable = false, columnDefinition = "CHAR", length = 6)
+  @Column(
+      name = "color",
+      nullable = false,
+      columnDefinition = "CHAR",
+      length = 6
+  )
   private String color;
 
-  @Column(name = "privacy", nullable = false, columnDefinition = "VARCHAR", length = 20)
+  @Column(
+      name = "privacy",
+      nullable = false,
+      columnDefinition = "VARCHAR",
+      length = 20
+  )
   @Enumerated(EnumType.STRING)
   private PrivacyType privacyType;
 

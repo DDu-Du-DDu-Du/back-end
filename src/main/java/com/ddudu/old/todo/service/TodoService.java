@@ -63,7 +63,7 @@ public class TodoService {
         .name(request.name())
         .goal(goal)
         .user(user)
-        .beginAt(request.beginAt())
+        .beginAt(LocalTime.from(request.beginAt()))
         .build();
 
     return TodoInfo.from(oldTodoRepository.save(ddudu));
@@ -87,8 +87,7 @@ public class TodoService {
     );
 
     Map<Long, List<Ddudu>> todosByGoal = ddudus.stream()
-        .collect(Collectors.groupingBy(todo -> todo.getGoal()
-            .getId()));
+        .collect(Collectors.groupingBy(todo -> todo.getGoalId()));
 
     Map<Long, List<Like>> likesByTodo = likeRepository.findByTodos(ddudus)
         .stream()

@@ -14,7 +14,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,14 +60,14 @@ public class DduduEntity extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private DduduStatus status;
 
-  @Column(
-      name = "begin_at",
-      nullable = false
-  )
-  private LocalDateTime beginAt;
+  @Column(name = "scheduled_on")
+  private LocalDate scheduledOn;
+
+  @Column(name = "begin_at")
+  private LocalTime beginAt;
 
   @Column(name = "end_at")
-  private LocalDateTime endAt;
+  private LocalTime endAt;
 
   @Column(
       name = "is_postponed",
@@ -77,11 +78,16 @@ public class DduduEntity extends BaseEntity {
   public static DduduEntity from(Ddudu ddudu) {
     return DduduEntity.builder()
         .id(ddudu.getId())
-        .goal(GoalEntity.from(ddudu.getGoal()))
-        .user(UserEntity.from(ddudu.getUser()))
+        .goal(GoalEntity.builder()
+            .id(ddudu.getGoalId())
+            .build())
+        .user(UserEntity.builder()
+            .id(ddudu.getUserId())
+            .build())
         .name(ddudu.getName())
         .status(ddudu.getStatus())
         .isPostponed(ddudu.isPostponed())
+        .scheduledOn(ddudu.getScheduledOn())
         .beginAt(ddudu.getBeginAt())
         .endAt(ddudu.getEndAt())
         .build();
@@ -90,6 +96,8 @@ public class DduduEntity extends BaseEntity {
   public Ddudu toDomain() {
     return Ddudu.builder()
         .id(id)
+        .userId(user.getId())
+        .goalId(goal.getId())
         .name(name)
         .status(status)
         .isPostponed(isPostponed)
