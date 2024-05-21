@@ -236,6 +236,8 @@ public class DduduController {
   }
 
   @PutMapping("/{id}/period")
+  @Operation(summary = "뚜두 시작/종료시간 설정")
+  @ApiResponse(responseCode = "204")
   public ResponseEntity<Void> setUpPeriod(
       @Login
       Long loginId,
