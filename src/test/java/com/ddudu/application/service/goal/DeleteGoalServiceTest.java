@@ -1,23 +1,26 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.goal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.auth.SignUpPort;
+import com.ddudu.application.port.out.goal.DeleteGoalPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.application.service.goal.UpdateGoalService;
 import com.ddudu.fixture.BaseFixture;
+import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
+import com.ddudu.infrastructure.persistence.entity.DduduEntity;
+import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -29,10 +32,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class UpdateGoalServiceTest {
+class DeleteGoalServiceTest {
 
   @Autowired
-  UpdateGoalService updateGoalService;
+  DeleteGoalService deleteGoalService;
 
   @Autowired
   UserLoaderPort userLoaderPort;
@@ -46,63 +49,72 @@ class UpdateGoalServiceTest {
   @Autowired
   SaveGoalPort saveGoalPort;
 
+  @Autowired
+  DeleteGoalPort deleteGoalPort;
+
+  // TODO: 포트로 변경
+  @Autowired
+  DduduRepository dduduRepository;
+
   Long userId;
   Goal goal;
-  UpdateGoalRequest request;
-  String newName;
-  String newColor;
-  PrivacyType newPrivacyType;
 
   @BeforeEach
   void setUp() {
     User user = createAndSaveUser();
     userId = user.getId();
     goal = createAndSaveGoal(user);
-    newName = BaseFixture.getRandomSentenceWithMax(50);
-    newColor = BaseFixture.getRandomColor();
-    newPrivacyType = GoalFixture.getRandomPrivacyType();
-    request = new UpdateGoalRequest(newName, newColor, newPrivacyType.name());
   }
 
   @Test
-  void 목표를_수정_할_수_있다() {
+  void 목표를_삭제_할_수_있다() {
     // when
-    updateGoalService.update(userId, goal.getId(), request);
+    deleteGoalService.delete(userId, goal.getId());
 
     // then
-    Goal actual = goalLoaderPort.findById(goal.getId())
-        .get();
-    assertThat(actual).extracting("name", "color", "privacyType")
-        .containsExactly(newName, newColor, newPrivacyType);
+    Optional<Goal> foundAfterDeleted = goalLoaderPort.findById(goal.getId());
+    assertThat(foundAfterDeleted).isEmpty();
   }
 
   @Test
-  void 유효하지_않은_ID인_경우_수정에_실패한다() {
+  void 목표_삭제_시_해당_목표의_뚜두도_삭제된다() {
+    //given
+    Ddudu ddudu = DduduFixture.createRandomDduduWithGoal(goal);
+    ddudu = dduduRepository.save(DduduEntity.from(ddudu))
+        .toDomain();
+
+    //when
+    deleteGoalService.delete(userId, goal.getId());
+
+    //then
+    assertThat(dduduRepository.findById(ddudu.getId())).isEmpty();
+  }
+
+  @Test
+  void 목표가_존재하지_않는_경우_예외가_발생한다() {
     // given
     Long invalidId = BaseFixture.getRandomId();
 
     // when
-    ThrowingCallable update = () -> updateGoalService.update(userId, invalidId, request);
+    ThrowingCallable delete = () -> deleteGoalService.delete(userId, invalidId);
 
     // then
-    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(update)
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(delete)
         .withMessage(GoalErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
   @Test
-  void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
+  void 로그인_사용자가_권한이_없는_경우_삭제에_실패한다() {
     // given
     User anotherUser = createAndSaveUser();
 
     // when
-    ThrowingCallable update = () -> updateGoalService.update(
-        anotherUser.getId(), goal.getId(), request);
+    ThrowingCallable delete = () -> deleteGoalService.delete(anotherUser.getId(), goal.getId());
 
     // then
-    assertThatExceptionOfType(SecurityException.class).isThrownBy(update)
+    assertThatExceptionOfType(SecurityException.class).isThrownBy(delete)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
-
 
   private User createAndSaveUser() {
     User user = UserFixture.createRandomUserWithId();
@@ -113,6 +125,5 @@ class UpdateGoalServiceTest {
     Goal goal = GoalFixture.createRandomGoalWithUser(user);
     return saveGoalPort.save(goal);
   }
-
 
 }

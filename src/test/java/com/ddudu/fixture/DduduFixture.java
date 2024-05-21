@@ -3,7 +3,6 @@ package com.ddudu.fixture;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.user.domain.User;
 import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -13,17 +12,17 @@ public class DduduFixture extends BaseFixture {
 
   public static Ddudu createRandomDduduWithGoal(Goal goal) {
     return createDdudu(
-        getRandomId(), goal, goal.getUser(), getRandomSentenceWithMax(50), null, null, null, false);
+        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null, null, false);
   }
 
   public static Ddudu createDdudu(
-      Long id, Goal goal, User user, String name, DduduStatus dduduStatus, LocalTime beginAt,
+      Long id, Long goalId, Long userId, String name, DduduStatus dduduStatus, LocalTime beginAt,
       LocalTime endAt, Boolean isPostponed
   ) {
     return Ddudu.builder()
         .id(id)
-        .goalId(goal.getId())
-        .userId(user.getId())
+        .goalId(goalId)
+        .userId(userId)
         .name(name)
         .isPostponed(isPostponed)
         .status(dduduStatus)

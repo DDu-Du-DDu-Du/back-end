@@ -1,4 +1,4 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,7 +12,6 @@ import com.ddudu.application.domain.user.domain.vo.AuthProvider;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.auth.SocialResourcePort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.application.service.auth.SocialLoginService;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
 import java.util.Optional;

@@ -1,18 +1,16 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.goal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
-import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
+import com.ddudu.application.domain.goal.dto.response.GoalResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.application.service.goal.ChangeGoalStatusService;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
@@ -29,10 +27,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class ChangeGoalStatusServiceTest {
+class RetrieveGoalServiceTest {
 
   @Autowired
-  ChangeGoalStatusService changeGoalStatusService;
+  RetrieveGoalService retrieveGoalService;
 
   @Autowired
   UserLoaderPort userLoaderPort;
@@ -48,57 +46,50 @@ class ChangeGoalStatusServiceTest {
 
   Long userId;
   Goal goal;
-  ChangeGoalStatusRequest request;
-  GoalStatus newStatus;
 
   @BeforeEach
   void setUp() {
     User user = createAndSaveUser();
     userId = user.getId();
     goal = createAndSaveGoal(user);
-    newStatus = GoalFixture.getRandomGoalStatus();
-    request = new ChangeGoalStatusRequest(newStatus.name());
   }
 
   @Test
-  void 목표_상태를_변경할_수_있다() {
+  void ID를_통해_목표를_조회_할_수_있다() {
     // when
-    changeGoalStatusService.changeStatus(userId, goal.getId(), request);
+    GoalResponse actual = retrieveGoalService.getById(userId, goal.getId());
 
     // then
-    Goal actual = goalLoaderPort.findById(goal.getId())
-        .get();
-    assertThat(actual.getStatus()).isEqualTo(newStatus);
+    assertThat(actual).extracting("id", "name", "status", "color", "privacyType")
+        .containsExactly(
+            goal.getId(), goal.getName(), goal.getStatus(), goal.getColor(), goal.getPrivacyType());
   }
 
   @Test
-  void 유효하지_않은_ID인_경우_수정에_실패한다() {
+  void 유효하지_않은_ID인_경우_조회에_실패한다() {
     // given
     Long invalidId = BaseFixture.getRandomId();
 
     // when
-    ThrowingCallable update = () -> changeGoalStatusService.changeStatus(
-        userId, invalidId, request);
+    ThrowingCallable getById = () -> retrieveGoalService.getById(userId, invalidId);
 
     // then
-    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(update)
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(getById)
         .withMessage(GoalErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
   @Test
-  void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
+  void 로그인_사용자가_목표의_주인이_아닌_경우_조회에_실패한다() {
     // given
     User anotherUser = createAndSaveUser();
 
     // when
-    ThrowingCallable update = () -> changeGoalStatusService.changeStatus(
-        anotherUser.getId(), goal.getId(), request);
+    ThrowingCallable getById = () -> retrieveGoalService.getById(anotherUser.getId(), goal.getId());
 
     // then
-    assertThatExceptionOfType(SecurityException.class).isThrownBy(update)
+    assertThatExceptionOfType(SecurityException.class).isThrownBy(getById)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
-
 
   private User createAndSaveUser() {
     User user = UserFixture.createRandomUserWithId();

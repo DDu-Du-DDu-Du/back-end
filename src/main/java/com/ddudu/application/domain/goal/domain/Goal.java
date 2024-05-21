@@ -1,7 +1,9 @@
 package com.ddudu.application.domain.goal.domain;
 
-import static io.micrometer.common.util.StringUtils.isBlank;
+import static com.google.common.base.Preconditions.checkArgument;
+import static io.micrometer.common.util.StringUtils.isNotBlank;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -25,7 +27,7 @@ public final class Goal {
   @EqualsAndHashCode.Include
   private final Long id;
   private final String name;
-  private final User user;
+  private final Long userId;
   private final GoalStatus status;
   private final PrivacyType privacyType;
 
@@ -34,13 +36,15 @@ public final class Goal {
 
   @Builder
   public Goal(
-      Long id, String name, User user, GoalStatus status, String color, PrivacyType privacyType
+      Long id, String name, Long userId, GoalStatus status, String color, PrivacyType privacyType,
+      // TODO : remove this after all migration as left for avoidance of compile errors
+      User user
   ) {
-    validate(name, user);
+    validate(name, user, userId);
 
     this.id = id;
     this.name = name;
-    this.user = user;
+    this.userId = isNull(user) ? userId : user.getId();
     this.status = isNull(status) ? DEFAULT_STATUS : status;
     this.color = new Color(color);
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
@@ -58,7 +62,7 @@ public final class Goal {
     return Goal.builder()
         .id(id)
         .name(name)
-        .user(user)
+        .userId(userId)
         .status(status)
         .color(color)
         .privacyType(privacyType)
@@ -69,36 +73,41 @@ public final class Goal {
     return Goal.builder()
         .id(id)
         .name(name)
-        .user(user)
+        .userId(userId)
         .status(status)
         .color(color.getCode())
         .privacyType(privacyType)
         .build();
   }
 
-  public boolean isCreatedBy(Long userId) {
-    return Objects.equals(this.user.getId(), userId);
+  public void validateGoalCreator(Long userId) {
+    if (!isCreatedBy(userId)) {
+      throw new SecurityException(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
   }
 
-  private void validate(String name, User user) {
+  public boolean isCreatedBy(Long userId) {
+    return Objects.equals(this.userId, userId);
+  }
+
+  private void validate(String name, User user, Long userId) {
     validateName(name);
-    validateUser(user);
+    validateUser(user, userId);
   }
 
   private void validateName(String name) {
-    if (isBlank(name)) {
-      throw new IllegalArgumentException(GoalErrorCode.BLANK_NAME.getCodeName());
-    }
-
-    if (name.length() > MAX_NAME_LENGTH) {
-      throw new IllegalArgumentException(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
-    }
+    checkArgument(isNotBlank(name), GoalErrorCode.BLANK_NAME.getCodeName());
+    checkArgument(
+        name.length() <= MAX_NAME_LENGTH, GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
   }
 
-  private void validateUser(User user) {
-    if (isNull(user)) {
-      throw new IllegalArgumentException(GoalErrorCode.NULL_USER.getCodeName());
-    }
+  private void validateUser(User user, Long userId) {
+    checkArgument(nonNull(user) || nonNull(userId), GoalErrorCode.NULL_USER.getCodeName());
+    checkArgument(
+        isNull(user) || isNull(userId) || user.getId()
+            .equals(userId), GoalErrorCode.TWO_OWNERS.getCodeName()
+    );
+    checkArgument(userId > 0, GoalErrorCode.NOT_POSITIVE_USER_ID.getCodeName());
   }
 
 }

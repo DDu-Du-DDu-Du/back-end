@@ -13,7 +13,7 @@ public class GoalDomainService {
 
   public Goal create(User user, CreateGoalRequest request) {
     return Goal.builder()
-        .user(user)
+        .userId(user.getId())
         .name(request.name())
         .privacyType(PrivacyType.from(request.privacyType()))
         .color(request.color())

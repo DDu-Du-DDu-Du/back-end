@@ -17,16 +17,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
-
-  public DduduQueryRepositoryImpl(EntityManager em) {
-    this.jpaQueryFactory = new JPAQueryFactory(em);
-  }
+  private final EntityManager entityManager;
 
   @Override
   public List<DduduEntity> findTodosByDate(
@@ -101,6 +100,8 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .delete(dduduEntity)
         .where(dduduEntity.goal.eq(goal))
         .execute();
+
+    entityManager.clear();
   }
 
 }
