@@ -16,16 +16,15 @@ import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
-
-  public DduduQueryRepositoryImpl(EntityManager em) {
-    this.jpaQueryFactory = new JPAQueryFactory(em);
-  }
+  private final EntityManager entityManager;
 
   @Override
   public List<TodoEntity> findTodosByDate(
@@ -100,6 +99,8 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .delete(todoEntity)
         .where(todoEntity.goal.eq(goal))
         .execute();
+
+    entityManager.clear();
   }
 
 }

@@ -1,23 +1,25 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.goal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
-import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.auth.SignUpPort;
+import com.ddudu.application.port.out.goal.DeleteGoalPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.application.service.goal.ChangeGoalStatusService;
 import com.ddudu.fixture.BaseFixture;
+import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
+import com.ddudu.old.todo.domain.Todo;
+import com.ddudu.old.todo.domain.TodoRepository;
 import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -29,10 +31,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class ChangeGoalStatusServiceTest {
+class DeleteGoalServiceTest {
 
   @Autowired
-  ChangeGoalStatusService changeGoalStatusService;
+  DeleteGoalService deleteGoalService;
 
   @Autowired
   UserLoaderPort userLoaderPort;
@@ -46,59 +48,70 @@ class ChangeGoalStatusServiceTest {
   @Autowired
   SaveGoalPort saveGoalPort;
 
+  @Autowired
+  DeleteGoalPort deleteGoalPort;
+
+  @Autowired
+  TodoRepository todoRepository;
+  User user;
   Long userId;
   Goal goal;
-  ChangeGoalStatusRequest request;
-  GoalStatus newStatus;
 
   @BeforeEach
   void setUp() {
-    User user = createAndSaveUser();
+    user = createAndSaveUser();
     userId = user.getId();
     goal = createAndSaveGoal(user);
-    newStatus = GoalFixture.getRandomGoalStatus();
-    request = new ChangeGoalStatusRequest(newStatus.name());
   }
 
   @Test
-  void 목표_상태를_변경할_수_있다() {
+  void 목표를_삭제_할_수_있다() {
     // when
-    changeGoalStatusService.changeStatus(userId, goal.getId(), request);
+    deleteGoalService.delete(userId, goal.getId());
 
     // then
-    Goal actual = goalLoaderPort.findById(goal.getId())
-        .get();
-    assertThat(actual.getStatus()).isEqualTo(newStatus);
+    Optional<Goal> foundAfterDeleted = goalLoaderPort.findById(goal.getId());
+    assertThat(foundAfterDeleted).isEmpty();
   }
 
   @Test
-  void 유효하지_않은_ID인_경우_수정에_실패한다() {
+  void 목표_삭제_시_해당_목표의_뚜두도_삭제된다() {
+    //given
+    Todo todo = DduduFixture.createRandomDduduWithGoal(goal, user);
+    todo = todoRepository.save(todo);
+
+    //when
+    deleteGoalService.delete(userId, goal.getId());
+
+    //then
+    assertThat(todoRepository.findById(todo.getId())).isEmpty();
+  }
+
+  @Test
+  void 목표가_존재하지_않는_경우_예외가_발생한다() {
     // given
     Long invalidId = BaseFixture.getRandomId();
 
     // when
-    ThrowingCallable update = () -> changeGoalStatusService.changeStatus(
-        userId, invalidId, request);
+    ThrowingCallable delete = () -> deleteGoalService.delete(userId, invalidId);
 
     // then
-    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(update)
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(delete)
         .withMessage(GoalErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
   @Test
-  void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
+  void 로그인_사용자가_권한이_없는_경우_삭제에_실패한다() {
     // given
     User anotherUser = createAndSaveUser();
 
     // when
-    ThrowingCallable update = () -> changeGoalStatusService.changeStatus(
-        anotherUser.getId(), goal.getId(), request);
+    ThrowingCallable delete = () -> deleteGoalService.delete(anotherUser.getId(), goal.getId());
 
     // then
-    assertThatExceptionOfType(SecurityException.class).isThrownBy(update)
+    assertThatExceptionOfType(SecurityException.class).isThrownBy(delete)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
-
 
   private User createAndSaveUser() {
     User user = UserFixture.createRandomUserWithId();

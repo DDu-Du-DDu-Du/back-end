@@ -8,18 +8,15 @@ import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class GoalQueryRepositoryImpl implements GoalQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
-
-  public GoalQueryRepositoryImpl(EntityManager em) {
-    this.jpaQueryFactory = new JPAQueryFactory(em);
-  }
 
   @Override
   public List<GoalEntity> findAllByUser(UserEntity user) {

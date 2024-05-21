@@ -1,4 +1,4 @@
-package com.ddudu.application.port.in;
+package com.ddudu.application.port.in.goal;
 
 public interface DeleteGoalUseCase {
 

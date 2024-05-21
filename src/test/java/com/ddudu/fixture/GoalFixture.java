@@ -27,7 +27,7 @@ public class GoalFixture extends BaseFixture {
   public static Goal createRandomGoal() {
     return Goal.builder()
         .name(getRandomSentenceWithMax(50))
-        .user(UserFixture.createRandomUserWithId())
+        .userId(UserFixture.getRandomId())
         .color(getRandomColor())
         .privacyType(getRandomPrivacyType())
         .build();
@@ -36,7 +36,7 @@ public class GoalFixture extends BaseFixture {
   public static Goal createRandomGoalWithUser(User user) {
     return Goal.builder()
         .name(getRandomSentenceWithMax(50))
-        .user(user)
+        .userId(user.getId())
         .color(getRandomColor())
         .privacyType(getRandomPrivacyType())
         .build();
