@@ -1,5 +1,6 @@
 package com.ddudu.presentation.api.doc;
 
+import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -83,5 +84,9 @@ public interface DduduControllerDoc {
       responseCode = "204"
   )
   ResponseEntity<Void> delete(Long loginId, Long id);
+
+  @Operation(summary = "뚜두 시작/종료시간 설정")
+  @ApiResponse(responseCode = "204")
+  ResponseEntity<Void> setUpPeriod(Long loginId, Long id, PeriodSetupRequest request);
 
 }

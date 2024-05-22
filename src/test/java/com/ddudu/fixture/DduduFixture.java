@@ -10,6 +10,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DduduFixture extends BaseFixture {
 
+  public static Ddudu createRandomDduduWithReference(Long goalId, Long userId) {
+    return createDdudu(
+        getRandomId(), goalId, userId, getRandomSentenceWithMax(50), null, null, null,
+        false
+    );
+  }
+
   public static Ddudu createRandomDduduWithGoal(Goal goal) {
     return createDdudu(
         getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null, null, false);

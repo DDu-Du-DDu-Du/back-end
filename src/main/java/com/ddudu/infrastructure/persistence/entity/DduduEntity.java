@@ -106,4 +106,12 @@ public class DduduEntity extends BaseEntity {
         .build();
   }
 
+  public void update(Ddudu ddudu) {
+    this.name = ddudu.getName();
+    this.status = ddudu.getStatus();
+    this.isPostponed = ddudu.isPostponed();
+    this.beginAt = ddudu.getBeginAt();
+    this.endAt = ddudu.getEndAt();
+  }
+
 }

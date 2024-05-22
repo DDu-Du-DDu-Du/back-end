@@ -1,7 +1,9 @@
 package com.ddudu.application.domain.ddudu.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu.DduduBuilder;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
@@ -13,6 +15,7 @@ import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -23,131 +26,241 @@ class DduduTest {
 
   Long goalId;
   Long userId;
-  String name;
 
   @BeforeEach
   void setUp() {
     goalId = DduduFixture.getRandomId();
     userId = DduduFixture.getRandomId();
-    name = DduduFixture.getRandomSentenceWithMax(50);
   }
 
-  @Test
-  void 뚜두_생성을_성공한다() {
-    // given
+  @Nested
+  class 생성_테스트 {
 
-    // when
-    Ddudu ddudu = Ddudu.builder()
-        .goalId(goalId)
-        .userId(userId)
-        .name(name)
-        .status(DduduStatus.COMPLETE)
-        .isPostponed(true)
-        .build();
+    String name;
 
-    // then
-    assertThat(ddudu).isNotNull();
+    @BeforeEach
+    void setUp() {
+      name = DduduFixture.getRandomSentenceWithMax(50);
+    }
+
+    @Test
+    void 뚜두_생성을_성공한다() {
+      // given
+
+      // when
+      Ddudu ddudu = Ddudu.builder()
+          .goalId(goalId)
+          .userId(userId)
+          .name(name)
+          .status(DduduStatus.COMPLETE)
+          .isPostponed(true)
+          .build();
+
+      // then
+      assertThat(ddudu).isNotNull();
+    }
+
+    @Test
+    void 뚜두_생성_시_디폴트_값이_적용된다() {
+      // given
+
+      // when
+      Ddudu ddudu = Ddudu.builder()
+          .goalId(goalId)
+          .userId(userId)
+          .name(name)
+          .build();
+
+      // then
+      assertThat(ddudu.getStatus()).isEqualTo(DduduStatus.UNCOMPLETED);
+      assertThat(ddudu.isPostponed()).isFalse();
+      assertThat(ddudu.getScheduledOn()).isEqualTo(LocalDate.now());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    void 이름이_빈_값이면_생성을_실패한다(String blankName) {
+      // given
+      DduduBuilder builder = Ddudu.builder()
+          .goalId(goalId)
+          .userId(userId)
+          .name(blankName);
+
+      // when
+      ThrowingCallable create = builder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(create)
+          .withMessage(DduduErrorCode.BLANK_NAME.getCodeName());
+    }
+
+    @Test
+    void 이름이_50자를_넘으면_생성을_실패한다() {
+      // given
+      String over50 = DduduFixture.getRandomSentence(51, 100);
+      DduduBuilder builder = Ddudu.builder()
+          .goalId(goalId)
+          .userId(userId)
+          .name(over50);
+
+      // when
+      ThrowingCallable create = builder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(create)
+          .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+    }
+
+    @Test
+    void 목표가_없으면_생성을_실패한다() {
+      // given
+      DduduBuilder builder = Ddudu.builder()
+          .userId(userId)
+          .name(name);
+
+      // when
+      ThrowingCallable create = builder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(create)
+          .withMessage(DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+    }
+
+    @Test
+    void 사용자가_없으면_생성을_실패한다() {
+      // given
+      DduduBuilder builder = Ddudu.builder()
+          .goalId(goalId)
+          .name(name);
+
+      // when
+      ThrowingCallable create = builder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(create)
+          .withMessage(DduduErrorCode.NULL_USER.getCodeName());
+    }
+
+    @Test
+    void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
+      // given
+      DduduBuilder builder = Ddudu.builder()
+          .goalId(goalId)
+          .userId(userId)
+          .name(name)
+          .beginAt(LocalTime.now()
+              .plusMinutes(1))
+          .endAt(LocalTime.now());
+
+      // when
+      ThrowingCallable create = builder::build;
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(create)
+          .withMessage(DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
+    }
+
   }
 
-  @Test
-  void 뚜두_생성_시_디폴트_값이_적용된다() {
-    // given
+  @Nested
+  class 권한_테스트 {
 
-    // when
-    Ddudu ddudu = Ddudu.builder()
-        .goalId(goalId)
-        .userId(userId)
-        .name(name)
-        .build();
+    Long userId;
+    Ddudu ddudu;
 
-    // then
-    assertThat(ddudu.getStatus()).isEqualTo(DduduStatus.UNCOMPLETED);
-    assertThat(ddudu.isPostponed()).isFalse();
-    assertThat(ddudu.getScheduledOn()).isEqualTo(LocalDate.now());
+    @BeforeEach
+    void setUp() {
+      userId = DduduFixture.getRandomId();
+      ddudu = DduduFixture.createRandomDduduWithReference(DduduFixture.getRandomId(), userId);
+    }
+
+    @Test
+    void 권한_확인을_성공한다() {
+      // given
+
+      // when
+      ThrowingCallable check = () -> ddudu.checkAuthority(userId);
+
+      // then
+      assertThatNoException().isThrownBy(check);
+    }
+
+    @Test
+    void 사용자의_아이디가_다르면_권한_확인을_실패한다() {
+      // given
+      long wrongUserId = DduduFixture.getRandomId();
+
+      // when
+      ThrowingCallable check = () -> ddudu.checkAuthority(wrongUserId);
+
+      // then
+      assertThatExceptionOfType(SecurityException.class).isThrownBy(check)
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
+
   }
 
-  @ParameterizedTest
-  @NullAndEmptySource
-  @ValueSource(strings = " ")
-  void 이름이_빈_값이면_생성을_실패한다(String blankName) {
-    // given
-    DduduBuilder builder = Ddudu.builder()
-        .goalId(goalId)
-        .userId(userId)
-        .name(blankName);
+  @Nested
+  class 기간_설정_테스트 {
 
-    // when
-    ThrowingCallable create = builder::build;
+    Ddudu ddudu;
 
-    // then
-    assertThatIllegalArgumentException().isThrownBy(create)
-        .withMessage(DduduErrorCode.BLANK_NAME.getCodeName());
-  }
+    @BeforeEach
+    void setUp() {
+      long userId = DduduFixture.getRandomId();
+      long goalId = DduduFixture.getRandomId();
+      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId);
+    }
 
-  @Test
-  void 이름이_50자를_넘으면_생성을_실패한다() {
-    // given
-    String over50 = DduduFixture.getRandomSentence(51, 100);
-    DduduBuilder builder = Ddudu.builder()
-        .goalId(goalId)
-        .userId(userId)
-        .name(over50);
+    @Test
+    void 기간_설정을_성공한다() {
+      // given
+      LocalTime now = LocalTime.now();
 
-    // when
-    ThrowingCallable create = builder::build;
+      // when
+      Ddudu actual = ddudu.setUpPeriod(now, now.plusHours(1));
 
-    // then
-    assertThatIllegalArgumentException().isThrownBy(create)
-        .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
-  }
+      // then
+      assertThat(actual)
+          .hasFieldOrPropertyWithValue("id", ddudu.getId())
+          .hasFieldOrPropertyWithValue("user", ddudu.getUser())
+          .hasFieldOrPropertyWithValue("name", ddudu.getName())
+          .hasFieldOrPropertyWithValue("isPostponed", ddudu.isPostponed())
+          .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
+          .hasFieldOrPropertyWithValue("goal", ddudu.getGoal())
+          .hasFieldOrPropertyWithValue("beginAt", now)
+          .hasFieldOrPropertyWithValue("endAt", now.plusHours(1));
+    }
 
-  @Test
-  void 목표가_없으면_생성을_실패한다() {
-    // given
-    DduduBuilder builder = Ddudu.builder()
-        .userId(userId)
-        .name(name);
+    @Test
+    void 시작_시간만_설정할_수_있다() {
+      // given
+      LocalTime now = LocalTime.now();
+      LocalTime expectedEndTime = ddudu.getEndAt();
 
-    // when
-    ThrowingCallable create = builder::build;
+      // when
+      Ddudu actual = ddudu.setUpPeriod(now, null);
 
-    // then
-    assertThatIllegalArgumentException().isThrownBy(create)
-        .withMessage(DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
-  }
+      // then
+      assertThat(actual.getBeginAt()).isEqualTo(now);
+      assertThat(actual.getEndAt()).isEqualTo(expectedEndTime);
+    }
 
-  @Test
-  void 사용자가_없으면_생성을_실패한다() {
-    // given
-    DduduBuilder builder = Ddudu.builder()
-        .goalId(goalId)
-        .name(name);
+    @Test
+    void 종료_시간만_설정할_수_있다() {
+      // given
+      LocalTime now = LocalTime.now();
+      LocalTime expectedBeginAt = ddudu.getBeginAt();
 
-    // when
-    ThrowingCallable create = builder::build;
+      // when
+      Ddudu actual = ddudu.setUpPeriod(null, now);
 
-    // then
-    assertThatIllegalArgumentException().isThrownBy(create)
-        .withMessage(DduduErrorCode.NULL_USER.getCodeName());
-  }
+      // then
+      assertThat(actual.getBeginAt()).isEqualTo(expectedBeginAt);
+      assertThat(actual.getEndAt()).isEqualTo(now);
+    }
 
-  @Test
-  void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
-    // given
-    DduduBuilder builder = Ddudu.builder()
-        .goalId(goalId)
-        .userId(userId)
-        .name(name)
-        .beginAt(LocalTime.now()
-            .plusMinutes(1))
-        .endAt(LocalTime.now());
-
-    // when
-    ThrowingCallable create = builder::build;
-
-    // then
-    assertThatIllegalArgumentException().isThrownBy(create)
-        .withMessage(DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
   }
 
 }
