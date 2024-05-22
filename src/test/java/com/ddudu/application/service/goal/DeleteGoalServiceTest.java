@@ -3,6 +3,7 @@ package com.ddudu.application.service.goal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
@@ -15,8 +16,8 @@ import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.todo.domain.TodoRepository;
+import com.ddudu.infrastructure.persistence.entity.DduduEntity;
+import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
 import java.util.Optional;
@@ -51,15 +52,16 @@ class DeleteGoalServiceTest {
   @Autowired
   DeleteGoalPort deleteGoalPort;
 
+  // TODO: 포트로 변경
   @Autowired
-  TodoRepository todoRepository;
-  User user;
+  DduduRepository dduduRepository;
+
   Long userId;
   Goal goal;
 
   @BeforeEach
   void setUp() {
-    user = createAndSaveUser();
+    User user = createAndSaveUser();
     userId = user.getId();
     goal = createAndSaveGoal(user);
   }
@@ -77,14 +79,15 @@ class DeleteGoalServiceTest {
   @Test
   void 목표_삭제_시_해당_목표의_뚜두도_삭제된다() {
     //given
-    Todo todo = DduduFixture.createRandomDduduWithGoal(goal, user);
-    todo = todoRepository.save(todo);
+    Ddudu ddudu = DduduFixture.createRandomDduduWithGoal(goal);
+    ddudu = dduduRepository.save(DduduEntity.from(ddudu))
+        .toDomain();
 
     //when
     deleteGoalService.delete(userId, goal.getId());
 
     //then
-    assertThat(todoRepository.findById(todo.getId())).isEmpty();
+    assertThat(dduduRepository.findById(ddudu.getId())).isEmpty();
   }
 
   @Test

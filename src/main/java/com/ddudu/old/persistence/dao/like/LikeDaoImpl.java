@@ -2,8 +2,8 @@ package com.ddudu.old.persistence.dao.like;
 
 import static com.ddudu.old.persistence.entity.QLikeEntity.likeEntity;
 
+import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.old.persistence.entity.LikeEntity;
-import com.ddudu.old.persistence.entity.TodoEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -19,7 +19,7 @@ public class LikeDaoImpl implements LikeDaoCustom {
   }
 
   @Override
-  public List<LikeEntity> findByTodos(List<TodoEntity> todos) {
+  public List<LikeEntity> findByTodos(List<DduduEntity> todos) {
     return jpaQueryFactory
         .selectFrom(likeEntity)
         .where(

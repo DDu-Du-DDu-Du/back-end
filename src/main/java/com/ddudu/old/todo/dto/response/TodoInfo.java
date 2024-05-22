@@ -1,30 +1,30 @@
 package com.ddudu.old.todo.dto.response;
 
-import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.todo.domain.TodoStatus;
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import lombok.Builder;
 
 @Builder
 public record TodoInfo(
     Long id,
     String name,
-    TodoStatus status,
+    DduduStatus status,
     LikeInfo likes
 ) {
 
-  public static TodoInfo from(Todo todo) {
+  public static TodoInfo from(Ddudu ddudu) {
     return TodoInfo.builder()
-        .id(todo.getId())
-        .name(todo.getName())
-        .status(todo.getStatus())
+        .id(ddudu.getId())
+        .name(ddudu.getName())
+        .status(ddudu.getStatus())
         .build();
   }
 
-  public static TodoInfo from(Todo todo, LikeInfo likeInfo) {
+  public static TodoInfo from(Ddudu ddudu, LikeInfo likeInfo) {
     return TodoInfo.builder()
-        .id(todo.getId())
-        .name(todo.getName())
-        .status(todo.getStatus())
+        .id(ddudu.getId())
+        .name(ddudu.getName())
+        .status(ddudu.getStatus())
         .likes(likeInfo)
         .build();
   }

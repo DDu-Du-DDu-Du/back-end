@@ -3,22 +3,22 @@ package com.ddudu.old.todo.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
-import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.todo.domain.TodoRepository;
-import com.ddudu.old.todo.domain.TodoStatus;
+import com.ddudu.old.todo.domain.OldTodoRepository;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoInfo;
 import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
-import com.ddudu.old.todo.exception.TodoErrorCode;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.old.user.dto.request.FollowRequest;
 import com.ddudu.old.user.service.FollowingService;
@@ -46,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class TodoServiceTest {
+class DduduServiceTest {
 
   static final Faker faker = new Faker();
 
@@ -54,10 +54,10 @@ class TodoServiceTest {
   TodoService todoService;
 
   @Autowired
-  TodoRepository todoRepository;
+  OldTodoRepository oldTodoRepository;
 
   @Autowired
-  OldGoalRepository goalRepository;
+  OldGoalRepository oldGoalRepository;
 
   @Autowired
   UserRepository userRepository;
@@ -104,7 +104,7 @@ class TodoServiceTest {
       TodoInfo response = todoService.create(user.getId(), request);
 
       // then
-      Todo actual = todoRepository.findById(response.id())
+      Ddudu actual = oldTodoRepository.findById(response.id())
           .get();
       assertThat(actual).extracting("name", "beginAt", "goal", "user")
           .containsExactly(name, beginAt, goal, user);
@@ -123,7 +123,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -138,7 +138,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(TodoErrorCode.GOAL_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.GOAL_NOT_EXISTING.getMessage());
     }
 
   }
@@ -150,16 +150,16 @@ class TodoServiceTest {
     void 할_일_조회를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
-      Todo todo = createTodo(name, goal, user);
+      Ddudu ddudu = createTodo(name, goal, user);
 
       // when
-      TodoResponse response = todoService.findById(user.getId(), todo.getId());
+      TodoResponse response = todoService.findById(user.getId(), ddudu.getId());
 
       // then
       assertThat(response).extracting(
               "goal.id", "goal.name", "todo.id", "todo.name", "todo.status")
           .containsExactly(
-              goal.getId(), goal.getName(), todo.getId(), todo.getName(), todo.getStatus());
+              goal.getId(), goal.getName(), ddudu.getId(), ddudu.getName(), ddudu.getStatus());
     }
 
     @Test
@@ -173,7 +173,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findById)
-          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -182,14 +182,14 @@ class TodoServiceTest {
       Long loginId = faker.random()
           .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
-      Todo todo = createTodo(name, goal, user);
+      Ddudu ddudu = createTodo(name, goal, user);
 
       // when
-      ThrowingCallable findById = () -> todoService.findById(loginId, todo.getId());
+      ThrowingCallable findById = () -> todoService.findById(loginId, ddudu.getId());
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findById)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
@@ -201,8 +201,8 @@ class TodoServiceTest {
     void 주어진_날짜에_자신의_할_일_리스트_조회를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
-      Todo todo1 = createTodo(name, goal, user);
-      Todo todo2 = createTodo("JPA N+1 문제 해결", goal, user);
+      Ddudu ddudu1 = createTodo(name, goal, user);
+      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal, user);
 
       LocalDate date = LocalDate.now();
 
@@ -218,7 +218,7 @@ class TodoServiceTest {
           .name())
           .isEqualTo(goal.getName());
       assertThat(response1.todos()).extracting("id")
-          .containsExactly(todo1.getId(), todo2.getId());
+          .containsExactly(ddudu1.getId(), ddudu2.getId());
 
     }
 
@@ -226,7 +226,7 @@ class TodoServiceTest {
     void 주어진_날짜에_팔로워의_할_일_리스트_조회를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
-      Todo todo = createTodo(name, goal, user);
+      Ddudu ddudu = createTodo(name, goal, user);
 
       LocalDate date = LocalDate.now();
 
@@ -246,7 +246,7 @@ class TodoServiceTest {
     void 주어진_날짜에_다른_사용자의_할_일_리스트_조회를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
-      Todo todo = createTodo(name, goal, user);
+      Ddudu ddudu = createTodo(name, goal, user);
 
       LocalDate date = LocalDate.now();
 
@@ -263,13 +263,13 @@ class TodoServiceTest {
     void 주어진_날짜에_할_일_리스트_및_좋아요_조회를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
-      Todo todo = createTodo(name, goal, user);
-      todo.switchStatus();
+      Ddudu ddudu = createTodo(name, goal, user);
+      ddudu.switchStatus();
 
       LocalDate date = LocalDate.now();
 
       User other = createUser();
-      Like like = createLike(other, todo);
+      Like like = createLike(other, ddudu);
 
       // when
       List<TodoListResponse> responses = todoService.findAllByDate(
@@ -303,7 +303,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findAllByDate)
-          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -319,7 +319,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findAllByDate)
-          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
@@ -327,7 +327,7 @@ class TodoServiceTest {
   @Nested
   class 할_일_수정_테스트 {
 
-    Todo todo;
+    Ddudu ddudu;
     Goal changedGoal;
     String changedName;
     LocalDateTime changedBeginAt;
@@ -335,7 +335,7 @@ class TodoServiceTest {
     @BeforeEach
     void setUp() {
       Goal goal = createGoal(goalName, user);
-      todo = createTodo(name, goal, user);
+      ddudu = createTodo(name, goal, user);
 
       String newGoalName = faker.lorem()
           .word();
@@ -353,10 +353,10 @@ class TodoServiceTest {
           changedGoal.getId(), changedName, changedBeginAt);
 
       // when
-      TodoInfo response = todoService.update(user.getId(), todo.getId(), request);
+      TodoInfo response = todoService.update(user.getId(), ddudu.getId(), request);
 
       // then
-      Optional<Todo> actual = todoRepository.findById(todo.getId());
+      Optional<Ddudu> actual = oldTodoRepository.findById(ddudu.getId());
       assertThat(actual.get()).extracting(
               "goal", "name", "status")
           .containsExactly(changedGoal, response.name(), response.status());
@@ -367,8 +367,7 @@ class TodoServiceTest {
       // given
       Long invalidId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      Long goalId = todo.getGoal()
-          .getId();
+      Long goalId = ddudu.getGoalId();
       UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
 
       // when
@@ -376,7 +375,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
-          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -384,16 +383,15 @@ class TodoServiceTest {
       // given
       Long invalidUserId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      Long goalId = todo.getGoal()
-          .getId();
+      Long goalId = ddudu.getGoalId();
       UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
 
       // when
-      ThrowingCallable update = () -> todoService.update(invalidUserId, todo.getId(), request);
+      ThrowingCallable update = () -> todoService.update(invalidUserId, ddudu.getId(), request);
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
     @Test
@@ -404,11 +402,11 @@ class TodoServiceTest {
       UpdateTodoRequest request = new UpdateTodoRequest(invalidGoalId, name, beginAt);
 
       // when
-      ThrowingCallable update = () -> todoService.update(user.getId(), todo.getId(), request);
+      ThrowingCallable update = () -> todoService.update(user.getId(), ddudu.getId(), request);
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
-          .withMessage(TodoErrorCode.GOAL_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.GOAL_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -419,11 +417,11 @@ class TodoServiceTest {
       UpdateTodoRequest request = new UpdateTodoRequest(goalFromAnotherUser.getId(), name, beginAt);
 
       // when
-      ThrowingCallable update = () -> todoService.update(user.getId(), todo.getId(), request);
+      ThrowingCallable update = () -> todoService.update(user.getId(), ddudu.getId(), request);
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
@@ -435,14 +433,14 @@ class TodoServiceTest {
     void 할_일_상태_업데이트를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
-      Todo todo = createTodo(name, goal, user);
-      TodoStatus beforeUpdated = todo.getStatus();
+      Ddudu ddudu = createTodo(name, goal, user);
+      DduduStatus beforeUpdated = ddudu.getStatus();
 
       // when
-      todoService.updateStatus(user.getId(), todo.getId());
+      todoService.updateStatus(user.getId(), ddudu.getId());
 
       // then
-      Optional<Todo> actual = todoRepository.findById(todo.getId());
+      Optional<Ddudu> actual = oldTodoRepository.findById(ddudu.getId());
       assertThat(actual.get()
           .getStatus()).isNotEqualTo(beforeUpdated);
     }
@@ -458,7 +456,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(updateStatus)
-          .withMessage(TodoErrorCode.ID_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.ID_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -467,14 +465,14 @@ class TodoServiceTest {
       Long loginId = faker.random()
           .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
-      Todo todo = createTodo(name, goal, user);
+      Ddudu ddudu = createTodo(name, goal, user);
 
       // when
-      ThrowingCallable updateStatus = () -> todoService.updateStatus(loginId, todo.getId());
+      ThrowingCallable updateStatus = () -> todoService.updateStatus(loginId, ddudu.getId());
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(updateStatus)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
@@ -487,8 +485,8 @@ class TodoServiceTest {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
-      Todo todo1 = createTodo(name, goal1, user);
-      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+      Ddudu ddudu1 = createTodo(name, goal1, user);
+      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
@@ -510,8 +508,8 @@ class TodoServiceTest {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
-      Todo todo1 = createTodo(name, goal1, user);
-      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+      Ddudu ddudu1 = createTodo(name, goal1, user);
+      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
@@ -536,8 +534,8 @@ class TodoServiceTest {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
-      Todo todo1 = createTodo(name, goal1, user);
-      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+      Ddudu ddudu1 = createTodo(name, goal1, user);
+      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
       LocalDate date = LocalDate.now();
       LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
@@ -567,7 +565,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findWeeklyCompletions)
-          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -583,7 +581,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findWeeklyCompletions)
-          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -591,8 +589,8 @@ class TodoServiceTest {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
-      Todo todo1 = createTodo(name, goal1, user);
-      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+      Ddudu ddudu1 = createTodo(name, goal1, user);
+      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
       LocalDate date = LocalDate.now();
       YearMonth yearMonth = YearMonth.now();
@@ -615,8 +613,8 @@ class TodoServiceTest {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
-      Todo todo1 = createTodo(name, goal1, user);
-      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+      Ddudu ddudu1 = createTodo(name, goal1, user);
+      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
       LocalDate date = LocalDate.now();
       YearMonth yearMonth = YearMonth.now();
@@ -642,8 +640,8 @@ class TodoServiceTest {
       // given
       Goal goal1 = createGoal(goalName, user);
       Goal goal2 = createGoal("book", user);
-      Todo todo1 = createTodo(name, goal1, user);
-      Todo todo2 = createTodo("JPA N+1 문제 해결", goal1, user);
+      Ddudu ddudu1 = createTodo(name, goal1, user);
+      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
 
       LocalDate date = LocalDate.now();
       YearMonth yearMonth = YearMonth.now();
@@ -674,7 +672,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findMonthlyCompletions)
-          .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
     }
 
     @Test
@@ -690,7 +688,7 @@ class TodoServiceTest {
 
       // then
       assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findMonthlyCompletions)
-          .withMessage(TodoErrorCode.USER_NOT_EXISTING.getMessage());
+          .withMessage(DduduErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
@@ -702,17 +700,17 @@ class TodoServiceTest {
     void 할_일을_삭제를_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
-      Todo todo = createTodo(name, goal, user);
+      Ddudu ddudu = createTodo(name, goal, user);
 
-      Optional<Todo> found = todoRepository.findById(todo.getId());
+      Optional<Ddudu> found = oldTodoRepository.findById(ddudu.getId());
       assertThat(found).isNotEmpty();
 
       // when
-      todoService.delete(user.getId(), todo.getId());
+      todoService.delete(user.getId(), ddudu.getId());
       flushAndClearPersistence();
 
       // then
-      Optional<Todo> foundAfterDeleted = todoRepository.findById(todo.getId());
+      Optional<Ddudu> foundAfterDeleted = oldTodoRepository.findById(ddudu.getId());
       assertThat(foundAfterDeleted).isEmpty();
     }
 
@@ -722,17 +720,17 @@ class TodoServiceTest {
       Long userId = faker.random()
           .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
-      Todo todo = createTodo(name, goal, user);
+      Ddudu ddudu = createTodo(name, goal, user);
 
-      Optional<Todo> found = todoRepository.findById(todo.getId());
+      Optional<Ddudu> found = oldTodoRepository.findById(ddudu.getId());
       assertThat(found).isNotEmpty();
 
       // when
-      ThrowingCallable delete = () -> todoService.delete(userId, todo.getId());
+      ThrowingCallable delete = () -> todoService.delete(userId, ddudu.getId());
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(delete)
-          .withMessage(TodoErrorCode.INVALID_AUTHORITY.getMessage());
+          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
   }
@@ -743,17 +741,17 @@ class TodoServiceTest {
         .user(user)
         .build();
 
-    return goalRepository.save(goal);
+    return oldGoalRepository.save(goal);
   }
 
-  private Todo createTodo(String name, Goal goal, User user) {
-    Todo todo = Todo.builder()
+  private Ddudu createTodo(String name, Goal goal, User user) {
+    Ddudu ddudu = Ddudu.builder()
         .name(name)
         .goal(goal)
         .user(user)
         .build();
 
-    return todoRepository.save(todo);
+    return oldTodoRepository.save(ddudu);
   }
 
   private User createUser() {
@@ -770,10 +768,10 @@ class TodoServiceTest {
     return userRepository.save(user);
   }
 
-  private Like createLike(User user, Todo todo) {
+  private Like createLike(User user, Ddudu ddudu) {
     Like like = Like.builder()
         .user(user)
-        .todo(todo)
+        .ddudu(ddudu)
         .build();
     return likeRepository.save(like);
   }

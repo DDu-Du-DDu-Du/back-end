@@ -1,5 +1,6 @@
 package com.ddudu.old.persistence.entity;
 
+import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.common.BaseEntity;
 import com.ddudu.old.like.domain.Like;
@@ -28,16 +29,22 @@ public class LikeEntity extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
+  @JoinColumn(
+      name = "user_id",
+      nullable = false
+  )
   private UserEntity user;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "todo_id", nullable = false)
-  private TodoEntity todo;
+  @JoinColumn(
+      name = "todo_id",
+      nullable = false
+  )
+  private DduduEntity todo;
 
   @Builder
   public LikeEntity(
-      Long id, UserEntity user, TodoEntity todo, LocalDateTime createdAt, LocalDateTime updatedAt
+      Long id, UserEntity user, DduduEntity todo, LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
     super(createdAt, updatedAt);
 
@@ -50,7 +57,7 @@ public class LikeEntity extends BaseEntity {
     return LikeEntity.builder()
         .id(like.getId())
         .user(UserEntity.from(like.getUser()))
-        .todo(TodoEntity.from(like.getTodo()))
+        .todo(DduduEntity.from(like.getDdudu()))
         .createdAt(like.getCreatedAt())
         .updatedAt(like.getUpdatedAt())
         .build();
@@ -60,7 +67,7 @@ public class LikeEntity extends BaseEntity {
     return Like.builder()
         .id(id)
         .user(user.toDomain())
-        .todo(todo.toDomain())
+        .ddudu(todo.toDomain())
         .createdAt(getCreatedAt())
         .updatedAt(getUpdatedAt())
         .build();

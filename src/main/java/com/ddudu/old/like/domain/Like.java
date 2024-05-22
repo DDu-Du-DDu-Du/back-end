@@ -1,10 +1,10 @@
 package com.ddudu.old.like.domain;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.common.domain.BaseDomain;
 import com.ddudu.old.like.exception.LikeErrorCode;
-import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.todo.domain.TodoStatus;
 import com.ddudu.presentation.api.exception.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -16,18 +16,18 @@ public class Like extends BaseDomain {
 
   private Long id;
   private User user;
-  private Todo todo;
+  private Ddudu ddudu;
 
   @Builder
   public Like(
-      Long id, User user, Todo todo, LocalDateTime createdAt, LocalDateTime updatedAt
+      Long id, User user, Ddudu ddudu, LocalDateTime createdAt, LocalDateTime updatedAt
   ) {
     super(createdAt, updatedAt);
-    validate(user, todo);
+    validate(user, ddudu);
 
     this.id = id;
     this.user = user;
-    this.todo = todo;
+    this.ddudu = ddudu;
   }
 
   @Override
@@ -51,21 +51,21 @@ public class Like extends BaseDomain {
     return (id != null) ? id.hashCode() : super.hashCode();
   }
 
-  private void validate(User user, Todo todo) {
+  private void validate(User user, Ddudu ddudu) {
     if (Objects.isNull(user)) {
       throw new InvalidParameterException(LikeErrorCode.NULL_USER);
     }
 
-    if (Objects.isNull(todo)) {
+    if (Objects.isNull(ddudu)) {
       throw new InvalidParameterException(LikeErrorCode.NULL_TODO);
     }
 
-    if (user.equals(todo.getUser())) {
+    if (user.equals(ddudu.getUser())) {
       throw new InvalidParameterException(LikeErrorCode.SELF_LIKE_UNAVAILABLE);
     }
 
-    if (todo.getStatus()
-        .equals(TodoStatus.UNCOMPLETED)) {
+    if (ddudu.getStatus()
+        .equals(DduduStatus.UNCOMPLETED)) {
       throw new InvalidParameterException(LikeErrorCode.UNAVAILABLE_UNCOMPLETED_TODO);
     }
   }

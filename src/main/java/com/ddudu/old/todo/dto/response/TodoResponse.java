@@ -1,7 +1,7 @@
 package com.ddudu.old.todo.dto.response;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.old.todo.domain.Todo;
 import lombok.Builder;
 
 @Builder
@@ -10,12 +10,12 @@ public record TodoResponse(
     TodoInfo todo
 ) {
 
-  public static TodoResponse from(Todo todo) {
-    Goal goal = todo.getGoal();
+  public static TodoResponse from(Ddudu ddudu) {
+    Goal goal = ddudu.getGoal();
 
     return TodoResponse.builder()
         .goal(GoalInfo.from(goal))
-        .todo(TodoInfo.from(todo))
+        .todo(TodoInfo.from(ddudu))
         .build();
   }
 

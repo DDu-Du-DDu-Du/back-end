@@ -1,13 +1,13 @@
 package com.ddudu.old.like.service;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.like.dto.request.LikeRequest;
 import com.ddudu.old.like.dto.response.LikeResponse;
 import com.ddudu.old.like.exception.LikeErrorCode;
-import com.ddudu.old.todo.domain.Todo;
-import com.ddudu.old.todo.domain.TodoRepository;
+import com.ddudu.old.todo.domain.OldTodoRepository;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.ForbiddenException;
@@ -22,7 +22,7 @@ public class LikeService {
 
   private final LikeRepository likeRepository;
   private final UserRepository userRepository;
-  private final TodoRepository todoRepository;
+  private final OldTodoRepository oldTodoRepository;
 
   @Transactional
   public LikeResponse toggle(Long loginId, LikeRequest request) {
@@ -30,10 +30,10 @@ public class LikeService {
 
     User user = userRepository.findById(request.userId())
         .orElseThrow(() -> new DataNotFoundException(LikeErrorCode.USER_NOT_EXISTING));
-    Todo todo = todoRepository.findById(request.todoId())
+    Ddudu ddudu = oldTodoRepository.findById(request.todoId())
         .orElseThrow(() -> new DataNotFoundException(LikeErrorCode.TODO_NOT_EXISTING));
 
-    Like existingLike = likeRepository.findByUserAndTodo(user, todo);
+    Like existingLike = likeRepository.findByUserAndTodo(user, ddudu);
 
     if (existingLike != null) {
       likeRepository.delete(existingLike);
@@ -42,7 +42,7 @@ public class LikeService {
 
     Like like = Like.builder()
         .user(user)
-        .todo(todo)
+        .ddudu(ddudu)
         .build();
 
     return LikeResponse.from(likeRepository.save(like));
