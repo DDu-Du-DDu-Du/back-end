@@ -9,6 +9,9 @@ on:
       task-definition:
         required: true
         type: string
+      ecr-registry-alias:
+        required: true
+        type: string
       ecs-container-name:
         required: true
         type: string
@@ -22,6 +25,9 @@ on:
         required: false
         default: false
         type: boolean
+      swagger-url:
+        required: false
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -80,18 +86,24 @@ jobs:
       - name: ECR 로그인
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registry-type: public
+        env:
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: us-east-1
 
       - name: Docker 이미지 빌드 후 배포
         id: build-docker
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY_ALIAS: ${{ inputs.ecr-registry-alias }}
           REPOSITORY: ddudu-ecr
           IMAGE_TAG: ${{ github.sha }}
           PROFILE: ${{ inputs.env }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg PROFILE=$PROFILE .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG --build-arg PROFILE=$PROFILE .
+          docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+          echo "image=$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: ECS Task Definition 생성
         id: render-task-definition
@@ -121,7 +133,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "🎊${{ inputs.env }} 서버 업데이트 있습니다🎊\n🚀**${{ github.event.pull_request.title }}**\n스웨거 확인하러 가기: https://ddudu-dev-alb-1593082408.ap-northeast-2.elb.amazonaws.com/docs\nPR 링크: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                    "text": "🎊${{ inputs.env }} 서버 업데이트 있습니다🎊\n내용 요약: 🚀${{ github.event.pull_request.title }}🚀\n스웨거 확인하러 가기: ${{ inputs.swagger-url }}\nPR 링크: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
                   }
                 }
               ]

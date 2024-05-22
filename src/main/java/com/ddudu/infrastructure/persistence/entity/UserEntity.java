@@ -109,6 +109,12 @@ public class UserEntity extends BaseEntity {
         .build();
   }
 
+  public static UserEntity withOnlyId(Long userId) {
+    return UserEntity.builder()
+        .id(userId)
+        .build();
+  }
+
   public User toDomain() {
     return buildUser().build();
   }

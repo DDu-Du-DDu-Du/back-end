@@ -10,11 +10,7 @@ import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.annotation.Login;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.ddudu.presentation.api.doc.DduduControllerDoc;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.DayOfWeek;
@@ -23,7 +19,6 @@ import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,21 +34,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/todos")
 @RequiredArgsConstructor
-@Tag(name = "뚜두 관련 API")
-public class DduduController {
+public class DduduController implements DduduControllerDoc {
 
   private final PeriodSetupUseCase periodSetupUseCase;
   private final TodoService todoService;
 
   @PostMapping
-  @Operation(summary = "뚜두 생성")
-  @ApiResponse(
-      responseCode = "201",
-      content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = TodoInfo.class)
-      )
-  )
   @Deprecated
   public ResponseEntity<TodoInfo> create(
       @Login
@@ -70,14 +56,6 @@ public class DduduController {
   }
 
   @GetMapping("/{id}")
-  @Operation(summary = "뚜두 상세 조회")
-  @ApiResponse(
-      responseCode = "200",
-      content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = TodoResponse.class)
-      )
-  )
   @Deprecated
   public ResponseEntity<TodoResponse> getById(
       @Login
@@ -90,15 +68,7 @@ public class DduduController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping(
-      value = "/daily",
-      produces = MediaType.APPLICATION_JSON_VALUE,
-      consumes = MediaType.APPLICATION_JSON_VALUE
-  )
-  @Operation(summary = "일간 뚜두 조회")
-  @ApiResponse(
-      responseCode = "200"
-  )
+  @GetMapping("/daily")
   @Deprecated
   public ResponseEntity<List<TodoListResponse>> getDaily(
       @Login
@@ -116,15 +86,7 @@ public class DduduController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping(
-      value = "/weekly",
-      produces = MediaType.APPLICATION_JSON_VALUE,
-      consumes = MediaType.APPLICATION_JSON_VALUE
-  )
-  @Operation(summary = "주간 뚜두 조회")
-  @ApiResponse(
-      responseCode = "200"
-  )
+  @GetMapping("/weekly")
   @Deprecated
   public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
       @Login
@@ -145,15 +107,7 @@ public class DduduController {
     return ResponseEntity.ok(completionList);
   }
 
-  @GetMapping(
-      value = "/monthly",
-      produces = MediaType.APPLICATION_JSON_VALUE,
-      consumes = MediaType.APPLICATION_JSON_VALUE
-  )
-  @Operation(summary = "월간 뚜두 조회")
-  @ApiResponse(
-      responseCode = "200"
-  )
+  @GetMapping("/monthly")
   @Deprecated
   public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
       @Login
@@ -176,14 +130,6 @@ public class DduduController {
   }
 
   @PutMapping("/{id}")
-  @Operation(summary = "뚜두 수정")
-  @ApiResponse(
-      responseCode = "200",
-      content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = TodoInfo.class)
-      )
-  )
   @Deprecated
   public ResponseEntity<TodoInfo> update(
       @Login
@@ -200,10 +146,6 @@ public class DduduController {
   }
 
   @PatchMapping("/{id}/status")
-  @Operation(summary = "뚜두 상태 변경")
-  @ApiResponse(
-      responseCode = "204"
-  )
   @Deprecated
   public ResponseEntity<Void> updateStatus(
       @Login
@@ -218,10 +160,6 @@ public class DduduController {
   }
 
   @DeleteMapping("/{id}")
-  @Operation(summary = "뚜두 삭제")
-  @ApiResponse(
-      responseCode = "204"
-  )
   @Deprecated
   public ResponseEntity<Void> delete(
       @Login
@@ -236,8 +174,6 @@ public class DduduController {
   }
 
   @PutMapping("/{id}/period")
-  @Operation(summary = "뚜두 시작/종료시간 설정")
-  @ApiResponse(responseCode = "204")
   public ResponseEntity<Void> setUpPeriod(
       @Login
       Long loginId,

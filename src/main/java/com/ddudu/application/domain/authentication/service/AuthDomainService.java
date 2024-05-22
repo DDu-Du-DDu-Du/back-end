@@ -28,7 +28,7 @@ public class AuthDomainService {
     claims.put("user", user.getId());
     claims.put("auth", user.getAuthority());
 
-    return jwtIssuer.issue(claims, Duration.ofMinutes(jwtProperties.getExpiredAfter()));
+    return jwtIssuer.issue(claims, Duration.ofSeconds(jwtProperties.getExpiredAfter()));
   }
 
   public RefreshToken createRefreshToken(User user, Integer family) {

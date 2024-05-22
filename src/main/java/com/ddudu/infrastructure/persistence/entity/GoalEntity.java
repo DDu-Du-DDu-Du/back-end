@@ -92,10 +92,16 @@ public class GoalEntity extends BaseEntity {
     return GoalEntity.builder()
         .id(goal.getId())
         .name(goal.getName())
-        .user(UserEntity.from(goal.getUser()))
+        .user(UserEntity.withOnlyId(goal.getUserId()))
         .status(goal.getStatus())
         .color(goal.getColor())
         .privacyType(goal.getPrivacyType())
+        .build();
+  }
+
+  public static GoalEntity withOnlyId(Long goalId) {
+    return GoalEntity.builder()
+        .id(goalId)
         .build();
   }
 
@@ -103,7 +109,7 @@ public class GoalEntity extends BaseEntity {
     return Goal.builder()
         .id(id)
         .name(name)
-        .user(user.toDomain())
+        .userId(user.getId())
         .status(status)
         .color(color)
         .privacyType(privacyType)
@@ -112,7 +118,7 @@ public class GoalEntity extends BaseEntity {
 
   public GoalEntity update(Goal goal) {
     this.name = goal.getName();
-    this.user = UserEntity.from(goal.getUser());
+    this.user = UserEntity.withOnlyId(goal.getUserId());
     this.status = goal.getStatus();
     this.color = goal.getColor();
     this.privacyType = goal.getPrivacyType();

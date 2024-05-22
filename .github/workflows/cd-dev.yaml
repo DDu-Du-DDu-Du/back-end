@@ -14,10 +14,12 @@ jobs:
     with:
       env: dev
       task-definition: .aws/dev-task-definition.json
+      ecr-registry-alias: y6p8j3t3
       ecs-container-name: ddudu-dev-ecs-container
       ecs-service: ddudu-dev-ecs-service
       ecs-cluster: ddudu-dev-ecs-cluster
       alimi-enabled: ${{ contains(toJson(github.event.pull_request.labels.*.name), 'feature') }}
+      swagger-url: http://ddudu-dev-alb-1593082408.ap-northeast-2.elb.amazonaws.com/docs
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}

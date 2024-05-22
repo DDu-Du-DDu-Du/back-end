@@ -19,8 +19,7 @@ public class DduduFixture extends BaseFixture {
 
   public static Ddudu createRandomDduduWithGoal(Goal goal) {
     return createDdudu(
-        getRandomId(), goal.getId(), goal.getUser()
-            .getId(), getRandomSentenceWithMax(50), null, null, null, false);
+        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null, null, false);
   }
 
   public static Ddudu createDdudu(

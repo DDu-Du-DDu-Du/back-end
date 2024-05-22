@@ -12,6 +12,7 @@ import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Repository;
 public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   private final JPAQueryFactory jpaQueryFactory;
+  private final EntityManager entityManager;
 
   @Override
   public List<DduduEntity> findTodosByDate(
@@ -98,6 +100,8 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .delete(dduduEntity)
         .where(dduduEntity.goal.eq(goal))
         .execute();
+
+    entityManager.clear();
   }
 
 }

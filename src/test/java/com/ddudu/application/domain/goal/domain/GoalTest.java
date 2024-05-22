@@ -9,7 +9,6 @@ import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.UserFixture;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -25,14 +24,14 @@ import org.junit.jupiter.params.provider.NullSource;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalTest {
 
-  User user;
+  Long userId;
   String name;
   String color;
   PrivacyType privacyType;
 
   @BeforeEach
   void setUp() {
-    user = UserFixture.createRandomUserWithId();
+    userId = BaseFixture.getRandomId();
     name = BaseFixture.getRandomSentenceWithMax(50);
     color = GoalFixture.getRandomColor();
     privacyType = GoalFixture.getRandomPrivacyType();
@@ -46,14 +45,14 @@ class GoalTest {
       // when
       Goal goal = Goal.builder()
           .name(name)
-          .user(user)
+          .userId(userId)
           .build();
 
       // then
       assertThat(goal)
-          .extracting("name", "user", "status", "color", "privacyType")
+          .extracting("name", "userId", "status", "color", "privacyType")
           .containsExactly(
-              name, user, GoalStatus.IN_PROGRESS, "191919", PrivacyType.PRIVATE);
+              name, userId, GoalStatus.IN_PROGRESS, "191919", PrivacyType.PRIVATE);
     }
 
     @Test
@@ -61,15 +60,15 @@ class GoalTest {
       // when
       Goal goal = Goal.builder()
           .name(name)
-          .user(user)
+          .userId(userId)
           .color(color)
           .privacyType(privacyType)
           .build();
 
       // then
       assertThat(goal)
-          .extracting("name", "user", "status", "color", "privacyType")
-          .containsExactly(name, user, GoalStatus.IN_PROGRESS, color, privacyType);
+          .extracting("name", "userId", "status", "color", "privacyType")
+          .containsExactly(name, userId, GoalStatus.IN_PROGRESS, color, privacyType);
     }
 
     @ParameterizedTest
@@ -90,7 +89,7 @@ class GoalTest {
       // when then
       assertThatThrownBy(() -> Goal.builder()
           .name(invalidName)
-          .user(user)
+          .userId(userId)
           .build())
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage(GoalErrorCode.BLANK_NAME.getCodeName());
@@ -102,7 +101,7 @@ class GoalTest {
       // when then
       assertThatThrownBy(() -> Goal.builder()
           .name(longName)
-          .user(user)
+          .userId(userId)
           .build())
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
@@ -114,7 +113,7 @@ class GoalTest {
       // when
       Goal goal = Goal.builder()
           .name(name)
-          .user(user)
+          .userId(userId)
           .color(emptyColor)
           .build();
 
@@ -135,7 +134,7 @@ class GoalTest {
       assertThatThrownBy(() ->
           Goal.builder()
               .name(name)
-              .user(user)
+              .userId(userId)
               .color(invalidColor)
               .build()
       )

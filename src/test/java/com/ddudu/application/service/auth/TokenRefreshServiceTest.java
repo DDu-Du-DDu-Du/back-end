@@ -1,4 +1,4 @@
-package com.ddudu.application.service;
+package com.ddudu.application.service.auth;
 
 import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +15,6 @@ import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.auth.TokenLoaderPort;
 import com.ddudu.application.port.out.auth.TokenManipulationPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.application.service.auth.TokenRefreshService;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
 import java.util.List;
