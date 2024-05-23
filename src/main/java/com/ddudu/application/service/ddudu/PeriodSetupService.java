@@ -6,7 +6,7 @@ import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
-import com.ddudu.application.port.out.ddudu.PeriodSetupPort;
+import com.ddudu.application.port.out.ddudu.DduduUpdatePort;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class PeriodSetupService implements PeriodSetupUseCase {
 
   private final DduduLoaderPort dduduLoaderPort;
-  private final PeriodSetupPort periodSetupPort;
+  private final DduduUpdatePort dduduUpdatePort;
 
   @Override
   public void setUpPeriod(Long loginId, Long dduduId, PeriodSetupRequest request) {
@@ -27,7 +27,7 @@ public class PeriodSetupService implements PeriodSetupUseCase {
 
     Ddudu updatedDdudu = ddudu.setUpPeriod(request.beginAt(), request.endAt());
 
-    periodSetupPort.updatePeriod(updatedDdudu);
+    dduduUpdatePort.update(updatedDdudu);
   }
 
 }
