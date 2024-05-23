@@ -5,7 +5,9 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
 import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
+import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.UpdateGoalPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ChangeGoalStatusService implements ChangeGoalStatusUseCase {
 
-  private final BaseGoalService baseGoalService;
+  private final GoalLoaderPort goalLoaderPort;
   private final UpdateGoalPort updateGoalPort;
 
   @Override
   public GoalIdResponse changeStatus(Long userId, Long id, ChangeGoalStatusRequest request) {
-    Goal goal = baseGoalService.findGoal(id);
- 
+    Goal goal = goalLoaderPort.getGoalOrElseThrow(id, GoalErrorCode.ID_NOT_EXISTING.getCodeName());
+
     goal.validateGoalCreator(userId);
 
     Goal updated = goal.changeStatus(GoalStatus.from(request.status()));

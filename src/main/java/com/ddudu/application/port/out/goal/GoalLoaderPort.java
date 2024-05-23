@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface GoalLoaderPort {
 
+  Goal getGoalOrElseThrow(Long id, String message);
+
   Optional<Goal> findById(Long id);
 
   List<Goal> findAllByUser(User user);
