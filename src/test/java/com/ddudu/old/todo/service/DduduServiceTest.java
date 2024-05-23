@@ -6,10 +6,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
@@ -190,136 +188,6 @@ class DduduServiceTest {
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findById)
           .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
-    }
-
-  }
-
-  @Nested
-  class 일별_할_일_조회_테스트 {
-
-    @Test
-    void 주어진_날짜에_자신의_할_일_리스트_조회를_성공한다() {
-      // given
-      Goal goal = createGoal(goalName, user);
-      Ddudu ddudu1 = createTodo(name, goal, user);
-      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal, user);
-
-      LocalDate date = LocalDate.now();
-
-      // when
-      List<GoalGroupedDdudusResponse> responses = todoService.findAllByDateGroupedByGoal(
-          user.getId(), user.getId(), date);
-
-      // then
-      assertThat(responses).hasSize(1);
-
-      GoalGroupedDdudusResponse response1 = responses.get(0);
-      assertThat(response1.goal()
-          .name())
-          .isEqualTo(goal.getName());
-      assertThat(response1.ddudus()).extracting("id")
-          .containsExactly(ddudu1.getId(), ddudu2.getId());
-
-    }
-
-    @Test
-    void 주어진_날짜에_팔로워의_할_일_리스트_조회를_성공한다() {
-      // given
-      Goal goal = createGoal(goalName, user);
-      Ddudu ddudu = createTodo(name, goal, user);
-
-      LocalDate date = LocalDate.now();
-
-      FollowRequest request = new FollowRequest(user.getId());
-      followingService.create(loginUser.getId(), request);
-
-      // when
-      List<GoalGroupedDdudusResponse> responses = todoService.findAllByDateGroupedByGoal(
-          loginUser.getId(), user.getId(), date);
-
-      // then
-      assertThat(responses).hasSize(0);
-      assertThat(goal.getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
-    }
-
-    @Test
-    void 주어진_날짜에_다른_사용자의_할_일_리스트_조회를_성공한다() {
-      // given
-      Goal goal = createGoal(goalName, user);
-      Ddudu ddudu = createTodo(name, goal, user);
-
-      LocalDate date = LocalDate.now();
-
-      // when
-      List<GoalGroupedDdudusResponse> responses = todoService.findAllByDateGroupedByGoal(
-          loginUser.getId(), user.getId(), date);
-
-      // then
-      assertThat(responses).hasSize(0);
-      assertThat(goal.getPrivacyType()).isEqualTo(PrivacyType.PRIVATE);
-    }
-
-    @Test
-    void 주어진_날짜에_할_일_리스트_및_좋아요_조회를_성공한다() {
-      // given
-      Goal goal = createGoal(goalName, user);
-      Ddudu ddudu = createTodo(name, goal, user);
-      ddudu.switchStatus();
-
-      LocalDate date = LocalDate.now();
-
-      User other = createUser();
-      Like like = createLike(other, ddudu);
-
-      // when
-      List<GoalGroupedDdudusResponse> responses = todoService.findAllByDateGroupedByGoal(
-          user.getId(), user.getId(), date);
-
-      // then
-      assertThat(responses).hasSize(1);
-
-      GoalGroupedDdudusResponse response = responses.get(0);
-      assertThat(response.ddudus()).hasSize(1);
-
-      DduduInfo dduduInfo = responses.get(0)
-          .ddudus()
-          .get(0);
-      assertThat(dduduInfo.likes()
-          .count()).isEqualTo(1);
-      assertThat(dduduInfo.likes()
-          .users()).containsExactly(other.getId());
-    }
-
-    @Test
-    void 로그인_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
-      // given
-      Long invalidLoginId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      LocalDate date = LocalDate.now();
-
-      // when
-      ThrowingCallable findAllByDate = () -> todoService.findAllByDateGroupedByGoal(
-          invalidLoginId, user.getId(), date);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findAllByDate)
-          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 사용자_아이디가_존재하지_않아_일별_할_일_조회를_실패한다() {
-      // given
-      Long invalidUserId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      LocalDate date = LocalDate.now();
-
-      // when
-      ThrowingCallable findAllByDate = () -> todoService.findAllByDateGroupedByGoal(
-          loginUser.getId(), invalidUserId, date);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findAllByDate)
-          .withMessage(DduduErrorCode.USER_NOT_EXISTING.getMessage());
     }
 
   }
