@@ -1,6 +1,7 @@
 package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.goal.DeleteGoalPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
@@ -39,6 +40,17 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   @Override
   public List<Goal> findAllByUser(User user) {
     return goalRepository.findAllByUser(UserEntity.from(user))
+        .stream()
+        .map(GoalEntity::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<Goal> findAllByUserAndPrivacyTypes(Long userId, List<PrivacyType> privacyTypes) {
+    return goalRepository.findAllByUserAndPrivacyTypes(
+            UserEntity.withOnlyId(userId),
+            privacyTypes
+        )
         .stream()
         .map(GoalEntity::toDomain)
         .toList();
