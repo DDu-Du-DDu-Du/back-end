@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/todos")
+@RequestMapping("/api/ddudus")
 @RequiredArgsConstructor
 public class DduduController implements DduduControllerDoc {
 
@@ -50,7 +50,7 @@ public class DduduController implements DduduControllerDoc {
       CreateTodoRequest request
   ) {
     TodoInfo response = todoService.create(loginId, request);
-    URI uri = URI.create("/api/todos/" + response.id());
+    URI uri = URI.create("/api/ddudus/" + response.id());
 
     return ResponseEntity.created(uri)
         .body(response);
