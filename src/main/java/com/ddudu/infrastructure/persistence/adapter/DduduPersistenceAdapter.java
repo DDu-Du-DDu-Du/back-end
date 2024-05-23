@@ -1,13 +1,18 @@
 package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.ddudu.PeriodSetupPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
+import com.ddudu.infrastructure.persistence.entity.GoalEntity;
+import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +31,20 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort
             id.toString()
         ))
         .toDomain();
+  }
+
+  @Override
+  public List<Ddudu> findAllByDateAndUserAndGoals(LocalDate date, Long userId, List<Goal> goals) {
+    return dduduRepository.findDdudusByDateAndUserAndGoals(
+            date,
+            UserEntity.withOnlyId(userId),
+            goals.stream()
+                .map(GoalEntity::from)
+                .toList()
+        )
+        .stream()
+        .map(DduduEntity::toDomain)
+        .toList();
   }
 
   @Override

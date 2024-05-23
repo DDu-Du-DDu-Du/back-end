@@ -36,10 +36,25 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .join(dduduEntity.goal)
         .fetchJoin()
         .where(
-            dduduEntity.beginAt.between(LocalTime.from(startDate), LocalTime.from(endDate)),
+            dduduEntity.beginAt.goe(LocalTime.from(startDate)),
+            dduduEntity.beginAt.lt(LocalTime.from(endDate)),
             dduduEntity.user.eq(user)
         )
-        .orderBy(dduduEntity.status.desc(), dduduEntity.endAt.asc())
+        .fetch();
+  }
+
+  @Override
+  public List<DduduEntity> findDdudusByDateAndUserAndGoals(
+      LocalDate date, UserEntity user, List<GoalEntity> goals
+  ) {
+    return jpaQueryFactory
+        .selectFrom(dduduEntity)
+        .where(
+            dduduEntity.scheduledOn.eq(date),
+            dduduEntity.user.eq(user),
+            dduduEntity.goal.in(goals)
+        )
+        .orderBy(dduduEntity.status.desc(), dduduEntity.createdAt.desc())
         .fetch();
   }
 
