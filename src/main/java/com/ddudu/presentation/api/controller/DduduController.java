@@ -1,5 +1,6 @@
 package com.ddudu.presentation.api.controller;
 
+import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
@@ -186,6 +187,18 @@ public class DduduController implements DduduControllerDoc {
 
     return ResponseEntity.noContent()
         .build();
+  }
+
+  @PutMapping("/{id}/date")
+  public ResponseEntity<Void> moveDate(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      MoveDateRequest request
+  ) {
+    return null;
   }
 
 }
