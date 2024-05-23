@@ -196,6 +196,7 @@ public class DduduController implements DduduControllerDoc {
       @PathVariable
       Long id,
       @RequestBody
+      @Valid
       MoveDateRequest request
   ) {
     return null;
