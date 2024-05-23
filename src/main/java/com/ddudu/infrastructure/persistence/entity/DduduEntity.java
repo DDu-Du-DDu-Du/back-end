@@ -60,13 +60,23 @@ public class DduduEntity extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private DduduStatus status;
 
-  @Column(name = "scheduled_on")
+  @Column(
+      name = "scheduled_on",
+      nullable = false,
+      columnDefinition = "DATE"
+  )
   private LocalDate scheduledOn;
 
-  @Column(name = "begin_at")
+  @Column(
+      name = "begin_at",
+      columnDefinition = "TIME"
+  )
   private LocalTime beginAt;
 
-  @Column(name = "end_at")
+  @Column(
+      name = "end_at",
+      columnDefinition = "TIME"
+  )
   private LocalTime endAt;
 
   @Column(
