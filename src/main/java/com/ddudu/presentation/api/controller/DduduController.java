@@ -1,13 +1,19 @@
 package com.ddudu.presentation.api.controller;
 
+import static java.util.Objects.isNull;
+import static org.hibernate.internal.util.StringHelper.isBlank;
+
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
+import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
+import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
+import com.ddudu.application.domain.ddudu.dto.response.TimeGroupedDdudusResponse;
+import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
+import com.ddudu.application.port.in.ddudu.GetDailyDdudusByTimeUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.old.todo.dto.response.TodoInfo;
-import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.annotation.Login;
@@ -38,18 +44,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class DduduController implements DduduControllerDoc {
 
   private final PeriodSetupUseCase periodSetupUseCase;
+  private final GetDailyDdudusByGoalUseCase getDailyDdudusByGoalUseCase;
+  private final GetDailyDdudusByTimeUseCase getDailyDdudusByTimeUseCase;
   private final TodoService todoService;
 
   @PostMapping
   @Deprecated
-  public ResponseEntity<TodoInfo> create(
+  public ResponseEntity<DduduInfo> create(
       @Login
       Long loginId,
       @RequestBody
       @Valid
       CreateTodoRequest request
   ) {
-    TodoInfo response = todoService.create(loginId, request);
+    DduduInfo response = todoService.create(loginId, request);
     URI uri = URI.create("/api/ddudus/" + response.id());
 
     return ResponseEntity.created(uri)
@@ -70,20 +78,29 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @GetMapping("/daily")
-  @Deprecated
-  public ResponseEntity<List<TodoListResponse>> getDaily(
+  public ResponseEntity<?> getDaily(
       @Login
       Long loginId,
       @RequestParam(required = false)
       Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+      LocalDate date,
+      @RequestParam(required = false)
+      String groupBy
   ) {
-    userId = (userId == null) ? loginId : userId;
-    date = (date == null) ? LocalDate.now() : date;
-    List<TodoListResponse> response = todoService.findAllByDate(loginId, userId, date);
+    userId = isNull(userId) ? loginId : userId;
+    date = isNull(date) ? LocalDate.now() : date;
+    groupBy = isBlank(groupBy) ? "goal" : groupBy;
 
+    if (groupBy.equals("goal")) {
+      List<GoalGroupedDdudusResponse> response = getDailyDdudusByGoalUseCase.get(
+          loginId, userId, date);
+      return ResponseEntity.ok(response);
+    }
+
+    List<TimeGroupedDdudusResponse> response = getDailyDdudusByTimeUseCase.get(
+        loginId, userId, date);
     return ResponseEntity.ok(response);
   }
 
@@ -132,7 +149,7 @@ public class DduduController implements DduduControllerDoc {
 
   @PutMapping("/{id}")
   @Deprecated
-  public ResponseEntity<TodoInfo> update(
+  public ResponseEntity<DduduInfo> update(
       @Login
       Long loginId,
       @PathVariable
@@ -141,7 +158,7 @@ public class DduduController implements DduduControllerDoc {
       @Valid
       UpdateTodoRequest request
   ) {
-    TodoInfo response = todoService.update(loginId, id, request);
+    DduduInfo response = todoService.update(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }

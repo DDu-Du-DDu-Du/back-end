@@ -2,13 +2,18 @@ package com.ddudu.presentation.api.doc;
 
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
+import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
+import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
+import com.ddudu.application.domain.ddudu.dto.response.TimeGroupedDdudusResponse;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.old.todo.dto.response.TodoInfo;
-import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,10 +32,10 @@ public interface DduduControllerDoc {
       responseCode = "201",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = TodoInfo.class)
+          schema = @Schema(implementation = DduduInfo.class)
       )
   )
-  ResponseEntity<TodoInfo> create(Long loginId, CreateTodoRequest request);
+  ResponseEntity<DduduInfo> create(Long loginId, CreateTodoRequest request);
 
   @Operation(summary = "뚜두 상세 조회")
   @ApiResponse(
@@ -42,11 +47,43 @@ public interface DduduControllerDoc {
   )
   ResponseEntity<TodoResponse> getById(Long loginId, Long id);
 
-  @Operation(summary = "일간 뚜두 조회")
+  @Operation(summary = "일간 뚜두 조회 (목표별 / 시간별)")
   @ApiResponse(
-      responseCode = "200"
+      responseCode = "200",
+      content = {
+          @Content(
+              mediaType = MediaType.APPLICATION_JSON_VALUE,
+              array = @ArraySchema(
+                  schema = @Schema(
+                      oneOf = {
+                          GoalGroupedDdudusResponse.class,
+                          TimeGroupedDdudusResponse.class
+                      }
+                  )
+              )
+          )
+      }
   )
-  ResponseEntity<List<TodoListResponse>> getDaily(Long loginId, Long userId, LocalDate date);
+  @Parameters(
+      {
+          @Parameter(
+              name = "userId",
+              description = "조회할 뚜두의 사용자 식별자 (기본값: 로그인한 사용자)",
+              in = ParameterIn.QUERY
+          ),
+          @Parameter(
+              name = "date",
+              description = "조회할 날짜 (기본값: 오늘)",
+              in = ParameterIn.QUERY
+          ),
+          @Parameter(
+              name = "groupBy",
+              description = "뚜두 그룹화 방법 [ goal | time ] (기본값: goal)",
+              in = ParameterIn.QUERY
+          )
+      }
+  )
+  ResponseEntity<?> getDaily(Long loginId, Long userId, LocalDate date, String groupBy);
 
   @Operation(summary = "주간 뚜두 조회")
   @ApiResponse(
@@ -69,10 +106,10 @@ public interface DduduControllerDoc {
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = TodoInfo.class)
+          schema = @Schema(implementation = DduduInfo.class)
       )
   )
-  ResponseEntity<TodoInfo> update(Long loginId, Long id, UpdateTodoRequest request);
+  ResponseEntity<DduduInfo> update(Long loginId, Long id, UpdateTodoRequest request);
 
   @Operation(summary = "뚜두 상태 변경")
   @ApiResponse(
