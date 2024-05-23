@@ -6,8 +6,8 @@ import static org.hibernate.internal.util.StringHelper.isBlank;
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
-import com.ddudu.application.domain.ddudu.dto.response.TimeGroupedDdudusResponse;
+import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.TimeGroupedDdudus;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByTimeUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
@@ -94,12 +94,12 @@ public class DduduController implements DduduControllerDoc {
     groupBy = isBlank(groupBy) ? "goal" : groupBy;
 
     if (groupBy.equals("goal")) {
-      List<GoalGroupedDdudusResponse> response = getDailyDdudusByGoalUseCase.get(
+      List<GoalGroupedDdudus> response = getDailyDdudusByGoalUseCase.get(
           loginId, userId, date);
       return ResponseEntity.ok(response);
     }
 
-    List<TimeGroupedDdudusResponse> response = getDailyDdudusByTimeUseCase.get(
+    List<TimeGroupedDdudus> response = getDailyDdudusByTimeUseCase.get(
         loginId, userId, date);
     return ResponseEntity.ok(response);
   }

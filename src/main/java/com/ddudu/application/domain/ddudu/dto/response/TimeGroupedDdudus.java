@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalTime;
 import java.util.List;
 
-public record TimeGroupedDdudusResponse(
+public record TimeGroupedDdudus(
     @JsonFormat(shape = Shape.STRING, pattern = "HH:mm")
     @Schema(type = "string", pattern = "HH:mm", example = "14:30")
     LocalTime time,

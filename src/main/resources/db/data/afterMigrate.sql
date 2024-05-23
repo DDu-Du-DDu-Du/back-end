@@ -34,5 +34,13 @@ VALUES (1, 1, '프로젝트', '191919', 'PUBLIC', 'IN_PROGRESS', '2024-05-17T07:
 -- DDUDUS
 INSERT INTO ddudus(id, user_id, goal_id, name, status, begin_at, end_at, is_postponed,
                    created_at, updated_at, scheduled_on)
-VALUES (1, 1, 1, '뚜두뚜두 배포하기', 'UNCOMPLETED', null, null, 0, '2024-05-17T07:13:48',
+VALUES (1, 1, 1, '데일리 스크럼', 'COMPLETE', '11:00:00', null, 0, '2024-05-17T06:30:48',
+        '2024-05-17T06:30:48', '2024-05-17');
+INSERT INTO ddudus(id, user_id, goal_id, name, status, begin_at, end_at, is_postponed,
+                   created_at, updated_at, scheduled_on)
+VALUES (2, 1, 1, '뚜두뚜두 배포하기', 'UNCOMPLETED', null, null, 0, '2024-05-17T07:13:48',
         '2024-05-17T07:13:48', '2024-05-17');
+INSERT INTO ddudus(id, user_id, goal_id, name, status, begin_at, end_at, is_postponed,
+                   created_at, updated_at, scheduled_on)
+VALUES (3, 1, 1, '목표 도메인 리팩토링', 'UNCOMPLETED', null, null, 0, '2024-05-17T07:30:48',
+        '2024-05-17T07:30:48', '2024-05-17');

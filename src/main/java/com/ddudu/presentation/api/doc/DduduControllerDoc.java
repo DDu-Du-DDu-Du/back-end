@@ -3,8 +3,8 @@ package com.ddudu.presentation.api.doc;
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
-import com.ddudu.application.domain.ddudu.dto.response.TimeGroupedDdudusResponse;
+import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.TimeGroupedDdudus;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -56,8 +56,8 @@ public interface DduduControllerDoc {
               array = @ArraySchema(
                   schema = @Schema(
                       oneOf = {
-                          GoalGroupedDdudusResponse.class,
-                          TimeGroupedDdudusResponse.class
+                          GoalGroupedDdudus.class,
+                          TimeGroupedDdudus.class
                       }
                   )
               )

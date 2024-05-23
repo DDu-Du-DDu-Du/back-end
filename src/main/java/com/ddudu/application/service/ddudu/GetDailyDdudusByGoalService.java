@@ -3,7 +3,7 @@ package com.ddudu.application.service.ddudu;
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
+import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -32,7 +32,7 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
   private final UserLoaderPort userLoaderPort;
 
   @Override
-  public List<GoalGroupedDdudusResponse> get(Long loginId, Long userId, LocalDate date) {
+  public List<GoalGroupedDdudus> get(Long loginId, Long userId, LocalDate date) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
     User user = userLoaderPort.getUserOrElseThrow(
@@ -61,7 +61,7 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
     return List.of(PrivacyType.PUBLIC);
   }
 
-  private GoalGroupedDdudusResponse toGoalGroupedDdudusResponse(
+  private GoalGroupedDdudus toGoalGroupedDdudusResponse(
       Goal goal, Map<Long, List<Ddudu>> todosByGoal
   ) {
     List<DduduInfo> dduduInfos = todosByGoal
@@ -70,7 +70,7 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
         .map(DduduInfo::from)
         .toList();
 
-    return GoalGroupedDdudusResponse.from(goal, dduduInfos);
+    return GoalGroupedDdudus.from(goal, dduduInfos);
   }
 
   private User findUser(Long userId) {

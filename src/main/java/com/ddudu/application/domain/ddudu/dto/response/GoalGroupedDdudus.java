@@ -6,13 +6,13 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record GoalGroupedDdudusResponse(
+public record GoalGroupedDdudus(
     GoalInfo goal,
     List<DduduInfo> ddudus
 ) {
 
-  public static GoalGroupedDdudusResponse from(Goal goal, List<DduduInfo> todos) {
-    return GoalGroupedDdudusResponse.builder()
+  public static GoalGroupedDdudus from(Goal goal, List<DduduInfo> todos) {
+    return GoalGroupedDdudus.builder()
         .goal(GoalInfo.from(goal))
         .ddudus(todos)
         .build();

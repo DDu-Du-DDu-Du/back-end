@@ -2,7 +2,7 @@ package com.ddudu.old.todo.service;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
+import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -75,7 +75,7 @@ public class TodoService {
     return TodoResponse.from(ddudu);
   }
 
-  public List<GoalGroupedDdudusResponse> findAllByDateGroupedByGoal(
+  public List<GoalGroupedDdudus> findAllByDateGroupedByGoal(
       Long loginId, Long userId, LocalDate date
   ) {
     User loginUser = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
@@ -222,7 +222,7 @@ public class TodoService {
     return List.of(PrivacyType.PUBLIC);
   }
 
-  private GoalGroupedDdudusResponse mapGoalToTodoListResponse(
+  private GoalGroupedDdudus mapGoalToTodoListResponse(
       Goal goal, Map<Long, List<Ddudu>> todosByGoal, Map<Long, List<Like>> likesByTodo
   ) {
     List<DduduInfo> dduduInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
@@ -230,7 +230,7 @@ public class TodoService {
         .map(todo -> mapTodoToTodoInfoWithLikes(todo, likesByTodo))
         .toList();
 
-    return GoalGroupedDdudusResponse.from(goal, dduduInfos);
+    return GoalGroupedDdudus.from(goal, dduduInfos);
   }
 
   private DduduInfo mapTodoToTodoInfoWithLikes(Ddudu ddudu, Map<Long, List<Like>> likesByTodo) {

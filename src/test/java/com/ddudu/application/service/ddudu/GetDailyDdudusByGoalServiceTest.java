@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
+import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -55,13 +55,13 @@ class GetDailyDdudusByGoalServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    List<GoalGroupedDdudusResponse> responses = getDailyDdudusByGoalService.get(
+    List<GoalGroupedDdudus> responses = getDailyDdudusByGoalService.get(
         user.getId(), user.getId(), date);
 
     // then
     assertThat(responses).hasSize(1);
 
-    GoalGroupedDdudusResponse firstElement = responses.get(0);
+    GoalGroupedDdudus firstElement = responses.get(0);
     assertThat(firstElement.goal()
         .id()).isEqualTo(goal.getId());
     assertThat(firstElement.ddudus()).extracting("id")
@@ -86,7 +86,7 @@ class GetDailyDdudusByGoalServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    List<GoalGroupedDdudusResponse> responses = getDailyDdudusByGoalService.get(
+    List<GoalGroupedDdudus> responses = getDailyDdudusByGoalService.get(
         anotherUser.getId(), user.getId(), date);
 
     // then
