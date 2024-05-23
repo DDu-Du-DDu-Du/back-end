@@ -46,9 +46,9 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public List<Goal> findAllByUserAndPrivacyTypes(Long userId, List<PrivacyType> privacyTypes) {
+  public List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes) {
     return goalRepository.findAllByUserAndPrivacyTypes(
-            UserEntity.withOnlyId(userId),
+            UserEntity.from(user),
             privacyTypes
         )
         .stream()

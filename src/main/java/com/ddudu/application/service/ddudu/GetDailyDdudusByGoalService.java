@@ -4,15 +4,19 @@ import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
 import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
+import com.ddudu.application.port.out.user.UserLoaderPort;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +29,15 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
 
   private final GoalLoaderPort goalLoaderPort;
   private final DduduLoaderPort dduduLoaderPort;
+  private final UserLoaderPort userLoaderPort;
 
   @Override
   public List<GoalGroupedDdudusResponse> get(Long loginId, Long userId, LocalDate date) {
+    User loginUser = findUser(loginId);
+    User user = findUser(userId);
+    
     List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(
-        userId, determinePrivacyTypes(loginId, userId));
+        user, determinePrivacyTypes(loginUser, user));
 
     List<Ddudu> ddudus = dduduLoaderPort.findAllByDateAndUserAndGoals(date, userId, goals);
 
@@ -41,8 +49,8 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
         .toList();
   }
 
-  private List<PrivacyType> determinePrivacyTypes(Long loginUserId, Long userId) {
-    if (Objects.equals(loginUserId, userId)) {
+  private List<PrivacyType> determinePrivacyTypes(User loginUser, User user) {
+    if (Objects.equals(loginUser, user)) {
       return List.of(PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC);
     }
 
@@ -61,6 +69,16 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
         .toList();
 
     return GoalGroupedDdudusResponse.from(goal, dduduInfos);
+  }
+
+  private User findUser(Long userId) {
+    return userLoaderPort.loadMinimalUser(userId)
+        .orElseThrow(
+            () -> new MissingResourceException(
+                DduduErrorCode.USER_NOT_EXISTING.getCodeName(),
+                User.class.getName(),
+                userId.toString()
+            ));
   }
 
 }
