@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -71,16 +70,6 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
         .toList();
 
     return GoalGroupedDdudus.of(goal, dduduInfos);
-  }
-
-  private User findUser(Long userId) {
-    return userLoaderPort.loadMinimalUser(userId)
-        .orElseThrow(
-            () -> new MissingResourceException(
-                DduduErrorCode.USER_NOT_EXISTING.getCodeName(),
-                User.class.getName(),
-                userId.toString()
-            ));
   }
 
 }
