@@ -230,7 +230,7 @@ public class TodoService {
         .map(todo -> mapTodoToTodoInfoWithLikes(todo, likesByTodo))
         .toList();
 
-    return GoalGroupedDdudus.from(goal, dduduInfos);
+    return GoalGroupedDdudus.of(goal, dduduInfos);
   }
 
   private DduduInfo mapTodoToTodoInfoWithLikes(Ddudu ddudu, Map<Long, List<Like>> likesByTodo) {

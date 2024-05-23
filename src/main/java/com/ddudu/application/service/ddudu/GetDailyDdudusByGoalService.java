@@ -70,7 +70,7 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
         .map(DduduInfo::from)
         .toList();
 
-    return GoalGroupedDdudus.from(goal, dduduInfos);
+    return GoalGroupedDdudus.of(goal, dduduInfos);
   }
 
   private User findUser(Long userId) {

@@ -11,7 +11,7 @@ public record GoalGroupedDdudus(
     List<DduduInfo> ddudus
 ) {
 
-  public static GoalGroupedDdudus from(Goal goal, List<DduduInfo> todos) {
+  public static GoalGroupedDdudus of(Goal goal, List<DduduInfo> todos) {
     return GoalGroupedDdudus.builder()
         .goal(GoalInfo.from(goal))
         .ddudus(todos)

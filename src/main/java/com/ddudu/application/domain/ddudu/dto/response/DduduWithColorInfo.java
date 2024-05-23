@@ -13,7 +13,7 @@ public record DduduWithColorInfo(
     String color
 ) {
 
-  public static DduduWithColorInfo from(Ddudu ddudu, Color color) {
+  public static DduduWithColorInfo of(Ddudu ddudu, Color color) {
     return DduduWithColorInfo.builder()
         .id(ddudu.getId())
         .name(ddudu.getName())
