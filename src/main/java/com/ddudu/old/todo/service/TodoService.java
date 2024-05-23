@@ -1,6 +1,8 @@
 package com.ddudu.old.todo.service;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
+import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -14,8 +16,6 @@ import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.LikeInfo;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.old.todo.dto.response.TodoInfo;
-import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.user.domain.FollowingRepository;
 import com.ddudu.old.user.domain.UserRepository;
@@ -49,7 +49,7 @@ public class TodoService {
   private final LikeRepository likeRepository;
 
   @Transactional
-  public TodoInfo create(
+  public DduduInfo create(
       Long loginId,
       @Valid
       CreateTodoRequest request
@@ -66,7 +66,7 @@ public class TodoService {
         .beginAt(LocalTime.from(request.beginAt()))
         .build();
 
-    return TodoInfo.from(oldTodoRepository.save(ddudu));
+    return DduduInfo.from(oldTodoRepository.save(ddudu));
   }
 
   public TodoResponse findById(Long loginId, Long id) {
@@ -75,7 +75,9 @@ public class TodoService {
     return TodoResponse.from(ddudu);
   }
 
-  public List<TodoListResponse> findAllByDate(Long loginId, Long userId, LocalDate date) {
+  public List<GoalGroupedDdudusResponse> findAllByDateGroupedByGoal(
+      Long loginId, Long userId, LocalDate date
+  ) {
     User loginUser = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
     User user = determineUser(loginId, userId, loginUser);
 
@@ -125,7 +127,7 @@ public class TodoService {
   }
 
   @Transactional
-  public TodoInfo update(Long loginId, Long id, UpdateTodoRequest request) {
+  public DduduInfo update(Long loginId, Long id, UpdateTodoRequest request) {
     Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
 
     Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);
@@ -136,7 +138,7 @@ public class TodoService {
 
     oldTodoRepository.update(ddudu);
 
-    return TodoInfo.from(ddudu);
+    return DduduInfo.from(ddudu);
   }
 
   @Transactional
@@ -220,25 +222,25 @@ public class TodoService {
     return List.of(PrivacyType.PUBLIC);
   }
 
-  private TodoListResponse mapGoalToTodoListResponse(
+  private GoalGroupedDdudusResponse mapGoalToTodoListResponse(
       Goal goal, Map<Long, List<Ddudu>> todosByGoal, Map<Long, List<Like>> likesByTodo
   ) {
-    List<TodoInfo> todoInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
+    List<DduduInfo> dduduInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
         .stream()
         .map(todo -> mapTodoToTodoInfoWithLikes(todo, likesByTodo))
         .toList();
 
-    return TodoListResponse.from(goal, todoInfos);
+    return GoalGroupedDdudusResponse.from(goal, dduduInfos);
   }
 
-  private TodoInfo mapTodoToTodoInfoWithLikes(Ddudu ddudu, Map<Long, List<Like>> likesByTodo) {
+  private DduduInfo mapTodoToTodoInfoWithLikes(Ddudu ddudu, Map<Long, List<Like>> likesByTodo) {
     List<Long> likedUsers = likesByTodo.getOrDefault(ddudu.getId(), Collections.emptyList())
         .stream()
         .map(like -> like.getUser()
             .getId())
         .toList();
 
-    return TodoInfo.from(ddudu, LikeInfo.from(likedUsers));
+    return DduduInfo.from(ddudu, LikeInfo.from(likedUsers));
   }
 
 }

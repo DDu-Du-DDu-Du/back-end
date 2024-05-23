@@ -5,6 +5,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
+import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
+import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudusResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -16,8 +18,6 @@ import com.ddudu.old.todo.domain.OldTodoRepository;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.old.todo.dto.response.TodoInfo;
-import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.old.user.dto.request.FollowRequest;
@@ -101,7 +101,7 @@ class DduduServiceTest {
       CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
 
       // when
-      TodoInfo response = todoService.create(user.getId(), request);
+      DduduInfo response = todoService.create(user.getId(), request);
 
       // then
       Ddudu actual = oldTodoRepository.findById(response.id())
@@ -207,17 +207,17 @@ class DduduServiceTest {
       LocalDate date = LocalDate.now();
 
       // when
-      List<TodoListResponse> responses = todoService.findAllByDate(
+      List<GoalGroupedDdudusResponse> responses = todoService.findAllByDateGroupedByGoal(
           user.getId(), user.getId(), date);
 
       // then
       assertThat(responses).hasSize(1);
 
-      TodoListResponse response1 = responses.get(0);
+      GoalGroupedDdudusResponse response1 = responses.get(0);
       assertThat(response1.goal()
           .name())
           .isEqualTo(goal.getName());
-      assertThat(response1.todos()).extracting("id")
+      assertThat(response1.ddudus()).extracting("id")
           .containsExactly(ddudu1.getId(), ddudu2.getId());
 
     }
@@ -234,7 +234,7 @@ class DduduServiceTest {
       followingService.create(loginUser.getId(), request);
 
       // when
-      List<TodoListResponse> responses = todoService.findAllByDate(
+      List<GoalGroupedDdudusResponse> responses = todoService.findAllByDateGroupedByGoal(
           loginUser.getId(), user.getId(), date);
 
       // then
@@ -251,7 +251,7 @@ class DduduServiceTest {
       LocalDate date = LocalDate.now();
 
       // when
-      List<TodoListResponse> responses = todoService.findAllByDate(
+      List<GoalGroupedDdudusResponse> responses = todoService.findAllByDateGroupedByGoal(
           loginUser.getId(), user.getId(), date);
 
       // then
@@ -272,21 +272,21 @@ class DduduServiceTest {
       Like like = createLike(other, ddudu);
 
       // when
-      List<TodoListResponse> responses = todoService.findAllByDate(
+      List<GoalGroupedDdudusResponse> responses = todoService.findAllByDateGroupedByGoal(
           user.getId(), user.getId(), date);
 
       // then
       assertThat(responses).hasSize(1);
 
-      TodoListResponse response = responses.get(0);
-      assertThat(response.todos()).hasSize(1);
+      GoalGroupedDdudusResponse response = responses.get(0);
+      assertThat(response.ddudus()).hasSize(1);
 
-      TodoInfo todoInfo = responses.get(0)
-          .todos()
+      DduduInfo dduduInfo = responses.get(0)
+          .ddudus()
           .get(0);
-      assertThat(todoInfo.likes()
+      assertThat(dduduInfo.likes()
           .count()).isEqualTo(1);
-      assertThat(todoInfo.likes()
+      assertThat(dduduInfo.likes()
           .users()).containsExactly(other.getId());
     }
 
@@ -298,7 +298,7 @@ class DduduServiceTest {
       LocalDate date = LocalDate.now();
 
       // when
-      ThrowingCallable findAllByDate = () -> todoService.findAllByDate(
+      ThrowingCallable findAllByDate = () -> todoService.findAllByDateGroupedByGoal(
           invalidLoginId, user.getId(), date);
 
       // then
@@ -314,7 +314,7 @@ class DduduServiceTest {
       LocalDate date = LocalDate.now();
 
       // when
-      ThrowingCallable findAllByDate = () -> todoService.findAllByDate(
+      ThrowingCallable findAllByDate = () -> todoService.findAllByDateGroupedByGoal(
           loginUser.getId(), invalidUserId, date);
 
       // then
@@ -353,7 +353,7 @@ class DduduServiceTest {
           changedGoal.getId(), changedName, changedBeginAt);
 
       // when
-      TodoInfo response = todoService.update(user.getId(), ddudu.getId(), request);
+      DduduInfo response = todoService.update(user.getId(), ddudu.getId(), request);
 
       // then
       Optional<Ddudu> actual = oldTodoRepository.findById(ddudu.getId());
