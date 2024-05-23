@@ -33,9 +33,11 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
 
   @Override
   public List<GoalGroupedDdudusResponse> get(Long loginId, Long userId, LocalDate date) {
-    User loginUser = findUser(loginId);
-    User user = findUser(userId);
-    
+    User loginUser = userLoaderPort.getUserOrElseThrow(
+        loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+    User user = userLoaderPort.getUserOrElseThrow(
+        userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+
     List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(
         user, determinePrivacyTypes(loginUser, user));
 

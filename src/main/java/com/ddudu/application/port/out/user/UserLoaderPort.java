@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface UserLoaderPort {
 
+  User getUserOrElseThrow(Long id, String message);
+
   Optional<User> loadSocialUser(AuthProvider authProvider);
 
   Optional<User> loadFullUser(Long userId);
