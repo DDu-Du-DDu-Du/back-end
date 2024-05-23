@@ -77,6 +77,14 @@ public class Ddudu {
     return builder.build();
   }
 
+  public Ddudu moveDate(LocalDate newDate) {
+    checkArgument(Objects.nonNull(newDate), DduduErrorCode.NULL_DATE_TO_MOVE.getCodeName());
+    
+    return getFullBuilder()
+        .scheduledOn(newDate)
+        .build();
+  }
+
   public Ddudu applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
     return getFullBuilder()
         .goal(goal)
