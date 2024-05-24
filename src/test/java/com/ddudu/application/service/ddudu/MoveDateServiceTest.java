@@ -67,7 +67,7 @@ class MoveDateServiceTest {
   @Test
   void 뚜두를_미루기_한다() {
     // given
-    MoveDateRequest request = new MoveDateRequest(tomorrow);
+    MoveDateRequest request = new MoveDateRequest(tomorrow, true);
 
     // when
     moveDateService.moveDate(user.getId(), ddudu.getId(), request);
@@ -76,16 +76,17 @@ class MoveDateServiceTest {
     Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
 
     assertThat(actual.getScheduledOn()).isEqualTo(tomorrow);
+    assertThat(actual.isPostponed()).isTrue();
   }
 
   @Test
-  void 뚜두를_오늘하기_한다() {
+  void 뚜두를_오늘_다시_하기_한다() {
     // given
     LocalDate yesterday = LocalDate.now()
         .minusDays(1);
     Ddudu pastDdudu = saveDduduPort.save(
         DduduFixture.createRandomDduduWithSchedule(goal, yesterday));
-    MoveDateRequest request = new MoveDateRequest(LocalDate.now());
+    MoveDateRequest request = new MoveDateRequest(LocalDate.now(), true);
 
     // when
     moveDateService.moveDate(user.getId(), pastDdudu.getId(), request);
@@ -97,10 +98,30 @@ class MoveDateServiceTest {
   }
 
   @Test
+  void 완료한_지난_뚜두의_날짜를_바꾼다() {
+    // given
+    LocalDate twoDaysAgo = LocalDate.now()
+        .minusDays(2);
+    Ddudu pastDdudu = saveDduduPort.save(
+        DduduFixture.createRandomDduduWithSchedule(goal, twoDaysAgo));
+    LocalDate yesterday = LocalDate.now()
+        .minusDays(1);
+    MoveDateRequest request = new MoveDateRequest(yesterday, null);
+
+    // when
+    moveDateService.moveDate(user.getId(), pastDdudu.getId(), request);
+
+    // then
+    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(pastDdudu.getId(), "not found");
+
+    assertThat(actual.getScheduledOn()).isEqualTo(yesterday);
+  }
+
+  @Test
   void 뚜두가_존재하지_않으면_날짜_변경을_실패한다() {
     // given
     long invalidId = DduduFixture.getRandomId();
-    MoveDateRequest request = new MoveDateRequest(tomorrow);
+    MoveDateRequest request = new MoveDateRequest(tomorrow, null);
 
     // when
     ThrowingCallable moveDate = () -> moveDateService.moveDate(user.getId(), invalidId, request);
