@@ -3,7 +3,9 @@ package com.ddudu.presentation.api.controller;
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.request.RepeatAnotherDayRequest;
+import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
+import com.ddudu.application.port.in.ddudu.RepeatUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -34,11 +36,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/todos")
+@RequestMapping("/api/ddudus")
 @RequiredArgsConstructor
 public class DduduController implements DduduControllerDoc {
 
   private final PeriodSetupUseCase periodSetupUseCase;
+  private final RepeatUseCase repeatUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -203,7 +206,7 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @PostMapping("/{id}/repeat")
-  public ResponseEntity<Void> repeatOnAnotherDay(
+  public ResponseEntity<RepeatAnotherDayResponse> repeatOnAnotherDay(
       @Login
       Long loginId,
       @PathVariable
@@ -211,7 +214,12 @@ public class DduduController implements DduduControllerDoc {
       @RequestBody
       RepeatAnotherDayRequest request
   ) {
-    return null;
+    RepeatAnotherDayResponse response = repeatUseCase.repeatOnAnotherDay(
+        loginId, id, request);
+    URI uri = URI.create("/api/ddudus/" + response.id());
+
+    return ResponseEntity.created(uri)
+        .body(response);
   }
 
 }
