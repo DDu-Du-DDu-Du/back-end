@@ -12,25 +12,27 @@ import lombok.NoArgsConstructor;
 public class DduduFixture extends BaseFixture {
 
   public static Ddudu createRandomDduduWithGoal(Goal goal) {
-    return createRandomDduduWithReference(goal.getId(), goal.getUserId());
+    return createRandomDduduWithReference(goal.getId(), goal.getUserId(), false, null);
   }
 
-  public static Ddudu createRandomDduduWithReference(Long goalId, Long userId) {
+  public static Ddudu createRandomDduduWithReference(
+      Long goalId, Long userId, Boolean isPostponed, DduduStatus status
+  ) {
     return createDdudu(
-        getRandomId(), goalId, userId, getRandomSentenceWithMax(50), null, null, null, null,
-        false
+        getRandomId(), goalId, userId, getRandomSentenceWithMax(50), status, null, null, null, null,
+        isPostponed
     );
   }
 
   public static Ddudu createRandomDduduWithSchedule(Goal goal, LocalDate scheduledOn) {
     return createDdudu(
-        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null,
+        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null,
         scheduledOn, null, null, false
     );
   }
 
   public static Ddudu createDdudu(
-      Long id, Long goalId, Long userId, String name, DduduStatus dduduStatus,
+      Long id, Long goalId, Long userId, String name, DduduStatus dduduStatus, String statusValue,
       LocalDate scheduledOn, LocalTime beginAt, LocalTime endAt, Boolean isPostponed
   ) {
     return Ddudu.builder()
@@ -40,6 +42,7 @@ public class DduduFixture extends BaseFixture {
         .name(name)
         .isPostponed(isPostponed)
         .status(dduduStatus)
+        .statusValue(statusValue)
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt)

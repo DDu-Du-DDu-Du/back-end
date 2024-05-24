@@ -174,7 +174,7 @@ class DduduTest {
     void setUp() {
       userId = DduduFixture.getRandomId();
       goalId = DduduFixture.getRandomId();
-      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId);
+      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId, false, null);
     }
 
     @Nested
@@ -269,10 +269,41 @@ class DduduTest {
             .plusDays(1);
 
         // when
-        Ddudu actual = ddudu.moveDate(newDate);
+        Ddudu actual = ddudu.moveDate(newDate, null);
 
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);
+        assertThat(actual.isPostponed()).isFalse();
+      }
+
+      @Test
+      void 이미_완료한_뚜두면_날짜_변경_시_상태가_변하지_않는다() {
+        // given
+        Ddudu completedDdudu = DduduFixture.createRandomDduduWithReference(
+            goalId, userId, false, DduduStatus.COMPLETE);
+        LocalDate newDate = LocalDate.now()
+            .plusDays(1);
+
+        // when
+        Ddudu actual = completedDdudu.moveDate(newDate, true);
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
+        assertThat(actual.isPostponed()).isFalse();
+      }
+
+      @Test
+      void 미루기_한다() {
+        // given
+        LocalDate newDate = LocalDate.now()
+            .plusDays(1);
+
+        // when
+        Ddudu actual = ddudu.moveDate(newDate, true);
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
+        assertThat(actual.isPostponed()).isTrue();
       }
 
       @Test
@@ -280,11 +311,41 @@ class DduduTest {
         // given
 
         // when
-        ThrowingCallable moveDate = () -> ddudu.moveDate(null);
+        ThrowingCallable moveDate = () -> ddudu.moveDate(null, null);
 
         // then
         assertThatIllegalArgumentException().isThrownBy(moveDate)
             .withMessage(DduduErrorCode.NULL_DATE_TO_MOVE.getCodeName());
+      }
+
+      @Test
+      void 변경할_날짜가_예정_날짜보다_이전일_때_미루기를_시도하면_변경을_실패한다() {
+        // given
+        LocalDate newDate = LocalDate.now()
+            .minusDays(1);
+
+        // when
+        ThrowingCallable moveDate = () -> ddudu.moveDate(newDate, true);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(moveDate)
+            .withMessage(DduduErrorCode.SHOULD_POSTPONE_UNTIL_FUTURE.getCodeName());
+      }
+
+      @Test
+      void 변경할_날짜가_예정_날짜보다_이전이어도_이미_미루기한_뚜두면_날짜_변경을_성공한다() {
+        // given
+        Ddudu postponedDdudu = DduduFixture.createRandomDduduWithReference(
+            goalId, userId, true, null);
+        LocalDate newDate = LocalDate.now()
+            .minusDays(1);
+
+        // when
+        Ddudu actual = postponedDdudu.moveDate(newDate, true);
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
+        assertThat(actual.isPostponed()).isTrue();
       }
 
     }
