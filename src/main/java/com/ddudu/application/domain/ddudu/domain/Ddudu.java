@@ -77,6 +77,20 @@ public class Ddudu {
     return builder.build();
   }
 
+  public Ddudu reproduceOnDate(LocalDate scheduledOn) {
+    checkArgument(
+        !scheduledOn.isEqual(this.scheduledOn),
+        DduduErrorCode.UNABLE_TO_REPRODUCE_ON_SAME_DATE.getCodeName()
+    );
+
+    return getFullBuilder()
+        .id(null)
+        .isPostponed(false)
+        .status(DduduStatus.UNCOMPLETED)
+        .scheduledOn(scheduledOn)
+        .build();
+  }
+
   public Ddudu applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
     return getFullBuilder()
         .goal(goal)

@@ -263,4 +263,55 @@ class DduduTest {
 
   }
 
+  @Nested
+  class 복제_테스트 {
+
+    Long userId;
+    Long goalId;
+    Ddudu ddudu;
+
+    @BeforeEach
+    void setUp() {
+      userId = DduduFixture.getRandomId();
+      goalId = DduduFixture.getRandomId();
+      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId);
+    }
+
+    @Test
+    void 뚜두_복제를_성공한다() {
+      // given
+      LocalDate tomorrow = LocalDate.now()
+          .plusDays(1);
+
+      // when
+      Ddudu replica = ddudu.reproduceOnDate(tomorrow);
+
+      // then
+      assertThat(replica).isNotEqualTo(ddudu);
+      assertThat(replica)
+          .hasFieldOrPropertyWithValue("goalId", ddudu.getGoalId())
+          .hasFieldOrPropertyWithValue("userId", ddudu.getUserId())
+          .hasFieldOrPropertyWithValue("name", ddudu.getName())
+          .hasFieldOrPropertyWithValue("status", DduduStatus.UNCOMPLETED)
+          .hasFieldOrPropertyWithValue("isPostponed", false)
+          .hasFieldOrPropertyWithValue("scheduledOn", tomorrow)
+          .hasFieldOrPropertyWithValue("beginAt", ddudu.getBeginAt())
+          .hasFieldOrPropertyWithValue("endAt", ddudu.getEndAt());
+    }
+
+    @Test
+    void 같은_날로_복제를_시도하면_실패한다() {
+      // given
+      LocalDate newDate = ddudu.getScheduledOn();
+
+      // when
+      ThrowingCallable reproduce = () -> ddudu.reproduceOnDate(newDate);
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(reproduce)
+          .withMessage(DduduErrorCode.UNABLE_TO_REPRODUCE_ON_SAME_DATE.getCodeName());
+    }
+
+  }
+
 }
