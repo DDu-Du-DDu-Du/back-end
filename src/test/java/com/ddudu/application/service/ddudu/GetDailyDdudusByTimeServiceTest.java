@@ -34,7 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class GetDailyDdudusByTimeServiceTest {
 
   @Autowired
-  GetTimetableAndUnassignedDdudusService getTimetableAndUnassignedDdudusService;
+  GetTimetableService getTimetableService;
 
   @Autowired
   SignUpPort signUpPort;
@@ -67,7 +67,7 @@ class GetDailyDdudusByTimeServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    TimetableResponse response = getTimetableAndUnassignedDdudusService.get(
+    TimetableResponse response = getTimetableService.get(
         user.getId(), user.getId(), date);
 
     // then
@@ -95,7 +95,7 @@ class GetDailyDdudusByTimeServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    TimetableResponse response = getTimetableAndUnassignedDdudusService.get(
+    TimetableResponse response = getTimetableService.get(
         user.getId(), user.getId(), date);
 
     // then
@@ -128,7 +128,7 @@ class GetDailyDdudusByTimeServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    TimetableResponse response = getTimetableAndUnassignedDdudusService.get(
+    TimetableResponse response = getTimetableService.get(
         anotherUser.getId(), user.getId(), date);
 
     // then
@@ -149,7 +149,7 @@ class GetDailyDdudusByTimeServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    ThrowingCallable findAllByDate = () -> getTimetableAndUnassignedDdudusService.get(
+    ThrowingCallable findAllByDate = () -> getTimetableService.get(
         invalidLoginId, user.getId(), date);
 
     // then
@@ -166,7 +166,7 @@ class GetDailyDdudusByTimeServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    ThrowingCallable findAllByDate = () -> getTimetableAndUnassignedDdudusService.get(
+    ThrowingCallable findAllByDate = () -> getTimetableService.get(
         loginUserId, invalidUserId, date);
 
     // then

@@ -9,7 +9,7 @@ import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
 import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
-import com.ddudu.application.port.in.ddudu.GetTimetableAndUnassignedDdudusUseCase;
+import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
@@ -45,7 +45,7 @@ public class DduduController implements DduduControllerDoc {
 
   private final PeriodSetupUseCase periodSetupUseCase;
   private final GetDailyDdudusByGoalUseCase getDailyDdudusByGoalUseCase;
-  private final GetTimetableAndUnassignedDdudusUseCase getTimetableAndUnassignedDdudusUseCase;
+  private final GetTimetableUseCase getTimetableUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -99,7 +99,7 @@ public class DduduController implements DduduControllerDoc {
       return ResponseEntity.ok(response);
     }
 
-    TimetableResponse response = getTimetableAndUnassignedDdudusUseCase.get(
+    TimetableResponse response = getTimetableUseCase.get(
         loginId, userId, date);
     return ResponseEntity.ok(response);
   }
