@@ -2,8 +2,8 @@ package com.ddudu.application.port.out.ddudu;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 
-public interface PeriodSetupPort {
+public interface DduduUpdatePort {
 
-  Ddudu updatePeriod(Ddudu ddudu);
+  Ddudu update(Ddudu ddudu);
 
 }
