@@ -32,22 +32,24 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
 
   @Override
   public List<GoalGroupedDdudus> get(Long loginId, Long userId, LocalDate date) {
-    User loginUser = userLoaderPort.getUserOrElseThrow(
-        loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
-    User user = userLoaderPort.getUserOrElseThrow(
-        userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+    User loginUser = getUserById(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+    User user = getUserById(userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
-    List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(
-        user, determinePrivacyTypes(loginUser, user));
+    List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
+    Map<Long, List<Ddudu>> ddudusByGoal = groupDdudusByGoal(accessibleGoals, user, date);
 
-    List<Ddudu> ddudus = dduduLoaderPort.findAllByDateAndUserAndGoals(date, userId, goals);
-
-    Map<Long, List<Ddudu>> todosByGoal = ddudus.stream()
-        .collect(Collectors.groupingBy(Ddudu::getGoalId));
-
-    return goals.stream()
-        .map(goal -> toGoalGroupedDdudusResponse(goal, todosByGoal))
+    return accessibleGoals.stream()
+        .map(goal -> toGoalGroupedDdudusResponse(goal, ddudusByGoal))
         .toList();
+  }
+
+  private User getUserById(Long userId, String errorCode) {
+    return userLoaderPort.getUserOrElseThrow(userId, errorCode);
+  }
+
+  private List<Goal> getAccessibleGoals(User requestingUser, User targetUser) {
+    return goalLoaderPort.findAllByUserAndPrivacyTypes(
+        targetUser, determinePrivacyTypes(requestingUser, targetUser));
   }
 
   private List<PrivacyType> determinePrivacyTypes(User loginUser, User user) {
@@ -60,12 +62,22 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
     return List.of(PrivacyType.PUBLIC);
   }
 
-  private GoalGroupedDdudus toGoalGroupedDdudusResponse(
-      Goal goal, Map<Long, List<Ddudu>> todosByGoal
+  private Map<Long, List<Ddudu>> groupDdudusByGoal(
+      List<Goal> accessibleGoals, User user, LocalDate date
   ) {
-    List<DduduInfo> dduduInfos = todosByGoal
+    List<Ddudu> ddudus = dduduLoaderPort.findAllByDateAndUserAndGoals(date, user, accessibleGoals);
+
+    return ddudus.stream()
+        .collect(Collectors.groupingBy(Ddudu::getGoalId));
+  }
+
+  private GoalGroupedDdudus toGoalGroupedDdudusResponse(
+      Goal goal, Map<Long, List<Ddudu>> ddudusByGoal
+  ) {
+    List<DduduInfo> dduduInfos = ddudusByGoal
         .getOrDefault(goal.getId(), Collections.emptyList())
         .stream()
+        .sorted((a, b) -> Math.toIntExact(b.getId() - a.getId()))
         .map(DduduInfo::from)
         .toList();
 
