@@ -39,21 +39,19 @@ public class GetTimetableService implements
 
   @Override
   public TimetableResponse get(Long loginId, Long userId, LocalDate date) {
-    User loginUser = getUserById(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
-    User user = getUserById(userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+    User loginUser = userLoaderPort.getUserOrElseThrow(
+        loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+    User user = userLoaderPort.getUserOrElseThrow(
+        loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
     List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
-    List<Ddudu> ddudus = getDdudusByDateAndUser(date, user, accessibleGoals);
+    List<Ddudu> ddudus = dduduLoaderPort.findAllByDateAndUserAndGoals(date, user, accessibleGoals);
 
     Map<LocalTime, List<DduduWithColorInfo>> dduduWithColorsByTime = groupDdudusWithColorByTime(
         ddudus, accessibleGoals);
     List<GoalGroupedDdudus> unassignedDdudus = groupUnassignedDdudusByGoal(ddudus, accessibleGoals);
 
     return TimetableResponse.of(dduduWithColorsByTime, unassignedDdudus);
-  }
-
-  private User getUserById(Long userId, String errorCode) {
-    return userLoaderPort.getUserOrElseThrow(userId, errorCode);
   }
 
   private List<Goal> getAccessibleGoals(User requestingUser, User targetUser) {
@@ -69,10 +67,6 @@ public class GetTimetableService implements
     // TODO: 팔로잉 기능 추가 시 팔로잉 상태 확인
 
     return List.of(PrivacyType.PUBLIC);
-  }
-
-  private List<Ddudu> getDdudusByDateAndUser(LocalDate date, User user, List<Goal> goals) {
-    return dduduLoaderPort.findAllByDateAndUserAndGoals(date, user, goals);
   }
 
   private Map<LocalTime, List<DduduWithColorInfo>> groupDdudusWithColorByTime(

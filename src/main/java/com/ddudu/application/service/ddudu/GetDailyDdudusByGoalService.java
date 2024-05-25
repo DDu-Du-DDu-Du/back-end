@@ -32,8 +32,10 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
 
   @Override
   public List<GoalGroupedDdudus> get(Long loginId, Long userId, LocalDate date) {
-    User loginUser = getUserById(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
-    User user = getUserById(userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+    User loginUser = userLoaderPort.getUserOrElseThrow(
+        loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+    User user = userLoaderPort.getUserOrElseThrow(
+        loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
     List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
     Map<Long, List<Ddudu>> ddudusByGoal = groupDdudusByGoal(accessibleGoals, user, date);
@@ -41,10 +43,6 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
     return accessibleGoals.stream()
         .map(goal -> toGoalGroupedDdudusResponse(goal, ddudusByGoal))
         .toList();
-  }
-
-  private User getUserById(Long userId, String errorCode) {
-    return userLoaderPort.getUserOrElseThrow(userId, errorCode);
   }
 
   private List<Goal> getAccessibleGoals(User requestingUser, User targetUser) {
