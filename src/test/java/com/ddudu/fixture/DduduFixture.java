@@ -19,7 +19,18 @@ public class DduduFixture extends BaseFixture {
 
   public static Ddudu createRandomDduduWithGoal(Goal goal) {
     return createDdudu(
-        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null, null, false);
+        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null,
+        null, false
+    );
+  }
+
+  public static Ddudu createRandomDduduWithGoalAndTime(
+      Goal goal, LocalTime beginAt, LocalTime endAt
+  ) {
+    return createDdudu(
+        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, beginAt,
+        endAt, false
+    );
   }
 
   public static Ddudu createDdudu(

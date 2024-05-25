@@ -1,10 +1,10 @@
 package com.ddudu.application.service.ddudu;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -18,8 +18,9 @@ import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalTime;
 import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -31,10 +32,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class GetDailyDdudusByGoalServiceTest {
+class GetDailyDdudusByTimeServiceTest {
 
   @Autowired
-  GetDailyDdudusByGoalService getDailyDdudusByGoalService;
+  GetDailyDdudusByTimeService getDailyDdudusByTimeService;
 
   @Autowired
   SignUpPort signUpPort;
@@ -46,61 +47,101 @@ class GetDailyDdudusByGoalServiceTest {
   SaveDduduPort saveDduduPort;
 
   User user;
+  LocalTime beginAt;
+  LocalTime endAt;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
+    beginAt = LocalTime.of(10, 00);
+    endAt = LocalTime.of(11, 00);
   }
 
   @Test
-  void 주어진_날짜에_자신의_목표별_뚜두_리스트_조회를_성공한다() {
+  void 주어진_날짜에_자신의_시간별_뚜두_리스트_조회를_성공한다() {
     // given
     Goal goal = saveGoalPort.save(
         GoalFixture.createRandomGoalWithUserAndPrivacyType(user, PrivacyType.PRIVATE));
-    Ddudu ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
+    Ddudu ddudu = saveDduduPort.save(
+        DduduFixture.createRandomDduduWithGoalAndTime(goal, beginAt, endAt));
 
     LocalDate date = LocalDate.now();
 
     // when
-    List<GoalGroupedDdudus> responses = getDailyDdudusByGoalService.get(
+    TimetableResponse response = getDailyDdudusByTimeService.get(
         user.getId(), user.getId(), date);
 
     // then
-    assertThat(responses).hasSize(1);
-
-    GoalGroupedDdudus firstElement = responses.get(0);
-    assertThat(firstElement.goal()).extracting("id")
-        .isEqualTo(goal.getId());
-    assertThat(firstElement.ddudus()).extracting("id")
-        .containsExactly(ddudu.getId());
+    assertThat(response.timetable()
+        .get(beginAt)
+        .size()).isEqualTo(1);
+    assertThat(response.timetable()
+        .get(beginAt)
+        .get(0)
+        .id()).isEqualTo(ddudu.getId());
+    assertThat(response.unassignedDdudus()
+        .get(0)
+        .ddudus()
+        .size()).isEqualTo(0);
   }
 
   @Test
-  void 다른_사용자의_목표별_뚜두을_조회할_경우_전체공개_목표의_뚜두만_조회한다() {
+  void 시간이_설정되지_않은_뚜두_조회에_성공한다() {
+    // given
+    Goal goal = saveGoalPort.save(
+        GoalFixture.createRandomGoalWithUserAndPrivacyType(user, PrivacyType.PRIVATE));
+    Ddudu ddudu = saveDduduPort.save(
+        DduduFixture.createRandomDduduWithGoal(goal));
+
+    LocalDate date = LocalDate.now();
+
+    // when
+    TimetableResponse response = getDailyDdudusByTimeService.get(
+        user.getId(), user.getId(), date);
+
+    // then
+    assertThat(response.unassignedDdudus()
+        .get(0)
+        .ddudus()
+        .size()).isEqualTo(1);
+    assertThat(response.unassignedDdudus()
+        .get(0)
+        .ddudus()
+        .get(0)
+        .id()).isEqualTo(ddudu.getId());
+  }
+
+  @Test
+  void 다른_사용자의_시간별_뚜두_리스트를_조회할_경우_전체공개_목표의_뚜두만_조회한다() {
     // given
     Goal publicGoal = saveGoalPort.save(
         GoalFixture.createRandomGoalWithUserAndPrivacyType(user, PrivacyType.PUBLIC));
-    saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(publicGoal));
+    Ddudu publicDdudu = saveDduduPort.save(
+        DduduFixture.createRandomDduduWithGoalAndTime(publicGoal, beginAt, endAt));
 
     Goal privateGoal = saveGoalPort.save(
         GoalFixture.createRandomGoalWithUserAndPrivacyType(user, PrivacyType.PRIVATE));
-    saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(privateGoal));
+    saveDduduPort.save(
+        DduduFixture.createRandomDduduWithGoalAndTime(privateGoal, beginAt, endAt));
 
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
     LocalDate date = LocalDate.now();
 
     // when
-    List<GoalGroupedDdudus> responses = getDailyDdudusByGoalService.get(
+    TimetableResponse response = getDailyDdudusByTimeService.get(
         anotherUser.getId(), user.getId(), date);
 
     // then
-    assertThat(responses).hasSize(1);
-    assertThat(responses.get(0)
-        .goal()).extracting("id")
-        .isEqualTo(publicGoal.getId());
+    Assertions.assertThat(response.timetable()
+            .get(beginAt))
+        .hasSize(1);
+    Assertions.assertThat(response.timetable()
+            .get(beginAt)
+            .get(0))
+        .extracting("id")
+        .isEqualTo(publicDdudu.getId());
   }
-
 
   @Test
   void 로그인_아이디가_존재하지_않아_목표별_뚜두_조회를_실패한다() {
@@ -109,7 +150,7 @@ class GetDailyDdudusByGoalServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    ThrowingCallable findAllByDate = () -> getDailyDdudusByGoalService.get(
+    ThrowingCallable findAllByDate = () -> getDailyDdudusByTimeService.get(
         invalidLoginId, user.getId(), date);
 
     // then
@@ -126,7 +167,7 @@ class GetDailyDdudusByGoalServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    ThrowingCallable findAllByDate = () -> getDailyDdudusByGoalService.get(
+    ThrowingCallable findAllByDate = () -> getDailyDdudusByTimeService.get(
         loginUserId, invalidUserId, date);
 
     // then
