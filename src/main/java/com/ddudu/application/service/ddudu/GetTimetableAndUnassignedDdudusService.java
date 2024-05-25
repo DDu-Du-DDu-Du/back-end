@@ -13,7 +13,7 @@ import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.port.in.ddudu.GetDailyDdudusByTimeUseCase;
+import com.ddudu.application.port.in.ddudu.GetTimetableAndUnassignedDdudusUseCase;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
@@ -30,7 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class GetDailyDdudusByTimeService implements GetDailyDdudusByTimeUseCase {
+public class GetTimetableAndUnassignedDdudusService implements
+    GetTimetableAndUnassignedDdudusUseCase {
 
   private final GoalLoaderPort goalLoaderPort;
   private final DduduLoaderPort dduduLoaderPort;
