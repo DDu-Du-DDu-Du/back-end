@@ -2,6 +2,7 @@ package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.ddudu.PeriodSetupPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
@@ -34,10 +35,10 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort
   }
 
   @Override
-  public List<Ddudu> findAllByDateAndUserAndGoals(LocalDate date, Long userId, List<Goal> goals) {
+  public List<Ddudu> findAllByDateAndUserAndGoals(LocalDate date, User user, List<Goal> goals) {
     return dduduRepository.findDdudusByDateAndUserAndGoals(
             date,
-            UserEntity.withOnlyId(userId),
+            UserEntity.from(user),
             goals.stream()
                 .map(GoalEntity::from)
                 .toList()
