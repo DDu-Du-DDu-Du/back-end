@@ -2,7 +2,7 @@ package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
-import com.ddudu.application.port.out.ddudu.PeriodSetupPort;
+import com.ddudu.application.port.out.ddudu.DduduUpdatePort;
 import com.ddudu.application.port.out.ddudu.RepeatDduduPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
 @RequiredArgsConstructor
-public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort, SaveDduduPort,
+public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort, SaveDduduPort,
     RepeatDduduPort {
 
   private final DduduRepository dduduRepository;
@@ -31,7 +31,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort
   }
 
   @Override
-  public Ddudu updatePeriod(Ddudu ddudu) {
+  public Ddudu update(Ddudu ddudu) {
     DduduEntity dduduEntity = dduduRepository.findById(ddudu.getId())
         .orElseThrow(EntityNotFoundException::new);
 

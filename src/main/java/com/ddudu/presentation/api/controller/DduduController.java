@@ -3,6 +3,7 @@ package com.ddudu.presentation.api.controller;
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.request.RepeatAnotherDayRequest;
+import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DduduController implements DduduControllerDoc {
 
   private final PeriodSetupUseCase periodSetupUseCase;
+  private final MoveDateUseCase moveDateUseCase;
   private final RepeatUseCase repeatUseCase;
   private final TodoService todoService;
 
@@ -200,9 +202,13 @@ public class DduduController implements DduduControllerDoc {
       @PathVariable
       Long id,
       @RequestBody
+      @Valid
       MoveDateRequest request
   ) {
-    return null;
+    moveDateUseCase.moveDate(loginId, id, request);
+
+    return ResponseEntity.noContent()
+        .build();
   }
 
   @PostMapping("/{id}/repeat")
