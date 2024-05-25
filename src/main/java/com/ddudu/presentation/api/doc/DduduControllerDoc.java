@@ -3,8 +3,7 @@ package com.ddudu.presentation.api.doc;
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
-import com.ddudu.application.domain.ddudu.dto.response.TimeGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,19 +48,10 @@ public interface DduduControllerDoc {
   @Operation(summary = "일간 뚜두 조회 (목표별 / 시간별)")
   @ApiResponse(
       responseCode = "200",
-      content = {
-          @Content(
-              mediaType = MediaType.APPLICATION_JSON_VALUE,
-              array = @ArraySchema(
-                  schema = @Schema(
-                      oneOf = {
-                          GoalGroupedDdudus.class,
-                          TimeGroupedDdudus.class
-                      }
-                  )
-              )
-          )
-      }
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = TimetableResponse.class)
+      )
   )
   @Parameters(
       {

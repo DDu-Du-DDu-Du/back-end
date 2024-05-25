@@ -1,11 +1,10 @@
 package com.ddudu.application.port.in.ddudu;
 
-import com.ddudu.application.domain.ddudu.dto.response.TimeGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
 import java.time.LocalDate;
-import java.util.List;
 
 public interface GetDailyDdudusByTimeUseCase {
 
-  List<TimeGroupedDdudus> get(Long loginId, Long userId, LocalDate date);
+  TimetableResponse get(Long loginId, Long userId, LocalDate date);
 
 }

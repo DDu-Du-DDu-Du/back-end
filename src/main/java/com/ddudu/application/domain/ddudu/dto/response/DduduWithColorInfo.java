@@ -2,7 +2,6 @@ package com.ddudu.application.domain.ddudu.dto.response;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
-import com.ddudu.application.domain.goal.domain.vo.Color;
 import lombok.Builder;
 
 @Builder
@@ -13,12 +12,12 @@ public record DduduWithColorInfo(
     String color
 ) {
 
-  public static DduduWithColorInfo of(Ddudu ddudu, Color color) {
+  public static DduduWithColorInfo of(Ddudu ddudu, String color) {
     return DduduWithColorInfo.builder()
         .id(ddudu.getId())
         .name(ddudu.getName())
         .status(ddudu.getStatus())
-        .color(color.getCode())
+        .color(color)
         .build();
   }
 
