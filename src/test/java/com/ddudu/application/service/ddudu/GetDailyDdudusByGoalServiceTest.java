@@ -12,7 +12,6 @@ import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
-import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
@@ -105,7 +104,7 @@ class GetDailyDdudusByGoalServiceTest {
   @Test
   void 로그인_아이디가_존재하지_않아_목표별_뚜두_조회를_실패한다() {
     // given
-    Long invalidLoginId = BaseFixture.getRandomId();
+    Long invalidLoginId = UserFixture.getRandomId();
     LocalDate date = LocalDate.now();
 
     // when
@@ -122,7 +121,7 @@ class GetDailyDdudusByGoalServiceTest {
   void 사용자_아이디가_존재하지_않아_목표별_뚜두_조회를_실패한다() {
     // given
     Long loginUserId = user.getId();
-    Long invalidUserId = BaseFixture.getRandomId();
+    Long invalidUserId = UserFixture.getRandomId();
     LocalDate date = LocalDate.now();
 
     // when

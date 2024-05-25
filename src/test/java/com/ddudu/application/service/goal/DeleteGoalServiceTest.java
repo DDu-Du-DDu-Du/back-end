@@ -12,7 +12,6 @@ import com.ddudu.application.port.out.goal.DeleteGoalPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
@@ -93,7 +92,7 @@ class DeleteGoalServiceTest {
   @Test
   void 목표가_존재하지_않는_경우_예외가_발생한다() {
     // given
-    Long invalidId = BaseFixture.getRandomId();
+    Long invalidId = GoalFixture.getRandomId();
 
     // when
     ThrowingCallable delete = () -> deleteGoalService.delete(userId, invalidId);

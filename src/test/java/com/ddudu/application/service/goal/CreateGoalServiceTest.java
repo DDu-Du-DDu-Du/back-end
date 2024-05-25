@@ -15,7 +15,6 @@ import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
@@ -64,8 +63,8 @@ class CreateGoalServiceTest {
   void setUp() {
     User user = createAndSaveUser();
     userId = user.getId();
-    name = BaseFixture.getRandomSentenceWithMax(50);
-    color = BaseFixture.getRandomColor();
+    name = GoalFixture.getRandomSentenceWithMax(50);
+    color = GoalFixture.getRandomColor();
     privacyType = GoalFixture.getRandomPrivacyType();
     request = new CreateGoalRequest(name, color, privacyType.name());
   }
@@ -139,7 +138,7 @@ class CreateGoalServiceTest {
   @Test
   void 사용자ID가_유효하지_않으면_예외가_발생한다() {
     // given
-    Long invalidUserId = BaseFixture.getRandomId();
+    Long invalidUserId = UserFixture.getRandomId();
 
     // when
     ThrowingCallable create = () -> createGoalService.create(invalidUserId, request);

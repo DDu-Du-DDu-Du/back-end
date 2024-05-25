@@ -12,7 +12,6 @@ import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
@@ -73,7 +72,7 @@ class ChangeGoalStatusServiceTest {
   @Test
   void 유효하지_않은_ID인_경우_수정에_실패한다() {
     // given
-    Long invalidId = BaseFixture.getRandomId();
+    Long invalidId = GoalFixture.getRandomId();
 
     // when
     ThrowingCallable update = () -> changeGoalStatusService.changeStatus(

@@ -11,7 +11,6 @@ import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
@@ -79,7 +78,7 @@ class RetrieveAllGoalsServiceTest {
   @Test
   void 사용자가_존재하지_않는_경우_조회에_실패한다() {
     // given
-    Long invalidLoginId = BaseFixture.getRandomId();
+    Long invalidLoginId = GoalFixture.getRandomId();
 
     // when
     ThrowingCallable findAllByUser = () -> retrieveAllGoalsService.findAllByUser(
