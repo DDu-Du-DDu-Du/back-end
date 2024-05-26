@@ -3,6 +3,10 @@ package com.ddudu.presentation.api.controller;
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.request.RepeatAnotherDayRequest;
+import com.ddudu.application.dto.ddudu.DduduCursorDto;
+import com.ddudu.application.dto.ddudu.MyDduduSearchDto;
+import com.ddudu.application.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
@@ -24,6 +28,7 @@ import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -226,6 +231,15 @@ public class DduduController implements DduduControllerDoc {
 
     return ResponseEntity.created(uri)
         .body(response);
+  }
+
+  @GetMapping(value = "/my", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ScrollResponse<MyDduduSearchDto>> searchMine(
+          @Login
+          Long loginId,
+          ScrollRequest request
+  ) {
+      return null;
   }
 
 }
