@@ -16,4 +16,6 @@ public interface GoalLoaderPort {
 
   List<Goal> findAllByUser(User user, List<PrivacyType> privacyTypes);
 
+  List<Goal> findAccessibleGoals(User user, boolean isFollower);
+
 }

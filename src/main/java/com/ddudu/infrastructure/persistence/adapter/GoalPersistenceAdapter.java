@@ -12,6 +12,7 @@ import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import com.ddudu.infrastructure.persistence.repository.goal.GoalRepository;
+import com.google.common.collect.Lists;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -63,6 +64,20 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
             UserEntity.from(user),
             privacyTypes
         )
+        .stream()
+        .map(GoalEntity::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<Goal> findAccessibleGoals(User user, boolean isFollower) {
+    List<PrivacyType> privacyTypes = Lists.newArrayList(PrivacyType.PUBLIC);
+
+    if (isFollower) {
+      privacyTypes.add(PrivacyType.FOLLOWER);
+    }
+
+    return goalRepository.findAllByUserAndPrivacyTypes(UserEntity.from(user), privacyTypes)
         .stream()
         .map(GoalEntity::toDomain)
         .toList();
