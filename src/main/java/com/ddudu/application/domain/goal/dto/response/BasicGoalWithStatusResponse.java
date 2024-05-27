@@ -5,15 +5,15 @@ import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import lombok.Builder;
 
 @Builder
-public record GoalSummaryResponse(
+public record BasicGoalWithStatusResponse(
     Long id,
     String name,
     GoalStatus status,
     String color
 ) {
 
-  public static GoalSummaryResponse from(Goal goal) {
-    return GoalSummaryResponse.builder()
+  public static BasicGoalWithStatusResponse from(Goal goal) {
+    return BasicGoalWithStatusResponse.builder()
         .id(goal.getId())
         .name(goal.getName())
         .status(goal.getStatus())

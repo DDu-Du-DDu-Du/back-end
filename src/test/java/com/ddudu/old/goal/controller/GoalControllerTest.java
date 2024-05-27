@@ -16,8 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
+import com.ddudu.application.domain.goal.dto.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
-import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.controller.GoalController;
@@ -163,8 +163,8 @@ class GoalControllerTest extends ControllerTestSupport {
     @Test
     void 사용자의_전체_목표_조회에_성공하면_200_OK를_반환한다() throws Exception {
       // given
-      List<GoalSummaryResponse> response = createGoalSummaryDTO();
-      GoalSummaryResponse firstElement = response.get(0);
+      List<BasicGoalWithStatusResponse> response = createGoalSummaryDTO();
+      BasicGoalWithStatusResponse firstElement = response.get(0);
 
       given(goalService.findAllByUser(anyLong(), anyLong())).willReturn(response);
 
@@ -231,17 +231,17 @@ class GoalControllerTest extends ControllerTestSupport {
               .value(containsString(GoalErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
-    private List<GoalSummaryResponse> createGoalSummaryDTO() {
+    private List<BasicGoalWithStatusResponse> createGoalSummaryDTO() {
       Long goalId = faker.random()
           .nextLong();
-      GoalSummaryResponse goalSummaryResponse = GoalSummaryResponse.builder()
+      BasicGoalWithStatusResponse basicGoalWithStatusResponse = BasicGoalWithStatusResponse.builder()
           .id(goalId)
           .name(name)
           .status(GoalStatus.IN_PROGRESS)
           .color(color)
           .build();
 
-      return List.of(goalSummaryResponse);
+      return List.of(basicGoalWithStatusResponse);
     }
 
   }

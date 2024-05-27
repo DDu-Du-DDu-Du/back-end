@@ -1,7 +1,7 @@
 package com.ddudu.application.service.goal;
 
 import com.ddudu.application.annotation.UseCase;
-import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
+import com.ddudu.application.domain.goal.dto.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.goal.RetrieveAllGoalsUseCase;
@@ -20,13 +20,13 @@ public class RetrieveAllGoalsService implements RetrieveAllGoalsUseCase {
   private final GoalLoaderPort goalLoaderPort;
 
   @Override
-  public List<GoalSummaryResponse> findAllByUser(Long userId) {
+  public List<BasicGoalWithStatusResponse> findAllByUser(Long userId) {
     User user = userLoaderPort.getUserOrElseThrow(
         userId, GoalErrorCode.USER_NOT_EXISTING.getCodeName());
 
     return goalLoaderPort.findAllByUser(user)
         .stream()
-        .map(GoalSummaryResponse::from)
+        .map(BasicGoalWithStatusResponse::from)
         .toList();
   }
 

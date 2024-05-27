@@ -3,9 +3,9 @@ package com.ddudu.presentation.api.controller;
 import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
 import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
 import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
+import com.ddudu.application.domain.goal.dto.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.dto.response.GoalResponse;
-import com.ddudu.application.domain.goal.dto.response.GoalSummaryResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
 import com.ddudu.application.port.in.goal.CreateGoalUseCase;
@@ -108,14 +108,14 @@ public class GoalController implements GoalControllerDoc {
   }
 
   @GetMapping
-  public ResponseEntity<List<GoalSummaryResponse>> getAllByUser(
+  public ResponseEntity<List<BasicGoalWithStatusResponse>> getAllByUser(
       @Login
       Long loginId,
       @RequestParam
       Long userId
   ) {
     checkAuthority(loginId, userId);
-    List<GoalSummaryResponse> response = retrieveAllGoalsUseCase.findAllByUser(userId);
+    List<BasicGoalWithStatusResponse> response = retrieveAllGoalsUseCase.findAllByUser(userId);
 
     return ResponseEntity.ok(response);
   }
