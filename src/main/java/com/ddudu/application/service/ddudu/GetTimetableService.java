@@ -1,13 +1,11 @@
 package com.ddudu.application.service.ddudu;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.dto.BasicDduduWithColor;
 import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
-import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
@@ -19,7 +17,6 @@ import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,7 +47,8 @@ public class GetTimetableService implements
 
     Map<LocalTime, List<BasicDduduWithColor>> dduduWithColorsByTime = groupDdudusWithColorByTime(
         ddudus, accessibleGoals);
-    List<GoalGroupedDdudus> unassignedDdudus = groupUnassignedDdudusByGoal(ddudus, accessibleGoals);
+    List<GoalGroupedDdudus> unassignedDdudus = dduduLoaderPort.getUnassignedDdudusOfUserGroupingByGoal(
+        date, loginUser, accessibleGoals);
 
     return TimetableResponse.of(dduduWithColorsByTime, unassignedDdudus);
   }
@@ -101,31 +99,6 @@ public class GetTimetableService implements
   private Map<Long, String> mapGoalColors(List<Goal> goals) {
     return goals.stream()
         .collect(Collectors.toMap(Goal::getId, Goal::getColor));
-  }
-
-  private List<GoalGroupedDdudus> groupUnassignedDdudusByGoal(
-      List<Ddudu> ddudus, List<Goal> goals
-  ) {
-    Map<Long, List<Ddudu>> unassignedDdudus = ddudus.stream()
-        .filter(ddudu -> isNull(ddudu.getBeginAt()) || isNull(ddudu.getEndAt()))
-        .collect(Collectors.groupingBy(Ddudu::getGoalId));
-
-    return goals.stream()
-        .map(goal -> toGoalGroupedDdudusResponse(goal, unassignedDdudus))
-        .toList();
-  }
-
-  private GoalGroupedDdudus toGoalGroupedDdudusResponse(
-      Goal goal, Map<Long, List<Ddudu>> ddudusByGoal
-  ) {
-    List<BasicDduduResponse> basicDduduResponses = ddudusByGoal
-        .getOrDefault(goal.getId(), Collections.emptyList())
-        .stream()
-        .sorted((a, b) -> Math.toIntExact(b.getId() - a.getId()))
-        .map(BasicDduduResponse::from)
-        .toList();
-
-    return GoalGroupedDdudus.of(goal, basicDduduResponses);
   }
 
 }
