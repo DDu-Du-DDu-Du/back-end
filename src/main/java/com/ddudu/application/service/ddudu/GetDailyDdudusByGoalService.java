@@ -35,7 +35,7 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
     User user = userLoaderPort.getUserOrElseThrow(
-        loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
     List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
     Map<Long, List<Ddudu>> ddudusByGoal = groupDdudusByGoal(accessibleGoals, user, date);

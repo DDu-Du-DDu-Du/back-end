@@ -42,7 +42,7 @@ public class GetTimetableService implements
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
     User user = userLoaderPort.getUserOrElseThrow(
-        loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
     List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
     List<Ddudu> ddudus = dduduLoaderPort.findAllByDateAndUserAndGoals(date, user, accessibleGoals);
