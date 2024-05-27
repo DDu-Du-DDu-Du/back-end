@@ -50,7 +50,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort
   }
 
   @Override
-  public List<GoalGroupedDdudus> getDailyDdudusOfUserGroupedByGoal(
+  public List<GoalGroupedDdudus> getDailyDdudusOfUserGroupingByGoal(
       LocalDate date, User loginUser, List<Goal> goals
   ) {
     List<GoalEntity> goalEntities = goals.stream()

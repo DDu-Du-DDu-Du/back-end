@@ -13,7 +13,7 @@ public interface DduduLoaderPort {
 
   List<Ddudu> getDailyDdudusOfUserUnderGoals(LocalDate date, User user, List<Goal> goals);
 
-  List<GoalGroupedDdudus> getDailyDdudusOfUserGroupedByGoal(
+  List<GoalGroupedDdudus> getDailyDdudusOfUserGroupingByGoal(
       LocalDate date, User loginUser, List<Goal> goals
   );
 
