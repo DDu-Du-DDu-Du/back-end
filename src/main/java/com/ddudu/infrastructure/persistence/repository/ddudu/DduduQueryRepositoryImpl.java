@@ -6,7 +6,7 @@ import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.goal.dto.response.GoalInfo;
+import com.ddudu.application.domain.goal.dto.response.BasicGoalResponse;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
@@ -144,7 +144,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
     return goals.stream()
         .map(goal -> GoalGroupedDdudus.builder()
-            .goal(GoalInfo.from(goal.toDomain()))
+            .goal(BasicGoalResponse.from(goal.toDomain()))
             .ddudus(ddudusByGoalId.getOrDefault(goal.getId(), List.of())
                 .stream()
                 .map(ddudu -> BasicDduduResponse.from(ddudu.toDomain()))

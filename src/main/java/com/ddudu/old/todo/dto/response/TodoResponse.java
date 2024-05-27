@@ -3,12 +3,12 @@ package com.ddudu.old.todo.dto.response;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.dto.response.GoalInfo;
+import com.ddudu.application.domain.goal.dto.response.BasicGoalResponse;
 import lombok.Builder;
 
 @Builder
 public record TodoResponse(
-    GoalInfo goal,
+    BasicGoalResponse goal,
     BasicDduduResponse todo
 ) {
 
@@ -16,7 +16,7 @@ public record TodoResponse(
     Goal goal = ddudu.getGoal();
 
     return TodoResponse.builder()
-        .goal(GoalInfo.from(goal))
+        .goal(BasicGoalResponse.from(goal))
         .todo(BasicDduduResponse.from(ddudu))
         .build();
   }
