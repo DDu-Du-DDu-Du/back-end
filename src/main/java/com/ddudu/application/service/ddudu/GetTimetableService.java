@@ -6,7 +6,6 @@ import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
@@ -34,32 +33,35 @@ public class GetTimetableService implements
   public TimetableResponse get(Long loginId, Long userId, LocalDate date) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+
+    if (Objects.equals(loginId, userId)) {
+      List<Goal> goals = goalLoaderPort.findAllByUser(loginUser);
+
+      Map<LocalTime, List<BasicDduduWithGoalId>> ddudusWithGoalIdByTime = dduduLoaderPort.getDailyDdudusOfUserGroupingByTime(
+          date, loginUser, goals);
+      List<GoalGroupedDdudus> unassignedDdudus = dduduLoaderPort.getUnassignedDdudusOfUserGroupingByGoal(
+          date, loginUser, goals);
+
+      return TimetableResponse.of(ddudusWithGoalIdByTime, unassignedDdudus);
+    }
+
     User user = userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
-    List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
+    boolean isFollower = isFollowerOf(loginUser, user);
+    List<Goal> accessibleGoals = goalLoaderPort.findAccessibleGoals(user, isFollower);
 
     Map<LocalTime, List<BasicDduduWithGoalId>> ddudusWithGoalIdByTime = dduduLoaderPort.getDailyDdudusOfUserGroupingByTime(
         date, user, accessibleGoals);
     List<GoalGroupedDdudus> unassignedDdudus = dduduLoaderPort.getUnassignedDdudusOfUserGroupingByGoal(
-        date, loginUser, accessibleGoals);
+        date, user, accessibleGoals);
 
     return TimetableResponse.of(ddudusWithGoalIdByTime, unassignedDdudus);
   }
 
-  private List<Goal> getAccessibleGoals(User requestingUser, User targetUser) {
-    return goalLoaderPort.findAllByUser(
-        targetUser, determinePrivacyTypes(requestingUser, targetUser));
-  }
-
-  private List<PrivacyType> determinePrivacyTypes(User loginUser, User user) {
-    if (Objects.equals(loginUser, user)) {
-      return List.of(PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC);
-    }
-
+  private boolean isFollowerOf(User user, User targetUser) {
     // TODO: 팔로잉 기능 추가 시 팔로잉 상태 확인
-
-    return List.of(PrivacyType.PUBLIC);
+    return false;
   }
 
 }
