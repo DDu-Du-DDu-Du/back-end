@@ -17,12 +17,7 @@ public class DduduFixture extends BaseFixture {
     List<Ddudu> ddudus = Lists.newArrayList();
 
     for (int i = 0; i < size; i++) {
-      Ddudu ddudu = createDdudu(
-          (long) (i + 1), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null,
-          null, null, null, null
-      );
-
-      ddudus.add(ddudu);
+      ddudus.add(createRandomDduduWithGoal(goal));
     }
 
     return ddudus;
