@@ -6,7 +6,6 @@ import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
@@ -34,10 +33,21 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
   public List<GoalGroupedDdudus> get(Long loginId, Long userId, LocalDate date) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+
+    if (Objects.equals(loginId, userId)) {
+      List<Goal> goals = goalLoaderPort.findAllByUser(loginUser);
+      Map<Long, List<Ddudu>> ddudusByGoal = groupDdudusByGoal(goals, loginUser, date);
+
+      return goals.stream()
+          .map(goal -> toGoalGroupedDdudusResponse(goal, ddudusByGoal))
+          .toList();
+    }
+
     User user = userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
-    List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
+    boolean isFollower = isFollowerOf(loginUser, user);
+    List<Goal> accessibleGoals = goalLoaderPort.findAccessibleGoals(user, isFollower);
     Map<Long, List<Ddudu>> ddudusByGoal = groupDdudusByGoal(accessibleGoals, user, date);
 
     return accessibleGoals.stream()
@@ -45,19 +55,9 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
         .toList();
   }
 
-  private List<Goal> getAccessibleGoals(User requestingUser, User targetUser) {
-    return goalLoaderPort.findAllByUser(
-        targetUser, determinePrivacyTypes(requestingUser, targetUser));
-  }
-
-  private List<PrivacyType> determinePrivacyTypes(User loginUser, User user) {
-    if (Objects.equals(loginUser, user)) {
-      return List.of(PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC);
-    }
-
+  private boolean isFollowerOf(User user, User targetUser) {
     // TODO: 팔로잉 기능 추가 시 팔로잉 상태 확인
-
-    return List.of(PrivacyType.PUBLIC);
+    return false;
   }
 
   private Map<Long, List<Ddudu>> groupDdudusByGoal(
