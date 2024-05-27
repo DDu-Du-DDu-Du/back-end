@@ -17,4 +17,8 @@ public interface DduduLoaderPort {
       LocalDate date, User loginUser, List<Goal> goals
   );
 
+  List<GoalGroupedDdudus> getUnassignedDdudusOfUserGroupingByGoal(
+      LocalDate date, User user, List<Goal> goals
+  );
+
 }

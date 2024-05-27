@@ -31,4 +31,8 @@ public interface DduduQueryRepository {
       LocalDate date, UserEntity user, List<GoalEntity> goals
   );
 
+  List<GoalGroupedDdudus> findUnassignedDdudusByUserGroupByGoal(
+      LocalDate date, UserEntity user, List<GoalEntity> goals
+  );
+
 }

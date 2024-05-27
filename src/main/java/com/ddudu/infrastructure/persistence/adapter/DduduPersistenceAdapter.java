@@ -62,6 +62,17 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort
   }
 
   @Override
+  public List<GoalGroupedDdudus> getUnassignedDdudusOfUserGroupingByGoal(
+      LocalDate date, User user, List<Goal> goals
+  ) {
+    return dduduRepository.findUnassignedDdudusByUserGroupByGoal(
+        date, UserEntity.from(user), goals.stream()
+            .map(GoalEntity::from)
+            .toList()
+    );
+  }
+
+  @Override
   public Ddudu updatePeriod(Ddudu ddudu) {
     DduduEntity dduduEntity = dduduRepository.findById(ddudu.getId())
         .orElseThrow(EntityNotFoundException::new);

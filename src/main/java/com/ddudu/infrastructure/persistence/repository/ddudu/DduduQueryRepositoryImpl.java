@@ -11,6 +11,7 @@ import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
@@ -128,16 +129,41 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   public List<GoalGroupedDdudus> findDailyDdudusByUserGroupByGoal(
       LocalDate date, UserEntity user, List<GoalEntity> goals
   ) {
-    List<DduduEntity> ddudus = jpaQueryFactory
+    List<DduduEntity> ddudus = fetchDdudusByUserAndGoals(date, user, goals, false);
+    return mapToGoalGroupedDdudus(goals, ddudus);
+  }
+
+  @Override
+  public List<GoalGroupedDdudus> findUnassignedDdudusByUserGroupByGoal(
+      LocalDate date, UserEntity user, List<GoalEntity> goals
+  ) {
+    List<DduduEntity> ddudus = fetchDdudusByUserAndGoals(date, user, goals, true);
+    return mapToGoalGroupedDdudus(goals, ddudus);
+  }
+
+  private List<DduduEntity> fetchDdudusByUserAndGoals(
+      LocalDate date, UserEntity user, List<GoalEntity> goals, boolean unassigned
+  ) {
+    BooleanBuilder whereClause = new BooleanBuilder()
+        .and(dduduEntity.user.eq(user))
+        .and(dduduEntity.goal.in(goals))
+        .and(dduduEntity.scheduledOn.eq(date));
+
+    if (unassigned) {
+      whereClause.and(dduduEntity.beginAt.isNull()
+          .or(dduduEntity.endAt.isNull()));
+    }
+
+    return jpaQueryFactory
         .selectFrom(dduduEntity)
-        .where(
-            dduduEntity.user.eq(user),
-            dduduEntity.goal.in(goals),
-            dduduEntity.scheduledOn.eq(date)
-        )
+        .where(whereClause)
         .orderBy(dduduEntity.goal.id.asc(), dduduEntity.status.desc(), dduduEntity.id.desc())
         .fetch();
+  }
 
+  private List<GoalGroupedDdudus> mapToGoalGroupedDdudus(
+      List<GoalEntity> goals, List<DduduEntity> ddudus
+  ) {
     Map<Long, List<DduduEntity>> ddudusByGoalId = ddudus.stream()
         .collect(Collectors.groupingBy(ddudu -> ddudu.getGoal()
             .getId()));
