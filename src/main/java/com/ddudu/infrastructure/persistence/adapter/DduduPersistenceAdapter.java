@@ -1,6 +1,7 @@
 package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
@@ -46,6 +47,18 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort
         .stream()
         .map(DduduEntity::toDomain)
         .toList();
+  }
+
+  @Override
+  public List<GoalGroupedDdudus> getDailyDdudusOfUserGroupedByGoal(
+      LocalDate date, User loginUser, List<Goal> goals
+  ) {
+    List<GoalEntity> goalEntities = goals.stream()
+        .map(GoalEntity::from)
+        .toList();
+
+    return dduduRepository.findDailyDdudusByUserGroupByGoal(
+        date, UserEntity.from(loginUser), goalEntities);
   }
 
   @Override

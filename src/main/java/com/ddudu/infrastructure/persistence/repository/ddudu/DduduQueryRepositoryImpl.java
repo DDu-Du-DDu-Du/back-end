@@ -3,7 +3,10 @@ package com.ddudu.infrastructure.persistence.repository.ddudu;
 import static com.ddudu.infrastructure.persistence.entity.QDduduEntity.dduduEntity;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
+import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.dto.response.GoalInfo;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
@@ -17,6 +20,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -117,6 +122,37 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .execute();
 
     entityManager.clear();
+  }
+
+  @Override
+  public List<GoalGroupedDdudus> findDailyDdudusByUserGroupByGoal(
+      LocalDate date, UserEntity user, List<GoalEntity> goals
+  ) {
+    List<DduduEntity> ddudus = jpaQueryFactory
+        .selectFrom(dduduEntity)
+        .where(
+            dduduEntity.user.eq(user),
+            dduduEntity.goal.in(goals),
+            dduduEntity.scheduledOn.eq(date)
+        )
+        .orderBy(dduduEntity.goal.id.asc(), dduduEntity.status.desc(), dduduEntity.id.desc())
+        .fetch();
+
+    Map<Long, List<DduduEntity>> ddudusByGoalId = ddudus.stream()
+        .collect(Collectors.groupingBy(ddudu -> ddudu.getGoal()
+            .getId()));
+
+    return goals.stream()
+        .map(goal -> GoalGroupedDdudus.builder()
+            .goal(GoalInfo.from(goal.toDomain()))
+            .ddudus(ddudusByGoalId.getOrDefault(goal.getId(), List.of())
+                .stream()
+                .map(ddudu -> BasicDduduResponse.from(ddudu.toDomain()))
+                .toList()
+            )
+            .build()
+        )
+        .toList();
   }
 
 }

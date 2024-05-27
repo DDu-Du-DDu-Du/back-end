@@ -36,11 +36,7 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
 
     if (Objects.equals(loginId, userId)) {
       List<Goal> goals = goalLoaderPort.findAllByUser(loginUser);
-      Map<Long, List<Ddudu>> ddudusByGoal = groupDdudusByGoal(goals, loginUser, date);
-
-      return goals.stream()
-          .map(goal -> toGoalGroupedDdudusResponse(goal, ddudusByGoal))
-          .toList();
+      return dduduLoaderPort.getDailyDdudusOfUserGroupedByGoal(date, loginUser, goals);
     }
 
     User user = userLoaderPort.getUserOrElseThrow(
@@ -48,11 +44,7 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
 
     boolean isFollower = isFollowerOf(loginUser, user);
     List<Goal> accessibleGoals = goalLoaderPort.findAccessibleGoals(user, isFollower);
-    Map<Long, List<Ddudu>> ddudusByGoal = groupDdudusByGoal(accessibleGoals, user, date);
-
-    return accessibleGoals.stream()
-        .map(goal -> toGoalGroupedDdudusResponse(goal, ddudusByGoal))
-        .toList();
+    return dduduLoaderPort.getDailyDdudusOfUserGroupedByGoal(date, user, accessibleGoals);
   }
 
   private boolean isFollowerOf(User user, User targetUser) {

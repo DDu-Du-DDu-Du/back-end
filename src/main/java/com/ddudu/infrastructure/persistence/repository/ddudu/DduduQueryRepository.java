@@ -1,5 +1,6 @@
 package com.ddudu.infrastructure.persistence.repository.ddudu;
 
+import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
@@ -25,5 +26,9 @@ public interface DduduQueryRepository {
   );
 
   void deleteAllByGoal(GoalEntity goal);
+
+  List<GoalGroupedDdudus> findDailyDdudusByUserGroupByGoal(
+      LocalDate date, UserEntity user, List<GoalEntity> goals
+  );
 
 }
