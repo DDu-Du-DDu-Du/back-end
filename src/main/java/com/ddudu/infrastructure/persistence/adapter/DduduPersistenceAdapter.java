@@ -35,7 +35,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort
   }
 
   @Override
-  public List<Ddudu> findAllByDateAndUserAndGoals(LocalDate date, User user, List<Goal> goals) {
+  public List<Ddudu> getDailyDdudusOfUserUnderGoals(LocalDate date, User user, List<Goal> goals) {
     return dduduRepository.findDdudusByDateAndUserAndGoals(
             date,
             UserEntity.from(user),

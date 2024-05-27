@@ -63,7 +63,8 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
   private Map<Long, List<Ddudu>> groupDdudusByGoal(
       List<Goal> accessibleGoals, User user, LocalDate date
   ) {
-    List<Ddudu> ddudus = dduduLoaderPort.findAllByDateAndUserAndGoals(date, user, accessibleGoals);
+    List<Ddudu> ddudus = dduduLoaderPort.getDailyDdudusOfUserUnderGoals(
+        date, user, accessibleGoals);
 
     return ddudus.stream()
         .collect(Collectors.groupingBy(Ddudu::getGoalId));

@@ -45,7 +45,8 @@ public class GetTimetableService implements
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
     List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
-    List<Ddudu> ddudus = dduduLoaderPort.findAllByDateAndUserAndGoals(date, user, accessibleGoals);
+    List<Ddudu> ddudus = dduduLoaderPort.getDailyDdudusOfUserUnderGoals(
+        date, user, accessibleGoals);
 
     Map<LocalTime, List<BasicDduduWithColor>> dduduWithColorsByTime = groupDdudusWithColorByTime(
         ddudus, accessibleGoals);

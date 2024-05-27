@@ -10,6 +10,6 @@ public interface DduduLoaderPort {
 
   Ddudu getDduduOrElseThrow(Long id, String message);
 
-  List<Ddudu> findAllByDateAndUserAndGoals(LocalDate date, User user, List<Goal> goals);
+  List<Ddudu> getDailyDdudusOfUserUnderGoals(LocalDate date, User user, List<Goal> goals);
 
 }
