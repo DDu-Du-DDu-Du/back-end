@@ -4,7 +4,7 @@ import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.request.RepeatAnotherDayRequest;
 import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
-import com.ddudu.application.dto.ddudu.MyDduduSearchDto;
+import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
@@ -67,7 +67,7 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ScrollResponse<MyDduduSearchDto>> searchMine(
+  public ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> searchMine(
       @Login
       Long loginId,
       DduduSearchRequest request

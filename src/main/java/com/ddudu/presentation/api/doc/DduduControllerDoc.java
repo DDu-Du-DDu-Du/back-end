@@ -4,7 +4,7 @@ import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.request.RepeatAnotherDayRequest;
 import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
-import com.ddudu.application.dto.ddudu.MyDduduSearchDto;
+import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
@@ -114,7 +114,7 @@ public interface DduduControllerDoc {
 
   @Operation(summary = "뚜두 조회. Not Yet Implemented")
   @ApiResponse(responseCode = "200")
-  ResponseEntity<ScrollResponse<MyDduduSearchDto>> searchMine(
+  ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> searchMine(
       Long loginId,
       @ParameterObject
       DduduSearchRequest request
