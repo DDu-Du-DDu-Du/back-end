@@ -5,7 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
-import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
+import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
@@ -99,7 +99,7 @@ class DduduServiceTest {
       CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
 
       // when
-      DduduInfo response = todoService.create(user.getId(), request);
+      BasicDduduResponse response = todoService.create(user.getId(), request);
 
       // then
       Ddudu actual = oldTodoRepository.findById(response.id())
@@ -221,7 +221,7 @@ class DduduServiceTest {
           changedGoal.getId(), changedName, changedBeginAt);
 
       // when
-      DduduInfo response = todoService.update(user.getId(), ddudu.getId(), request);
+      BasicDduduResponse response = todoService.update(user.getId(), ddudu.getId(), request);
 
       // then
       Optional<Ddudu> actual = oldTodoRepository.findById(ddudu.getId());

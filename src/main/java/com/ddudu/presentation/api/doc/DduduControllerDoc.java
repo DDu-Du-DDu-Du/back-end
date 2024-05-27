@@ -2,7 +2,7 @@ package com.ddudu.presentation.api.doc;
 
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
-import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
+import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
@@ -30,10 +30,10 @@ public interface DduduControllerDoc {
       responseCode = "201",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = DduduInfo.class)
+          schema = @Schema(implementation = BasicDduduResponse.class)
       )
   )
-  ResponseEntity<DduduInfo> create(Long loginId, CreateTodoRequest request);
+  ResponseEntity<BasicDduduResponse> create(Long loginId, CreateTodoRequest request);
 
   @Operation(summary = "뚜두 상세 조회")
   @ApiResponse(
@@ -95,10 +95,10 @@ public interface DduduControllerDoc {
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = DduduInfo.class)
+          schema = @Schema(implementation = BasicDduduResponse.class)
       )
   )
-  ResponseEntity<DduduInfo> update(Long loginId, Long id, UpdateTodoRequest request);
+  ResponseEntity<BasicDduduResponse> update(Long loginId, Long id, UpdateTodoRequest request);
 
   @Operation(summary = "뚜두 상태 변경")
   @ApiResponse(

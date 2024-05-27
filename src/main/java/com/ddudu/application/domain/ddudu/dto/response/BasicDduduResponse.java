@@ -6,14 +6,14 @@ import com.ddudu.old.todo.dto.response.LikeInfo;
 import lombok.Builder;
 
 @Builder
-public record DduduInfo(
+public record BasicDduduResponse(
     Long id,
     String name,
     DduduStatus status
 ) {
 
-  public static DduduInfo from(Ddudu ddudu) {
-    return DduduInfo.builder()
+  public static BasicDduduResponse from(Ddudu ddudu) {
+    return BasicDduduResponse.builder()
         .id(ddudu.getId())
         .name(ddudu.getName())
         .status(ddudu.getStatus())
@@ -21,8 +21,8 @@ public record DduduInfo(
   }
 
   // TODO: Remove this method after migration
-  public static DduduInfo from(Ddudu ddudu, LikeInfo likeInfo) {
-    return DduduInfo.builder()
+  public static BasicDduduResponse from(Ddudu ddudu, LikeInfo likeInfo) {
+    return BasicDduduResponse.builder()
         .id(ddudu.getId())
         .name(ddudu.getName())
         .status(ddudu.getStatus())

@@ -3,10 +3,10 @@ package com.ddudu.presentation.api.controller;
 import static java.util.Objects.isNull;
 import static org.hibernate.internal.util.StringHelper.isBlank;
 
+import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
-import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
@@ -50,14 +50,14 @@ public class DduduController implements DduduControllerDoc {
 
   @PostMapping
   @Deprecated
-  public ResponseEntity<DduduInfo> create(
+  public ResponseEntity<BasicDduduResponse> create(
       @Login
       Long loginId,
       @RequestBody
       @Valid
       CreateTodoRequest request
   ) {
-    DduduInfo response = todoService.create(loginId, request);
+    BasicDduduResponse response = todoService.create(loginId, request);
     URI uri = URI.create("/api/ddudus/" + response.id());
 
     return ResponseEntity.created(uri)
@@ -149,7 +149,7 @@ public class DduduController implements DduduControllerDoc {
 
   @PutMapping("/{id}")
   @Deprecated
-  public ResponseEntity<DduduInfo> update(
+  public ResponseEntity<BasicDduduResponse> update(
       @Login
       Long loginId,
       @PathVariable
@@ -158,7 +158,7 @@ public class DduduController implements DduduControllerDoc {
       @Valid
       UpdateTodoRequest request
   ) {
-    DduduInfo response = todoService.update(loginId, id, request);
+    BasicDduduResponse response = todoService.update(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }
