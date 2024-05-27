@@ -39,6 +39,7 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
 
     boolean isFollower = isFollowerOf(loginUser, user);
     List<Goal> accessibleGoals = goalLoaderPort.findAccessibleGoals(user, isFollower);
+
     return dduduLoaderPort.getDailyDdudusOfUserGroupingByGoal(date, user, accessibleGoals);
   }
 
