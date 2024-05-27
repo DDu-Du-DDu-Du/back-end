@@ -5,9 +5,9 @@ import static java.util.Objects.nonNull;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.DduduWithColorInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.BasicDduduWithColor;
+import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
@@ -47,7 +47,7 @@ public class GetTimetableService implements
     List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
     List<Ddudu> ddudus = dduduLoaderPort.findAllByDateAndUserAndGoals(date, user, accessibleGoals);
 
-    Map<LocalTime, List<DduduWithColorInfo>> dduduWithColorsByTime = groupDdudusWithColorByTime(
+    Map<LocalTime, List<BasicDduduWithColor>> dduduWithColorsByTime = groupDdudusWithColorByTime(
         ddudus, accessibleGoals);
     List<GoalGroupedDdudus> unassignedDdudus = groupUnassignedDdudusByGoal(ddudus, accessibleGoals);
 
@@ -69,7 +69,7 @@ public class GetTimetableService implements
     return List.of(PrivacyType.PUBLIC);
   }
 
-  private Map<LocalTime, List<DduduWithColorInfo>> groupDdudusWithColorByTime(
+  private Map<LocalTime, List<BasicDduduWithColor>> groupDdudusWithColorByTime(
       List<Ddudu> ddudus, List<Goal> goals
   ) {
 
@@ -82,7 +82,7 @@ public class GetTimetableService implements
             time -> ddudus.stream()
                 .filter(ddudu -> nonNull(ddudu.getBeginAt()) && ddudu.getBeginAt()
                     .equals(time))
-                .map(ddudu -> DduduWithColorInfo.of(ddudu, colors.get(ddudu.getGoalId())))
+                .map(ddudu -> BasicDduduWithColor.of(ddudu, colors.get(ddudu.getGoalId())))
                 .sorted((a, b) -> Math.toIntExact(b.id() - a.id()))
                 .toList()
         ));
@@ -117,14 +117,14 @@ public class GetTimetableService implements
   private GoalGroupedDdudus toGoalGroupedDdudusResponse(
       Goal goal, Map<Long, List<Ddudu>> ddudusByGoal
   ) {
-    List<DduduInfo> dduduInfos = ddudusByGoal
+    List<BasicDduduResponse> basicDduduResponses = ddudusByGoal
         .getOrDefault(goal.getId(), Collections.emptyList())
         .stream()
         .sorted((a, b) -> Math.toIntExact(b.getId() - a.getId()))
-        .map(DduduInfo::from)
+        .map(BasicDduduResponse::from)
         .toList();
 
-    return GoalGroupedDdudus.of(goal, dduduInfos);
+    return GoalGroupedDdudus.of(goal, basicDduduResponses);
   }
 
 }

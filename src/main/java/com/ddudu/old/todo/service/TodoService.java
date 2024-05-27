@@ -1,8 +1,8 @@
 package com.ddudu.old.todo.service;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -49,7 +49,7 @@ public class TodoService {
   private final LikeRepository likeRepository;
 
   @Transactional
-  public DduduInfo create(
+  public BasicDduduResponse create(
       Long loginId,
       @Valid
       CreateTodoRequest request
@@ -66,7 +66,7 @@ public class TodoService {
         .beginAt(LocalTime.from(request.beginAt()))
         .build();
 
-    return DduduInfo.from(oldTodoRepository.save(ddudu));
+    return BasicDduduResponse.from(oldTodoRepository.save(ddudu));
   }
 
   public TodoResponse findById(Long loginId, Long id) {
@@ -127,7 +127,7 @@ public class TodoService {
   }
 
   @Transactional
-  public DduduInfo update(Long loginId, Long id, UpdateTodoRequest request) {
+  public BasicDduduResponse update(Long loginId, Long id, UpdateTodoRequest request) {
     Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
 
     Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);
@@ -138,7 +138,7 @@ public class TodoService {
 
     oldTodoRepository.update(ddudu);
 
-    return DduduInfo.from(ddudu);
+    return BasicDduduResponse.from(ddudu);
   }
 
   @Transactional
@@ -225,22 +225,25 @@ public class TodoService {
   private GoalGroupedDdudus mapGoalToTodoListResponse(
       Goal goal, Map<Long, List<Ddudu>> todosByGoal, Map<Long, List<Like>> likesByTodo
   ) {
-    List<DduduInfo> dduduInfos = todosByGoal.getOrDefault(goal.getId(), Collections.emptyList())
+    List<BasicDduduResponse> basicDduduResponses = todosByGoal.getOrDefault(
+            goal.getId(), Collections.emptyList())
         .stream()
         .map(todo -> mapTodoToTodoInfoWithLikes(todo, likesByTodo))
         .toList();
 
-    return GoalGroupedDdudus.of(goal, dduduInfos);
+    return GoalGroupedDdudus.of(goal, basicDduduResponses);
   }
 
-  private DduduInfo mapTodoToTodoInfoWithLikes(Ddudu ddudu, Map<Long, List<Like>> likesByTodo) {
+  private BasicDduduResponse mapTodoToTodoInfoWithLikes(
+      Ddudu ddudu, Map<Long, List<Like>> likesByTodo
+  ) {
     List<Long> likedUsers = likesByTodo.getOrDefault(ddudu.getId(), Collections.emptyList())
         .stream()
         .map(like -> like.getUser()
             .getId())
         .toList();
 
-    return DduduInfo.from(ddudu, LikeInfo.from(likedUsers));
+    return BasicDduduResponse.from(ddudu, LikeInfo.from(likedUsers));
   }
 
 }

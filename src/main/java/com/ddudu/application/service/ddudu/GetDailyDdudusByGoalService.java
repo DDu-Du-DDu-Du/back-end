@@ -2,8 +2,8 @@ package com.ddudu.application.service.ddudu;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.ddudu.dto.response.DduduInfo;
-import com.ddudu.application.domain.ddudu.dto.response.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
+import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -72,14 +72,14 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
   private GoalGroupedDdudus toGoalGroupedDdudusResponse(
       Goal goal, Map<Long, List<Ddudu>> ddudusByGoal
   ) {
-    List<DduduInfo> dduduInfos = ddudusByGoal
+    List<BasicDduduResponse> basicDduduResponses = ddudusByGoal
         .getOrDefault(goal.getId(), Collections.emptyList())
         .stream()
         .sorted((a, b) -> Math.toIntExact(b.getId() - a.getId()))
-        .map(DduduInfo::from)
+        .map(BasicDduduResponse::from)
         .toList();
 
-    return GoalGroupedDdudus.of(goal, dduduInfos);
+    return GoalGroupedDdudus.of(goal, basicDduduResponses);
   }
 
 }
