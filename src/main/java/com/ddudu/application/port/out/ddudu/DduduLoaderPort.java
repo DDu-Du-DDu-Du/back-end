@@ -1,11 +1,14 @@
 package com.ddudu.application.port.out.ddudu;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.dto.BasicDduduWithGoalId;
 import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 public interface DduduLoaderPort {
 
@@ -18,6 +21,10 @@ public interface DduduLoaderPort {
   );
 
   List<GoalGroupedDdudus> getUnassignedDdudusOfUserGroupingByGoal(
+      LocalDate date, User user, List<Goal> goals
+  );
+
+  Map<LocalTime, List<BasicDduduWithGoalId>> getDailyDdudusOfUserGroupingByTime(
       LocalDate date, User user, List<Goal> goals
   );
 

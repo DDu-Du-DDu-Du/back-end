@@ -1,8 +1,10 @@
 package com.ddudu.infrastructure.persistence.repository.ddudu;
 
 import static com.ddudu.infrastructure.persistence.entity.QDduduEntity.dduduEntity;
+import static java.util.Objects.isNull;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
+import com.ddudu.application.domain.ddudu.dto.BasicDduduWithGoalId;
 import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -129,7 +132,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   public List<GoalGroupedDdudus> findDailyDdudusByUserGroupByGoal(
       LocalDate date, UserEntity user, List<GoalEntity> goals
   ) {
-    List<DduduEntity> ddudus = fetchDdudusByUserAndGoals(date, user, goals, false);
+    List<DduduEntity> ddudus = fetchDdudusByUserAndGoals(date, user, goals, null);
     return mapToGoalGroupedDdudus(goals, ddudus);
   }
 
@@ -141,17 +144,36 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     return mapToGoalGroupedDdudus(goals, ddudus);
   }
 
+  @Override
+  public Map<LocalTime, List<BasicDduduWithGoalId>> findDailyDdudusByUserGroupByTime(
+      LocalDate date, UserEntity user, List<GoalEntity> goals
+  ) {
+    List<DduduEntity> ddudus = fetchDdudusByUserAndGoals(date, user, goals, false);
+    return groupDdudusWithGoalIdByTime(ddudus);
+  }
+
   private List<DduduEntity> fetchDdudusByUserAndGoals(
-      LocalDate date, UserEntity user, List<GoalEntity> goals, boolean unassigned
+      LocalDate date, UserEntity user, List<GoalEntity> goals, Boolean unassigned
   ) {
     BooleanBuilder whereClause = new BooleanBuilder()
         .and(dduduEntity.user.eq(user))
         .and(dduduEntity.goal.in(goals))
         .and(dduduEntity.scheduledOn.eq(date));
 
+    if (isNull(unassigned)) {
+      return jpaQueryFactory
+          .selectFrom(dduduEntity)
+          .where(whereClause)
+          .orderBy(dduduEntity.goal.id.asc(), dduduEntity.status.desc(), dduduEntity.id.desc())
+          .fetch();
+    }
+
     if (unassigned) {
       whereClause.and(dduduEntity.beginAt.isNull()
           .or(dduduEntity.endAt.isNull()));
+    } else {
+      whereClause.and(dduduEntity.beginAt.isNotNull()
+          .and(dduduEntity.endAt.isNotNull()));
     }
 
     return jpaQueryFactory
@@ -178,6 +200,31 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
             )
             .build()
         )
+        .toList();
+  }
+
+  private Map<LocalTime, List<BasicDduduWithGoalId>> groupDdudusWithGoalIdByTime(
+      List<DduduEntity> ddudus
+  ) {
+    List<LocalTime> times = extractDistinctSortedTimes(ddudus);
+
+    return times.stream()
+        .collect(Collectors.toMap(
+            time -> time,
+            time -> ddudus.stream()
+                .filter(ddudu -> ddudu.getBeginAt()
+                    .equals(time))
+                .map(ddudu -> BasicDduduWithGoalId.of(ddudu.toDomain()))
+                .toList()
+        ));
+  }
+
+  private List<LocalTime> extractDistinctSortedTimes(List<DduduEntity> ddudus) {
+    return ddudus.stream()
+        .map(DduduEntity::getBeginAt)
+        .filter(Objects::nonNull)
+        .distinct()
+        .sorted()
         .toList();
   }
 

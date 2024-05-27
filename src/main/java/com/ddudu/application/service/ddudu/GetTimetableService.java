@@ -1,9 +1,6 @@
 package com.ddudu.application.service.ddudu;
 
-import static java.util.Objects.nonNull;
-
 import com.ddudu.application.annotation.UseCase;
-import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.dto.BasicDduduWithGoalId;
 import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
@@ -20,7 +17,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,11 +38,9 @@ public class GetTimetableService implements
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
     List<Goal> accessibleGoals = getAccessibleGoals(loginUser, user);
-    List<Ddudu> ddudus = dduduLoaderPort.getDailyDdudusOfUserUnderGoals(
-        date, user, accessibleGoals);
 
-    Map<LocalTime, List<BasicDduduWithGoalId>> ddudusWithGoalIdByTime = groupDdudusWithGoalIdByTime(
-        ddudus, accessibleGoals);
+    Map<LocalTime, List<BasicDduduWithGoalId>> ddudusWithGoalIdByTime = dduduLoaderPort.getDailyDdudusOfUserGroupingByTime(
+        date, user, accessibleGoals);
     List<GoalGroupedDdudus> unassignedDdudus = dduduLoaderPort.getUnassignedDdudusOfUserGroupingByGoal(
         date, loginUser, accessibleGoals);
 
@@ -66,32 +60,6 @@ public class GetTimetableService implements
     // TODO: 팔로잉 기능 추가 시 팔로잉 상태 확인
 
     return List.of(PrivacyType.PUBLIC);
-  }
-
-  private Map<LocalTime, List<BasicDduduWithGoalId>> groupDdudusWithGoalIdByTime(
-      List<Ddudu> ddudus, List<Goal> goals
-  ) {
-    List<LocalTime> times = extractDistinctSortedTimes(ddudus);
-
-    return times.stream()
-        .collect(Collectors.toMap(
-            time -> time,
-            time -> ddudus.stream()
-                .filter(ddudu -> nonNull(ddudu.getBeginAt()) && ddudu.getBeginAt()
-                    .equals(time))
-                .map(BasicDduduWithGoalId::of)
-                .sorted((a, b) -> Math.toIntExact(b.id() - a.id()))
-                .toList()
-        ));
-  }
-
-  private List<LocalTime> extractDistinctSortedTimes(List<Ddudu> ddudus) {
-    return ddudus.stream()
-        .map(Ddudu::getBeginAt)
-        .filter(Objects::nonNull)
-        .sorted(LocalTime::compareTo)
-        .distinct()
-        .toList();
   }
 
 }

@@ -1,6 +1,7 @@
 package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.dto.BasicDduduWithGoalId;
 import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
@@ -14,7 +15,9 @@ import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 
@@ -66,6 +69,17 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, PeriodSetupPort
       LocalDate date, User user, List<Goal> goals
   ) {
     return dduduRepository.findUnassignedDdudusByUserGroupByGoal(
+        date, UserEntity.from(user), goals.stream()
+            .map(GoalEntity::from)
+            .toList()
+    );
+  }
+
+  @Override
+  public Map<LocalTime, List<BasicDduduWithGoalId>> getDailyDdudusOfUserGroupingByTime(
+      LocalDate date, User user, List<Goal> goals
+  ) {
+    return dduduRepository.findDailyDdudusByUserGroupByTime(
         date, UserEntity.from(user), goals.stream()
             .map(GoalEntity::from)
             .toList()

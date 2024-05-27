@@ -1,5 +1,6 @@
 package com.ddudu.infrastructure.persistence.repository.ddudu;
 
+import com.ddudu.application.domain.ddudu.dto.BasicDduduWithGoalId;
 import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
@@ -8,7 +9,9 @@ import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 public interface DduduQueryRepository {
 
@@ -32,6 +35,10 @@ public interface DduduQueryRepository {
   );
 
   List<GoalGroupedDdudus> findUnassignedDdudusByUserGroupByGoal(
+      LocalDate date, UserEntity user, List<GoalEntity> goals
+  );
+
+  Map<LocalTime, List<BasicDduduWithGoalId>> findDailyDdudusByUserGroupByTime(
       LocalDate date, UserEntity user, List<GoalEntity> goals
   );
 
