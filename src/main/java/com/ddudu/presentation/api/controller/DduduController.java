@@ -7,6 +7,7 @@ import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
@@ -48,6 +49,7 @@ public class DduduController implements DduduControllerDoc {
   private final PeriodSetupUseCase periodSetupUseCase;
   private final MoveDateUseCase moveDateUseCase;
   private final RepeatUseCase repeatUseCase;
+  private final DduduSearchUseCase dduduSearchUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -67,12 +69,14 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> searchMine(
+  public ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
       @Login
       Long loginId,
       DduduSearchRequest request
   ) {
-    return null;
+    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchUseCase.search(loginId, request);
+
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")

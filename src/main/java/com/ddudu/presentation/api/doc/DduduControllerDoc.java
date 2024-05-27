@@ -114,7 +114,7 @@ public interface DduduControllerDoc {
 
   @Operation(summary = "뚜두 조회. Not Yet Implemented")
   @ApiResponse(responseCode = "200")
-  ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> searchMine(
+  ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
       Long loginId,
       @ParameterObject
       DduduSearchRequest request
