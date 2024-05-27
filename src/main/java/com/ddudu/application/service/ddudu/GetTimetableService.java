@@ -56,7 +56,7 @@ public class GetTimetableService implements
   }
 
   private List<Goal> getAccessibleGoals(User requestingUser, User targetUser) {
-    return goalLoaderPort.findAllByUserAndPrivacyTypes(
+    return goalLoaderPort.findAllByUser(
         targetUser, determinePrivacyTypes(requestingUser, targetUser));
   }
 

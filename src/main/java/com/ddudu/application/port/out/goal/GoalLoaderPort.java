@@ -14,6 +14,6 @@ public interface GoalLoaderPort {
 
   List<Goal> findAllByUser(User user);
 
-  List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes);
+  List<Goal> findAllByUser(User user, List<PrivacyType> privacyTypes);
 
 }
