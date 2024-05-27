@@ -3,12 +3,11 @@ package com.ddudu.presentation.api.controller;
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.request.RepeatAnotherDayRequest;
-import com.ddudu.application.dto.ddudu.DduduCursorDto;
+import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.MyDduduSearchDto;
-import com.ddudu.application.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
-import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
@@ -65,6 +64,15 @@ public class DduduController implements DduduControllerDoc {
 
     return ResponseEntity.created(uri)
         .body(response);
+  }
+
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ScrollResponse<MyDduduSearchDto>> searchMine(
+      @Login
+      Long loginId,
+      DduduSearchRequest request
+  ) {
+    return null;
   }
 
   @GetMapping("/{id}")
@@ -231,15 +239,6 @@ public class DduduController implements DduduControllerDoc {
 
     return ResponseEntity.created(uri)
         .body(response);
-  }
-
-  @GetMapping(value = "/my", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ScrollResponse<MyDduduSearchDto>> searchMine(
-          @Login
-          Long loginId,
-          ScrollRequest request
-  ) {
-      return null;
   }
 
 }
