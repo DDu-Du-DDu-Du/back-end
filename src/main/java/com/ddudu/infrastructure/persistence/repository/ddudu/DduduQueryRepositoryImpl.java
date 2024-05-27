@@ -22,6 +22,8 @@ import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -179,7 +181,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     return jpaQueryFactory
         .selectFrom(dduduEntity)
         .where(whereClause)
-        .orderBy(dduduEntity.goal.id.asc(), dduduEntity.status.desc(), dduduEntity.id.desc())
+        .orderBy(dduduEntity.status.desc(), dduduEntity.id.desc())
         .fetch();
   }
 
@@ -191,6 +193,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
             .getId()));
 
     return goals.stream()
+        .sorted(Comparator.comparing(GoalEntity::getId))
         .map(goal -> GoalGroupedDdudus.builder()
             .goal(BasicGoalResponse.from(goal.toDomain()))
             .ddudus(ddudusByGoalId.getOrDefault(goal.getId(), List.of())
@@ -215,7 +218,9 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
                 .filter(ddudu -> ddudu.getBeginAt()
                     .equals(time))
                 .map(ddudu -> BasicDduduWithGoalId.of(ddudu.toDomain()))
-                .toList()
+                .toList(),
+            (existing, replacement) -> existing,
+            LinkedHashMap::new
         ));
   }
 
