@@ -1,7 +1,6 @@
 package com.ddudu.presentation.api.controller;
 
 import static java.util.Objects.isNull;
-import static org.hibernate.internal.util.StringHelper.isBlank;
 
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
@@ -77,27 +76,36 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/daily")
-  public ResponseEntity<?> getDaily(
+  @GetMapping("/daily/list")
+  public ResponseEntity<List<GoalGroupedDdudus>> getDailyList(
       @Login
       Long loginId,
       @RequestParam(required = false)
       Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date,
-      @RequestParam(required = false)
-      String groupBy
+      LocalDate date
   ) {
     userId = isNull(userId) ? loginId : userId;
     date = isNull(date) ? LocalDate.now() : date;
-    groupBy = isBlank(groupBy) ? "goal" : groupBy;
 
-    if (groupBy.equals("goal")) {
-      List<GoalGroupedDdudus> response = getDailyDdudusByGoalUseCase.get(
-          loginId, userId, date);
-      return ResponseEntity.ok(response);
-    }
+    List<GoalGroupedDdudus> response = getDailyDdudusByGoalUseCase.get(
+        loginId, userId, date);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/daily/timetable")
+  public ResponseEntity<TimetableResponse> getDailyTimetable(
+      @Login
+      Long loginId,
+      @RequestParam(required = false)
+      Long userId,
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM-dd")
+      LocalDate date
+  ) {
+    userId = isNull(userId) ? loginId : userId;
+    date = isNull(date) ? LocalDate.now() : date;
 
     TimetableResponse response = getTimetableUseCase.get(
         loginId, userId, date);
