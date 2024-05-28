@@ -68,7 +68,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   public ScrollResponse<SimpleDduduSearchDto> search(
       Long userId, ScrollRequest request, String query, Boolean isMine
   ) {
-    List<DduduCursorDto> ddudusWithCursor = dduduRepository.findScrollMyDdudus(
+    List<DduduCursorDto> ddudusWithCursor = dduduRepository.findScrollDdudus(
         userId, request, query, isMine, false);
 
     return getScrollResponse(ddudusWithCursor, request.getSize());

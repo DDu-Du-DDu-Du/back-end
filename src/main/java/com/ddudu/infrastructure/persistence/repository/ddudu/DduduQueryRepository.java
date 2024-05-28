@@ -23,7 +23,7 @@ public interface DduduQueryRepository {
 
   void deleteAllByGoal(GoalEntity goal);
 
-  List<DduduCursorDto> findScrollMyDdudus(
+  List<DduduCursorDto> findScrollDdudus(
       Long userId, ScrollRequest request, String query, Boolean isMine, Boolean isFollower
   );
 

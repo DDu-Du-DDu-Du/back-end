@@ -121,7 +121,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   @Override
-  public List<DduduCursorDto> findScrollMyDdudus(
+  public List<DduduCursorDto> findScrollDdudus(
       Long userId, ScrollRequest request, String query, Boolean isMine, Boolean isFollower
   ) {
     BooleanExpression cursorFilter = getCursorFilter(request.getOrder(), request.getCursor());
