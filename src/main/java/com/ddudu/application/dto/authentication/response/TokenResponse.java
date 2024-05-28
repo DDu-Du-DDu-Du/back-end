@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.authentication.dto.response;
+package com.ddudu.application.dto.authentication.response;
 
 public record TokenResponse(String accessToken, String refreshToken) {
 

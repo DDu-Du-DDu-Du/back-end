@@ -3,11 +3,11 @@ package com.ddudu.presentation.api.controller;
 import static java.util.Objects.isNull;
 import static org.hibernate.internal.util.StringHelper.isBlank;
 
-import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
-import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
-import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
-import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
-import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
+import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
+import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;

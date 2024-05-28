@@ -1,7 +1,7 @@
 package com.ddudu.presentation.api.doc;
 
-import com.ddudu.application.domain.authentication.dto.request.TokenRefreshRequest;
-import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
+import com.ddudu.application.dto.authentication.request.TokenRefreshRequest;
+import com.ddudu.application.dto.authentication.response.TokenResponse;
 import com.ddudu.application.domain.user.domain.enums.ProviderType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

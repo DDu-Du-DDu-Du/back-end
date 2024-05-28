@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.authentication.dto.request;
+package com.ddudu.application.dto.authentication.request;
 
 import jakarta.validation.constraints.NotBlank;
 

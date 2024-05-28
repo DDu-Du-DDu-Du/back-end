@@ -1,9 +1,9 @@
 package com.ddudu.presentation.api.doc;
 
-import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
-import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
-import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
-import com.ddudu.application.domain.ddudu.dto.response.TimetableResponse;
+import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
+import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
+import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;

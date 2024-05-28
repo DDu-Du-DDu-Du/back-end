@@ -15,9 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.goal.dto.request.UpdateGoalRequest;
-import com.ddudu.application.domain.goal.dto.response.BasicGoalWithStatusResponse;
-import com.ddudu.application.domain.goal.dto.response.GoalResponse;
+import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
+import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.GoalResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.controller.GoalController;

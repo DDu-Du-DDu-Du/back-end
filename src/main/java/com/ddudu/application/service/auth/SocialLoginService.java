@@ -2,8 +2,8 @@ package com.ddudu.application.service.auth;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.authentication.domain.RefreshToken;
-import com.ddudu.application.domain.authentication.dto.request.SocialRequest;
-import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
+import com.ddudu.application.dto.authentication.request.SocialRequest;
+import com.ddudu.application.dto.authentication.response.TokenResponse;
 import com.ddudu.application.domain.authentication.service.AuthDomainService;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.vo.AuthProvider;

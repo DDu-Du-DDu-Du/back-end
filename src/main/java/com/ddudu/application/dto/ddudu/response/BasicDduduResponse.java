@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.ddudu.dto.response;
+package com.ddudu.application.dto.ddudu.response;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;

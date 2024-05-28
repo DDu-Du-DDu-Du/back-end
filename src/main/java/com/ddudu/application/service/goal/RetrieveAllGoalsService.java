@@ -1,7 +1,7 @@
 package com.ddudu.application.service.goal;
 
 import com.ddudu.application.annotation.UseCase;
-import com.ddudu.application.domain.goal.dto.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.in.goal.RetrieveAllGoalsUseCase;

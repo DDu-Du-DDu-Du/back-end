@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.goal.dto.request;
+package com.ddudu.application.dto.goal.request;
 
 import jakarta.validation.constraints.NotNull;
 

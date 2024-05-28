@@ -1,6 +1,6 @@
 package com.ddudu.application.port.in.goal;
 
-import com.ddudu.application.domain.goal.dto.response.GoalResponse;
+import com.ddudu.application.dto.goal.response.GoalResponse;
 
 public interface RetrieveGoalUseCase {
 

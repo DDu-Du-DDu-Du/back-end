@@ -6,8 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.authentication.domain.RefreshToken;
 import com.ddudu.application.domain.authentication.domain.vo.UserFamily;
-import com.ddudu.application.domain.authentication.dto.request.TokenRefreshRequest;
-import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
+import com.ddudu.application.dto.authentication.request.TokenRefreshRequest;
+import com.ddudu.application.dto.authentication.response.TokenResponse;
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
 import com.ddudu.application.domain.authentication.service.AuthDomainService;
 import com.ddudu.application.domain.user.domain.User;

@@ -1,8 +1,8 @@
 package com.ddudu.presentation.api.controller;
 
-import com.ddudu.application.domain.authentication.dto.request.SocialRequest;
-import com.ddudu.application.domain.authentication.dto.request.TokenRefreshRequest;
-import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
+import com.ddudu.application.dto.authentication.request.SocialRequest;
+import com.ddudu.application.dto.authentication.request.TokenRefreshRequest;
+import com.ddudu.application.dto.authentication.response.TokenResponse;
 import com.ddudu.application.port.in.auth.SocialLoginUseCase;
 import com.ddudu.application.port.in.auth.TokenRefreshUseCase;
 import com.ddudu.presentation.api.doc.AuthControllerDoc;

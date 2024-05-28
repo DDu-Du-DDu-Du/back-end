@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.user.dto;
+package com.ddudu.application.dto.user;
 
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.enums.Authority;

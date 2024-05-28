@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
-import com.ddudu.application.domain.goal.dto.request.ChangeGoalStatusRequest;
+import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.auth.SignUpPort;

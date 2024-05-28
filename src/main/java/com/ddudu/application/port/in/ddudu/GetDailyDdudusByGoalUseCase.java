@@ -1,6 +1,6 @@
 package com.ddudu.application.port.in.ddudu;
 
-import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import java.time.LocalDate;
 import java.util.List;
 

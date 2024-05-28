@@ -1,6 +1,6 @@
 package com.ddudu.application.port.in.goal;
 
-import com.ddudu.application.domain.goal.dto.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
 import java.util.List;
 
 public interface RetrieveAllGoalsUseCase {

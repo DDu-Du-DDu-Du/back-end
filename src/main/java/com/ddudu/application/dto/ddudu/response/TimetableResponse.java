@@ -1,7 +1,7 @@
-package com.ddudu.application.domain.ddudu.dto.response;
+package com.ddudu.application.dto.ddudu.response;
 
-import com.ddudu.application.domain.ddudu.dto.BasicDduduWithGoalId;
-import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.BasicDduduWithGoalId;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;

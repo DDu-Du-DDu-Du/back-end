@@ -4,11 +4,11 @@ import static com.ddudu.infrastructure.persistence.entity.QDduduEntity.dduduEnti
 import static java.util.Objects.isNull;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
-import com.ddudu.application.domain.ddudu.dto.BasicDduduWithGoalId;
-import com.ddudu.application.domain.ddudu.dto.GoalGroupedDdudus;
-import com.ddudu.application.domain.ddudu.dto.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.BasicDduduWithGoalId;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.goal.dto.response.BasicGoalResponse;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;

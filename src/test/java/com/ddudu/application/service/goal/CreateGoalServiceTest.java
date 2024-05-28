@@ -6,8 +6,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
-import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
+import com.ddudu.application.dto.goal.request.CreateGoalRequest;
+import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.goal.service.GoalDomainService;
 import com.ddudu.application.domain.user.domain.User;
