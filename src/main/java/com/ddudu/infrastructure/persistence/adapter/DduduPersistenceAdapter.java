@@ -4,12 +4,17 @@ import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
+import com.ddudu.application.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
+import com.ddudu.application.port.out.ddudu.DduduSearchPort;
 import com.ddudu.application.port.out.ddudu.DduduUpdatePort;
 import com.ddudu.application.port.out.ddudu.RepeatDduduPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
+import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
@@ -23,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @DrivenAdapter
 @RequiredArgsConstructor
 public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort, SaveDduduPort,
-    RepeatDduduPort {
+    RepeatDduduPort, DduduSearchPort {
 
   private final DduduRepository dduduRepository;
 
@@ -80,7 +85,9 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
       LocalDate date, User user, List<Goal> goals
   ) {
     return dduduRepository.findDailyDdudusByUserGroupByTime(
-        date, UserEntity.from(user), goals.stream()
+        date,
+        UserEntity.from(user),
+        goals.stream()
             .map(GoalEntity::from)
             .toList()
     );
@@ -100,6 +107,49 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   public Ddudu save(Ddudu ddudu) {
     return dduduRepository.save(DduduEntity.from(ddudu))
         .toDomain();
+  }
+
+  @Override
+  public List<Ddudu> saveAll(List<Ddudu> ddudus) {
+    List<DduduEntity> dduduEntities = ddudus.stream()
+        .map(DduduEntity::from)
+        .toList();
+
+    return dduduRepository.saveAll(dduduEntities)
+        .stream()
+        .map(DduduEntity::toDomain)
+        .toList();
+  }
+
+  @Override
+  public ScrollResponse<SimpleDduduSearchDto> search(
+      Long userId, ScrollRequest request, String query, Boolean isMine
+  ) {
+    List<DduduCursorDto> ddudusWithCursor = dduduRepository.findScrollDdudus(
+        userId, request, query, isMine, false);
+
+    return getScrollResponse(ddudusWithCursor, request.getSize());
+  }
+
+  private ScrollResponse<SimpleDduduSearchDto> getScrollResponse(
+      List<DduduCursorDto> ddudusWithCursor, int size
+  ) {
+    List<SimpleDduduSearchDto> simpleDdudus = ddudusWithCursor.stream()
+        .limit(size)
+        .map(DduduCursorDto::ddudu)
+        .toList();
+    String nextCursor = getNextCursor(ddudusWithCursor, size);
+
+    return ScrollResponse.from(simpleDdudus, nextCursor);
+  }
+
+  private String getNextCursor(List<DduduCursorDto> ddudusWithCursor, int size) {
+    if (ddudusWithCursor.size() > size) {
+      return ddudusWithCursor.get(size - 1)
+          .cursor();
+    }
+
+    return null;
   }
 
 }

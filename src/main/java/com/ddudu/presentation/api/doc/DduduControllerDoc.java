@@ -1,12 +1,15 @@
 package com.ddudu.presentation.api.doc;
 
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
+import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -23,6 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -154,6 +158,14 @@ public interface DduduControllerDoc {
   )
   ResponseEntity<RepeatAnotherDayResponse> repeatOnAnotherDay(
       Long loginId, Long id, RepeatAnotherDayRequest request
+  );
+
+  @Operation(summary = "뚜두 조회. Not Yet Implemented")
+  @ApiResponse(responseCode = "200")
+  ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
+      Long loginId,
+      @ParameterObject
+      DduduSearchRequest request
   );
 
 }

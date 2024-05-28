@@ -3,12 +3,16 @@ package com.ddudu.presentation.api.controller;
 import static java.util.Objects.isNull;
 
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
+import com.ddudu.application.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
@@ -29,6 +33,7 @@ import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,6 +56,7 @@ public class DduduController implements DduduControllerDoc {
   private final GetTimetableUseCase getTimetableUseCase;
   private final MoveDateUseCase moveDateUseCase;
   private final RepeatUseCase repeatUseCase;
+  private final DduduSearchUseCase dduduSearchUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -67,6 +73,17 @@ public class DduduController implements DduduControllerDoc {
 
     return ResponseEntity.created(uri)
         .body(response);
+  }
+
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
+      @Login
+      Long loginId,
+      DduduSearchRequest request
+  ) {
+    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchUseCase.search(loginId, request);
+
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")

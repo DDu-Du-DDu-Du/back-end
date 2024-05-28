@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.user.MeResponse;
 import com.ddudu.application.domain.user.exception.UserErrorCode;
+import com.ddudu.application.dto.user.MeResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
