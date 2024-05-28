@@ -1,20 +1,18 @@
 package com.ddudu.application.service.ddudu;
 
 import com.ddudu.application.annotation.UseCase;
-import com.ddudu.application.dto.ddudu.BasicDduduWithGoalId;
-import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
-import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
+import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +35,7 @@ public class GetTimetableService implements
     if (Objects.equals(loginId, userId)) {
       List<Goal> goals = goalLoaderPort.findAllByUser(loginUser);
 
-      Map<LocalTime, List<BasicDduduWithGoalId>> ddudusWithGoalIdByTime = dduduLoaderPort.getDailyDdudusOfUserGroupingByTime(
+      List<TimeGroupedDdudus> ddudusWithGoalIdByTime = dduduLoaderPort.getDailyDdudusOfUserGroupingByTime(
           date, loginUser, goals);
       List<GoalGroupedDdudus> unassignedDdudus = dduduLoaderPort.getUnassignedDdudusOfUserGroupingByGoal(
           date, loginUser, goals);
@@ -51,7 +49,7 @@ public class GetTimetableService implements
     boolean isFollower = isFollowerOf(loginUser, user);
     List<Goal> accessibleGoals = goalLoaderPort.findAccessibleGoals(user, isFollower);
 
-    Map<LocalTime, List<BasicDduduWithGoalId>> ddudusWithGoalIdByTime = dduduLoaderPort.getDailyDdudusOfUserGroupingByTime(
+    List<TimeGroupedDdudus> ddudusWithGoalIdByTime = dduduLoaderPort.getDailyDdudusOfUserGroupingByTime(
         date, user, accessibleGoals);
     List<GoalGroupedDdudus> unassignedDdudus = dduduLoaderPort.getUnassignedDdudusOfUserGroupingByGoal(
         date, user, accessibleGoals);

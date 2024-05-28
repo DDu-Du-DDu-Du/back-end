@@ -4,10 +4,11 @@ import static com.ddudu.infrastructure.persistence.entity.QDduduEntity.dduduEnti
 import static java.util.Objects.isNull;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.dto.ddudu.BasicDduduWithGoalId;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.dto.goal.response.BasicGoalResponse;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
@@ -23,7 +24,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -147,11 +147,11 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   @Override
-  public Map<LocalTime, List<BasicDduduWithGoalId>> findDailyDdudusByUserGroupByTime(
+  public List<TimeGroupedDdudus> findDailyDdudusByUserGroupByTime(
       LocalDate date, UserEntity user, List<GoalEntity> goals
   ) {
     List<DduduEntity> ddudus = fetchDdudusByUserAndGoals(date, user, goals, false);
-    return groupDdudusWithGoalIdByTime(ddudus);
+    return mapToTimeGroupedDdudus(ddudus);
   }
 
   private List<DduduEntity> fetchDdudusByUserAndGoals(
@@ -206,22 +206,20 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .toList();
   }
 
-  private Map<LocalTime, List<BasicDduduWithGoalId>> groupDdudusWithGoalIdByTime(
+  private List<TimeGroupedDdudus> mapToTimeGroupedDdudus(
       List<DduduEntity> ddudus
   ) {
     List<LocalTime> times = extractDistinctSortedTimes(ddudus);
+    Map<LocalTime, List<DduduEntity>> ddudusByTime = ddudus.stream()
+        .collect(Collectors.groupingBy(DduduEntity::getBeginAt));
 
     return times.stream()
-        .collect(Collectors.toMap(
-            time -> time,
-            time -> ddudus.stream()
-                .filter(ddudu -> ddudu.getBeginAt()
-                    .equals(time))
-                .map(ddudu -> BasicDduduWithGoalId.of(ddudu.toDomain()))
-                .toList(),
-            (existing, replacement) -> existing,
-            LinkedHashMap::new
-        ));
+        .map(time -> TimeGroupedDdudus.of(time, ddudusByTime.getOrDefault(time, List.of())
+            .stream()
+            .map(ddudu -> BasicDduduWithGoalId.of(ddudu.toDomain()))
+            .toList()
+        ))
+        .toList();
   }
 
   private List<LocalTime> extractDistinctSortedTimes(List<DduduEntity> ddudus) {

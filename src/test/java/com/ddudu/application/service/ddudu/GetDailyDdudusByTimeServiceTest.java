@@ -4,11 +4,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.dto.ddudu.BasicDduduWithGoalId;
+import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
@@ -19,7 +20,6 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.MissingResourceException;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -71,13 +71,19 @@ class GetDailyDdudusByTimeServiceTest {
         user.getId(), user.getId(), date);
 
     // then
-    assertThat(response.timetable()
-        .get(beginAt)
-        .size()).isEqualTo(1);
-    assertThat(response.timetable()
-        .get(beginAt)
+    int countOfTime = response.timetable()
+        .size();
+    LocalTime earliestTime = response.timetable()
         .get(0)
-        .id()).isEqualTo(ddudu.getId());
+        .beginAt();
+    BasicDduduWithGoalId firstOfEarliestTime = response.timetable()
+        .get(0)
+        .ddudus()
+        .get(0);
+
+    assertThat(countOfTime).isEqualTo(1);
+    assertThat(earliestTime).isEqualTo(beginAt);
+    assertThat(firstOfEarliestTime.id()).isEqualTo(ddudu.getId());
     assertThat(response.unassignedDdudus()
         .get(0)
         .ddudus()
@@ -132,14 +138,15 @@ class GetDailyDdudusByTimeServiceTest {
         anotherUser.getId(), user.getId(), date);
 
     // then
-    Assertions.assertThat(response.timetable()
-            .get(beginAt))
-        .hasSize(1);
-    Assertions.assertThat(response.timetable()
-            .get(beginAt)
-            .get(0))
-        .extracting("id")
-        .isEqualTo(publicDdudu.getId());
+    int countOfTime = response.timetable()
+        .size();
+    BasicDduduWithGoalId firstOfEarliestTime = response.timetable()
+        .get(0)
+        .ddudus()
+        .get(0);
+
+    assertThat(countOfTime).isEqualTo(1);
+    assertThat(firstOfEarliestTime.id()).isEqualTo(publicDdudu.getId());
   }
 
   @Test
