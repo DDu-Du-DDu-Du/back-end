@@ -2,8 +2,8 @@ package com.ddudu.application.service.ddudu;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
+import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.ddudu.DduduUpdatePort;

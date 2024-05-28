@@ -1,6 +1,6 @@
 package com.ddudu.application.port.in.ddudu;
 
-import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
+import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
 
 public interface PeriodSetupUseCase {
 

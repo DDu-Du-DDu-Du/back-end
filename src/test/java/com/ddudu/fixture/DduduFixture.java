@@ -43,6 +43,15 @@ public class DduduFixture extends BaseFixture {
     );
   }
 
+  public static Ddudu createRandomDduduWithGoalAndTime(
+      Goal goal, LocalTime beginAt, LocalTime endAt
+  ) {
+    return createDdudu(
+        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null,
+        null, beginAt, endAt, false
+    );
+  }
+
   public static Ddudu createDdudu(
       Long id, Long goalId, Long userId, String name, DduduStatus dduduStatus, String statusValue,
       LocalDate scheduledOn, LocalTime beginAt, LocalTime endAt, Boolean isPostponed

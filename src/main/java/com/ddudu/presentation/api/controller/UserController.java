@@ -1,7 +1,7 @@
 package com.ddudu.presentation.api.controller;
 
 import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
-import com.ddudu.application.domain.user.dto.MeResponse;
+import com.ddudu.application.dto.user.MeResponse;
 import com.ddudu.application.port.in.user.GetMyInfoUseCase;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;

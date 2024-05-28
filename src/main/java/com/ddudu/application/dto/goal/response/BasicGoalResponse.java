@@ -1,17 +1,17 @@
-package com.ddudu.old.todo.dto.response;
+package com.ddudu.application.dto.goal.response;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import lombok.Builder;
 
 @Builder
-public record GoalInfo(
+public record BasicGoalResponse(
     Long id,
     String name,
     String color
 ) {
 
-  public static GoalInfo from(Goal goal) {
-    return GoalInfo.builder()
+  public static BasicGoalResponse from(Goal goal) {
+    return BasicGoalResponse.builder()
         .id(goal.getId())
         .name(goal.getName())
         .color(goal.getColor())

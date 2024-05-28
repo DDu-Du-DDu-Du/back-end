@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.ddudu.application.domain.authentication.dto.request.SocialRequest;
-import com.ddudu.application.domain.authentication.dto.response.TokenResponse;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.enums.ProviderType;
 import com.ddudu.application.domain.user.domain.vo.AuthProvider;
+import com.ddudu.application.dto.authentication.request.SocialRequest;
+import com.ddudu.application.dto.authentication.response.TokenResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.auth.SocialResourcePort;
 import com.ddudu.application.port.out.user.UserLoaderPort;

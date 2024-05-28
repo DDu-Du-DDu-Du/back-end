@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.ddudu.dto.request;
+package com.ddudu.application.dto.ddudu.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalTime;

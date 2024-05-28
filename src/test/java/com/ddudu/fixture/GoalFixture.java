@@ -25,21 +25,29 @@ public class GoalFixture extends BaseFixture {
   }
 
   public static Goal createRandomGoal() {
-    return Goal.builder()
-        .name(getRandomSentenceWithMax(50))
-        .userId(UserFixture.getRandomId())
-        .color(getRandomColor())
-        .privacyType(getRandomPrivacyType())
+    return getGoalBuilder()
         .build();
   }
 
   public static Goal createRandomGoalWithUser(User user) {
+    return getGoalBuilder()
+        .userId(user.getId())
+        .build();
+  }
+
+  public static Goal createRandomGoalWithUserAndPrivacyType(User user, PrivacyType privacyType) {
+    return getGoalBuilder()
+        .userId(user.getId())
+        .privacyType(privacyType)
+        .build();
+  }
+
+  private static Goal.GoalBuilder getGoalBuilder() {
     return Goal.builder()
         .name(getRandomSentenceWithMax(50))
-        .userId(user.getId())
+        .userId(UserFixture.getRandomId())
         .color(getRandomColor())
-        .privacyType(getRandomPrivacyType())
-        .build();
+        .privacyType(getRandomPrivacyType());
   }
 
 }

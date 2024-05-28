@@ -1,26 +1,23 @@
-package com.ddudu.application.domain.goal.dto.response;
+package com.ddudu.application.dto.goal.response;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import lombok.Builder;
 
 @Builder
-public record GoalResponse(
+public record BasicGoalWithStatusResponse(
     Long id,
     String name,
     GoalStatus status,
-    String color,
-    PrivacyType privacyType
+    String color
 ) {
 
-  public static GoalResponse from(Goal goal) {
-    return GoalResponse.builder()
+  public static BasicGoalWithStatusResponse from(Goal goal) {
+    return BasicGoalWithStatusResponse.builder()
         .id(goal.getId())
         .name(goal.getName())
         .status(goal.getStatus())
         .color(goal.getColor())
-        .privacyType(goal.getPrivacyType())
         .build();
   }
 

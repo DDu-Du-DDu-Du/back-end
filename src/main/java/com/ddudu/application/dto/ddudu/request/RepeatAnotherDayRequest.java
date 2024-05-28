@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.ddudu.dto.request;
+package com.ddudu.application.dto.ddudu.request;
 
 import java.time.LocalDate;
 

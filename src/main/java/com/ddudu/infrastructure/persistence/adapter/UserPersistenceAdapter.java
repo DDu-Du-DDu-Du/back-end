@@ -23,6 +23,17 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
   private final AuthProviderRepository authProviderRepository;
 
   @Override
+  public User getUserOrElseThrow(Long id, String message) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new MissingResourceException(
+            message,
+            User.class.getName(),
+            id.toString()
+        ))
+        .toDomain();
+  }
+
+  @Override
   public User save(User user) {
     List<AuthProvider> authProviders = user.getAuthProviders();
     UserEntity savedUser = userRepository.save(UserEntity.from(user));

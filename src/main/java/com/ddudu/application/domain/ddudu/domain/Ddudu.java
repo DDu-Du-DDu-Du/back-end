@@ -171,6 +171,7 @@ public class Ddudu {
       return;
     }
 
+    System.out.println("beginAt: " + beginAt + ", endAt: " + endAt);
     checkArgument(
         !beginAt.isAfter(endAt), DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
   }

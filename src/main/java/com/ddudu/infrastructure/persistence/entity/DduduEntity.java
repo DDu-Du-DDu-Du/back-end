@@ -19,10 +19,12 @@ import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ddudus")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -60,13 +62,23 @@ public class DduduEntity extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private DduduStatus status;
 
-  @Column(name = "scheduled_on")
+  @Column(
+      name = "scheduled_on",
+      nullable = false,
+      columnDefinition = "DATE"
+  )
   private LocalDate scheduledOn;
 
-  @Column(name = "begin_at")
+  @Column(
+      name = "begin_at",
+      columnDefinition = "TIME"
+  )
   private LocalTime beginAt;
 
-  @Column(name = "end_at")
+  @Column(
+      name = "end_at",
+      columnDefinition = "TIME"
+  )
   private LocalTime endAt;
 
   @Column(

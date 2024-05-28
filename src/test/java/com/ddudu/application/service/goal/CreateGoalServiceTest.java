@@ -6,16 +6,15 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.goal.dto.request.CreateGoalRequest;
-import com.ddudu.application.domain.goal.dto.response.GoalIdResponse;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.goal.service.GoalDomainService;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.dto.goal.request.CreateGoalRequest;
+import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
-import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
@@ -64,8 +63,8 @@ class CreateGoalServiceTest {
   void setUp() {
     User user = createAndSaveUser();
     userId = user.getId();
-    name = BaseFixture.getRandomSentenceWithMax(50);
-    color = BaseFixture.getRandomColor();
+    name = GoalFixture.getRandomSentenceWithMax(50);
+    color = GoalFixture.getRandomColor();
     privacyType = GoalFixture.getRandomPrivacyType();
     request = new CreateGoalRequest(name, color, privacyType.name());
   }
@@ -139,7 +138,7 @@ class CreateGoalServiceTest {
   @Test
   void 사용자ID가_유효하지_않으면_예외가_발생한다() {
     // given
-    Long invalidUserId = BaseFixture.getRandomId();
+    Long invalidUserId = UserFixture.getRandomId();
 
     // when
     ThrowingCallable create = () -> createGoalService.create(invalidUserId, request);

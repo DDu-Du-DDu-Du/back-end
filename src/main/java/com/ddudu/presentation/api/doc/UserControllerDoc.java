@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.doc;
 
-import com.ddudu.application.domain.user.dto.MeResponse;
+import com.ddudu.application.dto.user.MeResponse;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import com.ddudu.old.user.dto.request.FollowRequest;

@@ -1,21 +1,26 @@
 package com.ddudu.presentation.api.controller;
 
-import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
-import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
-import com.ddudu.application.domain.ddudu.dto.request.RepeatAnotherDayRequest;
-import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
+import static java.util.Objects.isNull;
+
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
+import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
+import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
+import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
+import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
+import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
+import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
+import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.old.todo.dto.response.TodoInfo;
-import com.ddudu.old.todo.dto.response.TodoListResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.annotation.Login;
@@ -47,6 +52,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class DduduController implements DduduControllerDoc {
 
   private final PeriodSetupUseCase periodSetupUseCase;
+  private final GetDailyDdudusByGoalUseCase getDailyDdudusByGoalUseCase;
+  private final GetTimetableUseCase getTimetableUseCase;
   private final MoveDateUseCase moveDateUseCase;
   private final RepeatUseCase repeatUseCase;
   private final DduduSearchUseCase dduduSearchUseCase;
@@ -54,15 +61,15 @@ public class DduduController implements DduduControllerDoc {
 
   @PostMapping
   @Deprecated
-  public ResponseEntity<TodoInfo> create(
+  public ResponseEntity<BasicDduduResponse> create(
       @Login
       Long loginId,
       @RequestBody
       @Valid
       CreateTodoRequest request
   ) {
-    TodoInfo response = todoService.create(loginId, request);
-    URI uri = URI.create("/api/todos/" + response.id());
+    BasicDduduResponse response = todoService.create(loginId, request);
+    URI uri = URI.create("/api/ddudus/" + response.id());
 
     return ResponseEntity.created(uri)
         .body(response);
@@ -92,9 +99,8 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/daily")
-  @Deprecated
-  public ResponseEntity<List<TodoListResponse>> getDaily(
+  @GetMapping("/daily/list")
+  public ResponseEntity<List<GoalGroupedDdudus>> getDailyList(
       @Login
       Long loginId,
       @RequestParam(required = false)
@@ -103,10 +109,29 @@ public class DduduController implements DduduControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM-dd")
       LocalDate date
   ) {
-    userId = (userId == null) ? loginId : userId;
-    date = (date == null) ? LocalDate.now() : date;
-    List<TodoListResponse> response = todoService.findAllByDate(loginId, userId, date);
+    userId = isNull(userId) ? loginId : userId;
+    date = isNull(date) ? LocalDate.now() : date;
 
+    List<GoalGroupedDdudus> response = getDailyDdudusByGoalUseCase.get(
+        loginId, userId, date);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/daily/timetable")
+  public ResponseEntity<TimetableResponse> getDailyTimetable(
+      @Login
+      Long loginId,
+      @RequestParam(required = false)
+      Long userId,
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM-dd")
+      LocalDate date
+  ) {
+    userId = isNull(userId) ? loginId : userId;
+    date = isNull(date) ? LocalDate.now() : date;
+
+    TimetableResponse response = getTimetableUseCase.get(
+        loginId, userId, date);
     return ResponseEntity.ok(response);
   }
 
@@ -155,7 +180,7 @@ public class DduduController implements DduduControllerDoc {
 
   @PutMapping("/{id}")
   @Deprecated
-  public ResponseEntity<TodoInfo> update(
+  public ResponseEntity<BasicDduduResponse> update(
       @Login
       Long loginId,
       @PathVariable
@@ -164,7 +189,7 @@ public class DduduController implements DduduControllerDoc {
       @Valid
       UpdateTodoRequest request
   ) {
-    TodoInfo response = todoService.update(loginId, id, request);
+    BasicDduduResponse response = todoService.update(loginId, id, request);
 
     return ResponseEntity.ok(response);
   }
