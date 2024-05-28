@@ -11,6 +11,7 @@ import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.auth.AuthProviderRepository;
 import com.ddudu.infrastructure.persistence.repository.user.UserRepository;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -59,6 +60,16 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
   public Optional<User> loadMinimalUser(Long id) {
     return userRepository.findById(id)
         .map(UserEntity::toDomain);
+  }
+
+  @Override
+  public User loadMinimalUserOrElseThrow(Long id, String message) {
+    return loadMinimalUser(id)
+        .orElseThrow(() -> new MissingResourceException(
+            message,
+            User.class.getName(),
+            id.toString()
+        ));
   }
 
   private AuthProvider saveAuthProvider(AuthProvider authProvider, UserEntity user) {

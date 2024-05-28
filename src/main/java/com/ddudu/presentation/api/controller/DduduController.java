@@ -3,8 +3,12 @@ package com.ddudu.presentation.api.controller;
 import com.ddudu.application.domain.ddudu.dto.request.MoveDateRequest;
 import com.ddudu.application.domain.ddudu.dto.request.PeriodSetupRequest;
 import com.ddudu.application.domain.ddudu.dto.request.RepeatAnotherDayRequest;
-import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.domain.ddudu.dto.response.RepeatAnotherDayResponse;
+import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
+import com.ddudu.application.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
+import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
@@ -24,6 +28,7 @@ import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +49,7 @@ public class DduduController implements DduduControllerDoc {
   private final PeriodSetupUseCase periodSetupUseCase;
   private final MoveDateUseCase moveDateUseCase;
   private final RepeatUseCase repeatUseCase;
+  private final DduduSearchUseCase dduduSearchUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -60,6 +66,17 @@ public class DduduController implements DduduControllerDoc {
 
     return ResponseEntity.created(uri)
         .body(response);
+  }
+
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
+      @Login
+      Long loginId,
+      DduduSearchRequest request
+  ) {
+    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchUseCase.search(loginId, request);
+
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")
