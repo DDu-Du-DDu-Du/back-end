@@ -9,7 +9,7 @@ import lombok.Builder;
 @Builder
 public record TimeGroupedDdudus(
     @Schema(type = "string", pattern = "HH:mm", example = "14:00")
-    @JsonFormat(pattern = "HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     LocalTime beginAt,
     List<BasicDduduWithGoalId> ddudus
 ) {

@@ -164,101 +164,241 @@ class DduduTest {
   }
 
   @Nested
-  class 권한_테스트 {
+  class 기능_테스트 {
 
     Long userId;
+    Long goalId;
     Ddudu ddudu;
 
     @BeforeEach
     void setUp() {
       userId = DduduFixture.getRandomId();
-      ddudu = DduduFixture.createRandomDduduWithReference(DduduFixture.getRandomId(), userId);
+      goalId = DduduFixture.getRandomId();
+      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId, false, null);
     }
 
-    @Test
-    void 권한_확인을_성공한다() {
-      // given
+    @Nested
+    class 권한_테스트 {
 
-      // when
-      ThrowingCallable check = () -> ddudu.checkAuthority(userId);
+      @Test
+      void 권한_확인을_성공한다() {
+        // given
 
-      // then
-      assertThatNoException().isThrownBy(check);
+        // when
+        ThrowingCallable check = () -> ddudu.checkAuthority(userId);
+
+        // then
+        assertThatNoException().isThrownBy(check);
+      }
+
+      @Test
+      void 사용자의_아이디가_다르면_권한_확인을_실패한다() {
+        // given
+        long wrongUserId = DduduFixture.getRandomId();
+
+        // when
+        ThrowingCallable check = () -> ddudu.checkAuthority(wrongUserId);
+
+        // then
+        assertThatExceptionOfType(SecurityException.class).isThrownBy(check)
+            .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+      }
+
     }
 
-    @Test
-    void 사용자의_아이디가_다르면_권한_확인을_실패한다() {
-      // given
-      long wrongUserId = DduduFixture.getRandomId();
+    @Nested
+    class 기간_설정_테스트 {
 
-      // when
-      ThrowingCallable check = () -> ddudu.checkAuthority(wrongUserId);
+      @Test
+      void 기간_설정을_성공한다() {
+        // given
+        LocalTime now = LocalTime.now();
 
-      // then
-      assertThatExceptionOfType(SecurityException.class).isThrownBy(check)
-          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+        // when
+        Ddudu actual = ddudu.setUpPeriod(now, now.plusHours(1));
+
+        // then
+        assertThat(actual)
+            .hasFieldOrPropertyWithValue("id", ddudu.getId())
+            .hasFieldOrPropertyWithValue("user", ddudu.getUser())
+            .hasFieldOrPropertyWithValue("name", ddudu.getName())
+            .hasFieldOrPropertyWithValue("isPostponed", ddudu.isPostponed())
+            .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
+            .hasFieldOrPropertyWithValue("goal", ddudu.getGoal())
+            .hasFieldOrPropertyWithValue("beginAt", now)
+            .hasFieldOrPropertyWithValue("endAt", now.plusHours(1));
+      }
+
+      @Test
+      void 시작_시간만_설정할_수_있다() {
+        // given
+        LocalTime now = LocalTime.now();
+        LocalTime expectedEndTime = ddudu.getEndAt();
+
+        // when
+        Ddudu actual = ddudu.setUpPeriod(now, null);
+
+        // then
+        assertThat(actual.getBeginAt()).isEqualTo(now);
+        assertThat(actual.getEndAt()).isEqualTo(expectedEndTime);
+      }
+
+      @Test
+      void 종료_시간만_설정할_수_있다() {
+        // given
+        LocalTime now = LocalTime.now();
+        LocalTime expectedBeginAt = ddudu.getBeginAt();
+
+        // when
+        Ddudu actual = ddudu.setUpPeriod(null, now);
+
+        // then
+        assertThat(actual.getBeginAt()).isEqualTo(expectedBeginAt);
+        assertThat(actual.getEndAt()).isEqualTo(now);
+      }
+
+    }
+
+    @Nested
+    class 날짜_변경_테스트 {
+
+      @Test
+      void 날짜_변경을_성공한다() {
+        // given
+        LocalDate newDate = LocalDate.now()
+            .plusDays(1);
+
+        // when
+        Ddudu actual = ddudu.moveDate(newDate, null);
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
+        assertThat(actual.isPostponed()).isFalse();
+      }
+
+      @Test
+      void 이미_완료한_뚜두면_날짜_변경_시_상태가_변하지_않는다() {
+        // given
+        Ddudu completedDdudu = DduduFixture.createRandomDduduWithReference(
+            goalId, userId, false, DduduStatus.COMPLETE);
+        LocalDate newDate = LocalDate.now()
+            .plusDays(1);
+
+        // when
+        Ddudu actual = completedDdudu.moveDate(newDate, true);
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
+        assertThat(actual.isPostponed()).isFalse();
+      }
+
+      @Test
+      void 미루기_한다() {
+        // given
+        LocalDate newDate = LocalDate.now()
+            .plusDays(1);
+
+        // when
+        Ddudu actual = ddudu.moveDate(newDate, true);
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
+        assertThat(actual.isPostponed()).isTrue();
+      }
+
+      @Test
+      void 변경할_날짜가_누락되면_변경을_실패한다() {
+        // given
+
+        // when
+        ThrowingCallable moveDate = () -> ddudu.moveDate(null, null);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(moveDate)
+            .withMessage(DduduErrorCode.NULL_DATE_TO_MOVE.getCodeName());
+      }
+
+      @Test
+      void 변경할_날짜가_예정_날짜보다_이전일_때_미루기를_시도하면_변경을_실패한다() {
+        // given
+        LocalDate newDate = LocalDate.now()
+            .minusDays(1);
+
+        // when
+        ThrowingCallable moveDate = () -> ddudu.moveDate(newDate, true);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(moveDate)
+            .withMessage(DduduErrorCode.SHOULD_POSTPONE_UNTIL_FUTURE.getCodeName());
+      }
+
+      @Test
+      void 변경할_날짜가_예정_날짜보다_이전이어도_이미_미루기한_뚜두면_날짜_변경을_성공한다() {
+        // given
+        Ddudu postponedDdudu = DduduFixture.createRandomDduduWithReference(
+            goalId, userId, true, null);
+        LocalDate newDate = LocalDate.now()
+            .minusDays(1);
+
+        // when
+        Ddudu actual = postponedDdudu.moveDate(newDate, true);
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
+        assertThat(actual.isPostponed()).isTrue();
+      }
+
     }
 
   }
 
   @Nested
-  class 기간_설정_테스트 {
+  class 복제_테스트 {
 
+    Long userId;
+    Long goalId;
     Ddudu ddudu;
 
     @BeforeEach
     void setUp() {
-      long userId = DduduFixture.getRandomId();
-      long goalId = DduduFixture.getRandomId();
-      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId);
+      userId = DduduFixture.getRandomId();
+      goalId = DduduFixture.getRandomId();
+      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId, false, null);
     }
 
     @Test
-    void 기간_설정을_성공한다() {
+    void 뚜두_복제를_성공한다() {
       // given
-      LocalTime now = LocalTime.now();
+      LocalDate tomorrow = LocalDate.now()
+          .plusDays(1);
 
       // when
-      Ddudu actual = ddudu.setUpPeriod(now, now.plusHours(1));
+      Ddudu replica = ddudu.reproduceOnDate(tomorrow);
 
       // then
-      assertThat(actual)
-          .hasFieldOrPropertyWithValue("id", ddudu.getId())
-          .hasFieldOrPropertyWithValue("user", ddudu.getUser())
+      assertThat(replica).isNotEqualTo(ddudu);
+      assertThat(replica)
+          .hasFieldOrPropertyWithValue("goalId", ddudu.getGoalId())
+          .hasFieldOrPropertyWithValue("userId", ddudu.getUserId())
           .hasFieldOrPropertyWithValue("name", ddudu.getName())
-          .hasFieldOrPropertyWithValue("isPostponed", ddudu.isPostponed())
-          .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
-          .hasFieldOrPropertyWithValue("goal", ddudu.getGoal())
-          .hasFieldOrPropertyWithValue("beginAt", now)
-          .hasFieldOrPropertyWithValue("endAt", now.plusHours(1));
+          .hasFieldOrPropertyWithValue("status", DduduStatus.UNCOMPLETED)
+          .hasFieldOrPropertyWithValue("isPostponed", false)
+          .hasFieldOrPropertyWithValue("scheduledOn", tomorrow)
+          .hasFieldOrPropertyWithValue("beginAt", ddudu.getBeginAt())
+          .hasFieldOrPropertyWithValue("endAt", ddudu.getEndAt());
     }
 
     @Test
-    void 시작_시간만_설정할_수_있다() {
+    void 같은_날로_복제를_시도하면_실패한다() {
       // given
-      LocalTime now = LocalTime.now();
-      LocalTime expectedEndTime = ddudu.getEndAt();
+      LocalDate newDate = ddudu.getScheduledOn();
 
       // when
-      Ddudu actual = ddudu.setUpPeriod(now, null);
+      ThrowingCallable reproduce = () -> ddudu.reproduceOnDate(newDate);
 
       // then
-      assertThat(actual.getBeginAt()).isEqualTo(now);
-      assertThat(actual.getEndAt()).isEqualTo(expectedEndTime);
-    }
-
-    @Test
-    void 종료_시간만_설정할_수_있다() {
-      // given
-      LocalTime now = LocalTime.now();
-      LocalTime expectedBeginAt = ddudu.getBeginAt();
-
-      // when
-      Ddudu actual = ddudu.setUpPeriod(null, now);
-
-      // then
-      assertThat(actual.getBeginAt()).isEqualTo(expectedBeginAt);
-      assertThat(actual.getEndAt()).isEqualTo(now);
+      assertThatIllegalArgumentException().isThrownBy(reproduce)
+          .withMessage(DduduErrorCode.UNABLE_TO_REPRODUCE_ON_SAME_DATE.getCodeName());
     }
 
   }

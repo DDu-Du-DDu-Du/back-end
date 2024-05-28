@@ -1,10 +1,10 @@
 package com.ddudu.application.service.ddudu;
 
 import com.ddudu.application.annotation.UseCase;
-import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;

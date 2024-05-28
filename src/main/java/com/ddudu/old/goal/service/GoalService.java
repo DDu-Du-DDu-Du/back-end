@@ -2,11 +2,11 @@ package com.ddudu.old.goal.service;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.goal.exception.GoalErrorCode;
+import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.dto.goal.response.GoalResponse;
-import com.ddudu.application.domain.goal.exception.GoalErrorCode;
-import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.user.domain.UserRepository;

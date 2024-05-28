@@ -5,11 +5,15 @@ import static java.util.Objects.isNull;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
+import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
+import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
+import com.ddudu.application.port.in.ddudu.RepeatUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -45,6 +49,8 @@ public class DduduController implements DduduControllerDoc {
   private final PeriodSetupUseCase periodSetupUseCase;
   private final GetDailyDdudusByGoalUseCase getDailyDdudusByGoalUseCase;
   private final GetTimetableUseCase getTimetableUseCase;
+  private final MoveDateUseCase moveDateUseCase;
+  private final RepeatUseCase repeatUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -221,9 +227,30 @@ public class DduduController implements DduduControllerDoc {
       @PathVariable
       Long id,
       @RequestBody
+      @Valid
       MoveDateRequest request
   ) {
-    return null;
+    moveDateUseCase.moveDate(loginId, id, request);
+
+    return ResponseEntity.noContent()
+        .build();
+  }
+
+  @PostMapping("/{id}/repeat")
+  public ResponseEntity<RepeatAnotherDayResponse> repeatOnAnotherDay(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      RepeatAnotherDayRequest request
+  ) {
+    RepeatAnotherDayResponse response = repeatUseCase.repeatOnAnotherDay(
+        loginId, id, request);
+    URI uri = URI.create("/api/ddudus/" + response.id());
+
+    return ResponseEntity.created(uri)
+        .body(response);
   }
 
 }

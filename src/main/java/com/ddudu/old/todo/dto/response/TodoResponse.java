@@ -1,8 +1,8 @@
 package com.ddudu.old.todo.dto.response;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.dto.goal.response.BasicGoalResponse;
 import lombok.Builder;
 

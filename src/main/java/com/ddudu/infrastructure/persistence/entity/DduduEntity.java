@@ -113,6 +113,7 @@ public class DduduEntity extends BaseEntity {
         .name(name)
         .status(status)
         .isPostponed(isPostponed)
+        .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt)
         .build();
@@ -122,6 +123,7 @@ public class DduduEntity extends BaseEntity {
     this.name = ddudu.getName();
     this.status = ddudu.getStatus();
     this.isPostponed = ddudu.isPostponed();
+    this.scheduledOn = ddudu.getScheduledOn();
     this.beginAt = ddudu.getBeginAt();
     this.endAt = ddudu.getEndAt();
   }

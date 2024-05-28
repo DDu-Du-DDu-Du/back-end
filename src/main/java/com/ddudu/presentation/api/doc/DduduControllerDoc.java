@@ -3,7 +3,9 @@ package com.ddudu.presentation.api.doc;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
+import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
@@ -138,12 +140,20 @@ public interface DduduControllerDoc {
   @ApiResponse(responseCode = "204")
   ResponseEntity<Void> setUpPeriod(Long loginId, Long id, PeriodSetupRequest request);
 
-  // TODO: 구현 후 설명 수정
-  @Operation(
-      summary = "뚜두 날짜 변경",
-      description = "아직 구현되지 않은 기능입니다."
-  )
+  @Operation(summary = "뚜두 날짜 변경")
   @ApiResponse(responseCode = "204")
   ResponseEntity<Void> moveDate(Long loginId, Long id, MoveDateRequest request);
+
+  @Operation(summary = "뚜두 다른 날 반복하기")
+  @ApiResponse(
+      responseCode = "201",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = RepeatAnotherDayRequest.class)
+      )
+  )
+  ResponseEntity<RepeatAnotherDayResponse> repeatOnAnotherDay(
+      Long loginId, Long id, RepeatAnotherDayRequest request
+  );
 
 }

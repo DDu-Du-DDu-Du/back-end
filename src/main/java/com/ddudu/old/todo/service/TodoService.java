@@ -1,12 +1,12 @@
 package com.ddudu.old.todo.service;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
-import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;

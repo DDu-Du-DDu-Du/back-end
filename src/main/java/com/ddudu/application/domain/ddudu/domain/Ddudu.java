@@ -14,12 +14,12 @@ import java.util.Objects;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.commons.lang3.BooleanUtils;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Ddudu {
 
-  private static final DduduStatus DEFAULT_STATUS = DduduStatus.UNCOMPLETED;
   private static final int MAX_NAME_LENGTH = 50;
 
   @EqualsAndHashCode.Include
@@ -40,6 +40,7 @@ public class Ddudu {
   @Builder
   private Ddudu(
       Long id, Long goalId, Long userId, String name, Boolean isPostponed, DduduStatus status,
+      String statusValue,
       LocalDate scheduledOn, LocalTime beginAt, LocalTime endAt,
       // TODO: delete below fields after migration as left for avoidance of compile errors
       Goal goal, User user
@@ -50,7 +51,7 @@ public class Ddudu {
     this.goalId = goalId;
     this.userId = userId;
     this.name = name;
-    this.status = Objects.requireNonNullElse(status, DEFAULT_STATUS);
+    this.status = Objects.requireNonNullElse(status, DduduStatus.from(statusValue));
     this.isPostponed = Objects.requireNonNullElse(isPostponed, false);
     this.scheduledOn = Objects.requireNonNullElse(scheduledOn, LocalDate.now());
     this.beginAt = beginAt;
@@ -77,6 +78,43 @@ public class Ddudu {
     return builder.build();
   }
 
+  public Ddudu moveDate(LocalDate newDate, Boolean isPostponed) {
+    checkArgument(Objects.nonNull(newDate), DduduErrorCode.NULL_DATE_TO_MOVE.getCodeName());
+
+    if (!newDate.isAfter(this.scheduledOn) && !this.isPostponed) {
+      checkArgument(
+          BooleanUtils.isNotTrue(isPostponed),
+          DduduErrorCode.SHOULD_POSTPONE_UNTIL_FUTURE.getCodeName()
+      );
+    }
+
+    DduduBuilder builder = getFullBuilder()
+        .scheduledOn(newDate);
+
+    if (this.status.isCompleted()) {
+      return builder.build();
+    }
+
+    return builder
+        .isPostponed(isPostponed)
+        .build();
+  }
+
+  public Ddudu reproduceOnDate(LocalDate scheduledOn) {
+    checkArgument(
+        !scheduledOn.isEqual(this.scheduledOn),
+        DduduErrorCode.UNABLE_TO_REPRODUCE_ON_SAME_DATE.getCodeName()
+    );
+
+    return getFullBuilder()
+        .id(null)
+        .isPostponed(false)
+        .status(DduduStatus.UNCOMPLETED)
+        .scheduledOn(scheduledOn)
+        .build();
+  }
+
+  // TODO: 마이그레이션 예정
   public Ddudu applyTodoUpdates(Goal goal, String name, LocalDateTime beginAt) {
     return getFullBuilder()
         .goal(goal)
@@ -85,6 +123,7 @@ public class Ddudu {
         .build();
   }
 
+  // TODO: 마이그레이션 예정
   public Ddudu switchStatus() {
     if (this.status == DduduStatus.UNCOMPLETED) {
       return getFullBuilder()

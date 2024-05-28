@@ -3,8 +3,8 @@ package com.ddudu.application.domain.goal.service;
 import com.ddudu.application.annotation.DomainService;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import lombok.RequiredArgsConstructor;
 
 @DomainService
