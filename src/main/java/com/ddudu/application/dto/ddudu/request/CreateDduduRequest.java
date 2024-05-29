@@ -13,7 +13,7 @@ public record CreateDduduRequest(
     @NotBlank(message = "할 일이 입력되지 않았습니다.")
     @Size(max = 50, message = "할 일은 최대 50자 입니다.")
     String name,
-    LocalDate scheduleOn
+    LocalDate scheduledOn
 ) {
 
 }
