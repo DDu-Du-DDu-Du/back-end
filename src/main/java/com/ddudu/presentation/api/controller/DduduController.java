@@ -13,6 +13,7 @@ import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.port.in.ddudu.CreateDduduUseCase;
 import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
@@ -51,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class DduduController implements DduduControllerDoc {
 
+  private final CreateDduduUseCase createDduduUseCase;
   private final PeriodSetupUseCase periodSetupUseCase;
   private final GetDailyDdudusByGoalUseCase getDailyDdudusByGoalUseCase;
   private final GetTimetableUseCase getTimetableUseCase;
@@ -67,7 +69,7 @@ public class DduduController implements DduduControllerDoc {
       @Valid
       CreateDduduRequest request
   ) {
-    BasicDduduResponse response = todoService.create(loginId, request);
+    BasicDduduResponse response = createDduduUseCase.create(loginId, request);
     URI uri = URI.create("/api/ddudus/" + response.id());
 
     return ResponseEntity.created(uri)
