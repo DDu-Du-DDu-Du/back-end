@@ -18,6 +18,7 @@ import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
+import com.ddudu.application.port.in.ddudu.SwitchStatusUseCase;
 import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -57,6 +58,7 @@ public class DduduController implements DduduControllerDoc {
   private final MoveDateUseCase moveDateUseCase;
   private final RepeatUseCase repeatUseCase;
   private final DduduSearchUseCase dduduSearchUseCase;
+  private final SwitchStatusUseCase switchStatusUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -201,7 +203,7 @@ public class DduduController implements DduduControllerDoc {
       @PathVariable
       Long id
   ) {
-    todoService.updateStatus(loginId, id);
+    switchStatusUseCase.switchStatus(loginId, id);
 
     return ResponseEntity.noContent()
         .build();
