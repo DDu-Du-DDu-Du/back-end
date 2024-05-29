@@ -11,12 +11,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GoalDomainService {
 
+  private final String DEFAULT_GOAL_NAME = "목표";
+
   public Goal create(User user, CreateGoalRequest request) {
     return Goal.builder()
         .userId(user.getId())
         .name(request.name())
         .privacyType(PrivacyType.from(request.privacyType()))
         .color(request.color())
+        .build();
+  }
+
+  public Goal createDefaultGoal(User user) {
+    return Goal.builder()
+        .userId(user.getId())
+        .name(DEFAULT_GOAL_NAME)
+        .privacyType(PrivacyType.PUBLIC)
         .build();
   }
 
