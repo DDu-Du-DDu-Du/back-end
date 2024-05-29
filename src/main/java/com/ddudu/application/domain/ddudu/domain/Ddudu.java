@@ -123,18 +123,15 @@ public class Ddudu {
         .build();
   }
 
-  // TODO: 마이그레이션 예정
   public Ddudu switchStatus() {
     if (this.status == DduduStatus.UNCOMPLETED) {
       return getFullBuilder()
           .status(DduduStatus.COMPLETE)
-          .endAt(LocalTime.now())
           .build();
     }
 
     return getFullBuilder()
         .status(DduduStatus.UNCOMPLETED)
-        .endAt(null)
         .build();
   }
 
