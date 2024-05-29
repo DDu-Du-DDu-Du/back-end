@@ -24,7 +24,7 @@ public class RepeatService implements RepeatUseCase {
     Ddudu ddudu = repeatDduduPort.getDduduOrElseThrow(
         dduduId, DduduErrorCode.ID_NOT_EXISTING.getCodeName());
 
-    ddudu.checkAuthority(loginId);
+    ddudu.validateDduduCreator(loginId);
 
     Ddudu replica = ddudu.reproduceOnDate(request.repeatOn());
     Ddudu repeatedDdudu = repeatDduduPort.save(replica);

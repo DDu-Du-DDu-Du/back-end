@@ -58,8 +58,8 @@ public class Ddudu {
     this.endAt = endAt;
   }
 
-  public void checkAuthority(Long loginId) {
-    if (!isCreatedByUser(loginId)) {
+  public void validateDduduCreator(Long userId) {
+    if (!isCreatedByUser(userId)) {
       throw new SecurityException(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
     }
   }
