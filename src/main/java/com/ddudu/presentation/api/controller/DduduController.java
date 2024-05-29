@@ -195,7 +195,6 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @PatchMapping("/{id}/status")
-  @Deprecated
   public ResponseEntity<Void> updateStatus(
       @Login
       Long loginId,
