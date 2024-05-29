@@ -60,7 +60,6 @@ public class DduduController implements DduduControllerDoc {
   private final TodoService todoService;
 
   @PostMapping
-  @Deprecated
   public ResponseEntity<BasicDduduResponse> create(
       @Login
       Long loginId,
