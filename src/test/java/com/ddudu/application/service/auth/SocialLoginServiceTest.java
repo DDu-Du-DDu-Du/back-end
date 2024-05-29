@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.enums.ProviderType;
 import com.ddudu.application.domain.user.domain.vo.AuthProvider;
@@ -11,9 +13,11 @@ import com.ddudu.application.dto.authentication.request.SocialRequest;
 import com.ddudu.application.dto.authentication.response.TokenResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.auth.SocialResourcePort;
+import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +45,9 @@ class SocialLoginServiceTest {
 
   @Autowired
   UserLoaderPort userLoaderPort;
+
+  @Autowired
+  GoalLoaderPort goalLoaderPort;
 
   @Autowired
   JwtDecoder jwtDecoder;
@@ -96,6 +103,26 @@ class SocialLoginServiceTest {
         .getClaim("user");
 
     assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  void 유저가_생성된_경우_기본_목표가_생성된다() {
+    // given
+    when(socialResourcePort.retrieveSocialResource(any(SocialRequest.class)))
+        .thenReturn(authProvider);
+
+    // when
+    socialLoginService.login(request);
+
+    // then
+    User user = userLoaderPort.loadSocialUser(authProvider)
+        .get();
+    List<Goal> goals = goalLoaderPort.findAllByUser(user);
+
+    assertThat(goals).hasSize(1);
+    assertThat(goals.get(0))
+        .extracting("name", "privacyType")
+        .containsExactly("목표", PrivacyType.PUBLIC);
   }
 
 }
