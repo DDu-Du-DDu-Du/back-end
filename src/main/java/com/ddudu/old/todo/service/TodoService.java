@@ -6,13 +6,13 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.LikeInfo;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -52,7 +52,7 @@ public class TodoService {
   public BasicDduduResponse create(
       Long loginId,
       @Valid
-      CreateTodoRequest request
+      CreateDduduRequest request
   ) {
     User user = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
     Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);

@@ -8,12 +8,12 @@ import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
@@ -96,7 +96,7 @@ class DduduServiceTest {
     void 할_일_생성에_성공한다() {
       // given
       Goal goal = createGoal(goalName, user);
-      CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
+      CreateDduduRequest request = new CreateDduduRequest(goal.getId(), name, beginAt);
 
       // when
       BasicDduduResponse response = todoService.create(user.getId(), request);
@@ -114,7 +114,7 @@ class DduduServiceTest {
       Long userId = faker.random()
           .nextLong(Long.MAX_VALUE);
       Goal goal = createGoal(goalName, user);
-      CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
+      CreateDduduRequest request = new CreateDduduRequest(goal.getId(), name, beginAt);
 
       // when
       ThrowingCallable create = () -> todoService.create(userId, request);
@@ -129,7 +129,7 @@ class DduduServiceTest {
       // given
       Long goalId = faker.random()
           .nextLong(Long.MAX_VALUE);
-      CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
+      CreateDduduRequest request = new CreateDduduRequest(goalId, name, beginAt);
 
       // when
       ThrowingCallable create = () -> todoService.create(user.getId(), request);
