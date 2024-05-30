@@ -4,7 +4,7 @@ import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
-import com.ddudu.application.dto.goal.response.DduduNumberStatsResponse;
+import com.ddudu.application.dto.goal.response.CompletedDduduNumberStatsResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.dto.goal.response.GoalResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -110,8 +110,8 @@ public interface GoalControllerDoc {
   @ApiResponse(
       responseCode = "200"
   )
-  ResponseEntity<List<DduduNumberStatsResponse>> collectNumberStats(
-      Long loginId, Long id, YearMonth yearMonth
+  ResponseEntity<List<CompletedDduduNumberStatsResponse>> collectNumberStats(
+      Long loginId, YearMonth yearMonth
   );
 
 }

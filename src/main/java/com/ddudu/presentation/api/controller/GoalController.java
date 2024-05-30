@@ -5,7 +5,7 @@ import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
-import com.ddudu.application.dto.goal.response.DduduNumberStatsResponse;
+import com.ddudu.application.dto.goal.response.CompletedDduduNumberStatsResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.dto.goal.response.GoalResponse;
 import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
@@ -137,12 +137,10 @@ public class GoalController implements GoalControllerDoc {
         .build();
   }
 
-  @GetMapping("/{id}/stats/numbers")
-  public ResponseEntity<List<DduduNumberStatsResponse>> collectNumberStats(
+  @GetMapping("/stats/numbers")
+  public ResponseEntity<List<CompletedDduduNumberStatsResponse>> collectNumberStats(
       @Login
       Long loginId,
-      @PathVariable
-      Long id,
       @DateTimeFormat()
       YearMonth yearMonth
   ) {
