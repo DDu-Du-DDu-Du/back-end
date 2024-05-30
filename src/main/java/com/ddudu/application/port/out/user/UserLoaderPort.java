@@ -14,6 +14,4 @@ public interface UserLoaderPort {
 
   Optional<User> loadMinimalUser(Long id);
 
-  User loadMinimalUserOrElseThrow(Long id, String message);
-
 }
