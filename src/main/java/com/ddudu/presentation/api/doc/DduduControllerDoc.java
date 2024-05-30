@@ -160,7 +160,7 @@ public interface DduduControllerDoc {
       Long loginId, Long id, RepeatAnotherDayRequest request
   );
 
-  @Operation(summary = "뚜두 조회. Not Yet Implemented")
+  @Operation(summary = "뚜두 조회")
   @ApiResponse(responseCode = "200")
   ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
       Long loginId,
