@@ -9,6 +9,7 @@ import com.ddudu.application.dto.goal.response.CompletedDduduNumberStatsResponse
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.dto.goal.response.GoalResponse;
 import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
+import com.ddudu.application.port.in.goal.CollectNumberStatsUseCase;
 import com.ddudu.application.port.in.goal.CreateGoalUseCase;
 import com.ddudu.application.port.in.goal.DeleteGoalUseCase;
 import com.ddudu.application.port.in.goal.RetrieveAllGoalsUseCase;
@@ -50,6 +51,7 @@ public class GoalController implements GoalControllerDoc {
   private final UpdateGoalUseCase updateGoalUseCase;
   private final ChangeGoalStatusUseCase changeGoalStatusUseCase;
   private final DeleteGoalUseCase deleteGoalUseCase;
+  private final CollectNumberStatsUseCase collectNumberStatsUseCase;
 
   @PostMapping
   public ResponseEntity<GoalIdResponse> create(
@@ -141,10 +143,14 @@ public class GoalController implements GoalControllerDoc {
   public ResponseEntity<List<CompletedDduduNumberStatsResponse>> collectNumberStats(
       @Login
       Long loginId,
-      @DateTimeFormat()
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
-    return null;
+    List<CompletedDduduNumberStatsResponse> response = collectNumberStatsUseCase.collectNumberStats(
+        loginId, yearMonth);
+
+    return ResponseEntity.ok(response);
   }
 
   private void checkAuthority(Long loginId, Long id) {
