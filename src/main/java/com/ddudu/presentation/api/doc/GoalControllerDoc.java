@@ -106,10 +106,8 @@ public interface GoalControllerDoc {
   )
   ResponseEntity<Void> delete(Long loginId, Long id);
 
-  @Operation(summary = "월별 달성 뚜두 수 통계. Not Yet Implemented")
-  @ApiResponse(
-      responseCode = "200"
-  )
+  @Operation(summary = "월별 달성 뚜두 수 통계")
+  @ApiResponse(responseCode = "200")
   ResponseEntity<List<CompletedDduduNumberStatsResponse>> collectNumberStats(
       Long loginId, YearMonth yearMonth
   );
