@@ -4,6 +4,7 @@ import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.DduduNumberStatsResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.dto.goal.response.GoalResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.YearMonth;
 import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -103,5 +105,13 @@ public interface GoalControllerDoc {
       in = ParameterIn.PATH
   )
   ResponseEntity<Void> delete(Long loginId, Long id);
+
+  @Operation(summary = "월별 달성 뚜두 수 통계. Not Yet Implemented")
+  @ApiResponse(
+      responseCode = "200"
+  )
+  ResponseEntity<List<DduduNumberStatsResponse>> collectNumberStats(
+      Long loginId, Long id, YearMonth yearMonth
+  );
 
 }

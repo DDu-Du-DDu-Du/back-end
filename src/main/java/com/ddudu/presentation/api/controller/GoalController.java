@@ -5,6 +5,7 @@ import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.DduduNumberStatsResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.dto.goal.response.GoalResponse;
 import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
@@ -19,9 +20,11 @@ import com.ddudu.presentation.api.exception.ForbiddenException;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -132,6 +135,18 @@ public class GoalController implements GoalControllerDoc {
 
     return ResponseEntity.noContent()
         .build();
+  }
+
+  @GetMapping("/{id}/stats/numbers")
+  public ResponseEntity<List<DduduNumberStatsResponse>> collectNumberStats(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @DateTimeFormat()
+      YearMonth yearMonth
+  ) {
+    return null;
   }
 
   private void checkAuthority(Long loginId, Long id) {
