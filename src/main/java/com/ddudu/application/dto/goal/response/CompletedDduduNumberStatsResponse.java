@@ -1,9 +1,9 @@
 package com.ddudu.application.dto.goal.response;
 
-public record DduduNumberStatsResponse(
+public record CompletedDduduNumberStatsResponse(
     Long id,
     String name,
-    int completedCount
+    Long completedCount
 ) {
 
 }
