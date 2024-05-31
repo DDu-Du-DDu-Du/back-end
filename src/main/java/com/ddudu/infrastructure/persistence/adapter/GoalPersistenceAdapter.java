@@ -34,6 +34,18 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
+  public List<Goal> saveAll(List<Goal> defaultGoals) {
+    List<GoalEntity> goalEntities = defaultGoals.stream()
+        .map(GoalEntity::from)
+        .toList();
+    
+    return goalRepository.saveAll(goalEntities)
+        .stream()
+        .map(GoalEntity::toDomain)
+        .toList();
+  }
+
+  @Override
   public Goal getGoalOrElseThrow(Long id, String message) {
     return goalRepository.findById(id)
         .orElseThrow(() -> new MissingResourceException(

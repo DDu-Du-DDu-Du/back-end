@@ -12,7 +12,6 @@ import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.LikeInfo;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
@@ -21,7 +20,6 @@ import com.ddudu.old.user.domain.FollowingRepository;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.ForbiddenException;
-import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -47,27 +45,6 @@ public class TodoService {
   private final UserRepository userRepository;
   private final FollowingRepository followingRepository;
   private final LikeRepository likeRepository;
-
-  @Transactional
-  public BasicDduduResponse create(
-      Long loginId,
-      @Valid
-      CreateTodoRequest request
-  ) {
-    User user = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
-    Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);
-
-    checkGoalPermission(loginId, goal);
-
-    Ddudu ddudu = Ddudu.builder()
-        .name(request.name())
-        .goal(goal)
-        .user(user)
-        .beginAt(LocalTime.from(request.beginAt()))
-        .build();
-
-    return BasicDduduResponse.from(oldTodoRepository.save(ddudu));
-  }
 
   public TodoResponse findById(Long loginId, Long id) {
     Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
