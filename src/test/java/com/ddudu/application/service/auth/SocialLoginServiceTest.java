@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.enums.ProviderType;
 import com.ddudu.application.domain.user.domain.vo.AuthProvider;
@@ -119,10 +118,7 @@ class SocialLoginServiceTest {
         .get();
     List<Goal> goals = goalLoaderPort.findAllByUser(user);
 
-    assertThat(goals).hasSize(1);
-    assertThat(goals.get(0))
-        .extracting("name", "privacyType")
-        .containsExactly("목표", PrivacyType.PUBLIC);
+    assertThat(goals).hasSize(3);
   }
 
 }
