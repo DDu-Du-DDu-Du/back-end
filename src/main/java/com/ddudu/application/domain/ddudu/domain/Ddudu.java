@@ -124,14 +124,8 @@ public class Ddudu {
   }
 
   public Ddudu switchStatus() {
-    if (this.status == DduduStatus.UNCOMPLETED) {
-      return getFullBuilder()
-          .status(DduduStatus.COMPLETE)
-          .build();
-    }
-
     return getFullBuilder()
-        .status(DduduStatus.UNCOMPLETED)
+        .status(DduduStatus.switchStatus(status))
         .build();
   }
 
