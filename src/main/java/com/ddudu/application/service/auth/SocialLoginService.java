@@ -17,6 +17,7 @@ import com.ddudu.application.port.out.auth.TokenManipulationPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -47,8 +48,8 @@ public class SocialLoginService implements SocialLoginUseCase {
     User newUser = userDomainService.createFirstUser(authProvider);
     User user = signUpPort.save(newUser);
 
-    Goal defaultGoal = goalDomainService.createDefaultGoal(user);
-    saveGoalPort.save(defaultGoal);
+    List<Goal> defaultGoals = goalDomainService.createDefaultGoals(user);
+    saveGoalPort.saveAll(defaultGoals);
 
     return createTokenSet(user);
   }
