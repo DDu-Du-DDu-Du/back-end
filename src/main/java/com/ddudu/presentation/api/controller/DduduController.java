@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
 import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
@@ -12,18 +13,19 @@ import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.port.in.ddudu.CreateDduduUseCase;
 import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
-import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.annotation.Login;
+import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import com.ddudu.presentation.api.doc.DduduControllerDoc;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -51,6 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class DduduController implements DduduControllerDoc {
 
+  private final CreateDduduUseCase createDduduUseCase;
   private final PeriodSetupUseCase periodSetupUseCase;
   private final GetDailyDdudusByGoalUseCase getDailyDdudusByGoalUseCase;
   private final GetTimetableUseCase getTimetableUseCase;
@@ -60,19 +63,18 @@ public class DduduController implements DduduControllerDoc {
   private final TodoService todoService;
 
   @PostMapping
-  @Deprecated
-  public ResponseEntity<BasicDduduResponse> create(
+  public ResponseEntity<IdResponse> create(
       @Login
       Long loginId,
       @RequestBody
       @Valid
-      CreateTodoRequest request
+      CreateDduduRequest request
   ) {
-    BasicDduduResponse response = todoService.create(loginId, request);
+    BasicDduduResponse response = createDduduUseCase.create(loginId, request);
     URI uri = URI.create("/api/ddudus/" + response.id());
 
     return ResponseEntity.created(uri)
-        .body(response);
+        .body(new IdResponse(response.id()));
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

@@ -13,7 +13,6 @@ import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.old.todo.dto.request.CreateTodoRequest;
 import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
@@ -87,58 +86,6 @@ class DduduServiceTest {
         .word();
     goalName = faker.lorem()
         .word();
-  }
-
-  @Nested
-  class 할_일_생성_테스트 {
-
-    @Test
-    void 할_일_생성에_성공한다() {
-      // given
-      Goal goal = createGoal(goalName, user);
-      CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
-
-      // when
-      BasicDduduResponse response = todoService.create(user.getId(), request);
-
-      // then
-      Ddudu actual = oldTodoRepository.findById(response.id())
-          .get();
-      assertThat(actual).extracting("name", "beginAt", "goal", "user")
-          .containsExactly(name, beginAt, goal, user);
-    }
-
-    @Test
-    void 사용자_아이디가_유효하지_않으면_예외가_발생한다() {
-      // give
-      Long userId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      Goal goal = createGoal(goalName, user);
-      CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
-
-      // when
-      ThrowingCallable create = () -> todoService.create(userId, request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 목표_아이디가_유효하지_않으면_예외가_발생한다() {
-      // given
-      Long goalId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
-
-      // when
-      ThrowingCallable create = () -> todoService.create(user.getId(), request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(DduduErrorCode.GOAL_NOT_EXISTING.getMessage());
-    }
-
   }
 
   @Nested
