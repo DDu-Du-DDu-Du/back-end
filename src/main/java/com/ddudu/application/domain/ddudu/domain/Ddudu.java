@@ -125,7 +125,7 @@ public class Ddudu {
 
   public Ddudu switchStatus() {
     return getFullBuilder()
-        .status(DduduStatus.switchStatus(status))
+        .status(status.switchStatus())
         .build();
   }
 
