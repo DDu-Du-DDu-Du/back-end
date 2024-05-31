@@ -25,6 +25,7 @@ import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.annotation.Login;
+import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import com.ddudu.presentation.api.doc.DduduControllerDoc;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -62,7 +63,7 @@ public class DduduController implements DduduControllerDoc {
   private final TodoService todoService;
 
   @PostMapping
-  public ResponseEntity<BasicDduduResponse> create(
+  public ResponseEntity<IdResponse> create(
       @Login
       Long loginId,
       @RequestBody
@@ -73,7 +74,7 @@ public class DduduController implements DduduControllerDoc {
     URI uri = URI.create("/api/ddudus/" + response.id());
 
     return ResponseEntity.created(uri)
-        .body(response);
+        .body(new IdResponse(response.id()));
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
