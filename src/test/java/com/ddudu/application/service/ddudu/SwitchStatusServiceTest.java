@@ -44,8 +44,7 @@ class SwitchStatusServiceTest {
 
   @Autowired
   SaveDduduPort saveDduduPort;
-
-
+  
   User user;
   Goal goal;
   Ddudu ddudu;
