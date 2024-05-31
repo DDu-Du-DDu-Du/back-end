@@ -114,7 +114,7 @@ class CreateDduduServiceTest {
   }
 
   @Test
-  void 본인의_목표인_경우_예외가_발생한다() {
+  void 본인의_목표가_아닌_경우_예외가_발생한다() {
     // given
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
     Goal goalOfAnotherUser = saveGoalPort.save(
