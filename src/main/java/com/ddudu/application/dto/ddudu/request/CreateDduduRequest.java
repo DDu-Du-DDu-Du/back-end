@@ -7,12 +7,13 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public record CreateDduduRequest(
-    @NotNull(message = "목표 ID가 입력되지 않았습니다.")
-    @Positive(message = "목표 ID는 양수입니다.")
+    @NotNull(message = "2001 NULL_GOAL_VALUE")
+    @Positive(message = "2014 NEGATIVE_OR_ZERO_GOAL_ID")
     Long goalId,
-    @NotBlank(message = "할 일이 입력되지 않았습니다.")
-    @Size(max = 50, message = "할 일은 최대 50자 입니다.")
+    @NotBlank(message = "2002 BLANK_NAME")
+    @Size(max = 50, message = "2003 EXCESSIVE_NAME_LENGTH")
     String name,
+    @NotBlank(message = "2015 NULL_SCHEDULED_DATE")
     LocalDate scheduledOn
 ) {
 
