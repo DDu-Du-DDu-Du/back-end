@@ -185,7 +185,7 @@ class DduduTest {
         // given
 
         // when
-        ThrowingCallable check = () -> ddudu.checkAuthority(userId);
+        ThrowingCallable check = () -> ddudu.validateDduduCreator(userId);
 
         // then
         assertThatNoException().isThrownBy(check);
@@ -197,7 +197,7 @@ class DduduTest {
         long wrongUserId = DduduFixture.getRandomId();
 
         // when
-        ThrowingCallable check = () -> ddudu.checkAuthority(wrongUserId);
+        ThrowingCallable check = () -> ddudu.validateDduduCreator(wrongUserId);
 
         // then
         assertThatExceptionOfType(SecurityException.class).isThrownBy(check)
