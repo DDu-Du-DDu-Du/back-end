@@ -129,6 +129,13 @@ public class Ddudu {
         .build();
   }
 
+  public Ddudu changeName(String name) {
+    validateName(name);
+    return getFullBuilder()
+        .name(name)
+        .build();
+  }
+
   private DduduBuilder getFullBuilder() {
     return Ddudu.builder()
         .id(this.id)
