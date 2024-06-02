@@ -10,7 +10,7 @@ public interface GoalLoaderPort {
 
   Goal getGoalOrElseThrow(Long id, String message);
 
-  Optional<Goal> findById(Long id);
+  Optional<Goal> getOptionalGoal(Long id);
 
   List<Goal> findAllByUser(User user);
 
