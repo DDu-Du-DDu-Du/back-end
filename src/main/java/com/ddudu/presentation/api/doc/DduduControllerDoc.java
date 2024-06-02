@@ -119,15 +119,15 @@ public interface DduduControllerDoc {
       Long loginId, Long userId, YearMonth yearMonth
   );
 
-  @Operation(summary = "뚜두 수정")
+  @Operation(summary = "뚜두 이름(내용) 변경")
   @ApiResponse(
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = BasicDduduResponse.class)
+          schema = @Schema(implementation = IdResponse.class)
       )
   )
-  ResponseEntity<BasicDduduResponse> update(Long loginId, Long id, ChangeNameRequest request);
+  ResponseEntity<IdResponse> changeName(Long loginId, Long id, ChangeNameRequest request);
 
   @Operation(summary = "뚜두 상태 변경")
   @ApiResponse(

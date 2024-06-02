@@ -14,6 +14,7 @@ import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.port.in.ddudu.ChangeNameUseCase;
 import com.ddudu.application.port.in.ddudu.CreateDduduUseCase;
 import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
@@ -62,6 +63,7 @@ public class DduduController implements DduduControllerDoc {
   private final RepeatUseCase repeatUseCase;
   private final DduduSearchUseCase dduduSearchUseCase;
   private final SwitchStatusUseCase switchStatusUseCase;
+  private final ChangeNameUseCase changeNameUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -183,8 +185,7 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @PutMapping("/{id}")
-  @Deprecated
-  public ResponseEntity<BasicDduduResponse> update(
+  public ResponseEntity<IdResponse> changeName(
       @Login
       Long loginId,
       @PathVariable
@@ -193,9 +194,8 @@ public class DduduController implements DduduControllerDoc {
       @Valid
       ChangeNameRequest request
   ) {
-    BasicDduduResponse response = todoService.update(loginId, id, request);
-
-    return ResponseEntity.ok(response);
+    BasicDduduResponse response = changeNameUseCase.change(loginId, id, request);
+    return ResponseEntity.ok(new IdResponse(response.id()));
   }
 
   @PatchMapping("/{id}/status")
