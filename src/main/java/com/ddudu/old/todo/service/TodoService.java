@@ -6,7 +6,6 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
-import com.ddudu.application.dto.ddudu.request.ChangeNameRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.goal.domain.OldGoalRepository;
@@ -101,21 +100,6 @@ public class TodoService {
     LocalDateTime endDate = startDate.plusMonths(1);
 
     return generateCompletions(startDate, endDate, loginUser, user);
-  }
-
-  @Transactional
-  public BasicDduduResponse update(Long loginId, Long id, ChangeNameRequest request) {
-    Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
-
-    Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);
-
-    checkGoalPermission(loginId, goal);
-
-    ddudu.applyTodoUpdates(goal, request.name(), request.beginAt());
-
-    oldTodoRepository.update(ddudu);
-
-    return BasicDduduResponse.from(ddudu);
   }
 
   @Transactional
