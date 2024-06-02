@@ -7,10 +7,13 @@ import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface DduduLoaderPort {
 
   Ddudu getDduduOrElseThrow(Long id, String message);
+
+  Optional<Ddudu> getOptionalDdudu(Long id);
 
   List<Ddudu> getDailyDdudusOfUserUnderGoals(LocalDate date, User user, List<Goal> goals);
 

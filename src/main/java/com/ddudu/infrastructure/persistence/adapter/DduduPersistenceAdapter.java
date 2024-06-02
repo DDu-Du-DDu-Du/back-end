@@ -44,6 +44,12 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   }
 
   @Override
+  public Optional<Ddudu> getOptionalDdudu(Long id) {
+    return dduduRepository.findById(id)
+        .map(DduduEntity::toDomain);
+  }
+
+  @Override
   public List<Ddudu> getDailyDdudusOfUserUnderGoals(LocalDate date, User user, List<Goal> goals) {
     return dduduRepository.findDdudusByDateAndUserAndGoals(
             date,
