@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.ddudu.request.ChangeNameRequest;
 import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
 import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
@@ -21,7 +22,6 @@ import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
 import com.ddudu.application.port.in.ddudu.SwitchStatusUseCase;
-import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.service.TodoService;
@@ -191,7 +191,7 @@ public class DduduController implements DduduControllerDoc {
       Long id,
       @RequestBody
       @Valid
-      UpdateTodoRequest request
+      ChangeNameRequest request
   ) {
     BasicDduduResponse response = todoService.update(loginId, id, request);
 

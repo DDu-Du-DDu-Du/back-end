@@ -6,13 +6,13 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.request.ChangeNameRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.LikeInfo;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
@@ -104,7 +104,7 @@ public class TodoService {
   }
 
   @Transactional
-  public BasicDduduResponse update(Long loginId, Long id, UpdateTodoRequest request) {
+  public BasicDduduResponse update(Long loginId, Long id, ChangeNameRequest request) {
     Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
 
     Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);

@@ -2,6 +2,7 @@ package com.ddudu.presentation.api.doc;
 
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.ddudu.request.ChangeNameRequest;
 import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
 import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
@@ -11,7 +12,6 @@ import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
-import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
@@ -127,7 +127,7 @@ public interface DduduControllerDoc {
           schema = @Schema(implementation = BasicDduduResponse.class)
       )
   )
-  ResponseEntity<BasicDduduResponse> update(Long loginId, Long id, UpdateTodoRequest request);
+  ResponseEntity<BasicDduduResponse> update(Long loginId, Long id, ChangeNameRequest request);
 
   @Operation(summary = "뚜두 상태 변경")
   @ApiResponse(
