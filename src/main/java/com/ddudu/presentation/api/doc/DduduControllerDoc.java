@@ -127,18 +127,21 @@ public interface DduduControllerDoc {
           schema = @Schema(implementation = IdResponse.class)
       )
   )
+  @Parameter(name = "id", description = "변경할 뚜두 식별자", in = ParameterIn.PATH)
   ResponseEntity<IdResponse> changeName(Long loginId, Long id, ChangeNameRequest request);
 
   @Operation(summary = "뚜두 상태 변경")
   @ApiResponse(
       responseCode = "204"
   )
+  @Parameter(name = "id", description = "변경할 뚜두 식별자", in = ParameterIn.PATH)
   ResponseEntity<Void> updateStatus(Long loginId, Long id);
 
   @Operation(summary = "뚜두 삭제")
   @ApiResponse(
       responseCode = "204"
   )
+  @Parameter(name = "id", description = "삭제할 뚜두 식별자", in = ParameterIn.PATH)
   ResponseEntity<Void> delete(Long loginId, Long id);
 
   @Operation(summary = "뚜두 시작/종료시간 설정")

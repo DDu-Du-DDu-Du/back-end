@@ -17,6 +17,7 @@ import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.port.in.ddudu.ChangeNameUseCase;
 import com.ddudu.application.port.in.ddudu.CreateDduduUseCase;
 import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
+import com.ddudu.application.port.in.ddudu.DeleteDduduUseCase;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
@@ -64,6 +65,7 @@ public class DduduController implements DduduControllerDoc {
   private final DduduSearchUseCase dduduSearchUseCase;
   private final SwitchStatusUseCase switchStatusUseCase;
   private final ChangeNameUseCase changeNameUseCase;
+  private final DeleteDduduUseCase deleteDduduUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -212,14 +214,13 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @DeleteMapping("/{id}")
-  @Deprecated
   public ResponseEntity<Void> delete(
       @Login
       Long loginId,
       @PathVariable
       Long id
   ) {
-    todoService.delete(loginId, id);
+    deleteDduduUseCase.delete(loginId, id);
 
     return ResponseEntity.noContent()
         .build();

@@ -38,7 +38,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
     List<GoalEntity> goalEntities = defaultGoals.stream()
         .map(GoalEntity::from)
         .toList();
-    
+
     return goalRepository.saveAll(goalEntities)
         .stream()
         .map(GoalEntity::toDomain)
@@ -57,7 +57,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public Optional<Goal> findById(Long id) {
+  public Optional<Goal> getOptionalGoal(Long id) {
     return goalRepository.findById(id)
         .map(GoalEntity::toDomain);
   }

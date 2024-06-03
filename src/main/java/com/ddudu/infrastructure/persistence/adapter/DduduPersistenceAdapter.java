@@ -11,6 +11,7 @@ import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.ddudu.DduduSearchPort;
 import com.ddudu.application.port.out.ddudu.DduduUpdatePort;
+import com.ddudu.application.port.out.ddudu.DeleteDduduPort;
 import com.ddudu.application.port.out.ddudu.RepeatDduduPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
@@ -23,12 +24,13 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
 @RequiredArgsConstructor
 public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort, SaveDduduPort,
-    RepeatDduduPort, DduduSearchPort {
+    RepeatDduduPort, DduduSearchPort, DeleteDduduPort {
 
   private final DduduRepository dduduRepository;
 
@@ -41,6 +43,12 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
             id.toString()
         ))
         .toDomain();
+  }
+
+  @Override
+  public Optional<Ddudu> getOptionalDdudu(Long id) {
+    return dduduRepository.findById(id)
+        .map(DduduEntity::toDomain);
   }
 
   @Override
@@ -129,6 +137,11 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
         userId, request, query, isMine, false);
 
     return getScrollResponse(ddudusWithCursor, request.getSize());
+  }
+
+  @Override
+  public void delete(Ddudu ddudu) {
+    dduduRepository.delete(DduduEntity.from(ddudu));
   }
 
   private ScrollResponse<SimpleDduduSearchDto> getScrollResponse(
