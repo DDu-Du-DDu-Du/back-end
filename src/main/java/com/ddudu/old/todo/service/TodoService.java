@@ -12,6 +12,7 @@ import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
+import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.LikeInfo;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
@@ -100,6 +101,21 @@ public class TodoService {
     LocalDateTime endDate = startDate.plusMonths(1);
 
     return generateCompletions(startDate, endDate, loginUser, user);
+  }
+
+  @Transactional
+  public BasicDduduResponse update(Long loginId, Long id, UpdateTodoRequest request) {
+    Ddudu ddudu = findTodo(id, DduduErrorCode.ID_NOT_EXISTING);
+
+    Goal goal = findGoal(request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING);
+
+    checkGoalPermission(loginId, goal);
+
+    ddudu.applyTodoUpdates(goal, request.name(), request.beginAt());
+
+    oldTodoRepository.update(ddudu);
+
+    return BasicDduduResponse.from(ddudu);
   }
 
   @Transactional

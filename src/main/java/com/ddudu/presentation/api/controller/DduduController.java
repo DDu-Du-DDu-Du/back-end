@@ -4,7 +4,6 @@ import static java.util.Objects.isNull;
 
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
-import com.ddudu.application.dto.ddudu.request.ChangeNameRequest;
 import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
 import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
@@ -14,7 +13,6 @@ import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
-import com.ddudu.application.port.in.ddudu.ChangeNameUseCase;
 import com.ddudu.application.port.in.ddudu.CreateDduduUseCase;
 import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
@@ -23,6 +21,7 @@ import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
 import com.ddudu.application.port.in.ddudu.SwitchStatusUseCase;
+import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.service.TodoService;
@@ -63,7 +62,6 @@ public class DduduController implements DduduControllerDoc {
   private final RepeatUseCase repeatUseCase;
   private final DduduSearchUseCase dduduSearchUseCase;
   private final SwitchStatusUseCase switchStatusUseCase;
-  private final ChangeNameUseCase changeNameUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -185,17 +183,19 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<IdResponse> changeName(
+  @Deprecated
+  public ResponseEntity<BasicDduduResponse> update(
       @Login
       Long loginId,
       @PathVariable
       Long id,
       @RequestBody
       @Valid
-      ChangeNameRequest request
+      UpdateTodoRequest request
   ) {
-    BasicDduduResponse response = changeNameUseCase.change(loginId, id, request);
-    return ResponseEntity.ok(new IdResponse(response.id()));
+    BasicDduduResponse response = todoService.update(loginId, id, request);
+
+    return ResponseEntity.ok(response);
   }
 
   @PatchMapping("/{id}/status")
