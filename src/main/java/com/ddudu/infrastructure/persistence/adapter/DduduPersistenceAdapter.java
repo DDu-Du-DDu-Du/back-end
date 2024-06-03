@@ -141,7 +141,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public void delete(Ddudu ddudu) {
-    dduduRepository.deleteById(ddudu.getId());
+    dduduRepository.delete(DduduEntity.from(ddudu));
   }
 
   private ScrollResponse<SimpleDduduSearchDto> getScrollResponse(
