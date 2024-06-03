@@ -8,12 +8,10 @@ import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.user.domain.UserRepository;
@@ -134,108 +132,6 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findById)
-          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
-    }
-
-  }
-
-  @Nested
-  class 할_일_수정_테스트 {
-
-    Ddudu ddudu;
-    Goal changedGoal;
-    String changedName;
-    LocalDateTime changedBeginAt;
-
-    @BeforeEach
-    void setUp() {
-      Goal goal = createGoal(goalName, user);
-      ddudu = createTodo(name, goal, user);
-
-      String newGoalName = faker.lorem()
-          .word();
-      changedGoal = createGoal(newGoalName, user);
-
-      changedName = faker.lorem()
-          .word();
-      changedBeginAt = LocalDateTime.now();
-    }
-
-    @Test
-    void 할_일_수정에_성공한다() {
-      // given
-      UpdateTodoRequest request = new UpdateTodoRequest(
-          changedGoal.getId(), changedName, changedBeginAt);
-
-      // when
-      BasicDduduResponse response = todoService.update(user.getId(), ddudu.getId(), request);
-
-      // then
-      Optional<Ddudu> actual = oldTodoRepository.findById(ddudu.getId());
-      assertThat(actual.get()).extracting(
-              "goal", "name", "status")
-          .containsExactly(changedGoal, response.name(), response.status());
-    }
-
-    @Test
-    void 유효하지_않은_ID인_경우_수정에_실패한다() {
-      // given
-      Long invalidId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      Long goalId = ddudu.getGoalId();
-      UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
-
-      // when
-      ThrowingCallable update = () -> todoService.update(user.getId(), invalidId, request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
-          .withMessage(DduduErrorCode.ID_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
-      // given
-      Long invalidUserId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      Long goalId = ddudu.getGoalId();
-      UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
-
-      // when
-      ThrowingCallable update = () -> todoService.update(invalidUserId, ddudu.getId(), request);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
-          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
-    }
-
-    @Test
-    void 유효하지_않은_목표_ID인_경우_수정에_실패한다() {
-      // given
-      Long invalidGoalId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      UpdateTodoRequest request = new UpdateTodoRequest(invalidGoalId, name, beginAt);
-
-      // when
-      ThrowingCallable update = () -> todoService.update(user.getId(), ddudu.getId(), request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
-          .withMessage(DduduErrorCode.GOAL_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 로그인_사용자가_목표에_대한_권한이_없는_경우_수정에_실패한다() {
-      // given
-      User anotherUser = createUser();
-      Goal goalFromAnotherUser = createGoal(goalName, anotherUser);
-      UpdateTodoRequest request = new UpdateTodoRequest(goalFromAnotherUser.getId(), name, beginAt);
-
-      // when
-      ThrowingCallable update = () -> todoService.update(user.getId(), ddudu.getId(), request);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
           .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 

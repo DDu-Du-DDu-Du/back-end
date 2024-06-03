@@ -129,6 +129,12 @@ public class Ddudu {
         .build();
   }
 
+  public Ddudu changeName(String name) {
+    return getFullBuilder()
+        .name(name)
+        .build();
+  }
+
   private DduduBuilder getFullBuilder() {
     return Ddudu.builder()
         .id(this.id)
@@ -147,11 +153,11 @@ public class Ddudu {
   ) {
     checkArgument(Objects.nonNull(goalId), DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
     checkArgument(Objects.nonNull(userId), DduduErrorCode.NULL_USER.getCodeName());
-    validateTodo(name);
+    validateName(name);
     validatePeriod(beginAt, endAt);
   }
 
-  private void validateTodo(String name) {
+  private void validateName(String name) {
     checkArgument(StringUtils.isNotBlank(name), DduduErrorCode.BLANK_NAME.getCodeName());
     checkArgument(
         name.length() <= MAX_NAME_LENGTH, DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
@@ -162,7 +168,6 @@ public class Ddudu {
       return;
     }
 
-    System.out.println("beginAt: " + beginAt + ", endAt: " + endAt);
     checkArgument(
         !beginAt.isAfter(endAt), DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
   }
