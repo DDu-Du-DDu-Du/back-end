@@ -16,8 +16,9 @@ public enum RepeatableDduduErrorCode implements ErrorCode {
   UNABLE_TO_END_BEFORE_START(6007, "종료 날짜는 시작 날짜보다 뒤여야 합니다."),
   UNABLE_TO_FINISH_BEFORE_BEGIN(6008, "종료 시간은 시작 시간보다 뒤여야 합니다."),
   INVALID_REPEAT_TYPE(6009, "유효하지 않은 반복 유형입니다."),
-  INVALID_DAY_OF_WEEK(6010, "유효하지 않은 요일입니다.");
-
+  INVALID_DAY_OF_WEEK(6010, "유효하지 않은 요일입니다."),
+  EMPTY_REPEAT_DATES_OF_MONTH(6011, "반복되는 날짜가 없습니다."),
+  EMPTY_REPEAT_DAYS_OF_WEEK(6012, "반복되는 요일이 없습니다.");
 
   private final int code;
   private final String message;

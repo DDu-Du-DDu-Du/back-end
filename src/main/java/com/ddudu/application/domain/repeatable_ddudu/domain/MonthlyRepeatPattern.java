@@ -1,20 +1,31 @@
 package com.ddudu.application.domain.repeatable_ddudu.domain;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import com.ddudu.application.domain.repeatable_ddudu.exception.RepeatableDduduErrorCode;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-@Builder
-@AllArgsConstructor
 public class MonthlyRepeatPattern implements RepeatPattern {
 
-  private List<Integer> repeatedDatesOfMonth;
-  private boolean includeLastDay;
+  private final List<Integer> repeatedDatesOfMonth;
+  private final boolean includeLastDay;
+
+  @Builder
+  public MonthlyRepeatPattern(List<Integer> repeatedDatesOfMonth, Boolean includeLastDay) {
+    checkArgument(
+        !repeatedDatesOfMonth.isEmpty(),
+        RepeatableDduduErrorCode.EMPTY_REPEAT_DATES_OF_MONTH.getCodeName()
+    );
+    this.repeatedDatesOfMonth = repeatedDatesOfMonth;
+    this.includeLastDay = Objects.requireNonNullElse(includeLastDay, false);
+  }
 
   @Override
   public List<LocalDate> calculateRepeatDates(LocalDate startDate, LocalDate endDate) {

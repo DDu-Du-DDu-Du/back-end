@@ -1,17 +1,26 @@
 package com.ddudu.application.domain.repeatable_ddudu.domain;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import com.ddudu.application.domain.repeatable_ddudu.exception.RepeatableDduduErrorCode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-@Builder
-@AllArgsConstructor
 public class WeeklyRepeatPattern implements RepeatPattern {
 
-  private List<DayOfWeek> repeatedDaysOfWeek;
+  private final List<DayOfWeek> repeatedDaysOfWeek;
+
+  @Builder
+  public WeeklyRepeatPattern(List<DayOfWeek> repeatedDaysOfWeek) {
+    checkArgument(
+        !repeatedDaysOfWeek.isEmpty(),
+        RepeatableDduduErrorCode.EMPTY_REPEAT_DAYS_OF_WEEK.getCodeName()
+    );
+    this.repeatedDaysOfWeek = repeatedDaysOfWeek;
+  }
 
   @Override
   public List<LocalDate> calculateRepeatDates(LocalDate startDate, LocalDate endDate) {
