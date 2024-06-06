@@ -17,11 +17,11 @@ public class MonthlyRepeatPattern implements RepeatPattern {
   private boolean includeLastDay;
 
   @Override
-  public List<LocalDate> calculateRepetitionDates(LocalDate startDate, LocalDate endDate) {
+  public List<LocalDate> calculateRepeatDates(LocalDate startDate, LocalDate endDate) {
     return Stream.iterate(startDate.withDayOfMonth(1), date -> date.plusMonths(1))
         .limit(countMonthsBetween(startDate, endDate))
         .map(YearMonth::from)
-        .flatMap(this::getDatesToBeRepeatIn)
+        .flatMap(this::getRepeatDatesIn)
         .filter(date -> isBetween(date, startDate, endDate))
         .toList();
   }
@@ -31,24 +31,24 @@ public class MonthlyRepeatPattern implements RepeatPattern {
         .until(endDate, ChronoUnit.MONTHS) + 1;
   }
 
-  private Stream<LocalDate> getDatesToBeRepeatIn(YearMonth month) {
+  private Stream<LocalDate> getRepeatDatesIn(YearMonth month) {
     List<LocalDate> dates = new ArrayList<>();
 
-    addDatesToBeRepeatIn(dates, month);
+    addRepeatDatesIn(dates, month);
     addLastDayOfMonthIfNeeded(dates, month);
 
     return dates.stream();
   }
 
-  private void addDatesToBeRepeatIn(List<LocalDate> dates, YearMonth month) {
-    for (Integer dateToBeRepeat : repeatedDatesOfMonth) {
-      addDateToBeRepeat(dates, dateToBeRepeat, month);
+  private void addRepeatDatesIn(List<LocalDate> dates, YearMonth month) {
+    for (Integer repeatDate : repeatedDatesOfMonth) {
+      addRepeatDate(dates, repeatDate, month);
     }
   }
 
-  private void addDateToBeRepeat(List<LocalDate> dates, Integer dayToRepeat, YearMonth month) {
-    if (dayToRepeat > 0 && dayToRepeat <= month.lengthOfMonth()) {
-      dates.add(month.atDay(dayToRepeat));
+  private void addRepeatDate(List<LocalDate> dates, Integer repeatDate, YearMonth month) {
+    if (repeatDate > 0 && repeatDate <= month.lengthOfMonth()) {
+      dates.add(month.atDay(repeatDate));
     }
   }
 

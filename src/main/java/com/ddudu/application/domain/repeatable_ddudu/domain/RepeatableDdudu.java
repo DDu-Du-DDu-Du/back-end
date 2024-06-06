@@ -51,8 +51,8 @@ public class RepeatableDdudu {
     this.endAt = endAt;
   }
 
-  public List<LocalDate> getRepetitionDates() {
-    return repeatPattern.calculateRepetitionDates(startDate, endDate);
+  public List<LocalDate> getRepeatDates() {
+    return repeatPattern.calculateRepeatDates(startDate, endDate);
   }
 
   private void validate(

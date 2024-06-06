@@ -14,7 +14,7 @@ public class WeeklyRepeatPattern implements RepeatPattern {
   private List<DayOfWeek> repeatedDaysOfWeek;
 
   @Override
-  public List<LocalDate> calculateRepetitionDates(LocalDate startDate, LocalDate endDate) {
+  public List<LocalDate> calculateRepeatDates(LocalDate startDate, LocalDate endDate) {
     return Stream.iterate(startDate, date -> date.plusDays(1))
         .limit(countDaysBetween(startDate, endDate))
         .filter(date -> repeatedDaysOfWeek.contains(date.getDayOfWeek()))

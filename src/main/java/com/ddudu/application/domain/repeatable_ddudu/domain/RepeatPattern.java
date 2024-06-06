@@ -20,6 +20,6 @@ public interface RepeatPattern {
     };
   }
 
-  List<LocalDate> calculateRepetitionDates(LocalDate startDate, LocalDate endDate);
+  List<LocalDate> calculateRepeatDates(LocalDate startDate, LocalDate endDate);
 
 }
