@@ -28,7 +28,7 @@ public class RepeatableDduduDomainService {
   }
 
   public List<Ddudu> createRepeatedDdudus(Long userId, RepeatableDdudu repeatableDdudu) {
-    return repeatableDdudu.getRepetitionDates()
+    return repeatableDdudu.getRepeatDates()
         .stream()
         .map(date -> Ddudu.builder()
             .name(repeatableDdudu.getName())
@@ -46,8 +46,8 @@ public class RepeatableDduduDomainService {
   private RepeatPattern createRepeatPattern(CreateRepeatableDduduRequest request) {
     return RepeatPattern.create(
         Objects.requireNonNull(RepeatType.from(request.repeatType())),
-        request.repeatDays(),
-        request.repeatDates(),
+        request.repeatDaysOfWeek(),
+        request.repeatDatesOfMonth(),
         request.lastDayOfMonth()
     );
   }

@@ -33,19 +33,19 @@ public record CreateRepeatableDduduRequest(
     @NotBlank(message = "6003 NULL_REPEAT_TYPE")
     String repeatType,
     @Schema(
-        name = "repeatDays",
+        name = "repeatDaysOfWeek",
         description = "반복 요일 (WEEKLY일 때만)",
         nullable = true,
         example = "[\"월\", \"화\"]"
     )
-    List<String> repeatDays,
+    List<String> repeatDaysOfWeek,
     @Schema(
-        name = "repeatDates",
+        name = "repeatDatesOfMonth",
         description = "반복 날짜 (MONTHLY 때만)",
         nullable = true,
         example = "[1, 15]"
     )
-    List<Integer> repeatDates,
+    List<Integer> repeatDatesOfMonth,
     @Schema(
         name = "lastDayOfMonth",
         description = "마지막 날 반복 여부 (MONTHLY 때만)",
