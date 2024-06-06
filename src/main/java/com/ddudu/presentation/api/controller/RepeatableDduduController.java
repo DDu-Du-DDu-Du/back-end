@@ -1,9 +1,9 @@
 package com.ddudu.presentation.api.controller;
 
-import com.ddudu.application.dto.repeated_ddudu.requset.CreateRepeatitiveDduduRequest;
+import com.ddudu.application.dto.repeatable_ddudu.requset.CreateRepeatableDduduRequest;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
-import com.ddudu.presentation.api.doc.RepeatitiveDduduControllerDoc;
+import com.ddudu.presentation.api.doc.RepeatableDduduControllerDoc;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/repeatitive-ddudus")
 @RequiredArgsConstructor
-public class RepeatitiveDduduController implements RepeatitiveDduduControllerDoc {
+public class RepeatableDduduController implements RepeatableDduduControllerDoc {
 
   @PostMapping
   public ResponseEntity<IdResponse> create(
@@ -23,7 +23,7 @@ public class RepeatitiveDduduController implements RepeatitiveDduduControllerDoc
       Long loginId,
       @RequestBody
       @Valid
-      CreateRepeatitiveDduduRequest request
+      CreateRepeatableDduduRequest request
   ) {
 
     return null;

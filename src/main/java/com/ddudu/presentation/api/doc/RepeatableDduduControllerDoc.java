@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.doc;
 
-import com.ddudu.application.dto.repeated_ddudu.requset.CreateRepeatitiveDduduRequest;
+import com.ddudu.application.dto.repeatable_ddudu.requset.CreateRepeatableDduduRequest;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 @Tag(name = "반복 뚜두 관련 API")
-public interface RepeatitiveDduduControllerDoc {
+public interface RepeatableDduduControllerDoc {
 
   @Operation(summary = "반복 뚜두 생성")
   @ApiResponse(
@@ -21,6 +21,6 @@ public interface RepeatitiveDduduControllerDoc {
           schema = @Schema(implementation = IdResponse.class)
       )
   )
-  ResponseEntity<IdResponse> create(Long loginId, CreateRepeatitiveDduduRequest request);
+  ResponseEntity<IdResponse> create(Long loginId, CreateRepeatableDduduRequest request);
 
 }

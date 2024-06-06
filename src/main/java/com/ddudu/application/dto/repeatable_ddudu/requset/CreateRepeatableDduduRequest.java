@@ -1,4 +1,4 @@
-package com.ddudu.application.dto.repeated_ddudu.requset;
+package com.ddudu.application.dto.repeatable_ddudu.requset;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Schema(description = "반복 뚜두 생성 요청")
-public record CreateRepeatitiveDduduRequest(
+public record CreateRepeatableDduduRequest(
     @Schema(
         name = "name",
         description = "반복 뚜두명",
