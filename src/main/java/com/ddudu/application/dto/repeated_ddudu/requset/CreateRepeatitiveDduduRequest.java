@@ -9,7 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Schema(description = "반복 뚜두 생성 요청")
-public record CreateRepeatitiveDdudu(
+public record CreateRepeatitiveDduduRequest(
     @Schema(
         name = "name",
         description = "반복 뚜두명",

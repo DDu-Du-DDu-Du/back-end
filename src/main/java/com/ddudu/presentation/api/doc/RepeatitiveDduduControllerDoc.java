@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.doc;
 
-import com.ddudu.application.dto.repeated_ddudu.requset.CreateRepeatitiveDdudu;
+import com.ddudu.application.dto.repeated_ddudu.requset.CreateRepeatitiveDduduRequest;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,6 +21,6 @@ public interface RepeatitiveDduduControllerDoc {
           schema = @Schema(implementation = IdResponse.class)
       )
   )
-  ResponseEntity<IdResponse> create(Long loginId, CreateRepeatitiveDdudu request);
+  ResponseEntity<IdResponse> create(Long loginId, CreateRepeatitiveDduduRequest request);
 
 }

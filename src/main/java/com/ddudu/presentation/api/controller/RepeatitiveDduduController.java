@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.controller;
 
-import com.ddudu.application.dto.repeated_ddudu.requset.CreateRepeatitiveDdudu;
+import com.ddudu.application.dto.repeated_ddudu.requset.CreateRepeatitiveDduduRequest;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import com.ddudu.presentation.api.doc.RepeatitiveDduduControllerDoc;
@@ -23,7 +23,7 @@ public class RepeatitiveDduduController implements RepeatitiveDduduControllerDoc
       Long loginId,
       @RequestBody
       @Valid
-      CreateRepeatitiveDdudu request
+      CreateRepeatitiveDduduRequest request
   ) {
 
     return null;
