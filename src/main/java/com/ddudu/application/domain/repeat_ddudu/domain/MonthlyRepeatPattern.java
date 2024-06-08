@@ -1,30 +1,33 @@
-package com.ddudu.application.domain.repeatable_ddudu.domain;
+package com.ddudu.application.domain.repeat_ddudu.domain;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
-import com.ddudu.application.domain.repeatable_ddudu.exception.RepeatableDduduErrorCode;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.beans.ConstructorProperties;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.Builder;
 
 public class MonthlyRepeatPattern implements RepeatPattern {
 
-  private final List<Integer> repeatedDatesOfMonth;
-  private final boolean includeLastDay;
+  @JsonProperty(access = READ_ONLY)
+  private final List<Integer> repeatDaysOfMonth;
+  @JsonProperty
+  private final Boolean lastDay;
 
   @Builder
-  public MonthlyRepeatPattern(List<Integer> repeatedDatesOfMonth, Boolean includeLastDay) {
-    checkArgument(
-        !repeatedDatesOfMonth.isEmpty(),
-        RepeatableDduduErrorCode.EMPTY_REPEAT_DATES_OF_MONTH.getCodeName()
-    );
-    this.repeatedDatesOfMonth = repeatedDatesOfMonth;
-    this.includeLastDay = Objects.requireNonNullElse(includeLastDay, false);
+  @ConstructorProperties({"repeatDaysOfMonth", "lastDay"})
+  public MonthlyRepeatPattern(
+      List<Integer> repeatDaysOfMonth,
+      Boolean lastDay
+  ) {
+
+    this.repeatDaysOfMonth = repeatDaysOfMonth;
+    this.lastDay = lastDay;
   }
 
   @Override
@@ -52,7 +55,7 @@ public class MonthlyRepeatPattern implements RepeatPattern {
   }
 
   private void addRepeatDatesIn(List<LocalDate> dates, YearMonth month) {
-    for (Integer repeatDate : repeatedDatesOfMonth) {
+    for (Integer repeatDate : repeatDaysOfMonth) {
       addRepeatDate(dates, repeatDate, month);
     }
   }
@@ -64,7 +67,7 @@ public class MonthlyRepeatPattern implements RepeatPattern {
   }
 
   private void addLastDayOfMonthIfNeeded(List<LocalDate> dates, YearMonth month) {
-    if (includeLastDay && !dates.contains(month.atEndOfMonth())) {
+    if (lastDay && !dates.contains(month.atEndOfMonth())) {
       dates.add(month.atEndOfMonth());
     }
   }
