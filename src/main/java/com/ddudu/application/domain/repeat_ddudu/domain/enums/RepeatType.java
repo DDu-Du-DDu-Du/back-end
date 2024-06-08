@@ -1,8 +1,8 @@
-package com.ddudu.application.domain.repeatable_ddudu.domain.enums;
+package com.ddudu.application.domain.repeat_ddudu.domain.enums;
 
 import static java.util.Objects.isNull;
 
-import com.ddudu.application.domain.repeatable_ddudu.exception.RepeatableDduduErrorCode;
+import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import java.util.Arrays;
 
 public enum RepeatType {
@@ -21,6 +21,6 @@ public enum RepeatType {
         .findFirst()
         .orElseThrow(
             () -> new IllegalArgumentException(
-                RepeatableDduduErrorCode.INVALID_REPEAT_TYPE.getCodeName()));
+                RepeatDduduErrorCode.INVALID_REPEAT_TYPE.getCodeName()));
   }
 }

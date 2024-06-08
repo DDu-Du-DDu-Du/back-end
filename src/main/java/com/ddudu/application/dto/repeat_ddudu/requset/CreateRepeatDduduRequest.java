@@ -1,4 +1,4 @@
-package com.ddudu.application.dto.repeatable_ddudu.requset;
+package com.ddudu.application.dto.repeat_ddudu.requset;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Schema(description = "반복 뚜두 생성 요청")
-public record CreateRepeatableDduduRequest(
+public record CreateRepeatDduduRequest(
     @Schema(
         name = "name",
         description = "반복 뚜두명",
@@ -45,7 +45,7 @@ public record CreateRepeatableDduduRequest(
         nullable = true,
         example = "[1, 15]"
     )
-    List<Integer> repeatDatesOfMonth,
+    List<Integer> repeatDaysOfMonth,
     @Schema(
         name = "lastDayOfMonth",
         description = "마지막 날 반복 여부 (MONTHLY 때만)",

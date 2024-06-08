@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.repeatable_ddudu.exception;
+package com.ddudu.application.domain.repeat_ddudu.exception;
 
 import com.ddudu.application.exception.ErrorCode;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum RepeatableDduduErrorCode implements ErrorCode {
+public enum RepeatDduduErrorCode implements ErrorCode {
   BLANK_NAME(6001, "반복 뚜두명은 필수값입니다."),
   NULL_GOAL_VALUE(6002, "목표는 필수값입니다."),
   NULL_REPEAT_TYPE(6003, "반복 유형은 필수값입니다."),

@@ -1,4 +1,4 @@
-package com.ddudu.application.domain.repeatable_ddudu.domain;
+package com.ddudu.application.domain.repeat_ddudu.domain;
 
 import java.time.LocalDate;
 import java.util.List;

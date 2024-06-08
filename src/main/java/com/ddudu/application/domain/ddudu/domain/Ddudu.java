@@ -26,7 +26,7 @@ public class Ddudu {
   private final Long id;
   private final Long goalId;
   private final Long userId;
-  private final Long repeatableDduduId;
+  private final Long repeatDduduId;
   private final String name;
   private final DduduStatus status;
   private final boolean isPostponed;
@@ -40,7 +40,7 @@ public class Ddudu {
 
   @Builder
   private Ddudu(
-      Long id, Long goalId, Long userId, Long repeatableDduduId, String name, Boolean isPostponed,
+      Long id, Long goalId, Long userId, Long repeatDduduId, String name, Boolean isPostponed,
       DduduStatus status, String statusValue, LocalDate scheduledOn, LocalTime beginAt,
       LocalTime endAt,
       // TODO: delete below fields after migration as left for avoidance of compile errors
@@ -51,7 +51,7 @@ public class Ddudu {
     this.id = id;
     this.goalId = goalId;
     this.userId = userId;
-    this.repeatableDduduId = repeatableDduduId;
+    this.repeatDduduId = repeatDduduId;
     this.name = name;
     this.status = Objects.requireNonNullElse(status, DduduStatus.from(statusValue));
     this.isPostponed = Objects.requireNonNullElse(isPostponed, false);
@@ -143,6 +143,7 @@ public class Ddudu {
         .id(this.id)
         .goalId(this.goalId)
         .userId(this.userId)
+        .repeatDduduId(this.repeatDduduId)
         .name(this.name)
         .status(this.status)
         .scheduledOn(this.scheduledOn)
