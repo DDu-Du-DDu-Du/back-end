@@ -1,9 +1,9 @@
-package com.ddudu.application.domain.repeatable_ddudu.util;
+package com.ddudu.application.domain.repeat_ddudu.util;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 
-import com.ddudu.application.domain.repeatable_ddudu.exception.RepeatableDduduErrorCode;
+import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
 import java.util.HashMap;
@@ -19,16 +19,21 @@ public final class DayOfWeekUtil {
     for (DayOfWeek day : DayOfWeek.values()) {
       String koreanDay = day.getDisplayName(TextStyle.SHORT, Locale.KOREAN);
       dayOfWeekMap.put(koreanDay, day);
+      dayOfWeekMap.put(day.name(), day);
     }
   }
 
   public static DayOfWeek toDaysOfWeek(String dayOfWeek) {
-    checkArgument(nonNull(dayOfWeek), RepeatableDduduErrorCode.INVALID_DAY_OF_WEEK.getCodeName());
+    checkArgument(nonNull(dayOfWeek), RepeatDduduErrorCode.INVALID_DAY_OF_WEEK.getCodeName());
     return dayOfWeekMap.get(dayOfWeek);
   }
 
-  public static List<DayOfWeek> toDaysOfWeek(List<String> dayOfWeeks) {
-    return dayOfWeeks.stream()
+  public static List<DayOfWeek> toDaysOfWeek(List<String> daysOfWeek) {
+    if (daysOfWeek == null) {
+      return null;
+    }
+
+    return daysOfWeek.stream()
         .map(DayOfWeekUtil::toDaysOfWeek)
         .toList();
   }
