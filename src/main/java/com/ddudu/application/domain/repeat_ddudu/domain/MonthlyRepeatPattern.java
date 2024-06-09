@@ -1,7 +1,10 @@
 package com.ddudu.application.domain.repeat_ddudu.domain;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.nonNull;
 
+import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.beans.ConstructorProperties;
 import java.time.LocalDate;
@@ -10,7 +13,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import lombok.Builder;
 
 public class MonthlyRepeatPattern implements RepeatPattern {
 
@@ -19,15 +21,32 @@ public class MonthlyRepeatPattern implements RepeatPattern {
   @JsonProperty
   private final Boolean lastDay;
 
-  @Builder
   @ConstructorProperties({"repeatDaysOfMonth", "lastDay"})
   public MonthlyRepeatPattern(
       List<Integer> repeatDaysOfMonth,
       Boolean lastDay
   ) {
-
     this.repeatDaysOfMonth = repeatDaysOfMonth;
     this.lastDay = lastDay;
+  }
+
+  public static MonthlyRepeatPattern withValidation(
+      List<Integer> repeatDaysOfMonth, Boolean lastDay
+  ) {
+    validate(repeatDaysOfMonth, lastDay);
+    return new MonthlyRepeatPattern(repeatDaysOfMonth, lastDay);
+  }
+
+  private static void validate(List<Integer> repeatDaysOfMonth, Boolean lastDay) {
+    checkArgument(
+        nonNull(repeatDaysOfMonth) && !repeatDaysOfMonth.isEmpty(),
+        RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH.getCodeName()
+    );
+
+    checkArgument(
+        nonNull(lastDay),
+        RepeatDduduErrorCode.NULL_LAST_DAY.getCodeName()
+    );
   }
 
   @Override
