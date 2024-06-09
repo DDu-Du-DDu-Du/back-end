@@ -16,7 +16,7 @@ import lombok.Getter;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class RepeatDdudu {
+public final class RepeatDdudu {
 
   private static final int MAX_NAME_LENGTH = 50;
 
