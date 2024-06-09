@@ -2,6 +2,7 @@ package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
@@ -18,6 +19,7 @@ import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
+import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -99,6 +101,14 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
             .map(GoalEntity::from)
             .toList()
     );
+  }
+
+  @Override
+  public List<Ddudu> getRepeatedDdudus(RepeatDdudu repeatDdudu) {
+    return dduduRepository.findAllByRepeatDdudu(RepeatDduduEntity.from(repeatDdudu))
+        .stream()
+        .map(DduduEntity::toDomain)
+        .toList();
   }
 
   @Override
