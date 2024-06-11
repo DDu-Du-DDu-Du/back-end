@@ -5,7 +5,7 @@ import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatPattern;
 import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
-import com.ddudu.application.dto.repeat_ddudu.requset.CreateRepeatDduduRequest;
+import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;

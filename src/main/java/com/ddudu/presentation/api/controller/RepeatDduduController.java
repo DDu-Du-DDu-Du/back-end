@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.controller;
 
-import com.ddudu.application.dto.repeat_ddudu.requset.CreateRepeatDduduRequest;
+import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.application.port.in.repeat_ddudu.CreateRepeatDduduUseCase;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;

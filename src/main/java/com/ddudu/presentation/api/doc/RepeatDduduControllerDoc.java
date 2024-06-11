@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.doc;
 
-import com.ddudu.application.dto.repeat_ddudu.requset.CreateRepeatDduduRequest;
+import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

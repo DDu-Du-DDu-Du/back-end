@@ -1,4 +1,4 @@
-package com.ddudu.application.dto.repeat_ddudu.requset;
+package com.ddudu.application.dto.repeat_ddudu.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

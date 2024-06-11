@@ -5,7 +5,7 @@ import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.repeat_ddudu.service.RepeatDduduDomainService;
-import com.ddudu.application.dto.repeat_ddudu.requset.CreateRepeatDduduRequest;
+import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.application.port.in.repeat_ddudu.CreateRepeatDduduUseCase;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
