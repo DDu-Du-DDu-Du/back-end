@@ -18,13 +18,14 @@ public enum RepeatType {
   },
   WEEKLY() {
     RepeatPattern createPattern(RepeatPatternDto request) {
-      return new WeeklyRepeatPattern(request.repeatDaysOfWeek());
+      return WeeklyRepeatPattern.withValidation(request.repeatDaysOfWeek());
     }
 
   },
   MONTHLY() {
     RepeatPattern createPattern(RepeatPatternDto request) {
-      return new MonthlyRepeatPattern(request.repeatDaysOfMonth(), request.lastDayOfMonth());
+      return MonthlyRepeatPattern.withValidation(
+          request.repeatDaysOfMonth(), request.lastDayOfMonth());
     }
   };
 
