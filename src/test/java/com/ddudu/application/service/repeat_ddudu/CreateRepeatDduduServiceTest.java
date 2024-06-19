@@ -10,7 +10,7 @@ import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.repeat_ddudu.requset.CreateRepeatDduduRequest;
+import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
