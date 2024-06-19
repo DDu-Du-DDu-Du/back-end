@@ -2,6 +2,7 @@ package com.ddudu.application.domain.repeat_ddudu.domain;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 
 public class MonthlyRepeatPattern implements RepeatPattern {
 
+  private static final Boolean DEFAULT_LAST_DAY = false;
   @JsonProperty(access = READ_ONLY)
   private final List<Integer> repeatDaysOfMonth;
   @JsonProperty
@@ -27,7 +29,7 @@ public class MonthlyRepeatPattern implements RepeatPattern {
       Boolean lastDay
   ) {
     this.repeatDaysOfMonth = repeatDaysOfMonth;
-    this.lastDay = lastDay;
+    this.lastDay = isNull(lastDay) ? DEFAULT_LAST_DAY : lastDay;
   }
 
   public static MonthlyRepeatPattern withValidation(

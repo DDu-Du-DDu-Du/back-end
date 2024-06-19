@@ -191,26 +191,6 @@ class RepeatDduduTest {
     }
 
     @Test
-    void 먼슬리_반복_뚜두의_경우_마지막_날_반복_여부가_없으면_생성을_실패한다() {
-      // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
-          .goalId(goalId)
-          .name(name)
-          .repeatType(RepeatType.MONTHLY)
-          .repeatDaysOfMonth(RepeatDduduFixture.getRandomRepeatDaysOfMonth(1))
-          .lastDayOfMonth(null)
-          .startDate(startDate)
-          .endDate(endDate);
-
-      // when
-      ThrowingCallable create = builder::build;
-
-      // then
-      assertThatIllegalArgumentException().isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.NULL_LAST_DAY.getCodeName());
-    }
-
-    @Test
     void 시작_날짜가_없으면_생성을_실패한다() {
       // given
       RepeatDduduBuilder builder = RepeatDdudu.builder()
