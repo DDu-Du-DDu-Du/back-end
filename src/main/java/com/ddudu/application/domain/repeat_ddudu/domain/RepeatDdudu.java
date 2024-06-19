@@ -6,6 +6,7 @@ import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
+import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatPatternRequest;
 import io.micrometer.common.util.StringUtils;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,8 +34,8 @@ public final class RepeatDdudu {
 
   @Builder
   public RepeatDdudu(
-      Long id, Long goalId, String name, RepeatType repeatType, List<String> repeatDaysOfWeek,
-      List<Integer> repeatDaysOfMonth, Boolean lastDayOfMonth, RepeatPattern repeatPattern,
+      Long id, Long goalId, String name, RepeatType repeatType,
+      CreateRepeatPatternRequest createRepeatPatternRequest, RepeatPattern repeatPattern,
       LocalDate startDate, LocalDate endDate, LocalTime beginAt, LocalTime endAt
   ) {
     validate(
@@ -46,7 +47,7 @@ public final class RepeatDdudu {
     this.name = name;
     this.repeatType = repeatType;
     this.repeatPattern = isNull(repeatPattern) ?
-        RepeatPattern.create(repeatType, repeatDaysOfWeek, repeatDaysOfMonth, lastDayOfMonth)
+        repeatType.createRepeatPattern(createRepeatPatternRequest)
         : repeatPattern;
     this.startDate = startDate;
     this.endDate = endDate;

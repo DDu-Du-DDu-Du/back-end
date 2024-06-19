@@ -5,6 +5,7 @@ import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
 import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatPatternRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
@@ -19,9 +20,7 @@ public class RepeatDduduDomainService {
         .startDate(request.startDate())
         .endDate(request.endDate())
         .repeatType(RepeatType.from(request.repeatType()))
-        .repeatDaysOfWeek(request.repeatDaysOfWeek())
-        .repeatDaysOfMonth(request.repeatDaysOfMonth())
-        .lastDayOfMonth(request.lastDayOfMonth())
+        .createRepeatPatternRequest(CreateRepeatPatternRequest.from(request))
         .beginAt(request.beginAt())
         .endAt(request.endAt())
         .build();
