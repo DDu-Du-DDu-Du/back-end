@@ -1,9 +1,9 @@
 package com.ddudu.application.service.repeat_ddudu;
 
 import com.ddudu.application.annotation.UseCase;
-import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
+import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import com.ddudu.application.domain.repeat_ddudu.service.RepeatDduduDomainService;
 import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.application.port.in.repeat_ddudu.CreateRepeatDduduUseCase;
@@ -26,7 +26,7 @@ public class CreateRepeatDduduService implements CreateRepeatDduduUseCase {
   @Override
   public Long create(Long loginId, CreateRepeatDduduRequest request) {
     Goal goal = goalLoaderPort.getGoalOrElseThrow(
-        request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING.getCodeName());
+        request.goalId(), RepeatDduduErrorCode.NULL_GOAL_VALUE.getCodeName());
 
     goal.validateGoalCreator(loginId);
 

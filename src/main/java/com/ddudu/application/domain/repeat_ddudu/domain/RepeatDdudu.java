@@ -1,6 +1,7 @@
 package com.ddudu.application.domain.repeat_ddudu.domain;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
@@ -9,14 +10,13 @@ import io.micrometer.common.util.StringUtils;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class RepeatDdudu {
+public final class RepeatDdudu {
 
   private static final int MAX_NAME_LENGTH = 50;
 
@@ -33,16 +33,21 @@ public class RepeatDdudu {
 
   @Builder
   public RepeatDdudu(
-      Long id, Long goalId, String name, RepeatType repeatType, RepeatPattern repeatPattern,
+      Long id, Long goalId, String name, RepeatType repeatType, List<String> repeatDaysOfWeek,
+      List<Integer> repeatDaysOfMonth, Boolean lastDayOfMonth, RepeatPattern repeatPattern,
       LocalDate startDate, LocalDate endDate, LocalTime beginAt, LocalTime endAt
   ) {
-    validate(goalId, name, startDate, endDate, beginAt, endAt);
+    validate(
+        goalId, name, repeatType, startDate, endDate, beginAt, endAt
+    );
 
     this.id = id;
     this.goalId = goalId;
     this.name = name;
     this.repeatType = repeatType;
-    this.repeatPattern = repeatPattern;
+    this.repeatPattern = isNull(repeatPattern) ?
+        RepeatPattern.create(repeatType, repeatDaysOfWeek, repeatDaysOfMonth, lastDayOfMonth)
+        : repeatPattern;
     this.startDate = startDate;
     this.endDate = endDate;
     this.beginAt = beginAt;
@@ -54,10 +59,11 @@ public class RepeatDdudu {
   }
 
   private void validate(
-      Long goalId, String name, LocalDate startDate, LocalDate endDate, LocalTime beginAt,
-      LocalTime endAt
+      Long goalId, String name, RepeatType repeatType, LocalDate startDate, LocalDate endDate,
+      LocalTime beginAt, LocalTime endAt
   ) {
     checkArgument(nonNull(goalId), RepeatDduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+    checkArgument(nonNull(repeatType), RepeatDduduErrorCode.NULL_REPEAT_TYPE.getCodeName());
     validateName(name);
     validatePeriodOfRepeat(startDate, endDate);
     validatePeriodOfTime(beginAt, endAt);
@@ -81,7 +87,7 @@ public class RepeatDdudu {
   }
 
   private void validatePeriodOfTime(LocalTime beginAt, LocalTime endAt) {
-    if (Objects.isNull(beginAt) && Objects.isNull(endAt)) {
+    if (isNull(beginAt) && isNull(endAt)) {
       return;
     }
 

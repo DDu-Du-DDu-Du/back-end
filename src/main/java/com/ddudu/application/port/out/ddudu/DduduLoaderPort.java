@@ -2,6 +2,7 @@ package com.ddudu.application.port.out.ddudu;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
@@ -28,5 +29,7 @@ public interface DduduLoaderPort {
   List<TimeGroupedDdudus> getDailyDdudusOfUserGroupingByTime(
       LocalDate date, User user, List<Goal> goals
   );
+
+  List<Ddudu> getRepeatedDdudus(RepeatDdudu repeatDdudu);
 
 }

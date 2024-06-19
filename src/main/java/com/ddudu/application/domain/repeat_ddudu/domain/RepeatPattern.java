@@ -27,8 +27,8 @@ public interface RepeatPattern {
   ) {
     return switch (repeatType) {
       case DAILY -> new DailyRepeatPattern();
-      case WEEKLY -> new WeeklyRepeatPattern(repeatDays);
-      case MONTHLY -> new MonthlyRepeatPattern(repeatDates, lastDayOfMonth);
+      case WEEKLY -> WeeklyRepeatPattern.withValidation(repeatDays);
+      case MONTHLY -> MonthlyRepeatPattern.withValidation(repeatDates, lastDayOfMonth);
     };
   }
 
