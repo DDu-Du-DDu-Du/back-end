@@ -7,23 +7,23 @@ import com.ddudu.application.domain.repeat_ddudu.domain.MonthlyRepeatPattern;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatPattern;
 import com.ddudu.application.domain.repeat_ddudu.domain.WeeklyRepeatPattern;
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
-import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatPatternRequest;
+import com.ddudu.application.dto.repeat_ddudu.RepeatPatternDto;
 import java.util.Arrays;
 
 public enum RepeatType {
   DAILY() {
-    RepeatPattern createPattern(CreateRepeatPatternRequest request) {
+    RepeatPattern createPattern(RepeatPatternDto request) {
       return new DailyRepeatPattern();
     }
   },
   WEEKLY() {
-    RepeatPattern createPattern(CreateRepeatPatternRequest request) {
+    RepeatPattern createPattern(RepeatPatternDto request) {
       return new WeeklyRepeatPattern(request.repeatDaysOfWeek());
     }
 
   },
   MONTHLY() {
-    RepeatPattern createPattern(CreateRepeatPatternRequest request) {
+    RepeatPattern createPattern(RepeatPatternDto request) {
       return new MonthlyRepeatPattern(request.repeatDaysOfMonth(), request.lastDayOfMonth());
     }
   };
@@ -42,9 +42,9 @@ public enum RepeatType {
                 RepeatDduduErrorCode.INVALID_REPEAT_TYPE.getCodeName()));
   }
 
-  public RepeatPattern createRepeatPattern(CreateRepeatPatternRequest request) {
+  public RepeatPattern createRepeatPattern(RepeatPatternDto request) {
     return createPattern(request);
   }
 
-  abstract RepeatPattern createPattern(CreateRepeatPatternRequest request);
+  abstract RepeatPattern createPattern(RepeatPatternDto request);
 }
