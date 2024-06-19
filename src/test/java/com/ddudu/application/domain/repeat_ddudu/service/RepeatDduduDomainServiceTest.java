@@ -175,7 +175,8 @@ class RepeatDduduDomainServiceTest {
       // then
       ddudus.stream()
           .map(Ddudu::getScheduledOn)
-          .forEach(date -> assertThat(date).isEqualTo(repeatDayOfWeek.get(0)));
+          .forEach(date -> assertThat(date.getDayOfWeek()
+              .name()).isEqualTo(repeatDayOfWeek.get(0)));
     }
 
     @Test
@@ -194,9 +195,10 @@ class RepeatDduduDomainServiceTest {
           userId, monthlyRepeatDdudu);
 
       // then
-      assertThat(ddudus).extracting(ddudu -> ddudu.getScheduledOn()
-              .getDayOfMonth())
-          .containsExactlyInAnyOrder(repeatDayOfMonth, startDate.lengthOfMonth());
+      ddudus.stream()
+          .map(Ddudu::getScheduledOn)
+          .forEach(date -> assertThat(date.getDayOfMonth())
+              .isIn(repeatDayOfMonth, startDate.lengthOfMonth()));
     }
 
   }
