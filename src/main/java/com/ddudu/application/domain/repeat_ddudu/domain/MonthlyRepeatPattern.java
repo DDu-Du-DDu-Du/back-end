@@ -35,19 +35,14 @@ public class MonthlyRepeatPattern implements RepeatPattern {
   public static MonthlyRepeatPattern withValidation(
       List<Integer> repeatDaysOfMonth, Boolean lastDay
   ) {
-    validate(repeatDaysOfMonth, lastDay);
+    validate(repeatDaysOfMonth);
     return new MonthlyRepeatPattern(repeatDaysOfMonth, lastDay);
   }
 
-  private static void validate(List<Integer> repeatDaysOfMonth, Boolean lastDay) {
+  private static void validate(List<Integer> repeatDaysOfMonth) {
     checkArgument(
         nonNull(repeatDaysOfMonth) && !repeatDaysOfMonth.isEmpty(),
         RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH.getCodeName()
-    );
-
-    checkArgument(
-        nonNull(lastDay),
-        RepeatDduduErrorCode.NULL_LAST_DAY.getCodeName()
     );
   }
 
