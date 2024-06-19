@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu.RepeatDduduBuilder;
 import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
+import com.ddudu.application.dto.repeat_ddudu.RepeatPatternDto;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import java.time.LocalDate;
@@ -71,7 +72,7 @@ class RepeatDduduTest {
           .hasFieldOrPropertyWithValue("startDate", startDate)
           .hasFieldOrPropertyWithValue("endDate", endDate);
     }
-
+    
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = " ")
@@ -157,7 +158,7 @@ class RepeatDduduTest {
           .goalId(goalId)
           .name(name)
           .repeatType(RepeatType.WEEKLY)
-          .repeatDaysOfWeek(repeatDaysOfWeek)
+          .repeatPatternDto(RepeatPatternDto.weeklyPatternOf(repeatDaysOfWeek))
           .startDate(startDate)
           .endDate(endDate);
 
@@ -177,8 +178,7 @@ class RepeatDduduTest {
           .goalId(goalId)
           .name(name)
           .repeatType(RepeatType.MONTHLY)
-          .repeatDaysOfMonth(repeatDaysOfMonth)
-          .lastDayOfMonth(false)
+          .repeatPatternDto(RepeatPatternDto.monthlyPatternOf(repeatDaysOfMonth))
           .startDate(startDate)
           .endDate(endDate);
 

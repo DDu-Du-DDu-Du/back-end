@@ -17,4 +17,36 @@ public record RepeatPatternDto(
     );
   }
 
+  public static RepeatPatternDto dailyPatternOf() {
+    return new RepeatPatternDto(
+        null,
+        null,
+        null
+    );
+  }
+
+  public static RepeatPatternDto weeklyPatternOf(List<String> repeatDaysOfWeek) {
+    return new RepeatPatternDto(
+        repeatDaysOfWeek,
+        null,
+        null
+    );
+  }
+
+  public static RepeatPatternDto monthlyPatternOf(
+      List<Integer> repeatDaysOfMonth, Boolean lastDayOfMonth
+  ) {
+    return new RepeatPatternDto(
+        null,
+        repeatDaysOfMonth,
+        lastDayOfMonth
+    );
+  }
+
+  public static RepeatPatternDto monthlyPatternOf(
+      List<Integer> repeatDaysOfMonth
+  ) {
+    return monthlyPatternOf(repeatDaysOfMonth, null);
+  }
+
 }
