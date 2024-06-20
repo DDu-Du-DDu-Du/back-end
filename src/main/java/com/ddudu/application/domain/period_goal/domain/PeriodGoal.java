@@ -1,6 +1,7 @@
 package com.ddudu.application.domain.period_goal.domain;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static io.micrometer.common.util.StringUtils.isNotBlank;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
@@ -53,7 +54,7 @@ public final class PeriodGoal {
   }
 
   private void validateContents(String contents) {
-    checkArgument(nonNull(contents), PeriodGoalErrorCode.CONTENTS_NOT_EXISTING);
+    checkArgument(isNotBlank(contents), PeriodGoalErrorCode.CONTENTS_NOT_EXISTING.getCodeName());
   }
 
   private void validateType(String type) {
