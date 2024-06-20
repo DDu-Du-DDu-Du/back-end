@@ -57,7 +57,7 @@ public class PeriodGoalEntity extends BaseEntity {
   public static PeriodGoalEntity from(PeriodGoal periodGoal) {
     return PeriodGoalEntity.builder()
         .id(periodGoal.getId())
-        .user(UserEntity.from(periodGoal.getUser()))
+        .user(UserEntity.withOnlyId(periodGoal.getUserId()))
         .contents(periodGoal.getContents())
         .type(periodGoal.getType()
             .name())
@@ -68,7 +68,7 @@ public class PeriodGoalEntity extends BaseEntity {
   public PeriodGoal toDomain() {
     return PeriodGoal.builder()
         .id(id)
-        .user(user.toDomain())
+        .userId(user.getId())
         .contents(contents)
         .type(type)
         .planDate(planDate)

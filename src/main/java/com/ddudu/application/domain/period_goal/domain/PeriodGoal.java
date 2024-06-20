@@ -7,7 +7,6 @@ import static java.util.Objects.nonNull;
 import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
 import com.ddudu.application.domain.period_goal.domain.vo.PeriodGoalDate;
 import com.ddudu.application.domain.period_goal.exception.PeriodGoalErrorCode;
-import com.ddudu.application.domain.user.domain.User;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,7 +19,7 @@ public final class PeriodGoal {
 
   @EqualsAndHashCode.Include
   private final Long id;
-  private final User user;
+  private final Long userId;
   private final String contents;
   private final PeriodGoalType type;
   @Getter(AccessLevel.NONE)
@@ -28,12 +27,12 @@ public final class PeriodGoal {
 
   @Builder
   public PeriodGoal(
-      Long id, User user, String contents, String type, LocalDate planDate
+      Long id, Long userId, String contents, String type, LocalDate planDate
   ) {
-    validate(user, contents, type);
+    validate(userId, contents, type);
 
     this.id = id;
-    this.user = user;
+    this.userId = userId;
     this.contents = contents;
     this.type = PeriodGoalType.from(type);
     this.planDate = PeriodGoalDate.of(this.type, planDate);
@@ -43,14 +42,14 @@ public final class PeriodGoal {
     return planDate.getDate();
   }
 
-  private void validate(User user, String contents, String type) {
-    validateUser(user);
+  private void validate(Long userId, String contents, String type) {
+    validateUser(userId);
     validateContents(contents);
     validateType(type);
   }
 
-  private void validateUser(User user) {
-    checkArgument(nonNull(user), PeriodGoalErrorCode.USER_NOT_EXISTING);
+  private void validateUser(Long userId) {
+    checkArgument(nonNull(userId), PeriodGoalErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
   private void validateContents(String contents) {
@@ -58,7 +57,7 @@ public final class PeriodGoal {
   }
 
   private void validateType(String type) {
-    checkArgument(nonNull(type), PeriodGoalErrorCode.PERIOD_GOAL_TYPE_NOT_EXISTING);
+    checkArgument(nonNull(type), PeriodGoalErrorCode.PERIOD_GOAL_TYPE_NOT_EXISTING.getCodeName());
   }
 
 }

@@ -26,7 +26,7 @@ public class CreatePeriodGoalService implements CreatePeriodGoalUseCase {
 
     PeriodGoal periodGoal = PeriodGoal.builder()
         .contents(request.contents())
-        .user(user)
+        .userId(user.getId())
         .type(request.type())
         .planDate(request.planDate())
         .build();
