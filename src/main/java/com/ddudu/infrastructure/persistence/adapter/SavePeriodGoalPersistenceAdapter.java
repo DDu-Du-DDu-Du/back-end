@@ -1,7 +1,7 @@
 package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.period_goal.domain.PeriodGoal;
-import com.ddudu.application.port.out.period_goal.PeriodGoalLoaderPort;
+import com.ddudu.application.port.out.period_goal.SavePeriodGoalPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.PeriodGoalEntity;
 import com.ddudu.infrastructure.persistence.repository.period_goal.PeriodGoalRepository;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
 @RequiredArgsConstructor
-public class PeriodGoalPersistenceAdapter implements PeriodGoalLoaderPort {
+public class SavePeriodGoalPersistenceAdapter implements SavePeriodGoalPort {
 
   private final PeriodGoalRepository periodGoalRepository;
 
