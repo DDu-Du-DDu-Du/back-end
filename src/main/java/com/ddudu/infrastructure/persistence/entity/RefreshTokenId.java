@@ -10,10 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Getter
 public class RefreshTokenId {
 
   @Column(

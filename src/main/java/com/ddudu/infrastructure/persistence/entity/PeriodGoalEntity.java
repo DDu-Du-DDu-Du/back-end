@@ -12,14 +12,18 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "period_goals")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class PeriodGoalEntity extends BaseEntity {
 
   @Id
@@ -39,20 +43,6 @@ public class PeriodGoalEntity extends BaseEntity {
 
   @Column(name = "plan_date", nullable = false, columnDefinition = "DATE")
   private LocalDate planDate;
-
-  @Builder
-  public PeriodGoalEntity(
-      Long id, UserEntity user, String contents, String type, LocalDate planDate,
-      LocalDateTime createdAt, LocalDateTime updatedAt
-  ) {
-    super(createdAt, updatedAt);
-
-    this.id = id;
-    this.user = user;
-    this.contents = contents;
-    this.type = type;
-    this.planDate = planDate;
-  }
 
   public static PeriodGoalEntity from(PeriodGoal periodGoal) {
     return PeriodGoalEntity.builder()
