@@ -1,5 +1,7 @@
 package com.ddudu.infrastructure.persistence.entity;
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.old.common.BaseEntity;
@@ -45,6 +47,10 @@ public class DduduEntity extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private UserEntity user;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "repeat_ddudu_id")
+  private RepeatDduduEntity repeatDdudu;
 
   @Column(
       name = "name",
@@ -96,6 +102,10 @@ public class DduduEntity extends BaseEntity {
         .user(UserEntity.builder()
             .id(ddudu.getUserId())
             .build())
+        .repeatDdudu(
+            isNull(ddudu.getRepeatDduduId()) ? null : RepeatDduduEntity.builder()
+                .id(ddudu.getRepeatDduduId())
+                .build())
         .name(ddudu.getName())
         .status(ddudu.getStatus())
         .isPostponed(ddudu.isPostponed())
@@ -110,6 +120,7 @@ public class DduduEntity extends BaseEntity {
         .id(id)
         .userId(user.getId())
         .goalId(goal.getId())
+        .repeatDduduId(isNull(repeatDdudu) ? null : repeatDdudu.getId())
         .name(name)
         .status(status)
         .isPostponed(isPostponed)
