@@ -63,7 +63,7 @@ public class RepeatDduduEntity extends BaseEntity {
   @Convert(converter = RepeatPatternConverter.class)
   @Column(
       name = "repeat_info",
-      columnDefinition = "VARCHAR(255)"
+      columnDefinition = "VARCHAR(500)"
   )
   private RepeatPattern repeatInfo;
 
