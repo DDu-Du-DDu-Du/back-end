@@ -1,6 +1,6 @@
-package com.ddudu.old.persistence.entity;
+package com.ddudu.infrastructure.persistence.entity;
 
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
+import com.ddudu.application.domain.period_goal.domain.PeriodGoal;
 import com.ddudu.old.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,11 +13,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "period_goals")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class PeriodGoalEntity extends BaseEntity {
 
   @Id
@@ -37,5 +43,26 @@ public class PeriodGoalEntity extends BaseEntity {
 
   @Column(name = "plan_date", nullable = false, columnDefinition = "DATE")
   private LocalDate planDate;
+
+  public static PeriodGoalEntity from(PeriodGoal periodGoal) {
+    return PeriodGoalEntity.builder()
+        .id(periodGoal.getId())
+        .user(UserEntity.withOnlyId(periodGoal.getUserId()))
+        .contents(periodGoal.getContents())
+        .type(periodGoal.getType()
+            .name())
+        .planDate(periodGoal.getPlanDate())
+        .build();
+  }
+
+  public PeriodGoal toDomain() {
+    return PeriodGoal.builder()
+        .id(id)
+        .userId(user.getId())
+        .contents(contents)
+        .type(type)
+        .planDate(planDate)
+        .build();
+  }
 
 }
