@@ -9,25 +9,21 @@ import com.ddudu.application.domain.repeat_ddudu.domain.WeeklyRepeatPattern;
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import com.ddudu.application.dto.repeat_ddudu.RepeatPatternDto;
 import java.util.Arrays;
+import java.util.function.Function;
 
 public enum RepeatType {
-  DAILY() {
-    RepeatPattern createPattern(RepeatPatternDto request) {
-      return new DailyRepeatPattern();
-    }
-  },
-  WEEKLY() {
-    RepeatPattern createPattern(RepeatPatternDto request) {
-      return WeeklyRepeatPattern.withValidation(request.repeatDaysOfWeek());
-    }
+  DAILY(request -> new DailyRepeatPattern()),
+  WEEKLY(request -> WeeklyRepeatPattern.withValidation(request.repeatDaysOfWeek())),
+  MONTHLY(request -> MonthlyRepeatPattern.withValidation(
+      request.repeatDaysOfMonth(),
+      request.lastDayOfMonth()
+  ));
 
-  },
-  MONTHLY() {
-    RepeatPattern createPattern(RepeatPatternDto request) {
-      return MonthlyRepeatPattern.withValidation(
-          request.repeatDaysOfMonth(), request.lastDayOfMonth());
-    }
-  };
+  private final Function<RepeatPatternDto, RepeatPattern> createPattern;
+
+  RepeatType(Function<RepeatPatternDto, RepeatPattern> createPattern) {
+    this.createPattern = createPattern;
+  }
 
   public static RepeatType from(String value) {
     if (isNull(value)) {
@@ -44,8 +40,6 @@ public enum RepeatType {
   }
 
   public RepeatPattern createRepeatPattern(RepeatPatternDto request) {
-    return createPattern(request);
+    return createPattern.apply(request);
   }
-
-  abstract RepeatPattern createPattern(RepeatPatternDto request);
 }
