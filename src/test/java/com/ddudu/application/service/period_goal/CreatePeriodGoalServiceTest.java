@@ -32,10 +32,8 @@ class CreatePeriodGoalServiceTest {
   CreatePeriodGoalService createPeriodGoalService;
   @Autowired
   UserLoaderPort userLoaderPort;
-
   @Autowired
   SavePeriodGoalPort savePeriodGoalPort;
-
   @Autowired
   SignUpPort signUpPort;
 
