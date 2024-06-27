@@ -22,7 +22,7 @@ public class DduduSearchService implements DduduSearchUseCase {
 
   @Override
   public ScrollResponse<SimpleDduduSearchDto> search(Long loginId, DduduSearchRequest request) {
-    User user = userLoaderPort.loadMinimalUserOrElseThrow(
+    User user = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
     return dduduSearchPort.search(
