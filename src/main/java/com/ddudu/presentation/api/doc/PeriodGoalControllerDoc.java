@@ -1,6 +1,7 @@
 package com.ddudu.presentation.api.doc;
 
 import com.ddudu.application.dto.period_goal.request.CreatePeriodGoalRequest;
+import com.ddudu.application.dto.period_goal.request.UpdatePeriodGoalRequest;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,5 +23,15 @@ public interface PeriodGoalControllerDoc {
       )
   )
   ResponseEntity<IdResponse> create(Long userId, CreatePeriodGoalRequest request);
+
+  @Operation(summary = "기간 목표 수정")
+  @ApiResponse(
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          schema = @Schema(implementation = IdResponse.class)
+      )
+  )
+  public ResponseEntity<IdResponse> update(Long userId, Long id, UpdatePeriodGoalRequest request);
 
 }
