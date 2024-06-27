@@ -3,6 +3,7 @@ package com.ddudu.application.dto.period_goal.response;
 import com.ddudu.application.domain.period_goal.domain.PeriodGoal;
 import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Optional;
 import lombok.Builder;
 
 @Builder
@@ -28,11 +29,24 @@ public record PeriodGoalSummary(
     PeriodGoalType type
 ) {
 
+  public static PeriodGoalSummary ofNullable(Optional<PeriodGoal> optionalPeriodGoal) {
+    if (optionalPeriodGoal.isEmpty()) {
+      return empty();
+    }
+
+    return PeriodGoalSummary.from(optionalPeriodGoal.get());
+  }
+
   public static PeriodGoalSummary from(PeriodGoal periodGoal) {
     return PeriodGoalSummary.builder()
         .id(periodGoal.getId())
         .contents(periodGoal.getContents())
         .type(periodGoal.getType())
+        .build();
+  }
+
+  public static PeriodGoalSummary empty() {
+    return PeriodGoalSummary.builder()
         .build();
   }
 
