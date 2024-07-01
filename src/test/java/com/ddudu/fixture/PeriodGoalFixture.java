@@ -25,6 +25,7 @@ public class PeriodGoalFixture extends BaseFixture {
         .contents(contents)
         .type(type.name())
         .planDate(date)
+        .build();
   }
 
   public static PeriodGoal createRandomPeriodGoal(User user) {
