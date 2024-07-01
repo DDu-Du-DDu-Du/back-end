@@ -83,7 +83,8 @@ class UpdateGoalServiceTest {
     ThrowingCallable update = () -> updateGoalService.update(userId, invalidId, request);
 
     // then
-    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(update)
+    assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(update)
         .withMessage(GoalErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 

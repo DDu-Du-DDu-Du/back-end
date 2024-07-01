@@ -65,4 +65,8 @@ public class PeriodGoalEntity extends BaseEntity {
         .build();
   }
 
+  public void update(PeriodGoal periodGoal) {
+    this.contents = periodGoal.getContents();
+  }
+
 }

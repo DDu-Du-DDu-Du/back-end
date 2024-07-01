@@ -17,7 +17,6 @@ public class PeriodGoalFixture extends BaseFixture {
     return types[index];
   }
 
-
   public static PeriodGoal createPeriodGoal(
       User user, String contents, PeriodGoalType type, LocalDate date
   ) {
@@ -26,6 +25,15 @@ public class PeriodGoalFixture extends BaseFixture {
         .contents(contents)
         .type(type.name())
         .planDate(date)
+  }
+
+  public static PeriodGoal createRandomPeriodGoal(User user) {
+    return PeriodGoal.builder()
+        .id(getRandomId())
+        .userId(user.getId())
+        .type(getRandomType().name())
+        .contents(getRandomSentenceWithMax(255))
+        .planDate(LocalDate.now())
         .build();
   }
 

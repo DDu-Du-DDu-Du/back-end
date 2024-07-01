@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface PeriodGoalLoaderPort {
 
+  PeriodGoal getOrElseThrow(Long id, String message);
+
   Optional<PeriodGoal> getOptionalByDate(User user, LocalDate date, PeriodGoalType type);
 
 }
