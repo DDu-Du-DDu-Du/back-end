@@ -8,6 +8,7 @@ import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
 import com.ddudu.application.domain.period_goal.domain.vo.PeriodGoalDate;
 import com.ddudu.application.domain.period_goal.exception.PeriodGoalErrorCode;
 import java.time.LocalDate;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -58,6 +59,31 @@ public final class PeriodGoal {
 
   private void validateType(String type) {
     checkArgument(nonNull(type), PeriodGoalErrorCode.PERIOD_GOAL_TYPE_NOT_EXISTING.getCodeName());
+  }
+
+  public void validateCreator(Long userId) {
+    if (!isCreatedBy(userId)) {
+      throw new SecurityException(PeriodGoalErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
+  }
+
+  public boolean isCreatedBy(Long userId) {
+    return Objects.equals(this.userId, userId);
+  }
+
+  public PeriodGoal update(String contents) {
+    return getFullBuilder()
+        .contents(contents)
+        .build();
+  }
+
+  private PeriodGoalBuilder getFullBuilder() {
+    return PeriodGoal.builder()
+        .id(this.id)
+        .userId(this.userId)
+        .contents(this.contents)
+        .type(this.type.name())
+        .planDate(this.planDate.getDate());
   }
 
 }
