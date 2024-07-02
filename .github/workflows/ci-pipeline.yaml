@@ -68,48 +68,6 @@ jobs:
           path: '**/build/reports/checkstyle/**.xml'
           title: 📝 Checkstyle report
 
-      - name: 빌드 성공 슬랙 메세지 전송
-        uses: slackapi/slack-github-action@v1.24.0
-        if: success()
-        with:
-          payload: |
-            {
-              "text": "PR 업데이트 됐습니당",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "PR 업데이트 됐습니당\n✨빌드 결과✨: ✅ 열심히 하셨네요 ㅎㅎ🎉\n링크: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-
-      - name: 빌드 실패 슬랙 메세지 전송
-        uses: slackapi/slack-github-action@v1.24.0
-        if: failure()
-        with:
-          payload: |
-            {
-              "text": "PR 업데이트 됐습니당",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "PR 업데이트 됐습니당\n🧨빌드 결과🧨: 🚨 분발해주세요~ ㅎㅎ🎆\n링크: ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-
       - name: 테스트 리포트 작성
         uses: mikepenz/action-junit-report@v4
         with:
