@@ -3,11 +3,11 @@ package com.ddudu.old.persistence.repository;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,10 +43,10 @@ public class TodoRepositoryImpl implements OldTodoRepository {
   }
 
   @Override
-  public List<TodoCompletionResponse> findTodosCompletion(
+  public List<DduduCompletionResponse> findTodosCompletion(
       LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
   ) {
-    return dduduRepository.findTodosCompletion(
+    return dduduRepository.findDdudusCompletion(
         startDate, endDate, UserEntity.from(user), privacyTypes);
   }
 

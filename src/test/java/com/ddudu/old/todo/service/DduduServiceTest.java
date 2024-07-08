@@ -8,11 +8,11 @@ import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.old.user.dto.request.FollowRequest;
@@ -205,7 +205,7 @@ class DduduServiceTest {
       int dayIndex = dayOfWeek.getValue() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
+      List<DduduCompletionResponse> responses = todoService.findWeeklyCompletions(
           user.getId(), user.getId(), mondayDate);
 
       // then
@@ -231,7 +231,7 @@ class DduduServiceTest {
       followingService.create(loginUser.getId(), request);
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
+      List<DduduCompletionResponse> responses = todoService.findWeeklyCompletions(
           loginUser.getId(), user.getId(), mondayDate);
 
       // then
@@ -254,7 +254,7 @@ class DduduServiceTest {
       int dayIndex = dayOfWeek.getValue() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
+      List<DduduCompletionResponse> responses = todoService.findWeeklyCompletions(
           loginUser.getId(), user.getId(), mondayDate);
 
       // then
@@ -309,7 +309,7 @@ class DduduServiceTest {
       int dayOfMonthIndex = date.getDayOfMonth() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
+      List<DduduCompletionResponse> responses = todoService.findMonthlyCompletions(
           user.getId(), user.getId(), yearMonth);
 
       // then
@@ -336,7 +336,7 @@ class DduduServiceTest {
       followingService.create(loginUser.getId(), request);
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
+      List<DduduCompletionResponse> responses = todoService.findMonthlyCompletions(
           loginUser.getId(), user.getId(), yearMonth);
 
       // then
@@ -360,7 +360,7 @@ class DduduServiceTest {
       int dayOfMonthIndex = date.getDayOfMonth() - 1;
 
       // when
-      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
+      List<DduduCompletionResponse> responses = todoService.findMonthlyCompletions(
           loginUser.getId(), user.getId(), yearMonth);
 
       // then

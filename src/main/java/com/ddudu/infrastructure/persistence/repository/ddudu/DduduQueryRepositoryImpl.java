@@ -10,6 +10,7 @@ import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.dto.goal.response.BasicGoalResponse;
 import com.ddudu.application.dto.scroll.OrderType;
 import com.ddudu.application.dto.scroll.request.ScrollRequest;
@@ -17,7 +18,6 @@ import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
-import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Order;
@@ -84,7 +84,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   @Override
-  public List<TodoCompletionResponse> findTodosCompletion(
+  public List<DduduCompletionResponse> findDdudusCompletion(
       LocalDateTime startDate, LocalDateTime endDate, UserEntity user,
       List<PrivacyType> privacyTypes
   ) {
@@ -114,21 +114,24 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
                 .as("uncompletedTodos")
         )
         .from(dduduEntity)
+        .join(dduduEntity.goal)
+        .on(
+            dduduEntity.goal.user.eq(user),
+            dduduEntity.goal.privacyType.in(privacyTypes)
+        )
         .where(
             dduduEntity.beginAt.goe(LocalTime.from(startDate)),
-            dduduEntity.beginAt.lt(LocalTime.from(endDate)),
-            dduduEntity.user.eq(user),
-            dduduEntity.goal.privacyType.in(privacyTypes)
+            dduduEntity.beginAt.lt(LocalTime.from(endDate))
         )
         .groupBy(dateTemplate)
         .fetch()
         .stream()
-        .map(result -> TodoCompletionResponse.builder()
-            .date(result.get(0, LocalDateTime.class)
+        .map(result -> DduduCompletionResponse.builder()
+            .date(Objects.requireNonNull(result.get(0, LocalDateTime.class))
                 .toLocalDate())
-            .totalCount(result.get(1, Long.class)
+            .totalCount(Objects.requireNonNull(result.get(1, Long.class))
                 .intValue())
-            .uncompletedCount(result.get(2, Long.class)
+            .uncompletedCount(Objects.requireNonNull(result.get(2, Long.class))
                 .intValue())
             .build())
         .toList();

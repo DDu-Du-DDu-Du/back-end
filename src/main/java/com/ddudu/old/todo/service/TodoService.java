@@ -7,13 +7,13 @@ import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
 import com.ddudu.old.todo.dto.response.LikeInfo;
-import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.user.domain.FollowingRepository;
 import com.ddudu.old.user.domain.UserRepository;
@@ -77,7 +77,7 @@ public class TodoService {
         .toList();
   }
 
-  public List<TodoCompletionResponse> findWeeklyCompletions(
+  public List<DduduCompletionResponse> findWeeklyCompletions(
       Long loginId, Long userId, LocalDate date
   ) {
     User loginUser = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
@@ -89,7 +89,7 @@ public class TodoService {
     return generateCompletions(startDate, endDate, loginUser, user);
   }
 
-  public List<TodoCompletionResponse> findMonthlyCompletions(
+  public List<DduduCompletionResponse> findMonthlyCompletions(
       Long loginId, Long userId, YearMonth yearMonth
   ) {
     User loginUser = findUser(loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING);
@@ -119,22 +119,22 @@ public class TodoService {
         });
   }
 
-  private List<TodoCompletionResponse> generateCompletions(
+  private List<DduduCompletionResponse> generateCompletions(
       LocalDateTime startDate, LocalDateTime endDate, User loginUser, User user
   ) {
     List<PrivacyType> privacyTypes = determinePrivacyTypes(loginUser, user);
 
-    Map<LocalDate, TodoCompletionResponse> completionByDate = oldTodoRepository.findTodosCompletion(
+    Map<LocalDate, DduduCompletionResponse> completionByDate = oldTodoRepository.findTodosCompletion(
             startDate, endDate, user, privacyTypes)
         .stream()
-        .collect(Collectors.toMap(TodoCompletionResponse::date, response -> response));
+        .collect(Collectors.toMap(DduduCompletionResponse::date, response -> response));
 
-    List<TodoCompletionResponse> completionList = new ArrayList<>();
+    List<DduduCompletionResponse> completionList = new ArrayList<>();
     for (LocalDateTime currentDate = startDate; currentDate.isBefore(endDate);
         currentDate = currentDate.plusDays(1)) {
-      TodoCompletionResponse response = completionByDate.getOrDefault(
+      DduduCompletionResponse response = completionByDate.getOrDefault(
           currentDate.toLocalDate(),
-          TodoCompletionResponse.createEmptyResponse(currentDate.toLocalDate())
+          DduduCompletionResponse.createEmptyResponse(currentDate.toLocalDate())
       );
       completionList.add(response);
     }
