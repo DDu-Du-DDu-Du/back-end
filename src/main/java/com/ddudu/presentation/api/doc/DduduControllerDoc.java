@@ -9,10 +9,10 @@ import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
-import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -103,19 +103,37 @@ public interface DduduControllerDoc {
   ResponseEntity<TimetableResponse> getDailyTimetable(Long loginId, Long userId, LocalDate date);
 
 
-  @Operation(summary = "주간 뚜두 조회")
+  @Operation(summary = "주간 뚜두 완료도 조회")
   @ApiResponse(
-      responseCode = "200"
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          array = @ArraySchema(schema = @Schema(implementation = DduduCompletionResponse.class))
+      )
   )
-  ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
+  @Parameters(
+      {
+          @Parameter(
+              name = "userId",
+              description = "조회할 뚜두의 사용자 식별자 (기본값: 로그인한 사용자)",
+              in = ParameterIn.QUERY
+          ),
+          @Parameter(
+              name = "date",
+              description = "조회할 날짜 (기본값: 오늘)",
+              in = ParameterIn.QUERY
+          )
+      }
+  )
+  ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
       Long loginId, Long userId, LocalDate date
   );
 
-  @Operation(summary = "월간 뚜두 조회")
+  @Operation(summary = "월간 뚜두 완료도 조회")
   @ApiResponse(
       responseCode = "200"
   )
-  ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
+  ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
       Long loginId, Long userId, YearMonth yearMonth
   );
 
