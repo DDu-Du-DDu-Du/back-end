@@ -11,6 +11,7 @@ import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
@@ -23,9 +24,9 @@ import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
+import com.ddudu.application.port.in.ddudu.RetrieveDduduUseCase;
 import com.ddudu.application.port.in.ddudu.SwitchStatusUseCase;
 import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
@@ -66,6 +67,7 @@ public class DduduController implements DduduControllerDoc {
   private final SwitchStatusUseCase switchStatusUseCase;
   private final ChangeNameUseCase changeNameUseCase;
   private final DeleteDduduUseCase deleteDduduUseCase;
+  private final RetrieveDduduUseCase retrieveDduduUseCase;
   private final TodoService todoService;
 
   @PostMapping
@@ -95,14 +97,13 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @GetMapping("/{id}")
-  @Deprecated
-  public ResponseEntity<TodoResponse> getById(
+  public ResponseEntity<DduduDetailResponse> getById(
       @Login
       Long loginId,
       @PathVariable
       Long id
   ) {
-    TodoResponse response = todoService.findById(loginId, id);
+    DduduDetailResponse response = retrieveDduduUseCase.findById(loginId, id);
 
     return ResponseEntity.ok(response);
   }
