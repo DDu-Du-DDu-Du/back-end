@@ -176,10 +176,9 @@ public class DduduController implements DduduControllerDoc {
   ) {
     userId = (userId == null) ? loginId : userId;
     yearMonth = (yearMonth == null) ? YearMonth.now() : yearMonth;
-    List<DduduCompletionResponse> completionList = todoService.findMonthlyCompletions(
-        loginId, userId, yearMonth);
 
-    return ResponseEntity.ok(completionList);
+    // TODO: Need to implement this method
+    return null;
   }
 
   @PutMapping("/{id}")
