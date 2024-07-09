@@ -33,7 +33,6 @@ import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import com.ddudu.presentation.api.doc.DduduControllerDoc;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -155,11 +154,6 @@ public class DduduController implements DduduControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM-dd")
       LocalDate date
   ) {
-    userId = (userId == null) ? loginId : userId;
-    DayOfWeek weekStart = DayOfWeek.MONDAY;
-    date = (date == null) ? LocalDate.now()
-        .with(weekStart) : date.with(weekStart);
-
     List<DduduCompletionResponse> response = calculateWeeklyCompletionUseCase.calculate(
         loginId, userId, date);
 

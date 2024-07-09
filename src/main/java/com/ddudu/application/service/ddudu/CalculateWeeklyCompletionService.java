@@ -1,5 +1,7 @@
 package com.ddudu.application.service.ddudu;
 
+import static java.util.Objects.isNull;
+
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -29,7 +31,7 @@ public class CalculateWeeklyCompletionService implements CalculateWeeklyCompleti
   public List<DduduCompletionResponse> calculate(Long loginId, Long userId, LocalDate date) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
-    User user = userLoaderPort.getUserOrElseThrow(
+    User user = isNull(userId) ? loginUser : userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
     LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
