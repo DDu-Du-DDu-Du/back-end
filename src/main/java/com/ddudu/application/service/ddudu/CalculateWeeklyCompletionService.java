@@ -3,13 +3,13 @@ package com.ddudu.application.service.ddudu;
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.domain.repeat_ddudu.util.DayOfWeekUtil;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.port.in.ddudu.CalculateWeeklyCompletionUseCase;
 import com.ddudu.application.port.out.ddudu.DduduStatsPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +32,14 @@ public class CalculateWeeklyCompletionService implements CalculateWeeklyCompleti
     User user = userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
-    LocalDateTime startDate = date.atStartOfDay();
-    LocalDateTime endDate = startDate.plusDays(7);
+    LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
+    LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(7);
 
-    return generateCompletions(startDate, endDate, loginUser, user);
+    return generateCompletions(firstDayOfWeek, lastDayOfWeek, loginUser, user);
   }
 
   private List<DduduCompletionResponse> generateCompletions(
-      LocalDateTime startDate, LocalDateTime endDate, User loginUser, User user
+      LocalDate startDate, LocalDate endDate, User loginUser, User user
   ) {
     List<PrivacyType> privacyTypes = determinePrivacyTypes(loginUser, user);
 
@@ -49,11 +49,11 @@ public class CalculateWeeklyCompletionService implements CalculateWeeklyCompleti
         .collect(Collectors.toMap(DduduCompletionResponse::date, response -> response));
 
     List<DduduCompletionResponse> completionList = new ArrayList<>();
-    for (LocalDateTime currentDate = startDate; currentDate.isBefore(endDate);
+    for (LocalDate currentDate = startDate; currentDate.isBefore(endDate);
         currentDate = currentDate.plusDays(1)) {
       DduduCompletionResponse response = completionByDate.getOrDefault(
-          currentDate.toLocalDate(),
-          DduduCompletionResponse.createEmptyResponse(currentDate.toLocalDate())
+          currentDate,
+          DduduCompletionResponse.createEmptyResponse(currentDate)
       );
 
       completionList.add(response);

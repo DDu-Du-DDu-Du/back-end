@@ -8,6 +8,7 @@ import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public class TodoRepositoryImpl implements OldTodoRepository {
 
   @Override
   public List<DduduCompletionResponse> findTodosCompletion(
-      LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
+      LocalDate startDate, LocalDate endDate, User user, List<PrivacyType> privacyTypes
   ) {
     return dduduRepository.findDdudusCompletion(
         startDate, endDate, UserEntity.from(user), privacyTypes);

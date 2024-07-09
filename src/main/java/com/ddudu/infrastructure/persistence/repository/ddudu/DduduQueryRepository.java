@@ -24,7 +24,7 @@ public interface DduduQueryRepository {
   );
 
   List<DduduCompletionResponse> findDdudusCompletion(
-      LocalDateTime startDate, LocalDateTime endDate, UserEntity user,
+      LocalDate startDate, LocalDate endDate, UserEntity user,
       List<PrivacyType> privacyTypes
   );
 

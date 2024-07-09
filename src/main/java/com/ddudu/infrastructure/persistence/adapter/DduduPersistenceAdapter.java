@@ -27,7 +27,6 @@ import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
@@ -181,7 +180,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public List<DduduCompletionResponse> calculateDdudusCompletion(
-      LocalDateTime startDate, LocalDateTime endDate, User user, List<PrivacyType> privacyTypes
+      LocalDate startDate, LocalDate endDate, User user, List<PrivacyType> privacyTypes
   ) {
     return dduduRepository.findDdudusCompletion(
         startDate, endDate, UserEntity.from(user), privacyTypes);
