@@ -2,15 +2,18 @@ package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
+import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.ddudu.DduduSearchPort;
+import com.ddudu.application.port.out.ddudu.DduduStatsPort;
 import com.ddudu.application.port.out.ddudu.DduduUpdatePort;
 import com.ddudu.application.port.out.ddudu.DeleteDduduPort;
 import com.ddudu.application.port.out.ddudu.RepeatDduduPort;
@@ -32,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 @DrivenAdapter
 @RequiredArgsConstructor
 public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort, SaveDduduPort,
-    RepeatDduduPort, DduduSearchPort, DeleteDduduPort {
+    RepeatDduduPort, DduduSearchPort, DeleteDduduPort, DduduStatsPort {
 
   private final DduduRepository dduduRepository;
 
@@ -173,6 +176,14 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
     }
 
     return null;
+  }
+
+  @Override
+  public List<DduduCompletionResponse> calculateDdudusCompletion(
+      LocalDate startDate, LocalDate endDate, User user, List<PrivacyType> privacyTypes
+  ) {
+    return dduduRepository.findDdudusCompletion(
+        startDate, endDate, UserEntity.from(user), privacyTypes);
   }
 
 }
