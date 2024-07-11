@@ -10,10 +10,10 @@ import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
+import com.ddudu.application.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
-import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,10 +49,10 @@ public interface DduduControllerDoc {
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = TodoResponse.class)
+          schema = @Schema(implementation = DduduDetailResponse.class)
       )
   )
-  ResponseEntity<TodoResponse> getById(Long loginId, Long id);
+  ResponseEntity<DduduDetailResponse> getById(Long loginId, Long id);
 
   @Operation(summary = "일간 뚜두 리스트 조회 (목표별)")
   @ApiResponse(
@@ -182,7 +182,7 @@ public interface DduduControllerDoc {
       Long loginId, Long id, RepeatAnotherDayRequest request
   );
 
-  @Operation(summary = "뚜두 조회. Not Yet Implemented")
+  @Operation(summary = "뚜두 검색. Not Yet Implemented")
   @ApiResponse(responseCode = "200")
   ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
       Long loginId,
