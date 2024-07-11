@@ -13,7 +13,7 @@ public record CreateDduduRequest(
     @NotBlank(message = "2002 BLANK_NAME")
     @Size(max = 50, message = "2003 EXCESSIVE_NAME_LENGTH")
     String name,
-    @NotBlank(message = "2015 NULL_SCHEDULED_DATE")
+    @NotNull(message = "2015 NULL_SCHEDULED_DATE")
     LocalDate scheduledOn
 ) {
 
