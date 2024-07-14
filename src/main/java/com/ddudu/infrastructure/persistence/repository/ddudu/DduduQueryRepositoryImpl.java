@@ -5,7 +5,7 @@ import static java.util.Objects.isNull;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.dto.ddudu.BasicDduduWithGoalId;
+import com.ddudu.application.dto.ddudu.BasicDduduWithGoalIdAndTime;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
@@ -232,7 +232,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     return times.stream()
         .map(time -> TimeGroupedDdudus.of(time, ddudusByTime.getOrDefault(time, List.of())
             .stream()
-            .map(ddudu -> BasicDduduWithGoalId.of(ddudu.toDomain()))
+            .map(ddudu -> BasicDduduWithGoalIdAndTime.of(ddudu.toDomain()))
             .toList()
         ))
         .toList();
