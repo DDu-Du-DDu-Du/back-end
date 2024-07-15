@@ -63,7 +63,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public List<Goal> findAllByUser(User user) {
+  public List<Goal> findAllByUserAndPrivacyTypes(User user) {
     return goalRepository.findAllByUser(UserEntity.from(user))
         .stream()
         .map(GoalEntity::toDomain)
@@ -71,7 +71,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public List<Goal> findAllByUser(User user, List<PrivacyType> privacyTypes) {
+  public List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes) {
     return goalRepository.findAllByUserAndPrivacyTypes(
             UserEntity.from(user),
             privacyTypes

@@ -30,7 +30,7 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
 
     if (Objects.equals(loginId, userId)) {
-      List<Goal> goals = goalLoaderPort.findAllByUser(loginUser);
+      List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(loginUser);
       return dduduLoaderPort.getDailyDdudusOfUserGroupingByGoal(date, loginUser, goals);
     }
 
