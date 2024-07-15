@@ -46,4 +46,8 @@ public interface DduduQueryRepository {
       Long userId, ScrollRequest request, String query, Boolean isMine, Boolean isFollower
   );
 
+  List<DduduEntity> findAllByDateAndUserAndPrivacyTypes(
+      LocalDate date, UserEntity from, List<PrivacyType> accessiblePrivacyTypes
+  );
+
 }

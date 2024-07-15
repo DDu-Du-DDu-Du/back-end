@@ -7,7 +7,6 @@ import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
-import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
 import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
@@ -57,20 +56,6 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   }
 
   @Override
-  public List<Ddudu> getDailyDdudusOfUserUnderGoals(LocalDate date, User user, List<Goal> goals) {
-    return dduduRepository.findDdudusByDateAndUserAndGoals(
-            date,
-            UserEntity.from(user),
-            goals.stream()
-                .map(GoalEntity::from)
-                .toList()
-        )
-        .stream()
-        .map(DduduEntity::toDomain)
-        .toList();
-  }
-
-  @Override
   public List<GoalGroupedDdudus> getDailyDdudusOfUserGroupingByGoal(
       LocalDate date, User loginUser, List<Goal> goals
   ) {
@@ -83,32 +68,19 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   }
 
   @Override
-  public List<GoalGroupedDdudus> getUnassignedDdudusOfUserGroupingByGoal(
-      LocalDate date, User user, List<Goal> goals
-  ) {
-    return dduduRepository.findUnassignedDdudusByUserGroupByGoal(
-        date, UserEntity.from(user), goals.stream()
-            .map(GoalEntity::from)
-            .toList()
-    );
-  }
-
-  @Override
-  public List<TimeGroupedDdudus> getDailyDdudusOfUserGroupingByTime(
-      LocalDate date, User user, List<Goal> goals
-  ) {
-    return dduduRepository.findDailyDdudusByUserGroupByTime(
-        date,
-        UserEntity.from(user),
-        goals.stream()
-            .map(GoalEntity::from)
-            .toList()
-    );
-  }
-
-  @Override
   public List<Ddudu> getRepeatedDdudus(RepeatDdudu repeatDdudu) {
     return dduduRepository.findAllByRepeatDdudu(RepeatDduduEntity.from(repeatDdudu))
+        .stream()
+        .map(DduduEntity::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<Ddudu> getDailyDdudus(
+      LocalDate date, User user, List<PrivacyType> accessiblePrivacyTypes
+  ) {
+    return dduduRepository.findAllByDateAndUserAndPrivacyTypes(
+            date, UserEntity.from(user), accessiblePrivacyTypes)
         .stream()
         .map(DduduEntity::toDomain)
         .toList();

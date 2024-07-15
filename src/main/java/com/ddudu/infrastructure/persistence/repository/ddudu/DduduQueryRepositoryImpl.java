@@ -63,7 +63,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .where(
             dduduEntity.beginAt.goe(LocalTime.from(startDate)),
             dduduEntity.beginAt.lt(LocalTime.from(endDate)),
-            dduduEntity.user.eq(user)
+            userEq(user)
         )
         .fetch();
   }
@@ -75,8 +75,8 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     return jpaQueryFactory
         .selectFrom(dduduEntity)
         .where(
-            dduduEntity.scheduledOn.eq(date),
-            dduduEntity.user.eq(user),
+            scheduledOnEq(date),
+            userEq(user),
             dduduEntity.goal.in(goals)
         )
         .orderBy(dduduEntity.status.desc(), dduduEntity.createdAt.desc())
@@ -117,7 +117,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .join(dduduEntity.goal)
         .on(
             dduduEntity.goal.user.eq(user),
-            dduduEntity.goal.privacyType.in(privacyTypes)
+            privacyTypesIn(privacyTypes)
         )
         .where(
             dduduEntity.scheduledOn.goe(LocalDate.from(startDate)),
@@ -174,9 +174,9 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
       LocalDate date, UserEntity user, List<GoalEntity> goals, Boolean unassigned
   ) {
     BooleanBuilder whereClause = new BooleanBuilder()
-        .and(dduduEntity.user.eq(user))
+        .and(userEq(user))
         .and(dduduEntity.goal.in(goals))
-        .and(dduduEntity.scheduledOn.eq(date));
+        .and(scheduledOnEq(date));
 
     if (isNull(unassigned)) {
       return jpaQueryFactory
@@ -270,6 +270,22 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .fetch();
   }
 
+  @Override
+  public List<DduduEntity> findAllByDateAndUserAndPrivacyTypes(
+      LocalDate date, UserEntity user, List<PrivacyType> accessiblePrivacyTypes
+  ) {
+    return jpaQueryFactory
+        .selectFrom(dduduEntity)
+        .join(dduduEntity.goal)
+        .fetchJoin()
+        .where(
+            scheduledOnEq(date),
+            userEq(user),
+            privacyTypesIn(accessiblePrivacyTypes)
+        )
+        .fetch();
+  }
+
   private Predicate getOpenness(boolean isMine, boolean isFollower) {
     EnumPath<PrivacyType> privacyType = dduduEntity.goal.privacyType;
 
@@ -324,6 +340,18 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     if (Objects.isNull(orderType) || !orderType.isLatest()) {
       throw new NotImplementedException("아직 구현되지 않은 검색 결과 순서입니다.");
     }
+  }
+
+  private BooleanExpression privacyTypesIn(List<PrivacyType> accessiblePrivacyTypes) {
+    return dduduEntity.goal.privacyType.in(accessiblePrivacyTypes);
+  }
+
+  private BooleanExpression userEq(UserEntity from) {
+    return dduduEntity.user.eq(from);
+  }
+
+  private BooleanExpression scheduledOnEq(LocalDate date) {
+    return dduduEntity.scheduledOn.eq(date);
   }
 
 }
