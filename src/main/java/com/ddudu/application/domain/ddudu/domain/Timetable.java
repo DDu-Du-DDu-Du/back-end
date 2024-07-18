@@ -12,8 +12,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class Timetable {
 
@@ -30,11 +28,6 @@ public class Timetable {
     timetable = assignedDdudus.stream()
         .collect(groupingBy(Ddudu::getBeginHour));
     unassignedDdudus = new DduduList(split.getOrDefault(false, new ArrayList<>()));
-  }
-
-  private static Map<Long, Goal> mapGoalById(List<Goal> goals) {
-    return goals.stream()
-        .collect(Collectors.toMap(Goal::getId, Function.identity()));
   }
 
   public List<TimeGroupedDdudus> getTimeGroupedDdudus() {
