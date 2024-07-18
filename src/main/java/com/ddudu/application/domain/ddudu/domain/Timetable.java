@@ -1,7 +1,8 @@
 package com.ddudu.application.domain.ddudu.domain;
 
+import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.dto.ddudu.BasicDduduWithGoalIdAndTime;
@@ -20,7 +21,7 @@ public class Timetable {
   private final DduduList unassignedDdudus;
 
   public Timetable(List<Ddudu> ddudus) {
-    assertNotNull(ddudus, "Timetable 생성 시 ddudus는 null일 수 없습니다.");
+    checkArgument(nonNull(ddudus));
 
     Map<Boolean, List<Ddudu>> split = ddudus.stream()
         .collect(groupingBy((Ddudu::hasStartTime)));
