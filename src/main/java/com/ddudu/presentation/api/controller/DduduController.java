@@ -2,6 +2,7 @@ package com.ddudu.presentation.api.controller;
 
 import static java.util.Objects.isNull;
 
+import com.ddudu.application.domain.repeat_ddudu.util.DayOfWeekUtil;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.request.ChangeNameRequest;
@@ -16,7 +17,7 @@ import com.ddudu.application.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
-import com.ddudu.application.port.in.ddudu.CalculateWeeklyCompletionUseCase;
+import com.ddudu.application.port.in.ddudu.CalculateCompletionUseCase;
 import com.ddudu.application.port.in.ddudu.ChangeNameUseCase;
 import com.ddudu.application.port.in.ddudu.CreateDduduUseCase;
 import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
@@ -67,7 +68,7 @@ public class DduduController implements DduduControllerDoc {
   private final SwitchStatusUseCase switchStatusUseCase;
   private final ChangeNameUseCase changeNameUseCase;
   private final DeleteDduduUseCase deleteDduduUseCase;
-  private final CalculateWeeklyCompletionUseCase calculateWeeklyCompletionUseCase;
+  private final CalculateCompletionUseCase calculateCompletionUseCase;
   private final RetrieveDduduUseCase retrieveDduduUseCase;
   private final TodoService todoService;
 
@@ -155,14 +156,17 @@ public class DduduController implements DduduControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM-dd")
       LocalDate date
   ) {
-    List<DduduCompletionResponse> response = calculateWeeklyCompletionUseCase.calculate(
-        loginId, userId, date);
+    userId = isNull(userId) ? loginId : userId;
+    LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
+    LocalDate afterOneWeek = firstDayOfWeek.plusDays(7);
+
+    List<DduduCompletionResponse> response = calculateCompletionUseCase.calculate(
+        loginId, userId, firstDayOfWeek, afterOneWeek);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/monthly")
-  @Deprecated
   public ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
       @Login
       Long loginId,
@@ -175,11 +179,15 @@ public class DduduController implements DduduControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
-    userId = (userId == null) ? loginId : userId;
-    yearMonth = (yearMonth == null) ? YearMonth.now() : yearMonth;
+    userId = isNull(userId) ? loginId : userId;
+    LocalDate firstDayOfMonth = isNull(yearMonth) ? YearMonth.now()
+        .atDay(1) : yearMonth.atDay(1);
+    LocalDate afterOneMonth = firstDayOfMonth.plusMonths(1);
 
-    // TODO: Need to implement this method
-    return null;
+    List<DduduCompletionResponse> response = calculateCompletionUseCase.calculate(
+        loginId, userId, firstDayOfMonth, afterOneMonth);
+
+    return ResponseEntity.ok(response);
   }
 
   @PutMapping("/{id}")
