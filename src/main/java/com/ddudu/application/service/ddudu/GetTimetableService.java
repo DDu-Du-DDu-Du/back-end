@@ -35,8 +35,8 @@ public class GetTimetableService implements
     User user = userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
-    List<PrivacyType> accessiblePrivacyTypes = Relationship.getRelationship(loginUser, user)
-        .getAccessiblePrivacyTypes();
+    Relationship relationship = Relationship.getRelationship(loginUser, user);
+    List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
     Timetable timetable = new Timetable(
         dduduLoaderPort.getDailyDdudus(date, user, accessiblePrivacyTypes));
 

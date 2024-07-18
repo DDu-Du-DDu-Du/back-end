@@ -32,8 +32,8 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
     User user = userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
-    List<PrivacyType> accessiblePrivacyTypes = Relationship.getRelationship(loginUser, user)
-        .getAccessiblePrivacyTypes();
+    Relationship relationship = Relationship.getRelationship(loginUser, user);
+    List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
     DduduList ddudus = new DduduList(
         dduduLoaderPort.getDailyDdudus(date, user, accessiblePrivacyTypes));
 
