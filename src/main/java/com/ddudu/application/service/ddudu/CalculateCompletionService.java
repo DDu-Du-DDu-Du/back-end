@@ -1,14 +1,12 @@
 package com.ddudu.application.service.ddudu;
 
-import static java.util.Objects.isNull;
-
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.repeat_ddudu.util.DayOfWeekUtil;
 import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.application.domain.user.domain.enums.Relationship;
 import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
-import com.ddudu.application.port.in.ddudu.CalculateWeeklyCompletionUseCase;
+import com.ddudu.application.port.in.ddudu.CalculateCompletionUseCase;
 import com.ddudu.application.port.out.ddudu.DduduStatsPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
 import java.time.LocalDate;
@@ -22,31 +20,31 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CalculateWeeklyCompletionService implements CalculateWeeklyCompletionUseCase {
+public class CalculateCompletionService implements CalculateCompletionUseCase {
 
   private final UserLoaderPort userLoaderPort;
   private final DduduStatsPort dduduStatsPort;
 
   @Override
-  public List<DduduCompletionResponse> calculate(Long loginId, Long userId, LocalDate date) {
+  public List<DduduCompletionResponse> calculate(
+      Long loginId, Long userId, LocalDate from, LocalDate to
+  ) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
-    User user = isNull(userId) ? loginUser : userLoaderPort.getUserOrElseThrow(
+    User user = userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
-    LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
-    LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(7);
-
-    return generateCompletions(firstDayOfWeek, lastDayOfWeek, loginUser, user);
+    return generateCompletions(from, to, loginUser, user);
   }
 
   private List<DduduCompletionResponse> generateCompletions(
       LocalDate startDate, LocalDate endDate, User loginUser, User user
   ) {
-    List<PrivacyType> privacyTypes = determinePrivacyTypes(loginUser, user);
+    Relationship relationship = Relationship.getRelationship(loginUser, user);
+    List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
     Map<LocalDate, DduduCompletionResponse> completionByDate = dduduStatsPort.calculateDdudusCompletion(
-            startDate, endDate, user, privacyTypes)
+            startDate, endDate, user, accessiblePrivacyTypes)
         .stream()
         .collect(Collectors.toMap(DduduCompletionResponse::date, response -> response));
 
@@ -62,23 +60,6 @@ public class CalculateWeeklyCompletionService implements CalculateWeeklyCompleti
     }
 
     return completionList;
-  }
-
-  private List<PrivacyType> determinePrivacyTypes(User loginUser, User user) {
-    if (loginUser.equals(user)) {
-      return List.of(PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC);
-    }
-
-    if (isFollowerOf(loginUser, user)) {
-      return List.of(PrivacyType.FOLLOWER, PrivacyType.PUBLIC);
-    }
-
-    return List.of(PrivacyType.PUBLIC);
-  }
-
-  private boolean isFollowerOf(User user, User targetUser) {
-    // TODO: 팔로잉 기능 추가 시 팔로잉 상태 확인
-    return false;
   }
 
 }
