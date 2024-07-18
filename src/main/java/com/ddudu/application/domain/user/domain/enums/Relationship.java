@@ -1,34 +1,20 @@
 package com.ddudu.application.domain.user.domain.enums;
 
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import java.util.Arrays;
-import java.util.List;
+import java.util.function.BiPredicate;
 import lombok.Getter;
 
 @Getter
 public enum Relationship {
-  ME(List.of(PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC)) {
-    boolean isSatisfied(User user, User targetUser) {
-      return user.equals(targetUser);
-    }
-  },
-  FOLLOWER(List.of(PrivacyType.FOLLOWER, PrivacyType.PUBLIC)) {
-    boolean isSatisfied(User user, User targetUser) {
-      // TODO : 팔로우 기능 구현 후 수정
-      return false;
-    }
-  },
-  NONE(List.of(PrivacyType.PUBLIC)) {
-    boolean isSatisfied(User user, User targetUser) {
-      return true;
-    }
-  };
+  ME((user, targetUser) -> user.equals(targetUser)),
+  FOLLOWER((user, targetUser) -> false),
+  NONE((user, targetUser) -> true);
 
-  private final List<PrivacyType> accessiblePrivacyTypes;
+  private final BiPredicate<User, User> filter;
 
-  Relationship(List<PrivacyType> accessiblePrivacyTypes) {
-    this.accessiblePrivacyTypes = accessiblePrivacyTypes;
+  Relationship(BiPredicate<User, User> filter) {
+    this.filter = filter;
   }
 
   public static Relationship getRelationship(User user, User targetUser) {
@@ -38,6 +24,8 @@ public enum Relationship {
         .orElse(NONE);
   }
 
-  abstract boolean isSatisfied(User user, User targetUser);
+  public boolean isSatisfied(User user, User targetUser) {
+    return filter.test(user, targetUser);
+  }
 
 }
