@@ -1,6 +1,8 @@
 package com.ddudu.application.domain.ddudu.domain;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
@@ -138,6 +140,18 @@ public class Ddudu {
         .build();
   }
 
+  public boolean hasStartTime() {
+    return nonNull(beginAt);
+  }
+
+  public int getBeginHour() {
+    if (isNull(beginAt)) {
+      return -1;
+    }
+
+    return beginAt.getHour();
+  }
+
   private DduduBuilder getFullBuilder() {
     return Ddudu.builder()
         .id(this.id)
@@ -168,7 +182,7 @@ public class Ddudu {
   }
 
   private void validatePeriod(LocalTime beginAt, LocalTime endAt) {
-    if (Objects.isNull(beginAt) || Objects.isNull(endAt)) {
+    if (isNull(beginAt) || isNull(endAt)) {
       return;
     }
 
