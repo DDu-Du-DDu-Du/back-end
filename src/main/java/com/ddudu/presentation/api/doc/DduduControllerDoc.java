@@ -131,7 +131,25 @@ public interface DduduControllerDoc {
 
   @Operation(summary = "월간 뚜두 완료도 조회")
   @ApiResponse(
-      responseCode = "200"
+      responseCode = "200",
+      content = @Content(
+          mediaType = MediaType.APPLICATION_JSON_VALUE,
+          array = @ArraySchema(schema = @Schema(implementation = DduduCompletionResponse.class))
+      )
+  )
+  @Parameters(
+      {
+          @Parameter(
+              name = "userId",
+              description = "조회할 뚜두의 사용자 식별자 (기본값: 로그인한 사용자)",
+              in = ParameterIn.QUERY
+          ),
+          @Parameter(
+              name = "date",
+              description = "조회할 달 (기본값: 이번 달)",
+              in = ParameterIn.QUERY
+          )
+      }
   )
   ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
       Long loginId, Long userId, YearMonth yearMonth

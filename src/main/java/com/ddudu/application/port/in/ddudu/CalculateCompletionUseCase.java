@@ -4,8 +4,8 @@ import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface CalculateWeeklyCompletionUseCase {
+public interface CalculateCompletionUseCase {
 
-  List<DduduCompletionResponse> calculate(Long loginId, Long userId, LocalDate date);
+  List<DduduCompletionResponse> calculate(Long loginId, Long userId, LocalDate from, LocalDate to);
 
 }
