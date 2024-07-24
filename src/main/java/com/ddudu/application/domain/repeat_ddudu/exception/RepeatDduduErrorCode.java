@@ -19,7 +19,8 @@ public enum RepeatDduduErrorCode implements ErrorCode {
   INVALID_DAY_OF_WEEK(6010, "유효하지 않은 요일입니다."),
   NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH(6011, "반복되는 날짜가 없습니다."),
   NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK(6012, "반복되는 요일이 없습니다."),
-  NULL_LAST_DAY(6013, "마지막 날 반복 여부는 필수값입니다.");
+  NULL_LAST_DAY(6013, "마지막 날 반복 여부는 필수값입니다."),
+  INVALID_GOAL(6014, "유효하지 않은 목표입니다.");
 
   private final int code;
   private final String message;
