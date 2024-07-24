@@ -34,13 +34,11 @@ public interface UserControllerDoc {
           @ApiResponse(
               responseCode = "401", description = "UNAUTHORIZED",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "1011",
-                          description = "토큰의 사용자가 존재하지 않는 경우",
-                          value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "1011",
+                      description = "토큰의 사용자가 존재하지 않는 경우",
+                      value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
+                  )
               )
           )
       }
