@@ -27,15 +27,32 @@ public interface PeriodGoalControllerDoc {
               responseCode = "201", description = "CREATED", useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "400", description = "BAD_REQUEST",
               content = @Content(
                   examples = {
                       @ExampleObject(
-                          name = "4004",
-                          description = "로그인 사용자 아이디가 유효하지 않은 경우",
-                          value = PeriodGoalErrorExamples.PERIOD_GOAL_USER_NOT_EXISTING
+                          name = "4001",
+                          value = PeriodGoalErrorExamples.PERIOD_GOAL_CONTENTS_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "4002",
+                          value = PeriodGoalErrorExamples.PERIOD_GOAL_TYPE_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "4003",
+                          value = PeriodGoalErrorExamples.PERIOD_GOAL_PLAN_DATE_NOT_EXISTING
                       )
                   }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "4004",
+                      description = "로그인 사용자 아이디가 유효하지 않은 경우",
+                      value = PeriodGoalErrorExamples.PERIOD_GOAL_USER_NOT_EXISTING
+                  )
               )
           )
       }
@@ -51,13 +68,11 @@ public interface PeriodGoalControllerDoc {
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "4004",
-                          description = "로그인 사용자 아이디가 유효하지 않은 경우",
-                          value = PeriodGoalErrorExamples.PERIOD_GOAL_USER_NOT_EXISTING
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "4004",
+                      description = "로그인 사용자 아이디가 유효하지 않은 경우",
+                      value = PeriodGoalErrorExamples.PERIOD_GOAL_USER_NOT_EXISTING
+                  )
               )
           )
       }
@@ -87,15 +102,31 @@ public interface PeriodGoalControllerDoc {
               responseCode = "200", description = "OK", useReturnTypeSchema = true
           ),
           @ApiResponse(
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "4001",
+                      value = PeriodGoalErrorExamples.PERIOD_GOAL_CONTENTS_NOT_EXISTING
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "4006",
-                          description = "해당 기간 목표에 대한 권한이 없는 경우",
-                          value = PeriodGoalErrorExamples.PERIOD_GOAL_INVALID_AUTHORITY
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "4006",
+                      description = "해당 기간 목표에 대한 권한이 없는 경우",
+                      value = PeriodGoalErrorExamples.PERIOD_GOAL_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "4004",
+                      value = PeriodGoalErrorExamples.PERIOD_GOAL_PERIOD_GOAL_NOT_EXISTING
+                  )
               )
           )
       }
