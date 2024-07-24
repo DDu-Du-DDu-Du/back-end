@@ -6,38 +6,145 @@ import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.dto.goal.response.GoalResponse;
+import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
+import com.ddudu.presentation.api.doc.error.GoalErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "목표 관련 API")
+@Tag(name = "Goal", description = "목표 관련 API")
 public interface GoalControllerDoc {
 
   @Operation(summary = "목표 생성")
-  @ApiResponse(
-      responseCode = "201",
-      content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalIdResponse.class)
-      )
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "201", description = "CREATED", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "3001",
+                          value = GoalErrorExamples.GOAL_BLANK_NAME
+                      ),
+                      @ExampleObject(
+                          name = "3002",
+                          value = GoalErrorExamples.GOAL_EXCESSIVE_NAME_LENGTH
+                      ),
+                      @ExampleObject(
+                          name = "3003",
+                          value = GoalErrorExamples.GOAL_INVALID_COLOR_FORMAT
+                      ),
+                      @ExampleObject(
+                          name = "3010",
+                          value = GoalErrorExamples.GOAL_INVALID_PRIVACY_TYPE
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "3008",
+                          description = "로그인 사용자 아이디가 유효하지 않는 경우",
+                          value = GoalErrorExamples.GOAL_USER_NOT_EXISTING
+                      )
+                  }
+              )
+          )
+      }
   )
   ResponseEntity<GoalIdResponse> create(Long userId, CreateGoalRequest request);
 
   @Operation(summary = "목표 수정")
-  @ApiResponse(
-      responseCode = "200",
-      content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalIdResponse.class)
-      )
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "3001",
+                          value = GoalErrorExamples.GOAL_BLANK_NAME
+                      ),
+                      @ExampleObject(
+                          name = "3002",
+                          value = GoalErrorExamples.GOAL_EXCESSIVE_NAME_LENGTH
+                      ),
+                      @ExampleObject(
+                          name = "3003",
+                          value = GoalErrorExamples.GOAL_INVALID_COLOR_FORMAT
+                      ),
+                      @ExampleObject(
+                          name = "3007",
+                          value = GoalErrorExamples.GOAL_NULL_PRIVACY_TYPE
+                      ),
+                      @ExampleObject(
+                          name = "3007",
+                          value = GoalErrorExamples.GOAL_NULL_PRIVACY_TYPE
+                      ),
+                      @ExampleObject(
+                          name = "3010",
+                          value = GoalErrorExamples.GOAL_INVALID_PRIVACY_TYPE
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403", description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "3009",
+                      description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "3004",
+                          description = "목표 아이디가 유효하지 않는 경우",
+                          value = GoalErrorExamples.GOAL_ID_NOT_EXISTING
+                      )
+                  }
+              )
+          )
+      }
   )
   @Parameter(
       name = "id",
@@ -47,12 +154,54 @@ public interface GoalControllerDoc {
   ResponseEntity<GoalIdResponse> update(Long loginId, Long id, UpdateGoalRequest request);
 
   @Operation(summary = "목표 상태 변경")
-  @ApiResponse(
-      responseCode = "200",
-      content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalIdResponse.class)
-      )
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "3005",
+                      value = GoalErrorExamples.GOAL_NULL_STATUS
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403", description = "FORBIDDEN",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "3009",
+                          description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                          value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "3004",
+                          description = "목표 아이디가 유효하지 않는 경우",
+                          value = GoalErrorExamples.GOAL_ID_NOT_EXISTING
+                      )
+                  }
+              )
+          )
+      }
   )
   @Parameter(
       name = "id",
@@ -64,12 +213,41 @@ public interface GoalControllerDoc {
   );
 
   @Operation(summary = "목표 상세 조회")
-  @ApiResponse(
-      responseCode = "200",
-      content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalResponse.class)
-      )
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "403", description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "3009",
+                      description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "3004",
+                      description = "목표 아이디가 유효하지 않는 경우",
+                      value = GoalErrorExamples.GOAL_ID_NOT_EXISTING
+                  )
+              )
+          )
+      }
   )
   @Parameter(
       name = "id",
@@ -79,12 +257,41 @@ public interface GoalControllerDoc {
   ResponseEntity<GoalResponse> getById(Long loginId, Long id);
 
   @Operation(summary = "목표 전체 조회")
-  @ApiResponse(
-      responseCode = "200",
-      content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE,
-          array = @ArraySchema(schema = @Schema(implementation = BasicGoalWithStatusResponse.class))
-      )
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403", description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "3009",
+                      description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "3008",
+                      description = "로그인 사용자가 유효하지 않는 경우",
+                      value = GoalErrorExamples.GOAL_USER_NOT_EXISTING
+                  )
+              )
+          )
+      }
   )
   @Parameter(
       name = "userId",
@@ -93,9 +300,42 @@ public interface GoalControllerDoc {
   )
   ResponseEntity<List<BasicGoalWithStatusResponse>> getAllByUser(Long loginId, Long userId);
 
-  @Operation(summary = "목표 삭제")
-  @ApiResponse(
-      responseCode = "204"
+  @Operation(summary = "목표 삭제", description = "목표 삭제 시 하위 뚜두도 함께 삭제 됩니다.")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403", description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "3009",
+                      description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "3004",
+                      description = "목표 아이디가 유효하지 않는 경우",
+                      value = GoalErrorExamples.GOAL_ID_NOT_EXISTING
+                  )
+              )
+          )
+      }
   )
   @Parameter(
       name = "id",

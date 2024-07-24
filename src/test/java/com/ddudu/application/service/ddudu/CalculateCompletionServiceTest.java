@@ -106,7 +106,7 @@ class CalculateCompletionServiceTest {
 
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(findWeeklyCompletions)
-        .withMessage(DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
   }
 
   @Test

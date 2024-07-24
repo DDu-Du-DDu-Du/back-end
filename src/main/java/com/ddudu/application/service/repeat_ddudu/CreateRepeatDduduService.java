@@ -26,7 +26,7 @@ public class CreateRepeatDduduService implements CreateRepeatDduduUseCase {
   @Override
   public Long create(Long loginId, CreateRepeatDduduRequest request) {
     Goal goal = goalLoaderPort.getGoalOrElseThrow(
-        request.goalId(), RepeatDduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+        request.goalId(), RepeatDduduErrorCode.INVALID_GOAL.getCodeName());
 
     goal.validateGoalCreator(loginId);
 
