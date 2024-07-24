@@ -28,6 +28,29 @@ public interface GoalControllerDoc {
               responseCode = "201", description = "CREATED", useReturnTypeSchema = true
           ),
           @ApiResponse(
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "3001",
+                          value = GoalErrorExamples.GOAL_BLANK_NAME
+                      ),
+                      @ExampleObject(
+                          name = "3002",
+                          value = GoalErrorExamples.GOAL_EXCESSIVE_NAME_LENGTH
+                      ),
+                      @ExampleObject(
+                          name = "3003",
+                          value = GoalErrorExamples.GOAL_INVALID_COLOR_FORMAT
+                      ),
+                      @ExampleObject(
+                          name = "3010",
+                          value = GoalErrorExamples.GOAL_INVALID_PRIVACY_TYPE
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
                   examples = {
@@ -48,6 +71,37 @@ public interface GoalControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "3001",
+                          value = GoalErrorExamples.GOAL_BLANK_NAME
+                      ),
+                      @ExampleObject(
+                          name = "3002",
+                          value = GoalErrorExamples.GOAL_EXCESSIVE_NAME_LENGTH
+                      ),
+                      @ExampleObject(
+                          name = "3003",
+                          value = GoalErrorExamples.GOAL_INVALID_COLOR_FORMAT
+                      ),
+                      @ExampleObject(
+                          name = "3007",
+                          value = GoalErrorExamples.GOAL_NULL_PRIVACY_TYPE
+                      ),
+                      @ExampleObject(
+                          name = "3007",
+                          value = GoalErrorExamples.GOAL_NULL_PRIVACY_TYPE
+                      ),
+                      @ExampleObject(
+                          name = "3010",
+                          value = GoalErrorExamples.GOAL_INVALID_PRIVACY_TYPE
+                      )
+                  }
+              )
           ),
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
@@ -87,6 +141,15 @@ public interface GoalControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "3005",
+                      value = GoalErrorExamples.GOAL_NULL_STATUS
+                  )
+              )
           ),
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
@@ -132,25 +195,21 @@ public interface GoalControllerDoc {
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "3009",
-                          description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
-                          value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "3009",
+                      description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                  )
               )
           ),
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "3004",
-                          description = "목표 아이디가 유효하지 않는 경우",
-                          value = GoalErrorExamples.GOAL_ID_NOT_EXISTING
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "3004",
+                      description = "목표 아이디가 유효하지 않는 경우",
+                      value = GoalErrorExamples.GOAL_ID_NOT_EXISTING
+                  )
               )
           )
       }
@@ -171,25 +230,21 @@ public interface GoalControllerDoc {
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "3009",
-                          description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
-                          value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "3009",
+                      description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                  )
               )
           ),
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "3008",
-                          description = "로그인 사용자가 유효하지 않는 경우",
-                          value = GoalErrorExamples.GOAL_USER_NOT_EXISTING
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "3008",
+                      description = "로그인 사용자가 유효하지 않는 경우",
+                      value = GoalErrorExamples.GOAL_USER_NOT_EXISTING
+                  )
               )
           )
       }
@@ -210,25 +265,21 @@ public interface GoalControllerDoc {
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "3009",
-                          description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
-                          value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "3009",
+                      description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                  )
               )
           ),
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "3004",
-                          description = "목표 아이디가 유효하지 않는 경우",
-                          value = GoalErrorExamples.GOAL_ID_NOT_EXISTING
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "3004",
+                      description = "목표 아이디가 유효하지 않는 경우",
+                      value = GoalErrorExamples.GOAL_ID_NOT_EXISTING
+                  )
               )
           )
       }
