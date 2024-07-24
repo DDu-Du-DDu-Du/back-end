@@ -36,19 +36,42 @@ public interface DduduControllerDoc {
   @Operation(summary = "뚜두 생성")
   @ApiResponses(
       value = {
+          @ApiResponse(responseCode = "201", description = "OK", useReturnTypeSchema = true),
           @ApiResponse(
-              responseCode = "201", description = "OK", useReturnTypeSchema = true
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "2001",
+                          value = DduduErrorExamples.DDUDU_NULL_GOAL_VALUE
+                      ),
+                      @ExampleObject(
+                          name = "2014",
+                          value = DduduErrorExamples.DDUDU_NEGATIVE_OR_ZERO_GOAL_ID
+                      ),
+                      @ExampleObject(
+                          name = "2002",
+                          value = DduduErrorExamples.DDUDU_BLANK_NAME
+                      ),
+                      @ExampleObject(
+                          name = "2003",
+                          value = DduduErrorExamples.DDUDU_EXCESSIVE_NAME_LENGTH
+                      ),
+                      @ExampleObject(
+                          name = "2015",
+                          value = DduduErrorExamples.DDUDU_NULL_SCHEDULED_DATE
+                      ),
+                  }
+              )
           ),
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "3009",
-                          description = "해당 목표에 권한이 없는 사용자인 경우",
-                          value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "3009",
+                      description = "해당 목표에 권한이 없는 사용자인 경우",
+                      value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
+                  )
               )
           ),
           @ApiResponse(
@@ -279,35 +302,35 @@ public interface DduduControllerDoc {
               content = @Content(
                   examples = {
                       @ExampleObject(
+                          name = "2002",
+                          value = DduduErrorExamples.DDUDU_BLANK_NAME
+                      ),
+                      @ExampleObject(
                           name = "2003",
                           description = "변경할 이름이 50자가 넘는 경우",
                           value = DduduErrorExamples.DDUDU_EXCESSIVE_NAME_LENGTH
-                      ),
+                      )
                   }
               )
           ),
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2007",
-                          description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                          value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
-                      ),
-                  }
+                  examples = @ExampleObject(
+                      name = "2007",
+                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
+                  )
               )
           ),
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2004",
-                          description = "존재하지 않는 뚜두인 경우",
-                          value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
-                      ),
-                  }
+                  examples = @ExampleObject(
+                      name = "2004",
+                      description = "존재하지 않는 뚜두인 경우",
+                      value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                  )
               )
           )
       }
@@ -325,25 +348,21 @@ public interface DduduControllerDoc {
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2007",
-                          description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                          value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
-                      ),
-                  }
+                  examples = @ExampleObject(
+                      name = "2007",
+                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
+                  )
               )
           ),
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2004",
-                          description = "존재하지 않는 뚜두인 경우",
-                          value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
-                      ),
-                  }
+                  examples = @ExampleObject(
+                      name = "2004",
+                      description = "존재하지 않는 뚜두인 경우",
+                      value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                  )
               )
           )
       }
@@ -360,13 +379,11 @@ public interface DduduControllerDoc {
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2007",
-                          description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                          value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
-                      ),
-                  }
+                  examples = @ExampleObject(
+                      name = "2007",
+                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
+                  )
               )
           )
       }
@@ -381,15 +398,22 @@ public interface DduduControllerDoc {
               responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
           ),
           @ApiResponse(
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2010",
+                      value = DduduErrorExamples.DDUDU_UNABLE_TO_FINISH_BEFORE_BEGIN
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2004",
-                          description = "존재하지 않는 뚜두인 경우",
-                          value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
-                      ),
-                  }
+                  examples = @ExampleObject(
+                      name = "2004",
+                      description = "존재하지 않는 뚜두인 경우",
+                      value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                  )
               )
           )
       }
@@ -403,15 +427,28 @@ public interface DduduControllerDoc {
               responseCode = "204", description = "OK", useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "400", description = "BAD_REQUEST",
               content = @Content(
                   examples = {
                       @ExampleObject(
-                          name = "2004",
-                          description = "존재하지 않는 뚜두인 경우",
-                          value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                          name = "2011",
+                          value = DduduErrorExamples.DDUDU_NULL_DATE_TO_MOVE
                       ),
+                      @ExampleObject(
+                          name = "2012",
+                          value = DduduErrorExamples.DDUDU_SHOULD_POSTPONE_UNTIL_FUTURE
+                      )
                   }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2004",
+                      description = "존재하지 않는 뚜두인 경우",
+                      value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                  )
               )
           )
       }
@@ -425,15 +462,22 @@ public interface DduduControllerDoc {
               responseCode = "201", description = "CREATED", useReturnTypeSchema = true
           ),
           @ApiResponse(
+              responseCode = "400", description = "BAD_REQUEST",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2013",
+                      value = DduduErrorExamples.DDUDU_UNABLE_TO_REPRODUCE_ON_SAME_DATE
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2004",
-                          description = "존재하지 않는 뚜두인 경우",
-                          value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
-                      ),
-                  }
+                  examples = @ExampleObject(
+                      name = "2004",
+                      description = "존재하지 않는 뚜두인 경우",
+                      value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                  )
               )
           )
       }
