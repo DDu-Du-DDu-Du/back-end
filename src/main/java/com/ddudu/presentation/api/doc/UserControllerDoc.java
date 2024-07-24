@@ -10,6 +10,7 @@ import com.ddudu.old.user.dto.response.FollowingResponse;
 import com.ddudu.old.user.dto.response.ToggleOptionResponse;
 import com.ddudu.old.user.dto.response.UserProfileResponse;
 import com.ddudu.old.user.dto.response.UsersResponse;
+import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
 import com.ddudu.presentation.api.doc.error.UserErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,11 +35,17 @@ public interface UserControllerDoc {
           @ApiResponse(
               responseCode = "401", description = "UNAUTHORIZED",
               content = @Content(
-                  examples = @ExampleObject(
-                      name = "1011",
-                      description = "토큰의 사용자가 존재하지 않는 경우",
-                      value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
-                  )
+                  examples = {
+                      @ExampleObject(
+                          name = "5002",
+                          value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                      ),
+                      @ExampleObject(
+                          name = "1011",
+                          description = "토큰의 사용자가 존재하지 않는 경우",
+                          value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
+                      )
+                  }
               )
           )
       }

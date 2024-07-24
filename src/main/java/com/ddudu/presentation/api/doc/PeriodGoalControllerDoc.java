@@ -4,6 +4,7 @@ import com.ddudu.application.dto.period_goal.request.CreatePeriodGoalRequest;
 import com.ddudu.application.dto.period_goal.request.UpdatePeriodGoalRequest;
 import com.ddudu.application.dto.period_goal.response.PeriodGoalSummary;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
+import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
 import com.ddudu.presentation.api.doc.error.PeriodGoalErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,6 +47,15 @@ public interface PeriodGoalControllerDoc {
               )
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
@@ -64,6 +74,15 @@ public interface PeriodGoalControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
           ),
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
@@ -107,6 +126,15 @@ public interface PeriodGoalControllerDoc {
                   examples = @ExampleObject(
                       name = "4001",
                       value = PeriodGoalErrorExamples.PERIOD_GOAL_CONTENTS_NOT_EXISTING
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
                   )
               )
           ),

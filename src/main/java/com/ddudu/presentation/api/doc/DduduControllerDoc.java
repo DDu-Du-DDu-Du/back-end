@@ -14,6 +14,7 @@ import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
+import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
 import com.ddudu.presentation.api.doc.error.DduduErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,6 +66,15 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
@@ -102,6 +112,15 @@ public interface DduduControllerDoc {
               responseCode = "200", description = "OK", useReturnTypeSchema = true
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
                   examples = {
@@ -127,6 +146,15 @@ public interface DduduControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
           ),
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
@@ -168,6 +196,15 @@ public interface DduduControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
           ),
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
@@ -212,6 +249,15 @@ public interface DduduControllerDoc {
               responseCode = "200", description = "OK", useReturnTypeSchema = true
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
                   examples = {
@@ -253,6 +299,15 @@ public interface DduduControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
           ),
           @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
@@ -314,6 +369,15 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
@@ -344,6 +408,15 @@ public interface DduduControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
           ),
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
@@ -377,6 +450,15 @@ public interface DduduControllerDoc {
               responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
@@ -403,6 +485,15 @@ public interface DduduControllerDoc {
                   examples = @ExampleObject(
                       name = "2010",
                       value = DduduErrorExamples.DDUDU_UNABLE_TO_FINISH_BEFORE_BEGIN
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
                   )
               )
           ),
@@ -442,6 +533,15 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
@@ -471,6 +571,15 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
@@ -491,6 +600,15 @@ public interface DduduControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
           )
       }
   )

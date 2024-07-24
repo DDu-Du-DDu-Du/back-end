@@ -2,6 +2,7 @@ package com.ddudu.presentation.api.doc;
 
 import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
+import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
 import com.ddudu.presentation.api.doc.error.GoalErrorExamples;
 import com.ddudu.presentation.api.doc.error.RepeatDduduErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
@@ -78,6 +79,15 @@ public interface RepeatDduduControllerDoc {
                           value = RepeatDduduErrorExamples.REPEAT_DDUDU_NULL_LAST_DAY
                       )
                   }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
               )
           ),
           @ApiResponse(

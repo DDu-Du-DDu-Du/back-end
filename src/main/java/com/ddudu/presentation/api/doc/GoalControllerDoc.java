@@ -6,6 +6,7 @@ import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.dto.goal.response.GoalResponse;
+import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
 import com.ddudu.presentation.api.doc.error.GoalErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,6 +49,15 @@ public interface GoalControllerDoc {
                           value = GoalErrorExamples.GOAL_INVALID_PRIVACY_TYPE
                       )
                   }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
               )
           ),
           @ApiResponse(
@@ -104,15 +114,22 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
               content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "3009",
-                          description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
-                          value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
-                      )
-                  }
+                  examples = @ExampleObject(
+                      name = "3009",
+                      description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                  )
               )
           ),
           @ApiResponse(
@@ -148,6 +165,15 @@ public interface GoalControllerDoc {
                   examples = @ExampleObject(
                       name = "3005",
                       value = GoalErrorExamples.GOAL_NULL_STATUS
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
                   )
               )
           ),
@@ -203,6 +229,15 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404", description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
@@ -226,6 +261,15 @@ public interface GoalControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "200", description = "OK", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
           ),
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
@@ -261,6 +305,15 @@ public interface GoalControllerDoc {
       value = {
           @ApiResponse(
               responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
           ),
           @ApiResponse(
               responseCode = "403", description = "FORBIDDEN",
