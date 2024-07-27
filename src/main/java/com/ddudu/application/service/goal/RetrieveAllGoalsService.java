@@ -24,7 +24,7 @@ public class RetrieveAllGoalsService implements RetrieveAllGoalsUseCase {
     User user = userLoaderPort.getUserOrElseThrow(
         userId, GoalErrorCode.USER_NOT_EXISTING.getCodeName());
 
-    return goalLoaderPort.findAllByUser(user)
+    return goalLoaderPort.findAllByUserAndPrivacyTypes(user)
         .stream()
         .map(BasicGoalWithStatusResponse::from)
         .toList();

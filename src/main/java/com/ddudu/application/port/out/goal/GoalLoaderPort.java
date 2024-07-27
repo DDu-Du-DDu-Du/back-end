@@ -10,11 +10,11 @@ public interface GoalLoaderPort {
 
   Goal getGoalOrElseThrow(Long id, String message);
 
-  Optional<Goal> findById(Long id);
+  Optional<Goal> getOptionalGoal(Long id);
 
-  List<Goal> findAllByUser(User user);
+  List<Goal> findAllByUserAndPrivacyTypes(User user);
 
-  List<Goal> findAllByUser(User user, List<PrivacyType> privacyTypes);
+  List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes);
 
   List<Goal> findAccessibleGoals(User user, boolean isFollower);
 

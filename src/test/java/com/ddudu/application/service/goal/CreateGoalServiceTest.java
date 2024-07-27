@@ -75,7 +75,7 @@ class CreateGoalServiceTest {
     GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
-    Optional<Goal> actual = goalLoaderPort.findById(expected.id());
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
     assertThat(actual.get()).extracting("name", "color", "privacyType")
         .containsExactly(name, color, privacyType);
   }
@@ -86,7 +86,7 @@ class CreateGoalServiceTest {
     GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
-    Optional<Goal> actual = goalLoaderPort.findById(expected.id());
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
     assertThat(actual.get()
         .getId()).isNotNull();
   }
@@ -97,7 +97,7 @@ class CreateGoalServiceTest {
     GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
-    Optional<Goal> actual = goalLoaderPort.findById(expected.id());
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
     assertThat(actual.get()
         .getStatus()).isEqualTo(GoalStatus.IN_PROGRESS);
   }
@@ -115,7 +115,7 @@ class CreateGoalServiceTest {
     GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
-    Optional<Goal> actual = goalLoaderPort.findById(expected.id());
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
     assertThat(actual.get()
         .getColor()).isEqualTo(defaultColor);
   }
@@ -130,7 +130,7 @@ class CreateGoalServiceTest {
     GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
-    Optional<Goal> actual = goalLoaderPort.findById(expected.id());
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
     assertThat(actual.get()
         .getPrivacyType()).isEqualTo(defaultPrivacyType);
   }

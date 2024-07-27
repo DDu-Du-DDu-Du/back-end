@@ -64,7 +64,7 @@ class ChangeGoalStatusServiceTest {
     changeGoalStatusService.changeStatus(userId, goal.getId(), request);
 
     // then
-    Goal actual = goalLoaderPort.findById(goal.getId())
+    Goal actual = goalLoaderPort.getOptionalGoal(goal.getId())
         .get();
     assertThat(actual.getStatus()).isEqualTo(newStatus);
   }

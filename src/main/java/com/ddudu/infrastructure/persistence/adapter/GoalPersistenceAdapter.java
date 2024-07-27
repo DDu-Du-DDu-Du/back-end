@@ -34,6 +34,18 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
+  public List<Goal> saveAll(List<Goal> defaultGoals) {
+    List<GoalEntity> goalEntities = defaultGoals.stream()
+        .map(GoalEntity::from)
+        .toList();
+
+    return goalRepository.saveAll(goalEntities)
+        .stream()
+        .map(GoalEntity::toDomain)
+        .toList();
+  }
+
+  @Override
   public Goal getGoalOrElseThrow(Long id, String message) {
     return goalRepository.findById(id)
         .orElseThrow(() -> new MissingResourceException(
@@ -45,13 +57,13 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public Optional<Goal> findById(Long id) {
+  public Optional<Goal> getOptionalGoal(Long id) {
     return goalRepository.findById(id)
         .map(GoalEntity::toDomain);
   }
 
   @Override
-  public List<Goal> findAllByUser(User user) {
+  public List<Goal> findAllByUserAndPrivacyTypes(User user) {
     return goalRepository.findAllByUser(UserEntity.from(user))
         .stream()
         .map(GoalEntity::toDomain)
@@ -59,7 +71,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public List<Goal> findAllByUser(User user, List<PrivacyType> privacyTypes) {
+  public List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes) {
     return goalRepository.findAllByUserAndPrivacyTypes(
             UserEntity.from(user),
             privacyTypes

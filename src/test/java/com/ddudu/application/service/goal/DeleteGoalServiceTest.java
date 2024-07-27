@@ -2,12 +2,15 @@ package com.ddudu.application.service.goal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.port.out.auth.SignUpPort;
+import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
+import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.application.port.out.goal.DeleteGoalPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
@@ -15,10 +18,7 @@ import com.ddudu.application.port.out.user.UserLoaderPort;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import com.ddudu.infrastructure.persistence.entity.DduduEntity;
-import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import jakarta.transaction.Transactional;
-import java.util.MissingResourceException;
 import java.util.Optional;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,18 +51,21 @@ class DeleteGoalServiceTest {
   @Autowired
   DeleteGoalPort deleteGoalPort;
 
-  // TODO: 포트로 변경
   @Autowired
-  DduduRepository dduduRepository;
+  DduduLoaderPort dduduLoaderPort;
+
+  @Autowired
+  SaveDduduPort saveDduduPort;
+
 
   Long userId;
   Goal goal;
 
   @BeforeEach
   void setUp() {
-    User user = createAndSaveUser();
+    User user = signUpPort.save(UserFixture.createRandomUserWithId());
     userId = user.getId();
-    goal = createAndSaveGoal(user);
+    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user));
   }
 
   @Test
@@ -71,7 +74,7 @@ class DeleteGoalServiceTest {
     deleteGoalService.delete(userId, goal.getId());
 
     // then
-    Optional<Goal> foundAfterDeleted = goalLoaderPort.findById(goal.getId());
+    Optional<Goal> foundAfterDeleted = goalLoaderPort.getOptionalGoal(goal.getId());
     assertThat(foundAfterDeleted).isEmpty();
   }
 
@@ -79,33 +82,28 @@ class DeleteGoalServiceTest {
   void 목표_삭제_시_해당_목표의_뚜두도_삭제된다() {
     //given
     Ddudu ddudu = DduduFixture.createRandomDduduWithGoal(goal);
-    ddudu = dduduRepository.save(DduduEntity.from(ddudu))
-        .toDomain();
+    ddudu = saveDduduPort.save(ddudu);
 
     //when
     deleteGoalService.delete(userId, goal.getId());
 
     //then
-    assertThat(dduduRepository.findById(ddudu.getId())).isEmpty();
+    assertThat(dduduLoaderPort.getOptionalDdudu(ddudu.getId())).isEmpty();
   }
 
   @Test
-  void 목표가_존재하지_않는_경우_예외가_발생한다() {
+  void 목표가_존재하지_않는_경우_예외가_발생하지_않는다() {
     // given
     Long invalidId = GoalFixture.getRandomId();
 
-    // when
-    ThrowingCallable delete = () -> deleteGoalService.delete(userId, invalidId);
-
-    // then
-    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(delete)
-        .withMessage(GoalErrorCode.ID_NOT_EXISTING.getCodeName());
+    // when / then
+    assertDoesNotThrow(() -> deleteGoalService.delete(userId, invalidId));
   }
 
   @Test
   void 로그인_사용자가_권한이_없는_경우_삭제에_실패한다() {
     // given
-    User anotherUser = createAndSaveUser();
+    User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
     // when
     ThrowingCallable delete = () -> deleteGoalService.delete(anotherUser.getId(), goal.getId());
@@ -115,14 +113,5 @@ class DeleteGoalServiceTest {
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
-  private User createAndSaveUser() {
-    User user = UserFixture.createRandomUserWithId();
-    return signUpPort.save(user);
-  }
-
-  private Goal createAndSaveGoal(User user) {
-    Goal goal = GoalFixture.createRandomGoalWithUser(user);
-    return saveGoalPort.save(goal);
-  }
 
 }

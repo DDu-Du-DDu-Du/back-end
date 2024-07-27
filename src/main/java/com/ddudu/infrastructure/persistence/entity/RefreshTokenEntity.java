@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "refresh_tokens")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Getter
 public class RefreshTokenEntity extends BaseEntity {
 
   @Id

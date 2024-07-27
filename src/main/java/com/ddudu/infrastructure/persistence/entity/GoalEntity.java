@@ -15,16 +15,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "goals")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class GoalEntity extends BaseEntity {
 
   @Id
@@ -71,22 +73,6 @@ public class GoalEntity extends BaseEntity {
   )
   @Enumerated(EnumType.STRING)
   private PrivacyType privacyType;
-
-  @Builder
-  public GoalEntity(
-      Long id, String name, UserEntity user, GoalStatus status, String color,
-      PrivacyType privacyType,
-      LocalDateTime createdAt, LocalDateTime updatedAt
-  ) {
-    super(createdAt, updatedAt);
-
-    this.id = id;
-    this.name = name;
-    this.user = user;
-    this.status = status;
-    this.color = color;
-    this.privacyType = privacyType;
-  }
 
   public static GoalEntity from(Goal goal) {
     return GoalEntity.builder()

@@ -185,7 +185,7 @@ class DduduTest {
         // given
 
         // when
-        ThrowingCallable check = () -> ddudu.checkAuthority(userId);
+        ThrowingCallable check = () -> ddudu.validateDduduCreator(userId);
 
         // then
         assertThatNoException().isThrownBy(check);
@@ -197,7 +197,7 @@ class DduduTest {
         long wrongUserId = DduduFixture.getRandomId();
 
         // when
-        ThrowingCallable check = () -> ddudu.checkAuthority(wrongUserId);
+        ThrowingCallable check = () -> ddudu.validateDduduCreator(wrongUserId);
 
         // then
         assertThatExceptionOfType(SecurityException.class).isThrownBy(check)
@@ -346,6 +346,67 @@ class DduduTest {
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);
         assertThat(actual.isPostponed()).isTrue();
+      }
+
+    }
+
+    @Nested
+    class 상태_변경_테스트 {
+
+      @Test
+      void 미완료_뚜두는_완료_상태로_변경된다() {
+        // given
+        DduduStatus before = ddudu.getStatus();
+        assertThat(before).isEqualTo(DduduStatus.UNCOMPLETED);
+
+        // when
+        Ddudu actual = ddudu.switchStatus();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(DduduStatus.COMPLETE);
+      }
+
+      @Test
+      void 완료_뚜두는_미완료_상태로_변경된다() {
+        // given
+        Ddudu completeDdudu = DduduFixture.createRandomDduduWithReference(
+            goalId, userId, false, DduduStatus.COMPLETE);
+
+        // when
+        Ddudu actual = completeDdudu.switchStatus();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(DduduStatus.UNCOMPLETED);
+      }
+
+    }
+
+    @Nested
+    class 이름_변경_테스트 {
+
+      @Test
+      void 뚜두_이름_변경을_성공한다() {
+        // given
+        String expected = DduduFixture.getRandomSentenceWithMax(50);
+
+        // when
+        Ddudu actual = ddudu.changeName(expected);
+
+        // then
+        assertThat(actual.getName()).isEqualTo(expected);
+      }
+
+      @Test
+      void 이름이_50자를_넘으면_변경을_실패한다() {
+        // given
+        String longName = DduduFixture.getRandomSentence(51, 100);
+
+        // when
+        ThrowingCallable changeName = () -> ddudu.changeName(longName);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(changeName)
+            .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
       }
 
     }
