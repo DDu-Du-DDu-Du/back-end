@@ -12,6 +12,4 @@ public interface UserLoaderPort {
 
   Optional<User> loadFullUser(Long userId);
 
-  Optional<User> loadMinimalUser(Long id);
-
 }
