@@ -16,9 +16,8 @@ public class GetMyInfoService implements GetMyInfoUseCase {
 
   @Override
   public MeResponse getMyInfo(Long loginId) {
-    User user = userLoaderPort.loadMinimalUser(loginId)
-        .orElseThrow(() -> new UnsupportedOperationException(
-            UserErrorCode.NO_TARGET_FOR_MY_INFO.getCodeName()));
+    User user = userLoaderPort.getUserOrElseThrow(
+        loginId, UserErrorCode.NO_TARGET_FOR_MY_INFO.getCodeName());
 
     return MeResponse.from(user);
   }

@@ -595,7 +595,7 @@ public interface DduduControllerDoc {
       Long loginId, Long id, RepeatAnotherDayRequest request
   );
 
-  @Operation(summary = "뚜두 검색. Not Yet Implemented")
+  @Operation(summary = "뚜두 검색")
   @ApiResponses(
       value = {
           @ApiResponse(
