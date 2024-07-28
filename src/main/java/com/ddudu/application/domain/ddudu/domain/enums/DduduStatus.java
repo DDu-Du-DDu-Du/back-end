@@ -14,6 +14,10 @@ public enum DduduStatus {
         .orElseGet(() -> DduduStatus.UNCOMPLETED);
   }
 
+  public DduduStatus switchStatus() {
+    return this == UNCOMPLETED ? COMPLETE : UNCOMPLETED;
+  }
+
   public boolean isCompleted() {
     return this == COMPLETE;
   }

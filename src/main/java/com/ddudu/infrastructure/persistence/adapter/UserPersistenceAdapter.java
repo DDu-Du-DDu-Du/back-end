@@ -24,7 +24,8 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
 
   @Override
   public User getUserOrElseThrow(Long id, String message) {
-    return loadMinimalUser(id)
+    return userRepository.findById(id)
+        .map(UserEntity::toDomain)
         .orElseThrow(() -> new MissingResourceException(
             message,
             User.class.getName(),
@@ -64,12 +65,6 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
   public Optional<User> loadFullUser(Long userId) {
     return userRepository.fetchFullUserById(userId)
         .map(FullUser::toDomain);
-  }
-
-  @Override
-  public Optional<User> loadMinimalUser(Long id) {
-    return userRepository.findById(id)
-        .map(UserEntity::toDomain);
   }
 
   private AuthProvider saveAuthProvider(AuthProvider authProvider, UserEntity user) {

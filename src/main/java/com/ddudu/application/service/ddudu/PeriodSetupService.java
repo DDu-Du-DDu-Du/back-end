@@ -23,7 +23,7 @@ public class PeriodSetupService implements PeriodSetupUseCase {
     Ddudu ddudu = dduduLoaderPort.getDduduOrElseThrow(
         dduduId, DduduErrorCode.ID_NOT_EXISTING.getCodeName());
 
-    ddudu.checkAuthority(loginId);
+    ddudu.validateDduduCreator(loginId);
 
     Ddudu updatedDdudu = ddudu.setUpPeriod(request.beginAt(), request.endAt());
 

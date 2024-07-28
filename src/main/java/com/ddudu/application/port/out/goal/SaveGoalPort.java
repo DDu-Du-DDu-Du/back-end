@@ -7,6 +7,6 @@ public interface SaveGoalPort {
 
   Goal save(Goal goal);
 
-  List<Goal> saveAll(List<Goal> goals);
+  List<Goal> saveAll(List<Goal> defaultGoals);
 
 }

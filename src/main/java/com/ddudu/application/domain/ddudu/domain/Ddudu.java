@@ -1,6 +1,8 @@
 package com.ddudu.application.domain.ddudu.domain;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
@@ -26,6 +28,7 @@ public class Ddudu {
   private final Long id;
   private final Long goalId;
   private final Long userId;
+  private final Long repeatDduduId;
   private final String name;
   private final DduduStatus status;
   private final boolean isPostponed;
@@ -39,9 +42,9 @@ public class Ddudu {
 
   @Builder
   private Ddudu(
-      Long id, Long goalId, Long userId, String name, Boolean isPostponed, DduduStatus status,
-      String statusValue,
-      LocalDate scheduledOn, LocalTime beginAt, LocalTime endAt,
+      Long id, Long goalId, Long userId, Long repeatDduduId, String name, Boolean isPostponed,
+      DduduStatus status, String statusValue, LocalDate scheduledOn, LocalTime beginAt,
+      LocalTime endAt,
       // TODO: delete below fields after migration as left for avoidance of compile errors
       Goal goal, User user
   ) {
@@ -50,6 +53,7 @@ public class Ddudu {
     this.id = id;
     this.goalId = goalId;
     this.userId = userId;
+    this.repeatDduduId = repeatDduduId;
     this.name = name;
     this.status = Objects.requireNonNullElse(status, DduduStatus.from(statusValue));
     this.isPostponed = Objects.requireNonNullElse(isPostponed, false);
@@ -58,8 +62,8 @@ public class Ddudu {
     this.endAt = endAt;
   }
 
-  public void checkAuthority(Long loginId) {
-    if (!isCreatedByUser(loginId)) {
+  public void validateDduduCreator(Long userId) {
+    if (!isCreatedByUser(userId)) {
       throw new SecurityException(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
     }
   }
@@ -123,19 +127,29 @@ public class Ddudu {
         .build();
   }
 
-  // TODO: 마이그레이션 예정
   public Ddudu switchStatus() {
-    if (this.status == DduduStatus.UNCOMPLETED) {
-      return getFullBuilder()
-          .status(DduduStatus.COMPLETE)
-          .endAt(LocalTime.now())
-          .build();
+    return getFullBuilder()
+        .status(status.switchStatus())
+        .build();
+  }
+
+  public Ddudu changeName(String name) {
+    validateName(name);
+    return getFullBuilder()
+        .name(name)
+        .build();
+  }
+
+  public boolean hasStartTime() {
+    return nonNull(beginAt);
+  }
+
+  public int getBeginHour() {
+    if (isNull(beginAt)) {
+      return -1;
     }
 
-    return getFullBuilder()
-        .status(DduduStatus.UNCOMPLETED)
-        .endAt(null)
-        .build();
+    return beginAt.getHour();
   }
 
   private DduduBuilder getFullBuilder() {
@@ -143,6 +157,7 @@ public class Ddudu {
         .id(this.id)
         .goalId(this.goalId)
         .userId(this.userId)
+        .repeatDduduId(this.repeatDduduId)
         .name(this.name)
         .status(this.status)
         .scheduledOn(this.scheduledOn)
@@ -156,22 +171,21 @@ public class Ddudu {
   ) {
     checkArgument(Objects.nonNull(goalId), DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
     checkArgument(Objects.nonNull(userId), DduduErrorCode.NULL_USER.getCodeName());
-    validateTodo(name);
+    validateName(name);
     validatePeriod(beginAt, endAt);
   }
 
-  private void validateTodo(String name) {
+  private void validateName(String name) {
     checkArgument(StringUtils.isNotBlank(name), DduduErrorCode.BLANK_NAME.getCodeName());
     checkArgument(
         name.length() <= MAX_NAME_LENGTH, DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
   }
 
   private void validatePeriod(LocalTime beginAt, LocalTime endAt) {
-    if (Objects.isNull(beginAt) || Objects.isNull(endAt)) {
+    if (isNull(beginAt) || isNull(endAt)) {
       return;
     }
 
-    System.out.println("beginAt: " + beginAt + ", endAt: " + endAt);
     checkArgument(
         !beginAt.isAfter(endAt), DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
   }

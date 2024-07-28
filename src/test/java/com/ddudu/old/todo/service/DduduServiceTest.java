@@ -8,26 +8,17 @@ import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.like.domain.Like;
 import com.ddudu.old.like.domain.LikeRepository;
 import com.ddudu.old.todo.domain.OldTodoRepository;
-import com.ddudu.old.todo.dto.request.CreateTodoRequest;
-import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
-import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
 import com.ddudu.old.todo.dto.response.TodoResponse;
 import com.ddudu.old.user.domain.UserRepository;
-import com.ddudu.old.user.dto.request.FollowRequest;
 import com.ddudu.old.user.service.FollowingService;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.ForbiddenException;
 import jakarta.persistence.EntityManager;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.util.List;
 import java.util.Optional;
 import net.datafaker.Faker;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -89,56 +80,50 @@ class DduduServiceTest {
         .word();
   }
 
-  @Nested
-  class 할_일_생성_테스트 {
+  private Goal createGoal(String name, User user) {
+    Goal goal = Goal.builder()
+        .name(name)
+        .user(user)
+        .build();
 
-    @Test
-    void 할_일_생성에_성공한다() {
-      // given
-      Goal goal = createGoal(goalName, user);
-      CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
+    return oldGoalRepository.save(goal);
+  }
 
-      // when
-      BasicDduduResponse response = todoService.create(user.getId(), request);
+  private Ddudu createTodo(String name, Goal goal, User user) {
+    Ddudu ddudu = Ddudu.builder()
+        .name(name)
+        .goal(goal)
+        .user(user)
+        .build();
 
-      // then
-      Ddudu actual = oldTodoRepository.findById(response.id())
-          .get();
-      assertThat(actual).extracting("name", "beginAt", "goal", "user")
-          .containsExactly(name, beginAt, goal, user);
-    }
+    return oldTodoRepository.save(ddudu);
+  }
 
-    @Test
-    void 사용자_아이디가_유효하지_않으면_예외가_발생한다() {
-      // give
-      Long userId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      Goal goal = createGoal(goalName, user);
-      CreateTodoRequest request = new CreateTodoRequest(goal.getId(), name, beginAt);
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, true, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
 
-      // when
-      ThrowingCallable create = () -> todoService.create(userId, request);
+    User user = User.builder()
+        .build();
 
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
-    }
+    return userRepository.save(user);
+  }
 
-    @Test
-    void 목표_아이디가_유효하지_않으면_예외가_발생한다() {
-      // given
-      Long goalId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      CreateTodoRequest request = new CreateTodoRequest(goalId, name, beginAt);
+  private Like createLike(User user, Ddudu ddudu) {
+    Like like = Like.builder()
+        .user(user)
+        .ddudu(ddudu)
+        .build();
+    return likeRepository.save(like);
+  }
 
-      // when
-      ThrowingCallable create = () -> todoService.create(user.getId(), request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(create)
-          .withMessage(DduduErrorCode.GOAL_NOT_EXISTING.getMessage());
-    }
-
+  private void flushAndClearPersistence() {
+    entityManager.flush();
+    entityManager.clear();
   }
 
   @Nested
@@ -187,108 +172,6 @@ class DduduServiceTest {
 
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(findById)
-          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
-    }
-
-  }
-
-  @Nested
-  class 할_일_수정_테스트 {
-
-    Ddudu ddudu;
-    Goal changedGoal;
-    String changedName;
-    LocalDateTime changedBeginAt;
-
-    @BeforeEach
-    void setUp() {
-      Goal goal = createGoal(goalName, user);
-      ddudu = createTodo(name, goal, user);
-
-      String newGoalName = faker.lorem()
-          .word();
-      changedGoal = createGoal(newGoalName, user);
-
-      changedName = faker.lorem()
-          .word();
-      changedBeginAt = LocalDateTime.now();
-    }
-
-    @Test
-    void 할_일_수정에_성공한다() {
-      // given
-      UpdateTodoRequest request = new UpdateTodoRequest(
-          changedGoal.getId(), changedName, changedBeginAt);
-
-      // when
-      BasicDduduResponse response = todoService.update(user.getId(), ddudu.getId(), request);
-
-      // then
-      Optional<Ddudu> actual = oldTodoRepository.findById(ddudu.getId());
-      assertThat(actual.get()).extracting(
-              "goal", "name", "status")
-          .containsExactly(changedGoal, response.name(), response.status());
-    }
-
-    @Test
-    void 유효하지_않은_ID인_경우_수정에_실패한다() {
-      // given
-      Long invalidId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      Long goalId = ddudu.getGoalId();
-      UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
-
-      // when
-      ThrowingCallable update = () -> todoService.update(user.getId(), invalidId, request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
-          .withMessage(DduduErrorCode.ID_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 로그인_사용자가_권한이_없는_경우_수정에_실패한다() {
-      // given
-      Long invalidUserId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      Long goalId = ddudu.getGoalId();
-      UpdateTodoRequest request = new UpdateTodoRequest(goalId, name, beginAt);
-
-      // when
-      ThrowingCallable update = () -> todoService.update(invalidUserId, ddudu.getId(), request);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
-          .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
-    }
-
-    @Test
-    void 유효하지_않은_목표_ID인_경우_수정에_실패한다() {
-      // given
-      Long invalidGoalId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      UpdateTodoRequest request = new UpdateTodoRequest(invalidGoalId, name, beginAt);
-
-      // when
-      ThrowingCallable update = () -> todoService.update(user.getId(), ddudu.getId(), request);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(update)
-          .withMessage(DduduErrorCode.GOAL_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 로그인_사용자가_목표에_대한_권한이_없는_경우_수정에_실패한다() {
-      // given
-      User anotherUser = createUser();
-      Goal goalFromAnotherUser = createGoal(goalName, anotherUser);
-      UpdateTodoRequest request = new UpdateTodoRequest(goalFromAnotherUser.getId(), name, beginAt);
-
-      // when
-      ThrowingCallable update = () -> todoService.update(user.getId(), ddudu.getId(), request);
-
-      // then
-      assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
           .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
@@ -346,222 +229,6 @@ class DduduServiceTest {
   }
 
   @Nested
-  class 할_일_달성률_조회_테스트 {
-
-    @Test
-    void 자신의_주간_할_일_달성률_조회를_성공한다() {
-      // given
-      Goal goal1 = createGoal(goalName, user);
-      Goal goal2 = createGoal("book", user);
-      Ddudu ddudu1 = createTodo(name, goal1, user);
-      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
-
-      LocalDate date = LocalDate.now();
-      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
-      DayOfWeek dayOfWeek = date.getDayOfWeek();
-      int dayIndex = dayOfWeek.getValue() - 1;
-
-      // when
-      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
-          user.getId(), user.getId(), mondayDate);
-
-      // then
-      assertThat(responses).hasSize(7);
-      assertThat(responses.get(dayIndex)).extracting("date", "totalCount", "uncompletedCount")
-          .containsExactly(date, 2, 2);
-    }
-
-    @Test
-    void 팔로워의_주간_할_일_달성률_조회를_성공한다() {
-      // given
-      Goal goal1 = createGoal(goalName, user);
-      Goal goal2 = createGoal("book", user);
-      Ddudu ddudu1 = createTodo(name, goal1, user);
-      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
-
-      LocalDate date = LocalDate.now();
-      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
-      DayOfWeek dayOfWeek = date.getDayOfWeek();
-      int dayIndex = dayOfWeek.getValue() - 1;
-
-      FollowRequest request = new FollowRequest(user.getId());
-      followingService.create(loginUser.getId(), request);
-
-      // when
-      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
-          loginUser.getId(), user.getId(), mondayDate);
-
-      // then
-      assertThat(responses).hasSize(7);
-      assertThat(responses.get(dayIndex)).extracting("date", "totalCount", "uncompletedCount")
-          .containsExactly(date, 0, 0);
-    }
-
-    @Test
-    void 다른_사용자의_주간_할_일_달성률_조회를_성공한다() {
-      // given
-      Goal goal1 = createGoal(goalName, user);
-      Goal goal2 = createGoal("book", user);
-      Ddudu ddudu1 = createTodo(name, goal1, user);
-      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
-
-      LocalDate date = LocalDate.now();
-      LocalDate mondayDate = date.with(DayOfWeek.MONDAY);
-      DayOfWeek dayOfWeek = date.getDayOfWeek();
-      int dayIndex = dayOfWeek.getValue() - 1;
-
-      // when
-      List<TodoCompletionResponse> responses = todoService.findWeeklyCompletions(
-          loginUser.getId(), user.getId(), mondayDate);
-
-      // then
-      assertThat(responses).hasSize(7);
-      assertThat(responses.get(dayIndex)).extracting("date", "totalCount", "uncompletedCount")
-          .containsExactly(date, 0, 0);
-    }
-
-    @Test
-    void 로그인_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
-      // given
-      Long invalidLoginId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      LocalDate date = LocalDate.now();
-
-      // when
-      ThrowingCallable findWeeklyCompletions = () -> todoService.findWeeklyCompletions(
-          invalidLoginId, user.getId(), date);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findWeeklyCompletions)
-          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 사용자_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
-      // given
-      Long invalidUserId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      LocalDate date = LocalDate.now();
-
-      // when
-      ThrowingCallable findWeeklyCompletions = () -> todoService.findWeeklyCompletions(
-          loginUser.getId(), invalidUserId, date);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findWeeklyCompletions)
-          .withMessage(DduduErrorCode.USER_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 자신의_월간_할_일_달성률_조회를_성공한다() {
-      // given
-      Goal goal1 = createGoal(goalName, user);
-      Goal goal2 = createGoal("book", user);
-      Ddudu ddudu1 = createTodo(name, goal1, user);
-      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
-
-      LocalDate date = LocalDate.now();
-      YearMonth yearMonth = YearMonth.now();
-      int daysInMonth = yearMonth.lengthOfMonth();
-      int dayOfMonthIndex = date.getDayOfMonth() - 1;
-
-      // when
-      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
-          user.getId(), user.getId(), yearMonth);
-
-      // then
-      assertThat(responses).hasSize(daysInMonth);
-      assertThat(responses.get(dayOfMonthIndex)).extracting(
-              "date", "totalCount", "uncompletedCount")
-          .containsExactly(date, 2, 2);
-    }
-
-    @Test
-    void 팔로워의_월간_할_일_달성률_조회를_성공한다() {
-      // given
-      Goal goal1 = createGoal(goalName, user);
-      Goal goal2 = createGoal("book", user);
-      Ddudu ddudu1 = createTodo(name, goal1, user);
-      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
-
-      LocalDate date = LocalDate.now();
-      YearMonth yearMonth = YearMonth.now();
-      int daysInMonth = yearMonth.lengthOfMonth();
-      int dayOfMonthIndex = date.getDayOfMonth() - 1;
-
-      FollowRequest request = new FollowRequest(user.getId());
-      followingService.create(loginUser.getId(), request);
-
-      // when
-      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
-          loginUser.getId(), user.getId(), yearMonth);
-
-      // then
-      assertThat(responses).hasSize(daysInMonth);
-      assertThat(responses.get(dayOfMonthIndex)).extracting(
-              "date", "totalCount", "uncompletedCount")
-          .containsExactly(date, 0, 0);
-    }
-
-    @Test
-    void 다른_사용자의_월간_할_일_달성률_조회를_성공한다() {
-      // given
-      Goal goal1 = createGoal(goalName, user);
-      Goal goal2 = createGoal("book", user);
-      Ddudu ddudu1 = createTodo(name, goal1, user);
-      Ddudu ddudu2 = createTodo("JPA N+1 문제 해결", goal1, user);
-
-      LocalDate date = LocalDate.now();
-      YearMonth yearMonth = YearMonth.now();
-      int daysInMonth = yearMonth.lengthOfMonth();
-      int dayOfMonthIndex = date.getDayOfMonth() - 1;
-
-      // when
-      List<TodoCompletionResponse> responses = todoService.findMonthlyCompletions(
-          loginUser.getId(), user.getId(), yearMonth);
-
-      // then
-      assertThat(responses).hasSize(daysInMonth);
-      assertThat(responses.get(dayOfMonthIndex)).extracting(
-              "date", "totalCount", "uncompletedCount")
-          .containsExactly(date, 0, 0);
-    }
-
-    @Test
-    void 로그인_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
-      // given
-      Long invalidLoginId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      YearMonth yearMonth = YearMonth.now();
-
-      // when
-      ThrowingCallable findMonthlyCompletions = () -> todoService.findMonthlyCompletions(
-          invalidLoginId, user.getId(), yearMonth);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findMonthlyCompletions)
-          .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getMessage());
-    }
-
-    @Test
-    void 사용자_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
-      // given
-      Long invalidUserId = faker.random()
-          .nextLong(Long.MAX_VALUE);
-      YearMonth yearMonth = YearMonth.now();
-
-      // when
-      ThrowingCallable findMonthlyCompletions = () -> todoService.findMonthlyCompletions(
-          loginUser.getId(), invalidUserId, yearMonth);
-
-      // then
-      assertThatExceptionOfType(DataNotFoundException.class).isThrownBy(findMonthlyCompletions)
-          .withMessage(DduduErrorCode.USER_NOT_EXISTING.getMessage());
-    }
-
-  }
-
-  @Nested
   class 할_일_삭제_테스트 {
 
     @Test
@@ -601,52 +268,6 @@ class DduduServiceTest {
           .withMessage(DduduErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
-  }
-
-  private Goal createGoal(String name, User user) {
-    Goal goal = Goal.builder()
-        .name(name)
-        .user(user)
-        .build();
-
-    return oldGoalRepository.save(goal);
-  }
-
-  private Ddudu createTodo(String name, Goal goal, User user) {
-    Ddudu ddudu = Ddudu.builder()
-        .name(name)
-        .goal(goal)
-        .user(user)
-        .build();
-
-    return oldTodoRepository.save(ddudu);
-  }
-
-  private User createUser() {
-    String email = faker.internet()
-        .emailAddress();
-    String password = faker.internet()
-        .password(8, 40, true, true, true);
-    String nickname = faker.oscarMovie()
-        .character();
-
-    User user = User.builder()
-        .build();
-
-    return userRepository.save(user);
-  }
-
-  private Like createLike(User user, Ddudu ddudu) {
-    Like like = Like.builder()
-        .user(user)
-        .ddudu(ddudu)
-        .build();
-    return likeRepository.save(like);
-  }
-
-  private void flushAndClearPersistence() {
-    entityManager.flush();
-    entityManager.clear();
   }
 
 }

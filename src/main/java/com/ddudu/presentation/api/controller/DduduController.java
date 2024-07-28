@@ -2,32 +2,39 @@ package com.ddudu.presentation.api.controller;
 
 import static java.util.Objects.isNull;
 
+import com.ddudu.application.domain.repeat_ddudu.util.DayOfWeekUtil;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.ddudu.request.ChangeNameRequest;
+import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
 import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
+import com.ddudu.application.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.port.in.ddudu.CalculateCompletionUseCase;
+import com.ddudu.application.port.in.ddudu.ChangeNameUseCase;
+import com.ddudu.application.port.in.ddudu.CreateDduduUseCase;
 import com.ddudu.application.port.in.ddudu.DduduSearchUseCase;
+import com.ddudu.application.port.in.ddudu.DeleteDduduUseCase;
 import com.ddudu.application.port.in.ddudu.GetDailyDdudusByGoalUseCase;
 import com.ddudu.application.port.in.ddudu.GetTimetableUseCase;
 import com.ddudu.application.port.in.ddudu.MoveDateUseCase;
 import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
-import com.ddudu.old.todo.dto.request.CreateTodoRequest;
-import com.ddudu.old.todo.dto.request.UpdateTodoRequest;
-import com.ddudu.old.todo.dto.response.TodoCompletionResponse;
-import com.ddudu.old.todo.dto.response.TodoResponse;
+import com.ddudu.application.port.in.ddudu.RetrieveDduduUseCase;
+import com.ddudu.application.port.in.ddudu.SwitchStatusUseCase;
 import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.annotation.Login;
+import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import com.ddudu.presentation.api.doc.DduduControllerDoc;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -51,28 +58,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class DduduController implements DduduControllerDoc {
 
+  private final CreateDduduUseCase createDduduUseCase;
   private final PeriodSetupUseCase periodSetupUseCase;
   private final GetDailyDdudusByGoalUseCase getDailyDdudusByGoalUseCase;
   private final GetTimetableUseCase getTimetableUseCase;
   private final MoveDateUseCase moveDateUseCase;
   private final RepeatUseCase repeatUseCase;
   private final DduduSearchUseCase dduduSearchUseCase;
+  private final SwitchStatusUseCase switchStatusUseCase;
+  private final ChangeNameUseCase changeNameUseCase;
+  private final DeleteDduduUseCase deleteDduduUseCase;
+  private final CalculateCompletionUseCase calculateCompletionUseCase;
+  private final RetrieveDduduUseCase retrieveDduduUseCase;
   private final TodoService todoService;
 
   @PostMapping
-  @Deprecated
-  public ResponseEntity<BasicDduduResponse> create(
+  public ResponseEntity<IdResponse> create(
       @Login
       Long loginId,
       @RequestBody
       @Valid
-      CreateTodoRequest request
+      CreateDduduRequest request
   ) {
-    BasicDduduResponse response = todoService.create(loginId, request);
+    BasicDduduResponse response = createDduduUseCase.create(loginId, request);
     URI uri = URI.create("/api/ddudus/" + response.id());
 
     return ResponseEntity.created(uri)
-        .body(response);
+        .body(new IdResponse(response.id()));
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -87,14 +99,13 @@ public class DduduController implements DduduControllerDoc {
   }
 
   @GetMapping("/{id}")
-  @Deprecated
-  public ResponseEntity<TodoResponse> getById(
+  public ResponseEntity<DduduDetailResponse> getById(
       @Login
       Long loginId,
       @PathVariable
       Long id
   ) {
-    TodoResponse response = todoService.findById(loginId, id);
+    DduduDetailResponse response = retrieveDduduUseCase.findById(loginId, id);
 
     return ResponseEntity.ok(response);
   }
@@ -135,9 +146,8 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/weekly")
-  @Deprecated
-  public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
+  @GetMapping("/completion/weekly")
+  public ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
       @Login
       Long loginId,
       @RequestParam(required = false)
@@ -146,19 +156,18 @@ public class DduduController implements DduduControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM-dd")
       LocalDate date
   ) {
-    userId = (userId == null) ? loginId : userId;
-    DayOfWeek weekStart = DayOfWeek.MONDAY;
-    date = (date == null) ? LocalDate.now()
-        .with(weekStart) : date.with(weekStart);
-    List<TodoCompletionResponse> completionList = todoService.findWeeklyCompletions(
-        loginId, userId, date);
+    userId = isNull(userId) ? loginId : userId;
+    LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
+    LocalDate afterOneWeek = firstDayOfWeek.plusDays(7);
 
-    return ResponseEntity.ok(completionList);
+    List<DduduCompletionResponse> response = calculateCompletionUseCase.calculate(
+        loginId, userId, firstDayOfWeek, afterOneWeek);
+
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/monthly")
-  @Deprecated
-  public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
+  public ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
       @Login
       Long loginId,
       @RequestParam(required = false)
@@ -170,53 +179,52 @@ public class DduduController implements DduduControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
-    userId = (userId == null) ? loginId : userId;
-    yearMonth = (yearMonth == null) ? YearMonth.now() : yearMonth;
-    List<TodoCompletionResponse> completionList = todoService.findMonthlyCompletions(
-        loginId, userId, yearMonth);
+    userId = isNull(userId) ? loginId : userId;
+    LocalDate firstDayOfMonth = isNull(yearMonth) ? YearMonth.now()
+        .atDay(1) : yearMonth.atDay(1);
+    LocalDate afterOneMonth = firstDayOfMonth.plusMonths(1);
 
-    return ResponseEntity.ok(completionList);
+    List<DduduCompletionResponse> response = calculateCompletionUseCase.calculate(
+        loginId, userId, firstDayOfMonth, afterOneMonth);
+
+    return ResponseEntity.ok(response);
   }
 
   @PutMapping("/{id}")
-  @Deprecated
-  public ResponseEntity<BasicDduduResponse> update(
+  public ResponseEntity<IdResponse> changeName(
       @Login
       Long loginId,
       @PathVariable
       Long id,
       @RequestBody
       @Valid
-      UpdateTodoRequest request
+      ChangeNameRequest request
   ) {
-    BasicDduduResponse response = todoService.update(loginId, id, request);
-
-    return ResponseEntity.ok(response);
+    BasicDduduResponse response = changeNameUseCase.change(loginId, id, request);
+    return ResponseEntity.ok(new IdResponse(response.id()));
   }
 
   @PatchMapping("/{id}/status")
-  @Deprecated
   public ResponseEntity<Void> updateStatus(
       @Login
       Long loginId,
       @PathVariable
       Long id
   ) {
-    todoService.updateStatus(loginId, id);
+    switchStatusUseCase.switchStatus(loginId, id);
 
     return ResponseEntity.noContent()
         .build();
   }
 
   @DeleteMapping("/{id}")
-  @Deprecated
   public ResponseEntity<Void> delete(
       @Login
       Long loginId,
       @PathVariable
       Long id
   ) {
-    todoService.delete(loginId, id);
+    deleteDduduUseCase.delete(loginId, id);
 
     return ResponseEntity.noContent()
         .build();

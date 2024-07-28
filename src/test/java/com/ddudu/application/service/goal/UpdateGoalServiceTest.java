@@ -68,7 +68,7 @@ class UpdateGoalServiceTest {
     updateGoalService.update(userId, goal.getId(), request);
 
     // then
-    Goal actual = goalLoaderPort.findById(goal.getId())
+    Goal actual = goalLoaderPort.getOptionalGoal(goal.getId())
         .get();
     assertThat(actual).extracting("name", "color", "privacyType")
         .containsExactly(newName, newColor, newPrivacyType);
@@ -83,7 +83,8 @@ class UpdateGoalServiceTest {
     ThrowingCallable update = () -> updateGoalService.update(userId, invalidId, request);
 
     // then
-    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(update)
+    assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(update)
         .withMessage(GoalErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
