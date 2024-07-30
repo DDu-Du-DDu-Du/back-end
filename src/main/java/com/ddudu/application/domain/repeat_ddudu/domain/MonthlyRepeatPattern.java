@@ -1,13 +1,11 @@
 package com.ddudu.application.domain.repeat_ddudu.domain;
 
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.beans.ConstructorProperties;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
@@ -18,12 +16,11 @@ import java.util.stream.Stream;
 public class MonthlyRepeatPattern implements RepeatPattern {
 
   private static final Boolean DEFAULT_LAST_DAY = false;
-  @JsonProperty(access = READ_ONLY)
+  @JsonProperty
   private final List<Integer> repeatDaysOfMonth;
   @JsonProperty
   private final Boolean lastDay;
 
-  @ConstructorProperties({"repeatDaysOfMonth", "lastDay"})
   public MonthlyRepeatPattern(
       List<Integer> repeatDaysOfMonth,
       Boolean lastDay

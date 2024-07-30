@@ -1,13 +1,11 @@
 package com.ddudu.application.domain.repeat_ddudu.domain;
 
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import com.ddudu.application.domain.repeat_ddudu.util.DayOfWeekUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.beans.ConstructorProperties;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
@@ -15,11 +13,10 @@ import java.util.stream.Stream;
 
 public class WeeklyRepeatPattern implements RepeatPattern {
 
+  @JsonProperty
   private final List<DayOfWeek> repeatDaysOfWeek;
 
-  @ConstructorProperties({"repeatDaysOfWeek"})
   public WeeklyRepeatPattern(
-      @JsonProperty(access = READ_ONLY)
       List<String> repeatDaysOfWeek
   ) {
     this.repeatDaysOfWeek = DayOfWeekUtil.toDaysOfWeek(repeatDaysOfWeek);
