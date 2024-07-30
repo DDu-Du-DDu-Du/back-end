@@ -5,7 +5,7 @@ import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
-import com.ddudu.application.dto.goal.response.GoalResponse;
+import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -68,7 +68,7 @@ public interface GoalControllerDoc {
       responseCode = "200",
       content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE,
-          schema = @Schema(implementation = GoalResponse.class)
+          schema = @Schema(implementation = GoalWithRepeatDduduResponse.class)
       )
   )
   @Parameter(
@@ -76,7 +76,7 @@ public interface GoalControllerDoc {
       description = "조회할 목표의 식별자",
       in = ParameterIn.PATH
   )
-  ResponseEntity<GoalResponse> getById(Long loginId, Long id);
+  ResponseEntity<GoalWithRepeatDduduResponse> getById(Long loginId, Long id);
 
   @Operation(summary = "목표 전체 조회")
   @ApiResponse(

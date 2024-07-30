@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.goal.response.GoalResponse;
+import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
@@ -56,7 +56,7 @@ class RetrieveGoalServiceTest {
   @Test
   void ID를_통해_목표를_조회_할_수_있다() {
     // when
-    GoalResponse actual = retrieveGoalService.getById(userId, goal.getId());
+    GoalWithRepeatDduduResponse actual = retrieveGoalService.getById(userId, goal.getId());
 
     // then
     assertThat(actual).extracting("id", "name", "status", "color", "privacyType")
