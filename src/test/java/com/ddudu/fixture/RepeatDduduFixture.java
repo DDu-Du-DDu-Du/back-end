@@ -55,13 +55,13 @@ public class RepeatDduduFixture extends BaseFixture {
   }
 
   public static RepeatPattern createWeeklyRepeatPattern(List<String> repeatDaysOfWeek) {
-    return WeeklyRepeatPattern.withValidation(repeatDaysOfWeek);
+    return new WeeklyRepeatPattern(repeatDaysOfWeek);
   }
 
   public static RepeatPattern createMonthlyRepeatPattern(
       List<Integer> repeatDaysOfMonth, boolean lastDayOfMonth
   ) {
-    return MonthlyRepeatPattern.withValidation(repeatDaysOfMonth, lastDayOfMonth);
+    return new MonthlyRepeatPattern(repeatDaysOfMonth, lastDayOfMonth);
   }
 
   public static List<String> getRandomRepeatDaysOfWeek() {

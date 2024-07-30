@@ -25,22 +25,9 @@ public class MonthlyRepeatPattern implements RepeatPattern {
       List<Integer> repeatDaysOfMonth,
       Boolean lastDay
   ) {
+    validate(repeatDaysOfMonth);
     this.repeatDaysOfMonth = repeatDaysOfMonth;
     this.lastDay = isNull(lastDay) ? DEFAULT_LAST_DAY : lastDay;
-  }
-
-  public static MonthlyRepeatPattern withValidation(
-      List<Integer> repeatDaysOfMonth, Boolean lastDay
-  ) {
-    validate(repeatDaysOfMonth);
-    return new MonthlyRepeatPattern(repeatDaysOfMonth, lastDay);
-  }
-
-  private static void validate(List<Integer> repeatDaysOfMonth) {
-    checkArgument(
-        nonNull(repeatDaysOfMonth) && !repeatDaysOfMonth.isEmpty(),
-        RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH.getCodeName()
-    );
   }
 
   @Override
@@ -87,6 +74,13 @@ public class MonthlyRepeatPattern implements RepeatPattern {
 
   private boolean isBetween(LocalDate date, LocalDate startDate, LocalDate endDate) {
     return !date.isBefore(startDate) && !date.isAfter(endDate);
+  }
+
+  private void validate(List<Integer> repeatDaysOfMonth) {
+    checkArgument(
+        nonNull(repeatDaysOfMonth) && !repeatDaysOfMonth.isEmpty(),
+        RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH.getCodeName()
+    );
   }
 
 }

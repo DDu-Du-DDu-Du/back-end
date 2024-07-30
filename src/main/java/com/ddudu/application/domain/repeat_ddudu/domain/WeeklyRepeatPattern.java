@@ -19,19 +19,8 @@ public class WeeklyRepeatPattern implements RepeatPattern {
   public WeeklyRepeatPattern(
       List<String> repeatDaysOfWeek
   ) {
-    this.repeatDaysOfWeek = DayOfWeekUtil.toDaysOfWeek(repeatDaysOfWeek);
-  }
-
-  public static WeeklyRepeatPattern withValidation(List<String> repeatDaysOfWeek) {
     validate(repeatDaysOfWeek);
-    return new WeeklyRepeatPattern(repeatDaysOfWeek);
-  }
-
-  private static void validate(List<String> repeatDaysOfWeek) {
-    checkArgument(
-        nonNull(repeatDaysOfWeek) && !repeatDaysOfWeek.isEmpty(),
-        RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK.getCodeName()
-    );
+    this.repeatDaysOfWeek = DayOfWeekUtil.toDaysOfWeek(repeatDaysOfWeek);
   }
 
   @Override
@@ -40,6 +29,13 @@ public class WeeklyRepeatPattern implements RepeatPattern {
         .limit(countDaysBetween(startDate, endDate))
         .filter(date -> repeatDaysOfWeek.contains(date.getDayOfWeek()))
         .toList();
+  }
+
+  private void validate(List<String> repeatDaysOfWeek) {
+    checkArgument(
+        nonNull(repeatDaysOfWeek) && !repeatDaysOfWeek.isEmpty(),
+        RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK.getCodeName()
+    );
   }
 
   private long countDaysBetween(LocalDate startDate, LocalDate endDate) {
