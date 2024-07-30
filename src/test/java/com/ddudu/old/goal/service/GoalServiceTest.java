@@ -10,8 +10,8 @@ import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
-import com.ddudu.application.dto.goal.response.GoalResponse;
 import com.ddudu.old.goal.domain.OldGoalRepository;
+import com.ddudu.old.goal.dto.GoalResponse;
 import com.ddudu.old.user.domain.UserRepository;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
 import com.ddudu.presentation.api.exception.ForbiddenException;
@@ -55,6 +55,12 @@ class GoalServiceTest {
   private String color;
   private PrivacyType privacyType;
 
+  private static PrivacyType provideRandomPrivacy() {
+    PrivacyType[] privacyTypes = {PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC};
+    return privacyTypes[faker.random()
+        .nextInt(privacyTypes.length)];
+  }
+
   @BeforeEach
   void setUp() {
     user = createUser();
@@ -64,6 +70,40 @@ class GoalServiceTest {
         .hex()
         .substring(1);
     privacyType = provideRandomPrivacy();
+  }
+
+  private List<Goal> createGoals(User user, List<String> names) {
+    return names.stream()
+        .map(name -> createGoal(user, name))
+        .toList();
+  }
+
+  private Goal createGoal(User user, String name) {
+    Goal goal = Goal.builder()
+        .name(name)
+        .user(user)
+        .build();
+
+    return goalRepository.save(goal);
+  }
+
+  private User createUser() {
+    String email = faker.internet()
+        .emailAddress();
+    String password = faker.internet()
+        .password(8, 40, true, true, true);
+    String nickname = faker.oscarMovie()
+        .character();
+
+    User user = User.builder()
+        .build();
+
+    return userRepository.save(user);
+  }
+
+  private void flushAndClearPersistence() {
+    entityManager.flush();
+    entityManager.clear();
   }
 
   @Nested
@@ -187,6 +227,12 @@ class GoalServiceTest {
     GoalStatus changedStatus;
     PrivacyType changedPrivacyType;
 
+    private static GoalStatus provideRandomStatus() {
+      GoalStatus[] goalStatuses = {GoalStatus.IN_PROGRESS, GoalStatus.DONE};
+      return goalStatuses[faker.random()
+          .nextInt(goalStatuses.length)];
+    }
+
     @BeforeEach
     void setUp() {
       changedName = faker.lorem()
@@ -249,12 +295,6 @@ class GoalServiceTest {
       // then
       assertThatExceptionOfType(ForbiddenException.class).isThrownBy(update)
           .withMessage(GoalErrorCode.INVALID_AUTHORITY.getMessage());
-    }
-
-    private static GoalStatus provideRandomStatus() {
-      GoalStatus[] goalStatuses = {GoalStatus.IN_PROGRESS, GoalStatus.DONE};
-      return goalStatuses[faker.random()
-          .nextInt(goalStatuses.length)];
     }
 
   }
@@ -326,46 +366,6 @@ class GoalServiceTest {
           .withMessage(GoalErrorCode.INVALID_AUTHORITY.getMessage());
     }
 
-  }
-
-  private List<Goal> createGoals(User user, List<String> names) {
-    return names.stream()
-        .map(name -> createGoal(user, name))
-        .toList();
-  }
-
-  private Goal createGoal(User user, String name) {
-    Goal goal = Goal.builder()
-        .name(name)
-        .user(user)
-        .build();
-
-    return goalRepository.save(goal);
-  }
-
-  private User createUser() {
-    String email = faker.internet()
-        .emailAddress();
-    String password = faker.internet()
-        .password(8, 40, true, true, true);
-    String nickname = faker.oscarMovie()
-        .character();
-
-    User user = User.builder()
-        .build();
-
-    return userRepository.save(user);
-  }
-
-  private void flushAndClearPersistence() {
-    entityManager.flush();
-    entityManager.clear();
-  }
-
-  private static PrivacyType provideRandomPrivacy() {
-    PrivacyType[] privacyTypes = {PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC};
-    return privacyTypes[faker.random()
-        .nextInt(privacyTypes.length)];
   }
 
 }

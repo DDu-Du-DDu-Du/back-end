@@ -18,7 +18,7 @@ import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
-import com.ddudu.application.dto.goal.response.GoalResponse;
+import com.ddudu.old.goal.dto.GoalResponse;
 import com.ddudu.old.goal.service.GoalService;
 import com.ddudu.presentation.api.controller.GoalController;
 import com.ddudu.presentation.api.exception.DataNotFoundException;
@@ -52,6 +52,12 @@ class GoalControllerTest extends ControllerTestSupport {
   String token;
   String color;
   PrivacyType privacyType;
+
+  private static PrivacyType provideRandomPrivacy() {
+    PrivacyType[] privacyTypes = {PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC};
+    return privacyTypes[faker.random()
+        .nextInt(privacyTypes.length)];
+  }
 
   @BeforeEach
   void setUp() {
@@ -245,13 +251,67 @@ class GoalControllerTest extends ControllerTestSupport {
     }
 
   }
- 
+
   @Nested
   class PUT_목표_수정_API_테스트 {
 
     static final String PATH = "/api/goals/{id}";
 
     GoalStatus goalStatus;
+
+    private static Stream<Arguments> provideUpdateGoalRequestAndString() {
+      String validName = faker.lorem()
+          .word();
+      String validColor = faker.color()
+          .hex()
+          .substring(1);
+      PrivacyType validPrivacyType = provideRandomPrivacy();
+      GoalStatus validGoalStatus = provideRandomStatus();
+
+      String blank = " ";
+      String over50 = faker.lorem()
+          .characters(51);
+      String over6 = faker.lorem()
+          .characters(7);
+
+      return Stream.of(
+          Arguments.of(
+              "목표가 공백", new UpdateGoalRequest(blank, validColor,
+                  validPrivacyType.name()
+              ),
+              "목표가 입력되지 않았습니다."
+          ),
+          Arguments.of(
+              "목표가 " + over50,
+              new UpdateGoalRequest(
+                  over50, validColor, validPrivacyType.name()),
+              "목표는 최대 50자 입니다."
+          ),
+          Arguments.of(
+              "색상이 null", new UpdateGoalRequest(validName, null,
+                  validPrivacyType.name()
+              ),
+              "색상이 입력되지 않았습니다."
+          ),
+          Arguments.of(
+              "색상이 " + over6,
+              new UpdateGoalRequest(
+                  validName, over6, validPrivacyType.name()),
+              "색상 코드는 6자리 16진수입니다."
+          ),
+          Arguments.of(
+              "공개 설정이 null ",
+              new UpdateGoalRequest(validName, validColor, null),
+              "공개 설정이 입력되지 않았습니다."
+          )
+      );
+    }
+
+    private static GoalStatus provideRandomStatus() {
+      GoalStatus[] goalStatuses = {GoalStatus.IN_PROGRESS, GoalStatus.DONE};
+      return goalStatuses[faker.random()
+          .nextInt(goalStatuses.length)];
+    }
 
     @BeforeEach
     void setUp() {
@@ -416,60 +476,6 @@ class GoalControllerTest extends ControllerTestSupport {
               .value(containsString(GoalErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
-    private static Stream<Arguments> provideUpdateGoalRequestAndString() {
-      String validName = faker.lorem()
-          .word();
-      String validColor = faker.color()
-          .hex()
-          .substring(1);
-      PrivacyType validPrivacyType = provideRandomPrivacy();
-      GoalStatus validGoalStatus = provideRandomStatus();
-
-      String blank = " ";
-      String over50 = faker.lorem()
-          .characters(51);
-      String over6 = faker.lorem()
-          .characters(7);
-
-      return Stream.of(
-          Arguments.of(
-              "목표가 공백", new UpdateGoalRequest(blank, validColor,
-                  validPrivacyType.name()
-              ),
-              "목표가 입력되지 않았습니다."
-          ),
-          Arguments.of(
-              "목표가 " + over50,
-              new UpdateGoalRequest(
-                  over50, validColor, validPrivacyType.name()),
-              "목표는 최대 50자 입니다."
-          ),
-          Arguments.of(
-              "색상이 null", new UpdateGoalRequest(validName, null,
-                  validPrivacyType.name()
-              ),
-              "색상이 입력되지 않았습니다."
-          ),
-          Arguments.of(
-              "색상이 " + over6,
-              new UpdateGoalRequest(
-                  validName, over6, validPrivacyType.name()),
-              "색상 코드는 6자리 16진수입니다."
-          ),
-          Arguments.of(
-              "공개 설정이 null ",
-              new UpdateGoalRequest(validName, validColor, null),
-              "공개 설정이 입력되지 않았습니다."
-          )
-      );
-    }
-
-    private static GoalStatus provideRandomStatus() {
-      GoalStatus[] goalStatuses = {GoalStatus.IN_PROGRESS, GoalStatus.DONE};
-      return goalStatuses[faker.random()
-          .nextInt(goalStatuses.length)];
-    }
-
   }
 
   @Nested
@@ -518,12 +524,6 @@ class GoalControllerTest extends ControllerTestSupport {
               .value(containsString(GoalErrorCode.INVALID_AUTHORITY.getMessage())));
     }
 
-  }
-
-  private static PrivacyType provideRandomPrivacy() {
-    PrivacyType[] privacyTypes = {PrivacyType.PRIVATE, PrivacyType.FOLLOWER, PrivacyType.PUBLIC};
-    return privacyTypes[faker.random()
-        .nextInt(privacyTypes.length)];
   }
 
 }
