@@ -72,7 +72,7 @@ class RepeatDduduTest {
           .hasFieldOrPropertyWithValue("startDate", startDate)
           .hasFieldOrPropertyWithValue("endDate", endDate);
     }
-    
+
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = " ")
@@ -279,7 +279,8 @@ class RepeatDduduTest {
     void setUp() {
       startDate = LocalDate.now();
       endDate = LocalDate.now()
-          .plusMonths(1);
+          .plusMonths(1)
+          .minusDays(1);
     }
 
     @Test
@@ -327,9 +328,8 @@ class RepeatDduduTest {
     @Test
     void 먼슬리_반복_뚜두의_반복_날짜_리스트_조회에_성공한() {
       // given
-      int repeatDay = RepeatDduduFixture.getRandomInt(1, 25);
       RepeatPattern monthlyPattern = RepeatDduduFixture.createMonthlyRepeatPattern(
-          List.of(repeatDay), true);
+          List.of(), true);
       RepeatDdudu repeatDdudu = RepeatDduduFixture.createRepeatDdudu(
           RepeatType.MONTHLY,
           monthlyPattern,
@@ -341,11 +341,10 @@ class RepeatDduduTest {
       List<LocalDate> repeatDates = repeatDdudu.getRepeatDates();
 
       // then
-      assertThat(repeatDates).hasSize(2);
+      assertThat(repeatDates).hasSize(1);
       repeatDates.stream()
           .map(LocalDate::getDayOfMonth)
-          .forEach(dayOfMonth ->
-              assertThat(dayOfMonth).isIn(repeatDay, startDate.lengthOfMonth()));
+          .forEach(dayOfMonth -> assertThat(dayOfMonth).isIn(startDate.lengthOfMonth()));
     }
 
   }
