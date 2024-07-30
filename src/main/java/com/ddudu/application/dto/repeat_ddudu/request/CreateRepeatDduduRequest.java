@@ -40,7 +40,7 @@ public record CreateRepeatDduduRequest(
     )
     List<String> repeatDaysOfWeek,
     @Schema(
-        name = "repeatDatesOfMonth",
+        name = "repeatDaysOfMonth",
         description = "반복 날짜 (MONTHLY 때만)",
         nullable = true,
         example = "[1, 15]"
