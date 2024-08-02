@@ -116,7 +116,7 @@ class SocialLoginServiceTest {
     // then
     User user = userLoaderPort.loadSocialUser(authProvider)
         .get();
-    List<Goal> goals = goalLoaderPort.findAllByUser(user);
+    List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(user);
 
     assertThat(goals).hasSize(3);
   }

@@ -1,10 +1,12 @@
 package com.ddudu.application.domain.repeat_ddudu.util;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Map;
 
 public final class DayOfWeekUtil {
 
+  private static final DayOfWeek FIRST_DAY_OF_WEEK = DayOfWeek.MONDAY;
   private static final Map<String, DayOfWeek> dayOfWeekMap = new HashMap<>();
 
   static {
@@ -36,6 +39,11 @@ public final class DayOfWeekUtil {
     return daysOfWeek.stream()
         .map(DayOfWeekUtil::toDaysOfWeek)
         .toList();
+  }
+
+  public static LocalDate getFirstDayOfWeek(LocalDate date) {
+    return isNull(date) ? LocalDate.now()
+        .with(FIRST_DAY_OF_WEEK) : date.with(FIRST_DAY_OF_WEEK);
   }
 
 }
