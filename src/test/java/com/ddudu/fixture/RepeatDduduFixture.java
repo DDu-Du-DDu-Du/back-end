@@ -1,5 +1,6 @@
 package com.ddudu.fixture;
 
+import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.repeat_ddudu.domain.DailyRepeatPattern;
 import com.ddudu.application.domain.repeat_ddudu.domain.MonthlyRepeatPattern;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
@@ -30,7 +31,21 @@ public class RepeatDduduFixture extends BaseFixture {
         .startDate(startDate)
         .endDate(endDate)
         .build();
+  }
 
+  public static RepeatDdudu createRepeatDduduWithGoal(
+      Goal goal, LocalDate startDate, LocalDate endDate
+  ) {
+    RepeatType repeatType = getRandomRepeatType();
+
+    return RepeatDdudu.builder()
+        .goalId(goal.getId())
+        .name(getRandomSentenceWithMax(50))
+        .repeatType(repeatType)
+        .repeatPattern(createRandomRepeatPattern(repeatType))
+        .startDate(startDate)
+        .endDate(endDate)
+        .build();
   }
 
   public static RepeatType getRandomRepeatType() {
@@ -55,13 +70,13 @@ public class RepeatDduduFixture extends BaseFixture {
   }
 
   public static RepeatPattern createWeeklyRepeatPattern(List<String> repeatDaysOfWeek) {
-    return WeeklyRepeatPattern.withValidation(repeatDaysOfWeek);
+    return new WeeklyRepeatPattern(repeatDaysOfWeek);
   }
 
   public static RepeatPattern createMonthlyRepeatPattern(
       List<Integer> repeatDaysOfMonth, boolean lastDayOfMonth
   ) {
-    return MonthlyRepeatPattern.withValidation(repeatDaysOfMonth, lastDayOfMonth);
+    return new MonthlyRepeatPattern(repeatDaysOfMonth, lastDayOfMonth);
   }
 
   public static List<String> getRandomRepeatDaysOfWeek() {

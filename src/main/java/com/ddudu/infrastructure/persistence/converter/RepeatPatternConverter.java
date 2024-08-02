@@ -1,11 +1,16 @@
 package com.ddudu.infrastructure.persistence.converter;
 
+import com.ddudu.application.domain.repeat_ddudu.domain.DailyRepeatPattern;
+import com.ddudu.application.domain.repeat_ddudu.domain.MonthlyRepeatPattern;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatPattern;
+import com.ddudu.application.domain.repeat_ddudu.domain.WeeklyRepeatPattern;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +30,7 @@ public class RepeatPatternConverter implements AttributeConverter<RepeatPattern,
     try {
       return objectMapper.writeValueAsString(attribute);
     } catch (JsonProcessingException e) {
-      throw new IllegalArgumentException("Error converting list to JSON", e);
+      throw new IllegalArgumentException("Error converting RepeatPattern to JSON", e);
     }
   }
 
@@ -36,10 +41,42 @@ public class RepeatPatternConverter implements AttributeConverter<RepeatPattern,
     }
 
     try {
-      return objectMapper.readValue(dbData, RepeatPattern.class);
-    } catch (IOException e) {
-      throw new IllegalArgumentException("Error converting JSON to list", e);
+      JsonNode jsonNode = objectMapper.readTree(dbData);
+      String type = jsonNode.get("type")
+          .asText();
+
+      return switch (type) {
+        case "DAILY" -> objectMapper.treeToValue(jsonNode, DailyRepeatPattern.class);
+        case "WEEKLY" -> getWeeklyRepeatPattern(jsonNode);
+        case "MONTHLY" -> getMonthlyRepeatPattern(jsonNode);
+        default -> throw new IllegalArgumentException("Unknown type: " + type);
+      };
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Error converting JSON to RepeatPattern", e);
     }
+  }
+
+  private WeeklyRepeatPattern getWeeklyRepeatPattern(JsonNode jsonNode)
+      throws JsonProcessingException {
+    List<String> repeatDaysOfWeek = parseJsonNodeToList(jsonNode.get("repeatDaysOfWeek"));
+    return new WeeklyRepeatPattern(repeatDaysOfWeek);
+  }
+
+  private MonthlyRepeatPattern getMonthlyRepeatPattern(JsonNode jsonNode)
+      throws JsonProcessingException {
+    List<Integer> repeatDaysOfMonth = parseJsonNodeToList(jsonNode.get("repeatDaysOfMonth"));
+    boolean isLastDayOfMonth = jsonNode.get("lastDay")
+        .asBoolean();
+    return new MonthlyRepeatPattern(repeatDaysOfMonth, isLastDayOfMonth);
+  }
+
+  private <T> T parseJsonNodeToList(JsonNode jsonNode)
+      throws JsonProcessingException {
+    if (jsonNode == null || jsonNode.isNull()) {
+      throw new IllegalArgumentException("Missing expected JSON field");
+    }
+    return objectMapper.readValue(jsonNode.toString(), new TypeReference<>() {
+    });
   }
 
 }

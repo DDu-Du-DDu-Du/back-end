@@ -1,13 +1,11 @@
 package com.ddudu.application.domain.repeat_ddudu.domain;
 
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.beans.ConstructorProperties;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
@@ -18,32 +16,18 @@ import java.util.stream.Stream;
 public class MonthlyRepeatPattern implements RepeatPattern {
 
   private static final Boolean DEFAULT_LAST_DAY = false;
-  @JsonProperty(access = READ_ONLY)
+  @JsonProperty
   private final List<Integer> repeatDaysOfMonth;
   @JsonProperty
   private final Boolean lastDay;
 
-  @ConstructorProperties({"repeatDaysOfMonth", "lastDay"})
   public MonthlyRepeatPattern(
       List<Integer> repeatDaysOfMonth,
       Boolean lastDay
   ) {
-    this.repeatDaysOfMonth = repeatDaysOfMonth;
+    validate(repeatDaysOfMonth, lastDay);
+    this.repeatDaysOfMonth = isNull(repeatDaysOfMonth) ? List.of() : repeatDaysOfMonth;
     this.lastDay = isNull(lastDay) ? DEFAULT_LAST_DAY : lastDay;
-  }
-
-  public static MonthlyRepeatPattern withValidation(
-      List<Integer> repeatDaysOfMonth, Boolean lastDay
-  ) {
-    validate(repeatDaysOfMonth);
-    return new MonthlyRepeatPattern(repeatDaysOfMonth, lastDay);
-  }
-
-  private static void validate(List<Integer> repeatDaysOfMonth) {
-    checkArgument(
-        nonNull(repeatDaysOfMonth) && !repeatDaysOfMonth.isEmpty(),
-        RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH.getCodeName()
-    );
   }
 
   @Override
@@ -90,6 +74,17 @@ public class MonthlyRepeatPattern implements RepeatPattern {
 
   private boolean isBetween(LocalDate date, LocalDate startDate, LocalDate endDate) {
     return !date.isBefore(startDate) && !date.isAfter(endDate);
+  }
+
+  private void validate(List<Integer> repeatDaysOfMonth, Boolean lastDay) {
+    if (nonNull(lastDay)) {
+      return;
+    }
+
+    checkArgument(
+        nonNull(repeatDaysOfMonth) && !repeatDaysOfMonth.isEmpty(),
+        RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH.getCodeName()
+    );
   }
 
 }

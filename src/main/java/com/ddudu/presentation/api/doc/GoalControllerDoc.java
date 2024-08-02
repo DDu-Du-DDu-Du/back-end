@@ -5,8 +5,8 @@ import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
-import com.ddudu.application.dto.goal.response.GoalResponse;
 import com.ddudu.application.dto.goal.response.GoalStatsCompletionNumberResponse;
+import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
 import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
 import com.ddudu.presentation.api.doc.error.GoalErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
@@ -281,7 +281,7 @@ public interface GoalControllerDoc {
       description = "조회할 목표의 식별자",
       in = ParameterIn.PATH
   )
-  ResponseEntity<GoalResponse> getById(Long loginId, Long id);
+  ResponseEntity<GoalWithRepeatDduduResponse> getById(Long loginId, Long id);
 
   @Operation(summary = "목표 전체 조회")
   @ApiResponses(
