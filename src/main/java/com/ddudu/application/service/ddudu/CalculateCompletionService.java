@@ -30,7 +30,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
       Long loginId, Long userId, LocalDate from, LocalDate to
   ) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
-        loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
     User user = userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 

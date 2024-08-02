@@ -9,6 +9,7 @@ import com.ddudu.application.dto.user.MeResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
+import java.util.MissingResourceException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -53,7 +54,7 @@ class GetMyInfoServiceTest {
     ThrowingCallable getMyInfo = () -> getMyInfoService.getMyInfo(invalidId);
 
     // then
-    assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(getMyInfo)
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(getMyInfo)
         .withMessage(UserErrorCode.NO_TARGET_FOR_MY_INFO.getCodeName());
   }
 

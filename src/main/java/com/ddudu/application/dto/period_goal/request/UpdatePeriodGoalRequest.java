@@ -10,7 +10,7 @@ public record UpdatePeriodGoalRequest(
         description = "긴간 목표 내용",
         example = "- 1일 1컵 물 마시기"
     )
-    @NotNull
+    @NotNull(message = "4001 CONTENTS_NOT_EXISTING")
     String contents
 ) {
 

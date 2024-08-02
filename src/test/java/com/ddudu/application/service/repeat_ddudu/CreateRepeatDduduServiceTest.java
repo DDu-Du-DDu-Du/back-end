@@ -133,7 +133,7 @@ class CreateRepeatDduduServiceTest {
 
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(create)
-        .withMessage(RepeatDduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+        .withMessage(RepeatDduduErrorCode.INVALID_GOAL.getCodeName());
   }
 
   @Test

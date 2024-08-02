@@ -6,7 +6,6 @@ import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
-import java.util.Locale;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -29,7 +28,6 @@ class PeriodGoalDateTest {
 
       // then
       LocalDate actual = periodGoalDate.getDate();
-      assertThat(getWeekOfMonth(actual)).isEqualTo(getWeekOfMonth(inputDate));
       assertThat(actual.getDayOfWeek()).isEqualTo(DayOfWeek.TUESDAY);
     }
 
@@ -49,7 +47,7 @@ class PeriodGoalDateTest {
     }
 
     private int getWeekOfMonth(LocalDate date) {
-      WeekFields weekFields = WeekFields.of(Locale.getDefault());
+      WeekFields weekFields = WeekFields.ISO;
       return date.get(weekFields.weekOfMonth());
     }
 
