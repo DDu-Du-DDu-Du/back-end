@@ -13,8 +13,8 @@ import java.util.function.Function;
 
 public enum RepeatType {
   DAILY(request -> new DailyRepeatPattern()),
-  WEEKLY(request -> WeeklyRepeatPattern.withValidation(request.repeatDaysOfWeek())),
-  MONTHLY(request -> MonthlyRepeatPattern.withValidation(
+  WEEKLY(request -> new WeeklyRepeatPattern(request.repeatDaysOfWeek())),
+  MONTHLY(request -> new MonthlyRepeatPattern(
       request.repeatDaysOfMonth(),
       request.lastDayOfMonth()
   ));

@@ -65,7 +65,7 @@ class CreateRepeatDduduServiceTest {
     repeatType = RepeatDduduFixture.getRandomRepeatType();
     repeatDaysOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek();
     repeatDaysOfMonth = RepeatDduduFixture.getRandomRepeatDaysOfMonth();
-    lastDayOfMonth = false;
+    lastDayOfMonth = true;
     startDate = LocalDate.now();
     endDate = LocalDate.now()
         .plusMonths(1);

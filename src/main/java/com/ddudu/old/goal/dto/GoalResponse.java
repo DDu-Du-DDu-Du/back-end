@@ -1,4 +1,4 @@
-package com.ddudu.application.dto.goal.response;
+package com.ddudu.old.goal.dto;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
@@ -15,13 +15,13 @@ public record GoalResponse(
 ) {
 
   public static GoalResponse from(Goal goal) {
-    return GoalResponse.builder()
-        .id(goal.getId())
-        .name(goal.getName())
-        .status(goal.getStatus())
-        .color(goal.getColor())
-        .privacyType(goal.getPrivacyType())
-        .build();
+    return new GoalResponse(
+        goal.getId(),
+        goal.getName(),
+        goal.getStatus(),
+        goal.getColor(),
+        goal.getPrivacyType()
+    );
   }
 
 }

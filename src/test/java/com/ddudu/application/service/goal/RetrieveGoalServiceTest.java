@@ -5,15 +5,21 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
+import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.goal.response.GoalResponse;
+import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
+import com.ddudu.application.dto.repeat_ddudu.RepeatDduduSummary;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
+import com.ddudu.application.port.out.repeat_ddudu.RepeatDduduLoaderPort;
+import com.ddudu.application.port.out.repeat_ddudu.SaveRepeatDduduPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
 import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.RepeatDduduFixture;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.MissingResourceException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +49,12 @@ class RetrieveGoalServiceTest {
   @Autowired
   SaveGoalPort saveGoalPort;
 
+  @Autowired
+  SaveRepeatDduduPort saveRepeatDduduPort;
+
+  @Autowired
+  RepeatDduduLoaderPort repeatDduduLoaderPort;
+
   Long userId;
   Goal goal;
 
@@ -56,12 +68,38 @@ class RetrieveGoalServiceTest {
   @Test
   void ID를_통해_목표를_조회_할_수_있다() {
     // when
-    GoalResponse actual = retrieveGoalService.getById(userId, goal.getId());
+    GoalWithRepeatDduduResponse actual = retrieveGoalService.getById(userId, goal.getId());
 
     // then
     assertThat(actual).extracting("id", "name", "status", "color", "privacyType")
         .containsExactly(
             goal.getId(), goal.getName(), goal.getStatus(), goal.getColor(), goal.getPrivacyType());
+  }
+
+  @Test
+  void 목표_조회_시_해당_목표의_반복_뚜두도_함께_조회된다() {
+    // given
+    LocalDate startDate = LocalDate.now();
+    LocalDate endDate = LocalDate.now()
+        .plusMonths(1);
+    RepeatDdudu repeatDdudu = RepeatDduduFixture.createRepeatDduduWithGoal(
+        goal, startDate, endDate);
+
+    saveRepeatDduduPort.save(repeatDdudu);
+
+    // when
+    GoalWithRepeatDduduResponse response = retrieveGoalService.getById(userId, goal.getId());
+
+    // then
+    RepeatDduduSummary first = response.repeatDdudus()
+        .get(0);
+    RepeatDdudu actual = repeatDduduLoaderPort.getOptionalRepeatDdudu(first.id())
+        .get();
+    assertThat(actual).extracting("name", "repeatType", "repeatPattern", "startDate", "endDate")
+        .containsExactly(
+            repeatDdudu.getName(), repeatDdudu.getRepeatType(), repeatDdudu.getRepeatPattern(),
+            repeatDdudu.getStartDate(), repeatDdudu.getEndDate()
+        );
   }
 
   @Test

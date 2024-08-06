@@ -5,9 +5,9 @@ import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
-import com.ddudu.application.dto.goal.response.CompletedDduduNumberStatsResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
-import com.ddudu.application.dto.goal.response.GoalResponse;
+import com.ddudu.application.dto.goal.response.GoalStatsCompletionNumberResponse;
+import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
 import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
 import com.ddudu.application.port.in.goal.CollectNumberStatsUseCase;
 import com.ddudu.application.port.in.goal.CreateGoalUseCase;
@@ -101,13 +101,13 @@ public class GoalController implements GoalControllerDoc {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<GoalResponse> getById(
+  public ResponseEntity<GoalWithRepeatDduduResponse> getById(
       @Login
       Long loginId,
       @PathVariable
       Long id
   ) {
-    GoalResponse response = retrieveGoalUseCase.getById(loginId, id);
+    GoalWithRepeatDduduResponse response = retrieveGoalUseCase.getById(loginId, id);
 
     return ResponseEntity.ok(response);
   }
@@ -140,7 +140,7 @@ public class GoalController implements GoalControllerDoc {
   }
 
   @GetMapping("/stats/numbers")
-  public ResponseEntity<List<CompletedDduduNumberStatsResponse>> collectNumberStats(
+  public ResponseEntity<List<GoalStatsCompletionNumberResponse>> collectNumberStats(
       @Login
       Long loginId,
       @RequestParam(required = false)

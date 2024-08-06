@@ -4,9 +4,9 @@ import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
-import com.ddudu.application.dto.goal.response.CompletedDduduNumberStatsResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
-import com.ddudu.application.dto.goal.response.GoalResponse;
+import com.ddudu.application.dto.goal.response.GoalStatsCompletionNumberResponse;
+import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
 import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
 import com.ddudu.presentation.api.doc.error.GoalErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,17 +21,23 @@ import java.time.YearMonth;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "Goal", description = "목표 관련 API")
+@Tag(
+    name = "Goal",
+    description = "목표 관련 API"
+)
 public interface GoalControllerDoc {
 
   @Operation(summary = "목표 생성")
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "201", description = "CREATED", useReturnTypeSchema = true
+              responseCode = "201",
+              description = "CREATED",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -54,7 +60,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -63,7 +70,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -82,10 +90,13 @@ public interface GoalControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -116,7 +127,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -125,7 +137,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "3009",
@@ -135,7 +148,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -159,10 +173,13 @@ public interface GoalControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = @ExampleObject(
                       name = "3005",
@@ -171,7 +188,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -180,7 +198,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -192,7 +211,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -218,10 +238,13 @@ public interface GoalControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "3009",
@@ -231,7 +254,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -240,7 +264,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "3004",
@@ -256,16 +281,19 @@ public interface GoalControllerDoc {
       description = "조회할 목표의 식별자",
       in = ParameterIn.PATH
   )
-  ResponseEntity<GoalResponse> getById(Long loginId, Long id);
+  ResponseEntity<GoalWithRepeatDduduResponse> getById(Long loginId, Long id);
 
   @Operation(summary = "목표 전체 조회")
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -274,7 +302,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "3009",
@@ -284,7 +313,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "3008",
@@ -302,14 +332,20 @@ public interface GoalControllerDoc {
   )
   ResponseEntity<List<BasicGoalWithStatusResponse>> getAllByUser(Long loginId, Long userId);
 
-  @Operation(summary = "목표 삭제", description = "목표 삭제 시 하위 뚜두도 함께 삭제 됩니다.")
+  @Operation(
+      summary = "목표 삭제",
+      description = "목표 삭제 시 하위 뚜두도 함께 삭제 됩니다."
+  )
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
+              responseCode = "204",
+              description = "NO_CONTENT",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -318,7 +354,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "3009",
@@ -328,7 +365,8 @@ public interface GoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "3004",
@@ -346,9 +384,11 @@ public interface GoalControllerDoc {
   )
   ResponseEntity<Void> delete(Long loginId, Long id);
 
-  @Operation(summary = "월별 달성 뚜두 수 통계")
-  @ApiResponse(responseCode = "200")
-  ResponseEntity<List<CompletedDduduNumberStatsResponse>> collectNumberStats(
+  @Operation(summary = "월별 달성 뚜두 수 통계. Not Yet Implemented")
+  @ApiResponse(
+      responseCode = "200"
+  )
+  ResponseEntity<List<GoalStatsCompletionNumberResponse>> collectNumberStats(
       Long loginId, YearMonth yearMonth
   );
 

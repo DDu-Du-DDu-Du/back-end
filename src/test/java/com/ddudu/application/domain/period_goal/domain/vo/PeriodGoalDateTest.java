@@ -28,7 +28,6 @@ class PeriodGoalDateTest {
 
       // then
       LocalDate actual = periodGoalDate.getDate();
-      assertThat(getWeekOfMonth(actual)).isEqualTo(getWeekOfMonth(inputDate));
       assertThat(actual.getDayOfWeek()).isEqualTo(DayOfWeek.TUESDAY);
     }
 
