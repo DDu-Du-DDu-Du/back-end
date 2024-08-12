@@ -11,4 +11,6 @@ public interface RepeatDduduLoaderPort {
 
   List<RepeatDdudu> getAllByGoal(Goal goal);
 
+  RepeatDdudu getOrElseThrow(Long id, String message);
+
 }

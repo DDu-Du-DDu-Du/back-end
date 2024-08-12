@@ -9,6 +9,7 @@ import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
 import com.ddudu.infrastructure.persistence.repository.repeat_ddudu.RepeatDduduRepository;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -37,6 +38,17 @@ public class RepeatDduduPersistenceAdapter implements SaveRepeatDduduPort, Repea
         .stream()
         .map(RepeatDduduEntity::toDomain)
         .toList();
+  }
+
+  @Override
+  public RepeatDdudu getOrElseThrow(Long id, String message) {
+    return repeatDduduRepository.findById(id)
+        .orElseThrow(() -> new MissingResourceException(
+            message,
+            RepeatDdudu.class.getName(),
+            id.toString()
+        ))
+        .toDomain();
   }
 
 }
