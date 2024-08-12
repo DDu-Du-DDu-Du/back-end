@@ -114,6 +114,11 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
     dduduRepository.delete(DduduEntity.from(ddudu));
   }
 
+  @Override
+  public void deleteAllByRepeatDdudu(RepeatDdudu repeatDdudu) {
+    dduduRepository.deleteAllByRepeatDdudu(RepeatDduduEntity.from(repeatDdudu));
+  }
+
   private ScrollResponse<SimpleDduduSearchDto> getScrollResponse(
       List<DduduCursorDto> ddudusWithCursor, int size
   ) {

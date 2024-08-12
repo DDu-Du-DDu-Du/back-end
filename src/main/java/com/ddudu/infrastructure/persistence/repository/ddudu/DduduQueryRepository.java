@@ -6,6 +6,7 @@ import com.ddudu.application.dto.scroll.request.ScrollRequest;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
+import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,5 +32,7 @@ public interface DduduQueryRepository {
   List<DduduEntity> findAllByDateAndUserAndPrivacyTypes(
       LocalDate date, UserEntity from, List<PrivacyType> accessiblePrivacyTypes
   );
+
+  void deleteAllByRepeatDdudu(RepeatDduduEntity repeatDdudu);
 
 }
