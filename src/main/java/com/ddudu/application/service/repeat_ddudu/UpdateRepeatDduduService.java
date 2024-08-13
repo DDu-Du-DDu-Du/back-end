@@ -11,6 +11,7 @@ import com.ddudu.application.port.out.ddudu.DeleteDduduPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.repeat_ddudu.RepeatDduduLoaderPort;
+import com.ddudu.application.port.out.repeat_ddudu.UpdateRepeatDduduPort;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class UpdateRepeatDduduService implements UpdateRepeatDduduUseCase {
 
   private final RepeatDduduDomainService repeatDduduDomainService;
   private final RepeatDduduLoaderPort repeatDduduLoaderPort;
+  private final UpdateRepeatDduduPort updateRepeatDduduPort;
   private final DeleteDduduPort deleteDduduPort;
   private final GoalLoaderPort goalLoaderPort;
   private final SaveDduduPort saveDduduPort;
@@ -35,7 +37,8 @@ public class UpdateRepeatDduduService implements UpdateRepeatDduduUseCase {
 
     goal.validateGoalCreator(loginId);
 
-    repeatDduduDomainService.update(repeatDdudu, request);
+    repeatDdudu = updateRepeatDduduPort.update(
+        repeatDduduDomainService.update(repeatDdudu, request));
 
     deleteDduduPort.deleteAllByRepeatDdudu(repeatDdudu);
     saveDduduPort.saveAll(
