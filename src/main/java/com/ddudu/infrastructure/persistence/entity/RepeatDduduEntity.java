@@ -124,4 +124,14 @@ public class RepeatDduduEntity extends BaseEntity {
         .build();
   }
 
+  public void update(RepeatDdudu repeatDdudu) {
+    this.name = repeatDdudu.getName();
+    this.repeatType = repeatDdudu.getRepeatType();
+    this.repeatInfo = repeatDdudu.getRepeatPattern();
+    this.startDate = repeatDdudu.getStartDate();
+    this.endDate = repeatDdudu.getEndDate();
+    this.beginAt = repeatDdudu.getBeginAt();
+    this.endAt = repeatDdudu.getEndAt();
+  }
+
 }
