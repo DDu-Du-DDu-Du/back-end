@@ -4,6 +4,7 @@ import com.ddudu.application.annotation.DomainService;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
+import com.ddudu.application.dto.goal.request.CreateRepeatDduduRequestWithoutGoal;
 import com.ddudu.application.dto.repeat_ddudu.RepeatPatternDto;
 import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.application.dto.repeat_ddudu.request.UpdateRepeatDduduRequest;
@@ -20,6 +21,19 @@ public class RepeatDduduDomainService {
     return RepeatDdudu.builder()
         .name(request.name())
         .goalId(request.goalId())
+        .startDate(request.startDate())
+        .endDate(request.endDate())
+        .repeatType(RepeatType.from(request.repeatType()))
+        .repeatPatternDto(RepeatPatternDto.from(request))
+        .beginAt(request.beginAt())
+        .endAt(request.endAt())
+        .build();
+  }
+
+  public RepeatDdudu create(Long goalId, CreateRepeatDduduRequestWithoutGoal request) {
+    return RepeatDdudu.builder()
+        .name(request.name())
+        .goalId(goalId)
         .startDate(request.startDate())
         .endDate(request.endDate())
         .repeatType(RepeatType.from(request.repeatType()))

@@ -10,6 +10,7 @@ import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -42,7 +43,7 @@ class GoalDomainServiceTest {
       privacyType = GoalFixture.getRandomPrivacyType()
           .name();
       color = BaseFixture.getRandomColor();
-      request = new CreateGoalRequest(name, color, privacyType);
+      request = new CreateGoalRequest(name, color, privacyType, new ArrayList<>());
     }
 
     @Test
