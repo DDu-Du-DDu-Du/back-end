@@ -100,4 +100,11 @@ public final class RepeatDduduErrorExamples {
       }
       """;
 
+  public static final String REPEAT_DDUDU_NOT_EXIST = """
+      {
+        "code": 6015,
+        "message": "해당 아이디를 가진 반복 뚜두가 존재하지 않습니다."
+      }
+      """;
+
 }
