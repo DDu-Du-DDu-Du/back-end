@@ -1,6 +1,7 @@
 package com.ddudu.infrastructure.persistence.repository.ddudu;
 
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
+import com.ddudu.application.dto.ddudu.StatsBaseDto;
 import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.dto.scroll.request.ScrollRequest;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
@@ -30,6 +31,10 @@ public interface DduduQueryRepository {
 
   List<DduduEntity> findAllByDateAndUserAndPrivacyTypes(
       LocalDate date, UserEntity from, List<PrivacyType> accessiblePrivacyTypes
+  );
+
+  List<StatsBaseDto> findStatsBaseOfUser(
+      UserEntity user, GoalEntity goal, LocalDate from, LocalDate to
   );
 
 }
