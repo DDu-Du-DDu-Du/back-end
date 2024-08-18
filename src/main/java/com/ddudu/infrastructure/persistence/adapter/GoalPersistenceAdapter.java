@@ -3,10 +3,8 @@ package com.ddudu.infrastructure.persistence.adapter;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.goal.response.CompletedDduduNumberStatsResponse;
 import com.ddudu.application.port.out.goal.DeleteGoalPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
-import com.ddudu.application.port.out.goal.NumberStatsPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.goal.UpdateGoalPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
@@ -16,8 +14,6 @@ import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import com.ddudu.infrastructure.persistence.repository.goal.GoalRepository;
 import com.google.common.collect.Lists;
 import jakarta.persistence.EntityNotFoundException;
-import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
@@ -26,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @DrivenAdapter
 @RequiredArgsConstructor
 public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, UpdateGoalPort,
-    DeleteGoalPort, NumberStatsPort {
+    DeleteGoalPort {
 
   private final GoalRepository goalRepository;
   private final DduduRepository dduduRepository;
@@ -72,14 +68,6 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
         .stream()
         .map(GoalEntity::toDomain)
         .toList();
-  }
-
-  @Override
-  public List<CompletedDduduNumberStatsResponse> collectNumberStats(
-      User user, LocalDate from, LocalDate to
-  ) {
-    return Collections.unmodifiableList(
-        goalRepository.collectCompletedDduduNumberStats(UserEntity.from(user), from, to));
   }
 
   @Override
