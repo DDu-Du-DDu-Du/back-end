@@ -6,10 +6,8 @@ import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
 import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
-import com.ddudu.application.dto.goal.response.GoalStatsCompletionNumberResponse;
 import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
 import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
-import com.ddudu.application.port.in.goal.CollectNumberStatsUseCase;
 import com.ddudu.application.port.in.goal.CreateGoalUseCase;
 import com.ddudu.application.port.in.goal.DeleteGoalUseCase;
 import com.ddudu.application.port.in.goal.RetrieveAllGoalsUseCase;
@@ -21,11 +19,9 @@ import com.ddudu.presentation.api.exception.ForbiddenException;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +47,6 @@ public class GoalController implements GoalControllerDoc {
   private final UpdateGoalUseCase updateGoalUseCase;
   private final ChangeGoalStatusUseCase changeGoalStatusUseCase;
   private final DeleteGoalUseCase deleteGoalUseCase;
-  private final CollectNumberStatsUseCase collectNumberStatsUseCase;
 
   @PostMapping
   public ResponseEntity<GoalIdResponse> create(
@@ -137,20 +132,6 @@ public class GoalController implements GoalControllerDoc {
 
     return ResponseEntity.noContent()
         .build();
-  }
-
-  @GetMapping("/stats/numbers")
-  public ResponseEntity<List<GoalStatsCompletionNumberResponse>> collectNumberStats(
-      @Login
-      Long loginId,
-      @RequestParam(required = false)
-      @DateTimeFormat(pattern = "yyyy-MM")
-      YearMonth yearMonth
-  ) {
-    List<CompletedDduduNumberStatsResponse> response = collectNumberStatsUseCase.collectNumberStats(
-        loginId, yearMonth);
-
-    return ResponseEntity.ok(response);
   }
 
   private void checkAuthority(Long loginId, Long id) {
