@@ -3,21 +3,31 @@ package com.ddudu.application.service.goal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
+import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.goal.service.GoalDomainService;
+import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
+import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.goal.request.CreateGoalRequest;
+import com.ddudu.application.dto.goal.request.CreateRepeatDduduRequestWithoutGoal;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
+import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
+import com.ddudu.application.port.out.repeat_ddudu.RepeatDduduLoaderPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -53,6 +63,12 @@ class CreateGoalServiceTest {
   @Autowired
   GoalLoaderPort goalLoaderPort;
 
+  @Autowired
+  RepeatDduduLoaderPort repeatDduduLoaderPort;
+
+  @Autowired
+  DduduLoaderPort dduduLoaderPort;
+
   CreateGoalRequest request;
   Long userId;
   String name;
@@ -66,7 +82,7 @@ class CreateGoalServiceTest {
     name = GoalFixture.getRandomSentenceWithMax(50);
     color = GoalFixture.getRandomColor();
     privacyType = GoalFixture.getRandomPrivacyType();
-    request = new CreateGoalRequest(name, color, privacyType.name());
+    request = new CreateGoalRequest(name, color, privacyType.name(), new ArrayList<>());
   }
 
   @Test
@@ -109,7 +125,7 @@ class CreateGoalServiceTest {
     String defaultColor = "191919";
 
     CreateGoalRequest request = new CreateGoalRequest(
-        name, invalidColor, privacyType.name());
+        name, invalidColor, privacyType.name(), new ArrayList<>());
 
     // when
     GoalIdResponse expected = createGoalService.create(userId, request);
@@ -124,7 +140,7 @@ class CreateGoalServiceTest {
   void 보기_설정을_설정하지_않으면_PRIVATE이_적용된다() {
     // given
     PrivacyType defaultPrivacyType = PrivacyType.PRIVATE;
-    CreateGoalRequest request = new CreateGoalRequest(name, color, null);
+    CreateGoalRequest request = new CreateGoalRequest(name, color, null, new ArrayList<>());
 
     // when
     GoalIdResponse expected = createGoalService.create(userId, request);
@@ -146,6 +162,49 @@ class CreateGoalServiceTest {
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(create)
         .withMessage(GoalErrorCode.USER_NOT_EXISTING.getCodeName());
+  }
+
+  @Test
+  void 목표_생성_시_반복_뚜두도_함께_생성할_수_있다() {
+    // given
+    LocalDate nextMonday = LocalDate.now()
+        .with(DayOfWeek.MONDAY)
+        .plusDays(7);
+    LocalDate nextSunday = nextMonday.plusDays(6);
+    List<CreateRepeatDduduRequestWithoutGoal> requests = List.of(
+        new CreateRepeatDduduRequestWithoutGoal(
+            "반복 뚜두",
+            RepeatType.WEEKLY.name(),
+            List.of(DayOfWeek.SUNDAY.name()),
+            null,
+            null,
+            nextMonday,
+            nextSunday,
+            null,
+            null
+        )
+    );
+
+    CreateGoalRequest request = new CreateGoalRequest(name, color, null, requests);
+
+    // when
+    GoalIdResponse response = createGoalService.create(userId, request);
+
+    // then
+    Goal goal = goalLoaderPort.getOptionalGoal(response.id())
+        .get();
+    List<RepeatDdudu> repeatDdudus = repeatDduduLoaderPort.getAllByGoal(goal);
+    assertThat(repeatDdudus).hasSize(1);
+    assertThat(repeatDdudus.get(0))
+        .extracting("name", "repeatType", "startDate", "endDate")
+        .containsExactly("반복 뚜두", RepeatType.WEEKLY, nextMonday, nextSunday);
+
+    List<Ddudu> ddudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudus.get(0));
+    assertThat(ddudus).hasSize(1);
+    assertThat(ddudus.get(0))
+        .extracting(ddudu -> ddudu.getScheduledOn()
+            .getDayOfWeek())
+        .isEqualTo(DayOfWeek.SUNDAY);
   }
 
   private User createAndSaveUser() {

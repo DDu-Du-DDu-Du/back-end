@@ -98,4 +98,21 @@ public final class RepeatDdudu {
     );
   }
 
+  public RepeatDdudu update(
+      String name, RepeatType repeatType, RepeatPatternDto repeatPatternDto, LocalDate startDate,
+      LocalDate endDate, LocalTime beginAt, LocalTime endAt
+  ) {
+    return RepeatDdudu.builder()
+        .id(id)
+        .goalId(goalId)
+        .name(name)
+        .repeatType(repeatType)
+        .repeatPatternDto(repeatPatternDto)
+        .startDate(startDate)
+        .endDate(endDate)
+        .beginAt(beginAt)
+        .endAt(endAt)
+        .build();
+  }
+
 }

@@ -13,6 +13,7 @@ import com.ddudu.application.dto.scroll.request.ScrollRequest;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
+import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ConstructorExpression;
@@ -161,6 +162,17 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
             privacyTypesIn(accessiblePrivacyTypes)
         )
         .fetch();
+  }
+
+  @Override
+  public void deleteAllByRepeatDdudu(RepeatDduduEntity repeatDdudu) {
+    jpaQueryFactory
+        .delete(dduduEntity)
+        .where(
+            dduduEntity.repeatDdudu.eq(repeatDdudu),
+            dduduEntity.status.eq(DduduStatus.UNCOMPLETED)
+        )
+        .execute();
   }
 
   @Override
