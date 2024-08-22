@@ -1,6 +1,7 @@
 package com.ddudu.fixture;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.ddudu.domain.Ddudu.DduduBuilder;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.google.common.collect.Lists;
@@ -13,61 +14,93 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DduduFixture extends BaseFixture {
 
+  public static List<Ddudu> createDifferentDdudusWithGoal(
+      Goal goal, int completedCount, int uncompletedCount
+  ) {
+    List<Ddudu> ddudus = Lists.newArrayList();
+
+    ddudus.addAll(createMultipleDdudusWithGoal(goal, completedCount));
+    ddudus.addAll(createMultipleDdudusWithGoal(goal, uncompletedCount, DduduStatus.UNCOMPLETED));
+
+    return ddudus;
+  }
+
   public static List<Ddudu> createMultipleDdudusWithGoal(Goal goal, int size) {
+    return createMultipleDdudusWithGoal(goal, size, DduduStatus.COMPLETE);
+  }
+
+  private static List<Ddudu> createMultipleDdudusWithGoal(Goal goal, int size, DduduStatus status) {
     List<Ddudu> ddudus = Lists.newArrayList();
 
     for (int i = 0; i < size; i++) {
-      ddudus.add(createRandomDduduWithGoal(goal));
+      ddudus.add(createRandomDduduWithStatus(goal, status));
     }
 
     return ddudus;
   }
 
+  public static Ddudu createRandomDduduWithStatus(Goal goal, DduduStatus status) {
+    return getDduduBuilder()
+        .goalId(goal.getId())
+        .userId(goal.getUserId())
+        .status(status)
+        .build();
+  }
+
   public static Ddudu createRandomDduduWithGoal(Goal goal) {
-    return createRandomDduduWithReference(goal.getId(), goal.getUserId(), false, null);
+    return getDduduBuilder()
+        .goalId(goal.getId())
+        .userId(goal.getUserId())
+        .build();
   }
 
   public static Ddudu createRandomDduduWithReference(
       Long goalId, Long userId, Boolean isPostponed, DduduStatus status
   ) {
-    return createDdudu(
-        getRandomId(), goalId, userId, getRandomSentenceWithMax(50), status, null, null, null, null,
-        isPostponed
-    );
+    return getDduduBuilder()
+        .goalId(goalId)
+        .userId(userId)
+        .isPostponed(isPostponed)
+        .status(status)
+        .build();
+  }
+
+  public static Ddudu createRandomDduduWithStatusAndSchedule(
+      Goal goal, DduduStatus status, LocalDate scheduledOn
+  ) {
+    return getDduduBuilder()
+        .goalId(goal.getId())
+        .userId(goal.getUserId())
+        .status(status)
+        .scheduledOn(scheduledOn)
+        .build();
   }
 
   public static Ddudu createRandomDduduWithSchedule(Goal goal, LocalDate scheduledOn) {
-    return createDdudu(
-        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null,
-        scheduledOn, null, null, false
-    );
+    return getDduduBuilder()
+        .goalId(goal.getId())
+        .userId(goal.getUserId())
+        .scheduledOn(scheduledOn)
+        .build();
   }
 
   public static Ddudu createRandomDduduWithGoalAndTime(
       Goal goal, LocalTime beginAt, LocalTime endAt
   ) {
-    return createDdudu(
-        getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null,
-        null, beginAt, endAt, false
-    );
-  }
-
-  public static Ddudu createDdudu(
-      Long id, Long goalId, Long userId, String name, DduduStatus dduduStatus, String statusValue,
-      LocalDate scheduledOn, LocalTime beginAt, LocalTime endAt, Boolean isPostponed
-  ) {
-    return Ddudu.builder()
-        .id(id)
-        .goalId(goalId)
-        .userId(userId)
-        .name(name)
-        .isPostponed(isPostponed)
-        .status(dduduStatus)
-        .statusValue(statusValue)
-        .scheduledOn(scheduledOn)
+    return getDduduBuilder()
+        .goalId(goal.getId())
+        .userId(goal.getUserId())
         .beginAt(beginAt)
         .endAt(endAt)
         .build();
+  }
+
+  public static DduduBuilder getDduduBuilder(
+  ) {
+    return Ddudu.builder()
+        .id(getRandomId())
+        .name(getRandomSentenceWithMax(50))
+        .scheduledOn(LocalDate.now());
   }
 
 }
