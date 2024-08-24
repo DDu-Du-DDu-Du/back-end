@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.doc;
 
-import com.ddudu.application.dto.goal.response.MonthlyStatsSummaryResponse;
+import com.ddudu.application.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
 import com.ddudu.presentation.api.doc.error.DduduErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;

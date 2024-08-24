@@ -1,4 +1,4 @@
-package com.ddudu.application.dto.ddudu;
+package com.ddudu.application.dto.stats;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import java.time.LocalDate;

@@ -7,7 +7,7 @@ import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.goal.response.MonthlyStatsSummaryResponse;
+import com.ddudu.application.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;

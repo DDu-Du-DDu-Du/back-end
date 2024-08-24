@@ -1,6 +1,6 @@
-package com.ddudu.application.dto.goal.response;
+package com.ddudu.application.dto.stats.response;
 
-import com.ddudu.application.dto.goal.MonthlyStatsSummaryDto;
+import com.ddudu.application.dto.stats.MonthlyStatsSummaryDto;
 import lombok.Builder;
 
 @Builder
