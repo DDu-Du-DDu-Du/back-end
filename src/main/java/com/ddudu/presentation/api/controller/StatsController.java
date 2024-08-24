@@ -1,5 +1,7 @@
 package com.ddudu.presentation.api.controller;
 
+import com.ddudu.application.dto.stats.CompletionPerGoalDto;
+import com.ddudu.application.dto.stats.response.MonthlyStatsResponse;
 import com.ddudu.application.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.port.in.ddudu.CollectMonthlyStatsSummaryUseCase;
 import com.ddudu.presentation.api.annotation.Login;
@@ -20,7 +22,7 @@ public class StatsController implements StatsControllerDoc {
 
   private final CollectMonthlyStatsSummaryUseCase collectMonthlyStatsSummaryUseCase;
 
-  @GetMapping("/stats/numbers")
+  @GetMapping
   public ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(
       @Login
       Long loginId,
@@ -32,6 +34,13 @@ public class StatsController implements StatsControllerDoc {
         loginId, yearMonth);
 
     return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/completion")
+  public ResponseEntity<MonthlyStatsResponse<CompletionPerGoalDto>> collectCreation(
+      Long loginId, YearMonth yearMonth
+  ) {
+    return null;
   }
 
 }
