@@ -38,7 +38,11 @@ public class StatsController implements StatsControllerDoc {
 
   @GetMapping("/completion")
   public ResponseEntity<MonthlyStatsResponse<CompletionPerGoalDto>> collectCreation(
-      Long loginId, YearMonth yearMonth
+      @Login
+      Long loginId,
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM")
+      YearMonth yearMonth
   ) {
     return null;
   }
