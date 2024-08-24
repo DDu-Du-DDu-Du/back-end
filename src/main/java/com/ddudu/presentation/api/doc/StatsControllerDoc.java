@@ -4,6 +4,8 @@ import com.ddudu.application.dto.goal.response.MonthlyStatsSummaryResponse;
 import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
 import com.ddudu.presentation.api.doc.error.DduduErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,6 +50,12 @@ public interface StatsControllerDoc {
               )
           )
       }
+  )
+  @Parameter(
+      name = "yearMonth",
+      description = "통계 조회 대상 기간 월 (기본값: 이번 달)",
+      in = ParameterIn.QUERY,
+      example = "2024-08"
   )
   ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(
       Long loginId, YearMonth yearMonth
