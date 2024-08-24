@@ -1,8 +1,8 @@
 package com.ddudu.application.service.ddudu;
 
 import com.ddudu.application.annotation.UseCase;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.ddudu.service.DduduDomainService;
-import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.ddudu.StatsBaseDto;
 import com.ddudu.application.dto.goal.MonthlyStatsSummaryDto;
@@ -39,7 +39,7 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
       Long loginId, YearMonth yearMonth
   ) {
     User user = userLoaderPort.getUserOrElseThrow(
-        loginId, GoalErrorCode.USER_NOT_EXISTING.getCodeName());
+        loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
     LocalDate from = getFirstDateOfLastMonth(yearMonth);
     LocalDate to = getLastDateOfMonth(yearMonth);
     YearMonth lastMonth = YearMonth.from(from);
