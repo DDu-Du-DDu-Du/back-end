@@ -83,7 +83,7 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
     statsMap.put(thisMonth, List.of());
 
     stats.forEach(stat -> {
-      YearMonth key = YearMonth.from(stat.createdAt());
+      YearMonth key = YearMonth.from(stat.scheduledOn());
       List<StatsBaseDto> mutable = new ArrayList<>(statsMap.get(key));
 
       mutable.add(stat);

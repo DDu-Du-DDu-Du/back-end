@@ -192,7 +192,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .join(goalEntity)
         .on(dduduEntity.goal.eq(goalEntity))
         .where(condition)
-        .orderBy(dduduEntity.createdAt.yearMonth()
+        .orderBy(dduduEntity.scheduledOn.yearMonth()
             .asc(), dduduEntity.scheduledOn.asc(), dduduEntity.status.asc())
         .fetch();
   }
@@ -272,8 +272,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         goalEntity.id,
         dduduEntity.status,
         dduduEntity.isPostponed,
-        dduduEntity.scheduledOn,
-        dduduEntity.createdAt
+        dduduEntity.scheduledOn
     );
   }
 
