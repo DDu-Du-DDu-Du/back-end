@@ -1,4 +1,4 @@
-package com.ddudu.application.dto.goal;
+package com.ddudu.application.dto.stats;
 
 import java.time.YearMonth;
 import lombok.Builder;

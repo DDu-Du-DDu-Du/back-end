@@ -6,10 +6,10 @@ import static com.ddudu.infrastructure.persistence.entity.QGoalEntity.goalEntity
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
-import com.ddudu.application.dto.ddudu.StatsBaseDto;
 import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.dto.scroll.OrderType;
 import com.ddudu.application.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.dto.stats.StatsBaseDto;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
@@ -192,7 +192,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .join(goalEntity)
         .on(dduduEntity.goal.eq(goalEntity))
         .where(condition)
-        .orderBy(dduduEntity.createdAt.yearMonth()
+        .orderBy(dduduEntity.scheduledOn.yearMonth()
             .asc(), dduduEntity.scheduledOn.asc(), dduduEntity.status.asc())
         .fetch();
   }
@@ -272,8 +272,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         goalEntity.id,
         dduduEntity.status,
         dduduEntity.isPostponed,
-        dduduEntity.scheduledOn,
-        dduduEntity.createdAt
+        dduduEntity.scheduledOn
     );
   }
 

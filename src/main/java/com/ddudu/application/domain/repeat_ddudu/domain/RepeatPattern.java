@@ -7,7 +7,7 @@ import java.util.List;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    property = "type"
+    property = "repeatType"
 )
 @JsonSubTypes(
     {
