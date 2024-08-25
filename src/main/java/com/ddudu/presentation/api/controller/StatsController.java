@@ -1,6 +1,6 @@
 package com.ddudu.presentation.api.controller;
 
-import com.ddudu.application.dto.goal.response.MonthlyStatsSummaryResponse;
+import com.ddudu.application.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.port.in.ddudu.CollectMonthlyStatsSummaryUseCase;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.doc.StatsControllerDoc;

@@ -1,9 +1,9 @@
 package com.ddudu.infrastructure.persistence.repository.ddudu;
 
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.dto.ddudu.StatsBaseDto;
 import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.dto.stats.StatsBaseDto;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;

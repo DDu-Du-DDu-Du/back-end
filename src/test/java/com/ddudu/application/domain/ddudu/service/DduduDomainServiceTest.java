@@ -5,13 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.ddudu.StatsBaseDto;
 import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
+import com.ddudu.application.dto.stats.StatsBaseDto;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,15 +96,11 @@ class DduduDomainServiceTest {
         uncompletedSize = totalSize - completedSize;
 
         for (int i = 0; i < completedSize; i++) {
-          stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, false, LocalDate.now(),
-              LocalDateTime.now()
-          ));
+          stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, false, LocalDate.now()));
         }
 
         for (int i = 0; i < uncompletedSize; i++) {
-          stats.add(new StatsBaseDto(id, goalId, DduduStatus.UNCOMPLETED, false, LocalDate.now(),
-              LocalDateTime.now()
-          ));
+          stats.add(new StatsBaseDto(id, goalId, DduduStatus.UNCOMPLETED, false, LocalDate.now()));
         }
       }
 
@@ -148,18 +143,14 @@ class DduduDomainServiceTest {
           LocalDate scheduledOn = LocalDate.now()
               .plusDays(i);
 
-          stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, false, scheduledOn,
-              LocalDateTime.now()
-          ));
+          stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, false, scheduledOn));
         }
 
         for (int i = 0; i < uncompletedSize; i++) {
           LocalDate scheduledOn = LocalDate.now()
               .plusDays(i);
 
-          stats.add(new StatsBaseDto(id, goalId, DduduStatus.UNCOMPLETED, false, scheduledOn,
-              LocalDateTime.now()
-          ));
+          stats.add(new StatsBaseDto(id, goalId, DduduStatus.UNCOMPLETED, false, scheduledOn));
         }
       }
 
@@ -169,9 +160,7 @@ class DduduDomainServiceTest {
         LocalDate newStreakStart = LocalDate.now()
             .plusDays(completedSize + 1);
 
-        stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, false, newStreakStart,
-            LocalDateTime.now()
-        ));
+        stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, false, newStreakStart));
 
         // when
         int actual = dduduDomainService.calculateSustenanceCount(stats);
@@ -204,15 +193,11 @@ class DduduDomainServiceTest {
         uncompletedSize = totalSize - completedSize;
 
         for (int i = 0; i < completedSize; i++) {
-          stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, false, LocalDate.now(),
-              LocalDateTime.now()
-          ));
+          stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, false, LocalDate.now()));
         }
 
         for (int i = 0; i < uncompletedSize; i++) {
-          stats.add(new StatsBaseDto(id, goalId, DduduStatus.UNCOMPLETED, true, LocalDate.now(),
-              LocalDateTime.now()
-          ));
+          stats.add(new StatsBaseDto(id, goalId, DduduStatus.UNCOMPLETED, true, LocalDate.now()));
         }
       }
 
@@ -251,15 +236,11 @@ class DduduDomainServiceTest {
         uncompletedSize = totalSize - completedSize;
 
         for (int i = 0; i < completedSize; i++) {
-          stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, true, LocalDate.now(),
-              LocalDateTime.now()
-          ));
+          stats.add(new StatsBaseDto(id, goalId, DduduStatus.COMPLETE, true, LocalDate.now()));
         }
 
         for (int i = 0; i < uncompletedSize; i++) {
-          stats.add(new StatsBaseDto(id, goalId, DduduStatus.UNCOMPLETED, true, LocalDate.now(),
-              LocalDateTime.now()
-          ));
+          stats.add(new StatsBaseDto(id, goalId, DduduStatus.UNCOMPLETED, true, LocalDate.now()));
         }
       }
 

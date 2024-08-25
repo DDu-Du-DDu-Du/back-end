@@ -1,16 +1,14 @@
-package com.ddudu.application.dto.ddudu;
+package com.ddudu.application.dto.stats;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public record StatsBaseDto(
     Long id,
     Long goalId,
     DduduStatus status,
     boolean isPostponed,
-    LocalDate scheduledOn,
-    LocalDateTime createdAt
+    LocalDate scheduledOn
 ) {
 
 }

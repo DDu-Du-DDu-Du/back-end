@@ -1,12 +1,12 @@
 package com.ddudu.application.service.ddudu;
 
 import com.ddudu.application.annotation.UseCase;
+import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.ddudu.service.DduduDomainService;
-import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.ddudu.StatsBaseDto;
-import com.ddudu.application.dto.goal.MonthlyStatsSummaryDto;
-import com.ddudu.application.dto.goal.response.MonthlyStatsSummaryResponse;
+import com.ddudu.application.dto.stats.MonthlyStatsSummaryDto;
+import com.ddudu.application.dto.stats.StatsBaseDto;
+import com.ddudu.application.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.port.in.ddudu.CollectMonthlyStatsSummaryUseCase;
 import com.ddudu.application.port.out.goal.MonthlyStatsPort;
 import com.ddudu.application.port.out.user.UserLoaderPort;
@@ -39,7 +39,7 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
       Long loginId, YearMonth yearMonth
   ) {
     User user = userLoaderPort.getUserOrElseThrow(
-        loginId, GoalErrorCode.USER_NOT_EXISTING.getCodeName());
+        loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
     LocalDate from = getFirstDateOfLastMonth(yearMonth);
     LocalDate to = getLastDateOfMonth(yearMonth);
     YearMonth lastMonth = YearMonth.from(from);
@@ -83,7 +83,7 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
     statsMap.put(thisMonth, List.of());
 
     stats.forEach(stat -> {
-      YearMonth key = YearMonth.from(stat.createdAt());
+      YearMonth key = YearMonth.from(stat.scheduledOn());
       List<StatsBaseDto> mutable = new ArrayList<>(statsMap.get(key));
 
       mutable.add(stat);
