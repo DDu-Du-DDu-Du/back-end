@@ -8,6 +8,7 @@ import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.doc.StatsControllerDoc;
 import java.time.YearMonth;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,7 @@ public class StatsController implements StatsControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
-    return null;
+    throw new NotImplementedException();
   }
 
 }

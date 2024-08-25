@@ -63,7 +63,7 @@ public interface StatsControllerDoc {
       Long loginId, YearMonth yearMonth
   );
 
-  @Operation(summary = "월별 목표들의 뚜두 생성 수 통계")
+  @Operation(summary = "월별 목표들의 뚜두 생성 수 통계. Not Yet Implemented")
   @ApiResponses(
       {
           @ApiResponse(
