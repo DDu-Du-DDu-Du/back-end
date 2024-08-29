@@ -115,16 +115,6 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .toList();
   }
 
-  @Override
-  public void deleteAllByGoal(GoalEntity goal) {
-    jpaQueryFactory
-        .delete(dduduEntity)
-        .where(dduduEntity.goal.eq(goal))
-        .execute();
-
-    entityManager.clear();
-  }
-
   public List<DduduCursorDto> findScrollDdudus(
       Long userId, ScrollRequest request, String query, Boolean isMine, Boolean isFollower
   ) {
@@ -162,6 +152,16 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
             privacyTypesIn(accessiblePrivacyTypes)
         )
         .fetch();
+  }
+
+  @Override
+  public void deleteAllByGoal(GoalEntity goal) {
+    jpaQueryFactory
+        .delete(dduduEntity)
+        .where(dduduEntity.goal.eq(goal))
+        .execute();
+
+    entityManager.clear();
   }
 
   @Override

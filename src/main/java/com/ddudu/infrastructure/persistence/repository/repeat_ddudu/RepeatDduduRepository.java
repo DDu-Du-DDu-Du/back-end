@@ -5,7 +5,8 @@ import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RepeatDduduRepository extends JpaRepository<RepeatDduduEntity, Long> {
+public interface RepeatDduduRepository extends JpaRepository<RepeatDduduEntity, Long>,
+    RepeatDduduQueryRepository {
 
   List<RepeatDduduEntity> findAllByGoal(GoalEntity goal);
 
