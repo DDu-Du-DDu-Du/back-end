@@ -25,7 +25,7 @@ public class MoveDateService implements MoveDateUseCase {
 
     ddudu.validateDduduCreator(loginId);
 
-    Ddudu movedDdudu = ddudu.moveDate(request.newDate(), request.isPostponed());
+    Ddudu movedDdudu = ddudu.moveDate(request.newDate());
 
     dduduUpdatePort.update(movedDdudu);
   }
