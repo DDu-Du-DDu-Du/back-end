@@ -16,7 +16,6 @@ import java.util.Objects;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.commons.lang3.BooleanUtils;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -82,25 +81,19 @@ public class Ddudu {
     return builder.build();
   }
 
-  public Ddudu moveDate(LocalDate newDate, Boolean isPostponed) {
+  public Ddudu moveDate(LocalDate newDate) {
     checkArgument(Objects.nonNull(newDate), DduduErrorCode.NULL_DATE_TO_MOVE.getCodeName());
-
-    if (!newDate.isAfter(this.scheduledOn) && !this.isPostponed) {
-      checkArgument(
-          BooleanUtils.isNotTrue(isPostponed),
-          DduduErrorCode.SHOULD_POSTPONE_UNTIL_FUTURE.getCodeName()
-      );
-    }
 
     DduduBuilder builder = getFullBuilder()
         .scheduledOn(newDate);
 
-    if (this.status.isCompleted()) {
+    // 완료한 뚜두이거나 과거로 날짜를 변경하는 경우, 기존 미루기 상태가 적용된다.
+    if (this.status.isCompleted() || newDate.isBefore(scheduledOn)) {
       return builder.build();
     }
 
     return builder
-        .isPostponed(isPostponed)
+        .isPostponed(true)
         .build();
   }
 
