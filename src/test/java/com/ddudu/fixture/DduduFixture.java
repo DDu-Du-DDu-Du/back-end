@@ -3,6 +3,7 @@ package com.ddudu.fixture;
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -32,14 +33,14 @@ public class DduduFixture extends BaseFixture {
   ) {
     return createDdudu(
         getRandomId(), goalId, userId, getRandomSentenceWithMax(50), status, null, null, null, null,
-        isPostponed
+        isPostponed, null
     );
   }
 
   public static Ddudu createRandomDduduWithSchedule(Goal goal, LocalDate scheduledOn) {
     return createDdudu(
         getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null,
-        scheduledOn, null, null, false
+        scheduledOn, null, null, false, null
     );
   }
 
@@ -48,13 +49,14 @@ public class DduduFixture extends BaseFixture {
   ) {
     return createDdudu(
         getRandomId(), goal.getId(), goal.getUserId(), getRandomSentenceWithMax(50), null, null,
-        null, beginAt, endAt, false
+        null, beginAt, endAt, false, null
     );
   }
 
   public static Ddudu createDdudu(
       Long id, Long goalId, Long userId, String name, DduduStatus dduduStatus, String statusValue,
-      LocalDate scheduledOn, LocalTime beginAt, LocalTime endAt, Boolean isPostponed
+      LocalDate scheduledOn, LocalTime beginAt, LocalTime endAt, Boolean isPostponed,
+      Long repeatDduduId
   ) {
     return Ddudu.builder()
         .id(id)
@@ -67,7 +69,15 @@ public class DduduFixture extends BaseFixture {
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt)
+        .repeatDduduId(repeatDduduId)
         .build();
+  }
+
+  public static Ddudu createRandomDduduWithRepeatDdudu(Long userId, RepeatDdudu repeatDdudu) {
+    return createDdudu(
+        getRandomId(), repeatDdudu.getGoalId(), userId, getRandomSentenceWithMax(50), null, null,
+        null, null, null, false, repeatDdudu.getId()
+    );
   }
 
 }

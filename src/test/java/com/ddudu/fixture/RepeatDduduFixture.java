@@ -48,6 +48,18 @@ public class RepeatDduduFixture extends BaseFixture {
         .build();
   }
 
+  public static RepeatDdudu createDailyRepeatDduduWithGoal(Goal goal) {
+    return RepeatDdudu.builder()
+        .goalId(goal.getId())
+        .name(getRandomSentenceWithMax(50))
+        .repeatType(RepeatType.DAILY)
+        .repeatPattern(createRandomRepeatPattern(RepeatType.DAILY))
+        .startDate(LocalDate.now())
+        .endDate(LocalDate.now()
+            .plusDays(7))
+        .build();
+  }
+
   public static RepeatType getRandomRepeatType() {
     RepeatType[] types = RepeatType.values();
     int index = getRandomInt(0, types.length - 1);
