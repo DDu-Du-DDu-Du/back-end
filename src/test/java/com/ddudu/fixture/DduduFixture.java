@@ -4,6 +4,7 @@ import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.Ddudu.DduduBuilder;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -92,6 +93,14 @@ public class DduduFixture extends BaseFixture {
         .userId(goal.getUserId())
         .beginAt(beginAt)
         .endAt(endAt)
+        .build();
+  }
+
+  public static Ddudu createRandomDduduWithRepeatDdudu(Long userId, RepeatDdudu repeatDdudu) {
+    return getDduduBuilder()
+        .goalId(repeatDdudu.getGoalId())
+        .userId(userId)
+        .repeatDduduId(repeatDdudu.getId())
         .build();
   }
 

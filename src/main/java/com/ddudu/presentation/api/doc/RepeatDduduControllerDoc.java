@@ -213,4 +213,44 @@ public interface RepeatDduduControllerDoc {
   @Parameter(name = "id", description = "변경할 반복 뚜두 식별자", in = ParameterIn.PATH)
   ResponseEntity<IdResponse> update(Long loginId, Long id, UpdateRepeatDduduRequest request);
 
+  @Operation(summary = "반복 뚜두 삭제", description = "반복 뚜두 삭제 시 하위 뚜두도 함께 삭제 됩니다.")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401", description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403", description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "6014",
+                      description = "해당 목표에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = GoalErrorExamples.GOAL_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404", description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "6015",
+                      description = "반복 뚜두 아이디가 유효하지 않은 경우",
+                      value = RepeatDduduErrorExamples.REPEAT_DDUDU_NOT_EXIST
+                  )
+              )
+          )
+      }
+  )
+  @Parameter(name = "id", description = "삭제할 반복 뚜두 식별자", in = ParameterIn.PATH)
+  ResponseEntity<Void> delete(Long loginId, Long id);
+
 }

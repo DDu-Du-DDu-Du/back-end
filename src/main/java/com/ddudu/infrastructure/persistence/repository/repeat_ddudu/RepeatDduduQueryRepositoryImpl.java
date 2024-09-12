@@ -22,6 +22,7 @@ public class RepeatDduduQueryRepositoryImpl implements RepeatDduduQueryRepositor
         .where(repeatDduduEntity.goal.eq(goal))
         .execute();
 
+    entityManager.flush();
     entityManager.clear();
   }
 

@@ -161,6 +161,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .where(dduduEntity.goal.eq(goal))
         .execute();
 
+    entityManager.flush();
     entityManager.clear();
   }
 
@@ -173,6 +174,9 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
             dduduEntity.status.eq(DduduStatus.UNCOMPLETED)
         )
         .execute();
+
+    entityManager.flush();
+    entityManager.clear();
   }
 
   @Override

@@ -6,6 +6,7 @@ TRUNCATE refresh_tokens;
 TRUNCATE auth_providers;
 TRUNCATE goals;
 TRUNCATE ddudus;
+TRUNCATE repeat_ddudus;
 
 SET foreign_key_checks = 1;
 
