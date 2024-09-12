@@ -2,12 +2,14 @@ package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
+import com.ddudu.application.port.out.repeat_ddudu.DeleteRepeatDduduPort;
 import com.ddudu.application.port.out.repeat_ddudu.RepeatDduduLoaderPort;
 import com.ddudu.application.port.out.repeat_ddudu.SaveRepeatDduduPort;
 import com.ddudu.application.port.out.repeat_ddudu.UpdateRepeatDduduPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
+import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import com.ddudu.infrastructure.persistence.repository.repeat_ddudu.RepeatDduduRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -18,9 +20,10 @@ import lombok.RequiredArgsConstructor;
 @DrivenAdapter
 @RequiredArgsConstructor
 public class RepeatDduduPersistenceAdapter implements SaveRepeatDduduPort, RepeatDduduLoaderPort,
-    UpdateRepeatDduduPort {
+    UpdateRepeatDduduPort, DeleteRepeatDduduPort {
 
   private final RepeatDduduRepository repeatDduduRepository;
+  private final DduduRepository dduduRepository;
 
   @Override
   public RepeatDdudu save(RepeatDdudu repeatDdudu) {
@@ -62,6 +65,12 @@ public class RepeatDduduPersistenceAdapter implements SaveRepeatDduduPort, Repea
     repeatDduduEntity.update(repeatDdudu);
 
     return repeatDduduEntity.toDomain();
+  }
+
+  @Override
+  public void delete(RepeatDdudu repeatDdudu) {
+    dduduRepository.deleteAllByRepeatDdudu(RepeatDduduEntity.from(repeatDdudu));
+    repeatDduduRepository.delete(RepeatDduduEntity.from(repeatDdudu));
   }
 
 }
