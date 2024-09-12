@@ -171,6 +171,8 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
             dduduEntity.status.eq(DduduStatus.UNCOMPLETED)
         )
         .execute();
+
+    entityManager.clear();
   }
 
   private Predicate getOpenness(boolean isMine, boolean isFollower) {
