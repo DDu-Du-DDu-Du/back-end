@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +43,8 @@ public class RepeatPatternConverter implements AttributeConverter<RepeatPattern,
 
     try {
       JsonNode jsonNode = objectMapper.readTree(dbData);
-      String type = jsonNode.get("type")
+      String type = Optional.ofNullable(jsonNode.get("repeatType"))
+          .orElseGet(() -> jsonNode.get("type"))
           .asText();
 
       return switch (type) {

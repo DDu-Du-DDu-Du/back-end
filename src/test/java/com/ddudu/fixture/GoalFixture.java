@@ -4,6 +4,8 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
+import com.google.common.collect.Lists;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +35,16 @@ public class GoalFixture extends BaseFixture {
     return getGoalBuilder()
         .userId(user.getId())
         .build();
+  }
+
+  public static List<Goal> createRandomGoalsWithUser(User user, int size) {
+    List<Goal> goals = Lists.newArrayList();
+
+    for (int i = 0; i < size; i++) {
+      goals.add(createRandomGoalWithUser(user));
+    }
+
+    return goals;
   }
 
   public static Goal createRandomGoalWithUserAndPrivacyType(User user, PrivacyType privacyType) {

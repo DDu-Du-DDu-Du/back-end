@@ -77,7 +77,7 @@ class DeleteRepeatDduduServiceTest {
   @Test
   void 반복뚜두를_삭제_할_수_있다() {
     // when
-    deleteRepeatDduduPort.delete(repeatDdudu);
+    deleteRepeatDduduService.delete(userId, repeatDdudu.getId());
 
     // then
     Optional<RepeatDdudu> foundAfterDeleted = repeatDduduLoaderPort.getOptionalRepeatDdudu(

@@ -263,29 +263,16 @@ class DduduTest {
     class 날짜_변경_테스트 {
 
       @Test
-      void 날짜_변경을_성공한다() {
-        // given
-        LocalDate newDate = LocalDate.now()
-            .plusDays(1);
-
-        // when
-        Ddudu actual = ddudu.moveDate(newDate, null);
-
-        // then
-        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
-        assertThat(actual.isPostponed()).isFalse();
-      }
-
-      @Test
       void 이미_완료한_뚜두면_날짜_변경_시_상태가_변하지_않는다() {
         // given
-        Ddudu completedDdudu = DduduFixture.createRandomDduduWithReference(
-            goalId, userId, false, DduduStatus.COMPLETE);
         LocalDate newDate = LocalDate.now()
             .plusDays(1);
 
+        ddudu = ddudu.switchStatus(); // 완료 상태로 변경
+        assertThat(ddudu.getStatus()).isEqualTo(DduduStatus.COMPLETE);
+
         // when
-        Ddudu actual = completedDdudu.moveDate(newDate, true);
+        Ddudu actual = ddudu.moveDate(newDate);
 
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);
@@ -293,13 +280,13 @@ class DduduTest {
       }
 
       @Test
-      void 미루기_한다() {
+      void 완료_하지_않은_뚜두의_날짜를_기존_날짜_이후로_변경하면_미루기_상태가_된다() {
         // given
         LocalDate newDate = LocalDate.now()
             .plusDays(1);
 
         // when
-        Ddudu actual = ddudu.moveDate(newDate, true);
+        Ddudu actual = ddudu.moveDate(newDate);
 
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);
@@ -307,11 +294,25 @@ class DduduTest {
       }
 
       @Test
+      void 완료_하지_않은_뚜두의_날짜를_기존_날짜_이전으로_변경하면_상태가_변하지_않는다() {
+        // given
+        LocalDate newDate = LocalDate.now()
+            .minusDays(1);
+
+        // when
+        Ddudu actual = ddudu.moveDate(newDate);
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
+        assertThat(actual.isPostponed()).isFalse();
+      }
+
+      @Test
       void 변경할_날짜가_누락되면_변경을_실패한다() {
         // given
 
         // when
-        ThrowingCallable moveDate = () -> ddudu.moveDate(null, null);
+        ThrowingCallable moveDate = () -> ddudu.moveDate(null);
 
         // then
         assertThatIllegalArgumentException().isThrownBy(moveDate)
@@ -319,21 +320,7 @@ class DduduTest {
       }
 
       @Test
-      void 변경할_날짜가_예정_날짜보다_이전일_때_미루기를_시도하면_변경을_실패한다() {
-        // given
-        LocalDate newDate = LocalDate.now()
-            .minusDays(1);
-
-        // when
-        ThrowingCallable moveDate = () -> ddudu.moveDate(newDate, true);
-
-        // then
-        assertThatIllegalArgumentException().isThrownBy(moveDate)
-            .withMessage(DduduErrorCode.SHOULD_POSTPONE_UNTIL_FUTURE.getCodeName());
-      }
-
-      @Test
-      void 변경할_날짜가_예정_날짜보다_이전이어도_이미_미루기한_뚜두면_날짜_변경을_성공한다() {
+      void 변경할_날짜가_예정_날짜보다_이전이어도_이미_미루기한_뚜두면_미루기_상태가_유지된다() {
         // given
         Ddudu postponedDdudu = DduduFixture.createRandomDduduWithReference(
             goalId, userId, true, null);
@@ -341,7 +328,7 @@ class DduduTest {
             .minusDays(1);
 
         // when
-        Ddudu actual = postponedDdudu.moveDate(newDate, true);
+        Ddudu actual = postponedDdudu.moveDate(newDate);
 
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);

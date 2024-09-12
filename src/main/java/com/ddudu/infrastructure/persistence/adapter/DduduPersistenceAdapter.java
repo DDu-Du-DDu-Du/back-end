@@ -1,6 +1,7 @@
 package com.ddudu.infrastructure.persistence.adapter;
 
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
+import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.user.domain.User;
@@ -8,6 +9,7 @@ import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.dto.stats.StatsBaseDto;
 import com.ddudu.application.port.out.ddudu.DduduLoaderPort;
 import com.ddudu.application.port.out.ddudu.DduduSearchPort;
 import com.ddudu.application.port.out.ddudu.DduduStatsPort;
@@ -15,9 +17,11 @@ import com.ddudu.application.port.out.ddudu.DduduUpdatePort;
 import com.ddudu.application.port.out.ddudu.DeleteDduduPort;
 import com.ddudu.application.port.out.ddudu.RepeatDduduPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
+import com.ddudu.application.port.out.goal.MonthlyStatsPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
+import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
@@ -25,13 +29,14 @@ import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
 @RequiredArgsConstructor
 public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort, SaveDduduPort,
-    RepeatDduduPort, DduduSearchPort, DeleteDduduPort, DduduStatsPort {
+    RepeatDduduPort, DduduSearchPort, DeleteDduduPort, DduduStatsPort, MonthlyStatsPort {
 
   private final DduduRepository dduduRepository;
 
@@ -146,6 +151,15 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   ) {
     return dduduRepository.findDdudusCompletion(
         startDate, endDate, UserEntity.from(user), privacyTypes);
+  }
+
+  @Override
+  public List<StatsBaseDto> collectMonthlyStats(
+      User user, Goal goal, LocalDate from, LocalDate to
+  ) {
+    GoalEntity goalEntity = Objects.nonNull(goal) ? GoalEntity.from(goal) : null;
+
+    return dduduRepository.findStatsBaseOfUser(UserEntity.from(user), goalEntity, from, to);
   }
 
 }

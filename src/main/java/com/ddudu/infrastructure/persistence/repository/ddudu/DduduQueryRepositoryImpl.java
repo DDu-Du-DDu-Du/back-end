@@ -1,6 +1,7 @@
 package com.ddudu.infrastructure.persistence.repository.ddudu;
 
 import static com.ddudu.infrastructure.persistence.entity.QDduduEntity.dduduEntity;
+import static com.ddudu.infrastructure.persistence.entity.QGoalEntity.goalEntity;
 
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
@@ -8,6 +9,7 @@ import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
 import com.ddudu.application.dto.scroll.OrderType;
 import com.ddudu.application.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.dto.stats.StatsBaseDto;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
@@ -113,16 +115,6 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .toList();
   }
 
-  @Override
-  public void deleteAllByGoal(GoalEntity goal) {
-    jpaQueryFactory
-        .delete(dduduEntity)
-        .where(dduduEntity.goal.eq(goal))
-        .execute();
-
-    entityManager.clear();
-  }
-
   public List<DduduCursorDto> findScrollDdudus(
       Long userId, ScrollRequest request, String query, Boolean isMine, Boolean isFollower
   ) {
@@ -163,6 +155,17 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   @Override
+  public void deleteAllByGoal(GoalEntity goal) {
+    jpaQueryFactory
+        .delete(dduduEntity)
+        .where(dduduEntity.goal.eq(goal))
+        .execute();
+
+    entityManager.flush();
+    entityManager.clear();
+  }
+
+  @Override
   public void deleteAllByRepeatDdudu(RepeatDduduEntity repeatDdudu) {
     jpaQueryFactory
         .delete(dduduEntity)
@@ -172,7 +175,30 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         )
         .execute();
 
+    entityManager.flush();
     entityManager.clear();
+  }
+
+  @Override
+  public List<StatsBaseDto> findStatsBaseOfUser(
+      UserEntity user, GoalEntity goal, LocalDate from, LocalDate to
+  ) {
+    BooleanBuilder condition = new BooleanBuilder(goalEntity.user.eq(user))
+        .and(dduduEntity.scheduledOn.between(from, to));
+
+    if (Objects.nonNull(goal)) {
+      condition.and(goalEntity.eq(goal));
+    }
+
+    return jpaQueryFactory
+        .select(projectionStatsBase())
+        .from(dduduEntity)
+        .join(goalEntity)
+        .on(dduduEntity.goal.eq(goalEntity))
+        .where(condition)
+        .orderBy(dduduEntity.scheduledOn.yearMonth()
+            .asc(), dduduEntity.scheduledOn.asc(), dduduEntity.status.asc())
+        .fetch();
   }
 
   private Predicate getOpenness(boolean isMine, boolean isFollower) {
@@ -241,6 +267,17 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   private BooleanExpression scheduledOnEq(LocalDate date) {
     return dduduEntity.scheduledOn.eq(date);
+  }
+
+  private ConstructorExpression<StatsBaseDto> projectionStatsBase() {
+    return Projections.constructor(
+        StatsBaseDto.class,
+        dduduEntity.id,
+        goalEntity.id,
+        dduduEntity.status,
+        dduduEntity.isPostponed,
+        dduduEntity.scheduledOn
+    );
   }
 
 }

@@ -30,7 +30,7 @@ public class DeleteRepeatDduduService implements DeleteRepeatDduduUseCase {
               RepeatDduduErrorCode.INVALID_GOAL.getCodeName()
           );
           goal.validateGoalCreator(userId);
-          deleteRepeatDduduPort.delete(repeatDdudu);
+          deleteRepeatDduduPort.deleteWithDdudus(repeatDdudu);
         });
   }
 
