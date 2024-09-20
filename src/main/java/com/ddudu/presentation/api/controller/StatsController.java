@@ -3,12 +3,12 @@ package com.ddudu.presentation.api.controller;
 import com.ddudu.application.dto.stats.CompletionPerGoalDto;
 import com.ddudu.application.dto.stats.response.MonthlyStatsResponse;
 import com.ddudu.application.dto.stats.response.MonthlyStatsSummaryResponse;
+import com.ddudu.application.port.in.ddudu.CollectMonthlyCreationStatsUseCase;
 import com.ddudu.application.port.in.ddudu.CollectMonthlyStatsSummaryUseCase;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.doc.StatsControllerDoc;
 import java.time.YearMonth;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StatsController implements StatsControllerDoc {
 
   private final CollectMonthlyStatsSummaryUseCase collectMonthlyStatsSummaryUseCase;
+  private final CollectMonthlyCreationStatsUseCase collectMonthlyCreationStatsUseCase;
 
   @GetMapping
   public ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(
@@ -45,7 +46,10 @@ public class StatsController implements StatsControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
-    throw new NotImplementedException();
+    MonthlyStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsUseCase.collectCreation(
+        loginId, yearMonth);
+
+    return ResponseEntity.ok(response);
   }
 
 }
