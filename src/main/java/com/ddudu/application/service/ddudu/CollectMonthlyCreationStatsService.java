@@ -12,6 +12,7 @@ import com.ddudu.application.port.out.user.UserLoaderPort;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,11 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
   ) {
     User user = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+
+    if (Objects.isNull(yearMonth)) {
+      yearMonth = YearMonth.now();
+    }
+
     LocalDate from = yearMonth.atDay(FIRST_DATE);
     LocalDate to = yearMonth.atEndOfMonth();
     List<StatsBaseDto> stats = monthlyStatsPort.collectMonthlyStats(user, null, from, to);
@@ -42,10 +48,11 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
 
   private List<CompletionPerGoalDto> countPerGoalId(List<StatsBaseDto> stats) {
     return stats.stream()
-        .collect(Collectors.groupingBy(StatsBaseDto::id, Collectors.summingInt(toAdd -> 1)))
+        .collect(Collectors.groupingBy(StatsBaseDto::goalId, Collectors.summingInt(toAdd -> 1)))
         .entrySet()
         .stream()
         .map(completion -> CompletionPerGoalDto.from(completion.getKey(), completion.getValue()))
+        .sorted((first, second) -> second.count() - first.count())
         .toList();
   }
 
