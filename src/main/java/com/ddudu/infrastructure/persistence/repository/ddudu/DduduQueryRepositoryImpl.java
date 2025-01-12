@@ -142,7 +142,6 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   public List<DduduEntity> findAllByDateAndUserAndPrivacyTypes(
       LocalDate date, UserEntity user, List<PrivacyType> accessiblePrivacyTypes
   ) {
-    // TODO: 종료된 목표는 제외하도록 수정 필요
     return jpaQueryFactory
         .selectFrom(dduduEntity)
         .join(dduduEntity.goal)
