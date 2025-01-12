@@ -34,14 +34,21 @@ public class CreateDduduService implements CreateDduduUseCase {
     Goal goal = goalLoaderPort.getGoalOrElseThrow(
         request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING.getCodeName());
 
-    // 2. 생성 권한 검증
+    // 2. 목표 소유자의 요청인지 확인
     goal.validateGoalCreator(loginId);
 
-    // TODO: 완료된 목표에 대한 생성은 거절하도록 변경
+    // 3. 종료되지 않은 목표인지 확인
+    validateGoalNotDone(goal);
 
+    // 4. 뚜두 생성 후 저장
     Ddudu ddudu = dduduDomainService.create(user, request);
-
     return BasicDduduResponse.from(saveDduduPort.save(ddudu));
+  }
+
+  private void validateGoalNotDone(Goal goal) {
+    if (goal.isDone()) {
+      throw new IllegalArgumentException(DduduErrorCode.GOAL_ALREADY_DONE.getCodeName());
+    }
   }
 
 }

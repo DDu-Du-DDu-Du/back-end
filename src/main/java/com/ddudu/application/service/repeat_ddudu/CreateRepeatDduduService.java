@@ -29,18 +29,27 @@ public class CreateRepeatDduduService implements CreateRepeatDduduUseCase {
     Goal goal = goalLoaderPort.getGoalOrElseThrow(
         request.goalId(), RepeatDduduErrorCode.INVALID_GOAL.getCodeName());
 
-    // TODO: 완료된 목표에 대한 생성은 거절하도록 변경
+    // 2. 목표 소유자의 요청인지 확인
     goal.validateGoalCreator(loginId);
 
-    // 2. 반복 뚜두 생성 후 저장
+    // 3. 종료되지 않은 목표인지 확인
+    validateGoalNotDone(goal);
+
+    // 4. 반복 뚜두 생성 후 저장
     RepeatDdudu repeatDdudu = saveRepeatDduduPort.save(
         repeatDduduDomainService.create(request));
 
-    // 3. (반복되는) 뚜두 생성 후 저장
+    // 5. (반복되는) 뚜두 생성 후 저장
     saveDduduPort.saveAll(
         repeatDduduDomainService.createRepeatedDdudus(loginId, repeatDdudu));
 
     return repeatDdudu.getId();
+  }
+
+  private void validateGoalNotDone(Goal goal) {
+    if (goal.isDone()) {
+      throw new IllegalArgumentException(RepeatDduduErrorCode.GOAL_ALREADY_DONE.getCodeName());
+    }
   }
 
 }

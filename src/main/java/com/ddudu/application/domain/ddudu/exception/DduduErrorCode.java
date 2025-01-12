@@ -22,7 +22,8 @@ public enum DduduErrorCode implements ErrorCode {
   SHOULD_POSTPONE_UNTIL_FUTURE(2012, "미루기 날짜는 오늘 이후의 날짜여야 합니다."),
   UNABLE_TO_REPRODUCE_ON_SAME_DATE(2013, "다시 하기의 날짜는 기존과 달라야합니다."),
   NEGATIVE_OR_ZERO_GOAL_ID(2014, "목표 ID는 양수입니다."),
-  NULL_SCHEDULED_DATE(2015, "날짜는 필수값입니다.");
+  NULL_SCHEDULED_DATE(2015, "날짜는 필수값입니다."),
+  GOAL_ALREADY_DONE(2016, "목표가 이미 완료되었습니다.");
 
   private final int code;
   private final String message;
