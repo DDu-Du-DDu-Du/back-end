@@ -58,17 +58,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class DduduController implements DduduControllerDoc {
 
   private final CreateDduduUseCase createDduduUseCase;
-  private final PeriodSetupUseCase periodSetupUseCase;
   private final GetDailyDdudusByGoalUseCase getDailyDdudusByGoalUseCase;
   private final GetTimetableUseCase getTimetableUseCase;
+  private final DduduSearchUseCase dduduSearchUseCase;
+  private final CalculateCompletionUseCase calculateCompletionUseCase;
+  private final RetrieveDduduUseCase retrieveDduduUseCase;
+  private final PeriodSetupUseCase periodSetupUseCase;
   private final MoveDateUseCase moveDateUseCase;
   private final RepeatUseCase repeatUseCase;
-  private final DduduSearchUseCase dduduSearchUseCase;
   private final SwitchStatusUseCase switchStatusUseCase;
   private final ChangeNameUseCase changeNameUseCase;
   private final DeleteDduduUseCase deleteDduduUseCase;
-  private final CalculateCompletionUseCase calculateCompletionUseCase;
-  private final RetrieveDduduUseCase retrieveDduduUseCase;
 
   @PostMapping
   public ResponseEntity<IdResponse> create(
@@ -83,29 +83,6 @@ public class DduduController implements DduduControllerDoc {
 
     return ResponseEntity.created(uri)
         .body(new IdResponse(response.id()));
-  }
-
-  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
-      @Login
-      Long loginId,
-      DduduSearchRequest request
-  ) {
-    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchUseCase.search(loginId, request);
-
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<DduduDetailResponse> getById(
-      @Login
-      Long loginId,
-      @PathVariable
-      Long id
-  ) {
-    DduduDetailResponse response = retrieveDduduUseCase.findById(loginId, id);
-
-    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/daily/list")
@@ -144,6 +121,17 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
+      @Login
+      Long loginId,
+      DduduSearchRequest request
+  ) {
+    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchUseCase.search(loginId, request);
+
+    return ResponseEntity.ok(response);
+  }
+
   @GetMapping("/completion/weekly")
   public ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
       @Login
@@ -160,6 +148,18 @@ public class DduduController implements DduduControllerDoc {
 
     List<DduduCompletionResponse> response = calculateCompletionUseCase.calculate(
         loginId, userId, firstDayOfWeek, afterOneWeek);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<DduduDetailResponse> getById(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id
+  ) {
+    DduduDetailResponse response = retrieveDduduUseCase.findById(loginId, id);
 
     return ResponseEntity.ok(response);
   }
@@ -188,46 +188,6 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<IdResponse> changeName(
-      @Login
-      Long loginId,
-      @PathVariable
-      Long id,
-      @RequestBody
-      @Valid
-      ChangeNameRequest request
-  ) {
-    BasicDduduResponse response = changeNameUseCase.change(loginId, id, request);
-    return ResponseEntity.ok(new IdResponse(response.id()));
-  }
-
-  @PatchMapping("/{id}/status")
-  public ResponseEntity<Void> updateStatus(
-      @Login
-      Long loginId,
-      @PathVariable
-      Long id
-  ) {
-    switchStatusUseCase.switchStatus(loginId, id);
-
-    return ResponseEntity.noContent()
-        .build();
-  }
-
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(
-      @Login
-      Long loginId,
-      @PathVariable
-      Long id
-  ) {
-    deleteDduduUseCase.delete(loginId, id);
-
-    return ResponseEntity.noContent()
-        .build();
-  }
-
   @PutMapping("/{id}/period")
   public ResponseEntity<Void> setUpPeriod(
       @Login
@@ -243,6 +203,20 @@ public class DduduController implements DduduControllerDoc {
         .build();
   }
 
+  @PutMapping("/{id}")
+  public ResponseEntity<IdResponse> changeName(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      @Valid
+      ChangeNameRequest request
+  ) {
+    BasicDduduResponse response = changeNameUseCase.change(loginId, id, request);
+    return ResponseEntity.ok(new IdResponse(response.id()));
+  }
+
   @PutMapping("/{id}/date")
   public ResponseEntity<Void> moveDate(
       @Login
@@ -254,6 +228,19 @@ public class DduduController implements DduduControllerDoc {
       MoveDateRequest request
   ) {
     moveDateUseCase.moveDate(loginId, id, request);
+
+    return ResponseEntity.noContent()
+        .build();
+  }
+
+  @PatchMapping("/{id}/status")
+  public ResponseEntity<Void> updateStatus(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id
+  ) {
+    switchStatusUseCase.switchStatus(loginId, id);
 
     return ResponseEntity.noContent()
         .build();
@@ -274,6 +261,19 @@ public class DduduController implements DduduControllerDoc {
 
     return ResponseEntity.created(uri)
         .body(response);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id
+  ) {
+    deleteDduduUseCase.delete(loginId, id);
+
+    return ResponseEntity.noContent()
+        .build();
   }
 
 }
