@@ -41,7 +41,6 @@ public class GetTimetableService implements
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
     // 3. 타임 테이블 조회
-    // TODO: 종료된 목표는 제외하도록 수정 필요
     Timetable timetable = new Timetable(
         dduduLoaderPort.getDailyDdudus(date, user, accessiblePrivacyTypes));
 

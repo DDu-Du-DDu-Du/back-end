@@ -5,7 +5,7 @@ import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
-import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
 import com.ddudu.application.exception.ErrorCode;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.goal.dto.GoalResponse;
@@ -52,7 +52,7 @@ public class GoalService {
     return GoalResponse.from(goal);
   }
 
-  public List<BasicGoalWithStatusResponse> findAllByUser(Long loginId, Long userId) {
+  public List<BasicGoalResponse> findAllByUser(Long loginId, Long userId) {
     if (!userId.equals(loginId)) {
       throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
     }
@@ -62,7 +62,7 @@ public class GoalService {
     List<Goal> goals = oldGoalRepository.findAllByUser(user);
 
     return goals.stream()
-        .map(BasicGoalWithStatusResponse::from)
+        .map(BasicGoalResponse::from)
         .toList();
   }
 

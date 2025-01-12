@@ -1,12 +1,14 @@
 package com.ddudu.application.dto.goal.response;
 
 import com.ddudu.application.domain.goal.domain.Goal;
+import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import lombok.Builder;
 
 @Builder
 public record BasicGoalResponse(
     Long id,
     String name,
+    GoalStatus status,
     String color
 ) {
 
@@ -14,6 +16,7 @@ public record BasicGoalResponse(
     return BasicGoalResponse.builder()
         .id(goal.getId())
         .name(goal.getName())
+        .status(goal.getStatus())
         .color(goal.getColor())
         .build();
   }

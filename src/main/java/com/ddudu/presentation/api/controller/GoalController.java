@@ -4,7 +4,7 @@ import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
-import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
 import com.ddudu.application.port.in.goal.ChangeGoalStatusUseCase;
@@ -85,14 +85,14 @@ public class GoalController implements GoalControllerDoc {
    * 목표 전체 조회 API (사용자 기준, 뚜두도 함께)
    */
   @GetMapping
-  public ResponseEntity<List<BasicGoalWithStatusResponse>> getAllByUser(
+  public ResponseEntity<List<BasicGoalResponse>> getAllByUser(
       @Login
       Long loginId,
       @RequestParam
       Long userId
   ) {
     checkAuthority(loginId, userId);
-    List<BasicGoalWithStatusResponse> response = retrieveAllGoalsUseCase.findAllByUser(userId);
+    List<BasicGoalResponse> response = retrieveAllGoalsUseCase.findAllByUser(userId);
 
     return ResponseEntity.ok(response);
   }

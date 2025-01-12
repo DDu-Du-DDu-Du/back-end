@@ -1,10 +1,10 @@
 package com.ddudu.application.port.in.goal;
 
-import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
 import java.util.List;
 
 public interface RetrieveAllGoalsUseCase {
 
-  List<BasicGoalWithStatusResponse> findAllByUser(Long userId);
+  List<BasicGoalResponse> findAllByUser(Long userId);
 
 }

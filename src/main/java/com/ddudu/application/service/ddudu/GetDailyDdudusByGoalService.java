@@ -27,13 +27,17 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
 
   @Override
   public List<GoalGroupedDdudus> get(Long loginId, Long userId, LocalDate date) {
+    // 1. 요청 사용자와 조회 대상 사용자 조회
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
     User user = userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
+    // 2. 사용자 간 관계 확인
     Relationship relationship = Relationship.getRelationship(loginUser, user);
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
+
+    // 3. 뚜두 조회
     DduduList ddudus = new DduduList(
         dduduLoaderPort.getDailyDdudus(date, user, accessiblePrivacyTypes));
 

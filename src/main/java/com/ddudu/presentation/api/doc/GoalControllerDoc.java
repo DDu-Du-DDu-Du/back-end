@@ -3,7 +3,7 @@ package com.ddudu.presentation.api.doc;
 import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
-import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
 import com.ddudu.application.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
 import com.ddudu.presentation.api.doc.error.AuthErrorExamples;
@@ -328,7 +328,7 @@ public interface GoalControllerDoc {
       description = "조회할 목표의 소유자",
       in = ParameterIn.QUERY
   )
-  ResponseEntity<List<BasicGoalWithStatusResponse>> getAllByUser(Long loginId, Long userId);
+  ResponseEntity<List<BasicGoalResponse>> getAllByUser(Long loginId, Long userId);
 
   @Operation(
       summary = "목표 삭제",
