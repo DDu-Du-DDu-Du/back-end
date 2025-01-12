@@ -67,6 +67,37 @@ public class GoalController implements GoalControllerDoc {
   }
 
   /**
+   * 목표 상세 조회 API (반복 뚜두도 함께)
+   */
+  @GetMapping("/{id}")
+  public ResponseEntity<GoalWithRepeatDduduResponse> getById(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id
+  ) {
+    GoalWithRepeatDduduResponse response = retrieveGoalUseCase.getById(loginId, id);
+
+    return ResponseEntity.ok(response);
+  }
+
+  /**
+   * 목표 전체 조회 API (사용자 기준, 뚜두도 함께)
+   */
+  @GetMapping
+  public ResponseEntity<List<BasicGoalWithStatusResponse>> getAllByUser(
+      @Login
+      Long loginId,
+      @RequestParam
+      Long userId
+  ) {
+    checkAuthority(loginId, userId);
+    List<BasicGoalWithStatusResponse> response = retrieveAllGoalsUseCase.findAllByUser(userId);
+
+    return ResponseEntity.ok(response);
+  }
+
+  /**
    * 목표 수정 API (수정 가능: 목표명, 색상, 공개 범위)
    */
   @PutMapping("/{id}")
@@ -102,37 +133,6 @@ public class GoalController implements GoalControllerDoc {
 
     return ResponseEntity.ok()
         .body(response);
-  }
-
-  /**
-   * 목표 상세 조회 API (반복 뚜두도 함께)
-   */
-  @GetMapping("/{id}")
-  public ResponseEntity<GoalWithRepeatDduduResponse> getById(
-      @Login
-      Long loginId,
-      @PathVariable
-      Long id
-  ) {
-    GoalWithRepeatDduduResponse response = retrieveGoalUseCase.getById(loginId, id);
-
-    return ResponseEntity.ok(response);
-  }
-
-  /**
-   * 목표 전체 조회 API (사용자 기준, 뚜두도 함께)
-   */
-  @GetMapping
-  public ResponseEntity<List<BasicGoalWithStatusResponse>> getAllByUser(
-      @Login
-      Long loginId,
-      @RequestParam
-      Long userId
-  ) {
-    checkAuthority(loginId, userId);
-    List<BasicGoalWithStatusResponse> response = retrieveAllGoalsUseCase.findAllByUser(userId);
-
-    return ResponseEntity.ok(response);
   }
 
   /**
