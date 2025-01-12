@@ -48,6 +48,9 @@ public class GoalController implements GoalControllerDoc {
   private final ChangeGoalStatusUseCase changeGoalStatusUseCase;
   private final DeleteGoalUseCase deleteGoalUseCase;
 
+  /**
+   * 목표 생성 API (반복 뚜두도 함께 생성 가능)
+   */
   @PostMapping
   public ResponseEntity<GoalIdResponse> create(
       @Login
@@ -63,6 +66,9 @@ public class GoalController implements GoalControllerDoc {
         .body(response);
   }
 
+  /**
+   * 목표 수정 API (수정 가능: 목표명, 색상, 공개 범위)
+   */
   @PutMapping("/{id}")
   public ResponseEntity<GoalIdResponse> update(
       @Login
@@ -79,6 +85,9 @@ public class GoalController implements GoalControllerDoc {
         .body(response);
   }
 
+  /**
+   * 목표 상태 변경 API (진행 중 or 완료)
+   */
   @PatchMapping("/{id}")
   public ResponseEntity<GoalIdResponse> changeStatus(
       @Login
@@ -95,6 +104,9 @@ public class GoalController implements GoalControllerDoc {
         .body(response);
   }
 
+  /**
+   * 목표 상세 조회 API (반복 뚜두도 함께)
+   */
   @GetMapping("/{id}")
   public ResponseEntity<GoalWithRepeatDduduResponse> getById(
       @Login
@@ -107,6 +119,9 @@ public class GoalController implements GoalControllerDoc {
     return ResponseEntity.ok(response);
   }
 
+  /**
+   * 목표 전체 조회 API (사용자 기준, 뚜두도 함께)
+   */
   @GetMapping
   public ResponseEntity<List<BasicGoalWithStatusResponse>> getAllByUser(
       @Login
@@ -120,6 +135,9 @@ public class GoalController implements GoalControllerDoc {
     return ResponseEntity.ok(response);
   }
 
+  /**
+   * 목표 삭제 API (해당 목표의 반복 뚜두 / 뚜두도 함께 삭제)
+   */
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(
       @Login
