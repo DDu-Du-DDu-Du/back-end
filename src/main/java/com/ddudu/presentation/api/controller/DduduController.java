@@ -29,7 +29,6 @@ import com.ddudu.application.port.in.ddudu.PeriodSetupUseCase;
 import com.ddudu.application.port.in.ddudu.RepeatUseCase;
 import com.ddudu.application.port.in.ddudu.RetrieveDduduUseCase;
 import com.ddudu.application.port.in.ddudu.SwitchStatusUseCase;
-import com.ddudu.old.todo.service.TodoService;
 import com.ddudu.presentation.api.annotation.Login;
 import com.ddudu.presentation.api.common.dto.response.IdResponse;
 import com.ddudu.presentation.api.doc.DduduControllerDoc;
@@ -70,7 +69,6 @@ public class DduduController implements DduduControllerDoc {
   private final DeleteDduduUseCase deleteDduduUseCase;
   private final CalculateCompletionUseCase calculateCompletionUseCase;
   private final RetrieveDduduUseCase retrieveDduduUseCase;
-  private final TodoService todoService;
 
   @PostMapping
   public ResponseEntity<IdResponse> create(
