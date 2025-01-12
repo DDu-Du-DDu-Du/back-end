@@ -152,8 +152,8 @@ public class GoalController implements GoalControllerDoc {
         .build();
   }
 
-  private void checkAuthority(Long loginId, Long id) {
-    if (!Objects.equals(loginId, id)) {
+  private void checkAuthority(Long loginId, Long userId) {
+    if (!Objects.equals(loginId, userId)) {
       throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
     }
   }
