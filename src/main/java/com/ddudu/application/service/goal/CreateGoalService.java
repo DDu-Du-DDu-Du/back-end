@@ -28,10 +28,15 @@ public class CreateGoalService implements CreateGoalUseCase {
 
   @Override
   public GoalIdResponse create(Long userId, CreateGoalRequest request) {
+    // 1. 사용자 조회 및 검증
     User user = userLoaderPort.getUserOrElseThrow(
         userId, GoalErrorCode.USER_NOT_EXISTING.getCodeName());
+
+    // 2. 목표 생성 후 저장
     Goal goal = saveGoalPort.save(goalDomainService.create(user, request));
 
+    // 3. 반복 뚜두 생성 후 저장
+    // TODO: 반복 뚜두 생성 부분을 비동기로 변경
     request.repeatDdudus()
         .forEach(repeatDduduRequest ->
             createRepeatDduduService.create(

@@ -25,13 +25,17 @@ public class CreateRepeatDduduService implements CreateRepeatDduduUseCase {
 
   @Override
   public Long create(Long loginId, CreateRepeatDduduRequest request) {
+    // 1. 목표 조회 및 검증
     Goal goal = goalLoaderPort.getGoalOrElseThrow(
         request.goalId(), RepeatDduduErrorCode.INVALID_GOAL.getCodeName());
 
     goal.validateGoalCreator(loginId);
 
+    // 2. 반복 뚜두 생성 후 저장
     RepeatDdudu repeatDdudu = saveRepeatDduduPort.save(
         repeatDduduDomainService.create(request));
+
+    // 3. (반복되는) 뚜두 생성 후 저장
     saveDduduPort.saveAll(
         repeatDduduDomainService.createRepeatedDdudus(loginId, repeatDdudu));
 
