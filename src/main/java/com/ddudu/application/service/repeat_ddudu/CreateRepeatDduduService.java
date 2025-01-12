@@ -29,6 +29,7 @@ public class CreateRepeatDduduService implements CreateRepeatDduduUseCase {
     Goal goal = goalLoaderPort.getGoalOrElseThrow(
         request.goalId(), RepeatDduduErrorCode.INVALID_GOAL.getCodeName());
 
+    // TODO: 완료된 목표에 대한 생성은 거절하도록 변경
     goal.validateGoalCreator(loginId);
 
     // 2. 반복 뚜두 생성 후 저장

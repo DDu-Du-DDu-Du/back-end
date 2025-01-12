@@ -30,13 +30,18 @@ public class GetTimetableService implements
 
   @Override
   public TimetableResponse get(Long loginId, Long userId, LocalDate date) {
+    // 1. 요청 유저, 검색 대상 유저 조회 및 검증
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
     User user = userLoaderPort.getUserOrElseThrow(
         userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
 
+    // 2. 두 유저 사이의 관계 확인 및 접근 가능한 PrivacyType 조회
     Relationship relationship = Relationship.getRelationship(loginUser, user);
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
+
+    // 3. 타임 테이블 조회
+    // TODO: 종료된 목표는 제외하도록 수정 필요
     Timetable timetable = new Timetable(
         dduduLoaderPort.getDailyDdudus(date, user, accessiblePrivacyTypes));
 

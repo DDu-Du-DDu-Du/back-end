@@ -28,12 +28,16 @@ public class CreateDduduService implements CreateDduduUseCase {
 
   @Override
   public BasicDduduResponse create(Long loginId, CreateDduduRequest request) {
+    // 1. 요청 유저, 목표 조회
     User user = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
     Goal goal = goalLoaderPort.getGoalOrElseThrow(
         request.goalId(), DduduErrorCode.GOAL_NOT_EXISTING.getCodeName());
 
+    // 2. 생성 권한 검증
     goal.validateGoalCreator(loginId);
+
+    // TODO: 완료된 목표에 대한 생성은 거절하도록 변경
 
     Ddudu ddudu = dduduDomainService.create(user, request);
 

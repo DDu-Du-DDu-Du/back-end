@@ -70,6 +70,9 @@ public class DduduController implements DduduControllerDoc {
   private final ChangeNameUseCase changeNameUseCase;
   private final DeleteDduduUseCase deleteDduduUseCase;
 
+  /**
+   * 뚜두 생성 API
+   */
   @PostMapping
   public ResponseEntity<IdResponse> create(
       @Login
@@ -85,6 +88,9 @@ public class DduduController implements DduduControllerDoc {
         .body(new IdResponse(response.id()));
   }
 
+  /**
+   * 일별 뚜두 리스트 조회 API (목표별로 그룹화)
+   */
   @GetMapping("/daily/list")
   public ResponseEntity<List<GoalGroupedDdudus>> getDailyList(
       @Login
@@ -103,6 +109,9 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
+  /**
+   * 일별 시간표 조회 API
+   */
   @GetMapping("/daily/timetable")
   public ResponseEntity<TimetableResponse> getDailyTimetable(
       @Login
@@ -121,6 +130,9 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
+  /**
+   * 뚜두 검색 API
+   */
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ScrollResponse<SimpleDduduSearchDto>> getList(
       @Login
@@ -132,6 +144,9 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
+  /**
+   * 주간 뚜두 완료율 조회 API
+   */
   @GetMapping("/completion/weekly")
   public ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
       @Login
@@ -152,6 +167,9 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
+  /**
+   * 뚜두 상세 조회 API
+   */
   @GetMapping("/{id}")
   public ResponseEntity<DduduDetailResponse> getById(
       @Login
@@ -164,6 +182,9 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
+  /**
+   * 월별 뚜두 완료율 조회 API (달성 뚜두 수 / 생성 뚜두 수)
+   */
   @GetMapping("/monthly")
   public ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
       @Login
@@ -188,6 +209,9 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(response);
   }
 
+  /**
+   * 뚜두 기간(시작 시간, 종료 시간) 설정 API
+   */
   @PutMapping("/{id}/period")
   public ResponseEntity<Void> setUpPeriod(
       @Login
@@ -203,6 +227,9 @@ public class DduduController implements DduduControllerDoc {
         .build();
   }
 
+  /**
+   * 뚜두명 변경 API
+   */
   @PutMapping("/{id}")
   public ResponseEntity<IdResponse> changeName(
       @Login
@@ -217,6 +244,9 @@ public class DduduController implements DduduControllerDoc {
     return ResponseEntity.ok(new IdResponse(response.id()));
   }
 
+  /**
+   * 뚜두 날짜 변경 API
+   */
   @PutMapping("/{id}/date")
   public ResponseEntity<Void> moveDate(
       @Login
@@ -233,6 +263,9 @@ public class DduduController implements DduduControllerDoc {
         .build();
   }
 
+  /**
+   * 뚜두 상태 변경 API (진행 중 or 완료)
+   */
   @PatchMapping("/{id}/status")
   public ResponseEntity<Void> updateStatus(
       @Login
@@ -246,6 +279,9 @@ public class DduduController implements DduduControllerDoc {
         .build();
   }
 
+  /**
+   * 다른 날 반복하기 API
+   */
   @PostMapping("/{id}/repeat")
   public ResponseEntity<RepeatAnotherDayResponse> repeatOnAnotherDay(
       @Login
@@ -263,6 +299,9 @@ public class DduduController implements DduduControllerDoc {
         .body(response);
   }
 
+  /**
+   * 뚜두 삭제 API
+   */
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(
       @Login
