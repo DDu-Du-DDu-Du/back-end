@@ -11,10 +11,10 @@ public record TimeGroupedDdudus(
     @Schema(type = "string", pattern = "HH:mm", example = "14:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     LocalTime beginAt,
-    List<BasicDduduWithGoalIdAndTime> ddudus
+    List<DduduForTimetable> ddudus
 ) {
 
-  public static TimeGroupedDdudus of(LocalTime beginAt, List<BasicDduduWithGoalIdAndTime> ddudus) {
+  public static TimeGroupedDdudus of(LocalTime beginAt, List<DduduForTimetable> ddudus) {
     return TimeGroupedDdudus.builder()
         .beginAt(beginAt)
         .ddudus(ddudus)

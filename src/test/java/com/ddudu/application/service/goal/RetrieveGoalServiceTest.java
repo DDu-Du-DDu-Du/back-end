@@ -8,7 +8,7 @@ import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
-import com.ddudu.application.dto.repeat_ddudu.RepeatDduduSummary;
+import com.ddudu.application.dto.repeat_ddudu.RepeatDduduDto;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.goal.GoalLoaderPort;
 import com.ddudu.application.port.out.goal.SaveGoalPort;
@@ -91,7 +91,7 @@ class RetrieveGoalServiceTest {
     GoalWithRepeatDduduResponse response = retrieveGoalService.getById(userId, goal.getId());
 
     // then
-    RepeatDduduSummary first = response.repeatDdudus()
+    RepeatDduduDto first = response.repeatDdudus()
         .get(0);
     RepeatDdudu actual = repeatDduduLoaderPort.getOptionalRepeatDdudu(first.id())
         .get();

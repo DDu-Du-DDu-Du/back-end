@@ -8,11 +8,12 @@ import java.time.LocalTime;
 import lombok.Builder;
 
 @Builder
-public record BasicDduduWithGoalIdAndTime(
+public record DduduForTimetable(
     Long id,
     String name,
     DduduStatus status,
     Long goalId,
+    String color,
     @Schema(type = "string", pattern = "HH:mm", example = "14:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     LocalTime beginAt,
@@ -21,13 +22,13 @@ public record BasicDduduWithGoalIdAndTime(
     LocalTime endAt
 ) {
 
-  public static BasicDduduWithGoalIdAndTime of(Ddudu ddudu) {
-
-    return BasicDduduWithGoalIdAndTime.builder()
+  public static DduduForTimetable of(Ddudu ddudu, String color) {
+    return DduduForTimetable.builder()
         .id(ddudu.getId())
         .name(ddudu.getName())
         .status(ddudu.getStatus())
         .goalId(ddudu.getGoalId())
+        .color(color)
         .beginAt(ddudu.getBeginAt())
         .endAt(ddudu.getEndAt())
         .build();
