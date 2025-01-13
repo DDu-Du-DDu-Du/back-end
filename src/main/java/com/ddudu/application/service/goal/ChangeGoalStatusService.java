@@ -22,10 +22,12 @@ public class ChangeGoalStatusService implements ChangeGoalStatusUseCase {
 
   @Override
   public GoalIdResponse changeStatus(Long userId, Long id, ChangeGoalStatusRequest request) {
+    // 1. 목표 조회 및 검증
     Goal goal = goalLoaderPort.getGoalOrElseThrow(id, GoalErrorCode.ID_NOT_EXISTING.getCodeName());
 
     goal.validateGoalCreator(userId);
 
+    // 2. 목표 상태 변경
     Goal updated = goal.changeStatus(GoalStatus.from(request.status()));
 
     return GoalIdResponse.from(updateGoalPort.update(updated));

@@ -38,9 +38,7 @@ public final class RepeatDdudu {
       RepeatPatternDto repeatPatternDto, RepeatPattern repeatPattern,
       LocalDate startDate, LocalDate endDate, LocalTime beginAt, LocalTime endAt
   ) {
-    validate(
-        goalId, name, repeatType, startDate, endDate, beginAt, endAt
-    );
+    validate(goalId, name, repeatType, startDate, endDate, beginAt, endAt);
 
     this.id = id;
     this.goalId = goalId;
@@ -82,9 +80,7 @@ public final class RepeatDdudu {
     checkArgument(nonNull(startDate), RepeatDduduErrorCode.NULL_START_DATE.getCodeName());
     checkArgument(nonNull(endDate), RepeatDduduErrorCode.NULL_END_DATE.getCodeName());
     checkArgument(
-        endDate.isAfter(startDate),
-        RepeatDduduErrorCode.UNABLE_TO_END_BEFORE_START.getCodeName()
-    );
+        endDate.isAfter(startDate), RepeatDduduErrorCode.UNABLE_TO_END_BEFORE_START.getCodeName());
   }
 
   private void validatePeriodOfTime(LocalTime beginAt, LocalTime endAt) {

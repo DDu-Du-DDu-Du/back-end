@@ -2,7 +2,6 @@ package com.ddudu.infrastructure.persistence.repository.goal;
 
 import static com.ddudu.infrastructure.persistence.entity.QGoalEntity.goalEntity;
 
-import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
@@ -36,7 +35,6 @@ public class GoalQueryRepositoryImpl implements GoalQueryRepository {
   ) {
     BooleanBuilder whereClause = new BooleanBuilder();
     whereClause.and(goalEntity.user.eq(user));
-    whereClause.and(goalEntity.status.eq(GoalStatus.IN_PROGRESS));
     whereClause.and(goalEntity.privacyType.in(privacyTypes));
 
     return jpaQueryFactory

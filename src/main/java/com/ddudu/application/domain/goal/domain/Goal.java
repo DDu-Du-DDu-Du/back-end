@@ -90,6 +90,10 @@ public final class Goal {
     return Objects.equals(this.userId, userId);
   }
 
+  public boolean isDone() {
+    return status == GoalStatus.DONE;
+  }
+
   private void validate(String name, User user, Long userId) {
     validateName(name);
     validateUser(user, userId);

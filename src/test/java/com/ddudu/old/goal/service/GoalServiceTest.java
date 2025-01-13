@@ -9,7 +9,7 @@ import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.goal.exception.GoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
-import com.ddudu.application.dto.goal.response.BasicGoalWithStatusResponse;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
 import com.ddudu.old.goal.domain.OldGoalRepository;
 import com.ddudu.old.goal.dto.GoalResponse;
 import com.ddudu.old.user.domain.UserRepository;
@@ -186,7 +186,7 @@ class GoalServiceTest {
       Long loginId = user.getId();
 
       // when
-      List<BasicGoalWithStatusResponse> actual = goalService.findAllByUser(loginId, user.getId());
+      List<BasicGoalResponse> actual = goalService.findAllByUser(loginId, user.getId());
 
       // then
       assertThat(actual.size()).isEqualTo(expected.size());
