@@ -4,7 +4,7 @@ import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
-import com.ddudu.application.dto.repeat_ddudu.RepeatDduduSummary;
+import com.ddudu.application.dto.repeat_ddudu.RepeatDduduDto;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -24,8 +24,8 @@ public record GoalWithRepeatDduduResponse(
     String color,
     @Schema(description = "목표 공개 범위 [PRIVATE|FOLLOWER|PUBLIC]", example = "PUBLIC")
     PrivacyType privacyType,
-    @ArraySchema(schema = @Schema(implementation = RepeatDduduSummary.class))
-    List<RepeatDduduSummary> repeatDdudus
+    @ArraySchema(schema = @Schema(implementation = RepeatDduduDto.class))
+    List<RepeatDduduDto> repeatDdudus
 ) {
 
   public static GoalWithRepeatDduduResponse from(Goal goal, List<RepeatDdudu> repeatDdudus) {
@@ -37,7 +37,7 @@ public record GoalWithRepeatDduduResponse(
         .privacyType(goal.getPrivacyType())
         .repeatDdudus(
             repeatDdudus.stream()
-                .map(RepeatDduduSummary::from)
+                .map(RepeatDduduDto::from)
                 .toList())
         .build();
   }
