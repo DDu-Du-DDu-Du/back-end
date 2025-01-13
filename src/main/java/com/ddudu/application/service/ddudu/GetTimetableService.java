@@ -3,6 +3,7 @@ package com.ddudu.application.service.ddudu;
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.ddudu.domain.Timetable;
 import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
+import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.domain.user.domain.enums.Relationship;
@@ -44,10 +45,11 @@ public class GetTimetableService implements
     Timetable timetable = new Timetable(
         dduduLoaderPort.getDailyDdudus(date, user, accessiblePrivacyTypes));
 
-    List<TimeGroupedDdudus> assignedDdudus = timetable.getTimeGroupedDdudus();
-    List<GoalGroupedDdudus> unassignedDdudus = timetable.getUnassignedDdudusWithGoal(
-        goalLoaderPort.findAllByUserAndPrivacyTypes(user, accessiblePrivacyTypes)
-    );
+    // 4. 응답 생성 (데이터 변환)
+    List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(
+        user, accessiblePrivacyTypes);
+    List<TimeGroupedDdudus> assignedDdudus = timetable.getTimeGroupedDdudus(goals);
+    List<GoalGroupedDdudus> unassignedDdudus = timetable.getUnassignedDdudusWithGoal(goals);
 
     return TimetableResponse.of(assignedDdudus, unassignedDdudus);
   }

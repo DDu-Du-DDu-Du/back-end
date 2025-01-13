@@ -8,7 +8,7 @@ import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
 import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.ddudu.BasicDduduWithGoalIdAndTime;
+import com.ddudu.application.dto.ddudu.DduduForTimetable;
 import com.ddudu.application.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.port.out.auth.SignUpPort;
 import com.ddudu.application.port.out.ddudu.SaveDduduPort;
@@ -76,7 +76,7 @@ class GetDailyDdudusByTimeServiceTest {
     LocalTime earliestTime = response.timetable()
         .get(0)
         .beginAt();
-    BasicDduduWithGoalIdAndTime firstOfEarliestTime = response.timetable()
+    DduduForTimetable firstOfEarliestTime = response.timetable()
         .get(0)
         .ddudus()
         .get(0);
@@ -140,7 +140,7 @@ class GetDailyDdudusByTimeServiceTest {
     // then
     int countOfTime = response.timetable()
         .size();
-    BasicDduduWithGoalIdAndTime firstOfEarliestTime = response.timetable()
+    DduduForTimetable firstOfEarliestTime = response.timetable()
         .get(0)
         .ddudus()
         .get(0);

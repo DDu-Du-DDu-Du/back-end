@@ -5,13 +5,14 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
 
 import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.dto.ddudu.BasicDduduWithGoalIdAndTime;
+import com.ddudu.application.dto.ddudu.DduduForTimetable;
 import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Timetable {
 
@@ -30,16 +31,15 @@ public class Timetable {
     unassignedDdudus = new DduduList(split.getOrDefault(false, new ArrayList<>()));
   }
 
-  public List<TimeGroupedDdudus> getTimeGroupedDdudus() {
+  public List<TimeGroupedDdudus> getTimeGroupedDdudus(List<Goal> goals) {
+    Map<Long, String> goalToColor = mapGoalsToColors(goals);
+
     return timetable.entrySet()
         .stream()
         .map(entry ->
             TimeGroupedDdudus.of(
                 LocalTime.of(entry.getKey(), 0),
-                entry.getValue()
-                    .stream()
-                    .map(BasicDduduWithGoalIdAndTime::of)
-                    .toList()
+                toDduduForTimetableList(entry.getValue(), goalToColor)
             )
         )
         .toList();
@@ -47,6 +47,19 @@ public class Timetable {
 
   public List<GoalGroupedDdudus> getUnassignedDdudusWithGoal(List<Goal> goals) {
     return unassignedDdudus.getDdudusWithGoal(goals);
+  }
+
+  private Map<Long, String> mapGoalsToColors(List<Goal> goals) {
+    return goals.stream()
+        .collect(Collectors.toMap(Goal::getId, Goal::getColor));
+  }
+
+  private List<DduduForTimetable> toDduduForTimetableList(
+      List<Ddudu> ddudus, Map<Long, String> goalToColor
+  ) {
+    return ddudus.stream()
+        .map((ddudu) -> DduduForTimetable.of(ddudu, goalToColor.get(ddudu.getGoalId())))
+        .toList();
   }
 
 }
