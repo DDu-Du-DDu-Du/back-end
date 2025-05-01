@@ -21,7 +21,6 @@ import com.ddudu.application.port.out.goal.MonthlyStatsPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
-import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -57,7 +56,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public List<Ddudu> getRepeatedDdudus(RepeatDdudu repeatDdudu) {
-    return dduduRepository.findAllByRepeatDdudu(RepeatDduduEntity.from(repeatDdudu))
+    return dduduRepository.findAllByRepeatDduduId(repeatDdudu.getId())
         .stream()
         .map(DduduEntity::toDomain)
         .toList();
@@ -157,7 +156,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   ) {
     Long goalId = Objects.nonNull(goal) ? goal.getId() : null;
 
-    return dduduRepository.findStatsBaseOfUser(user.getId(), goal.getId(), from, to);
+    return dduduRepository.findStatsBaseOfUser(user.getId(), goalId, from, to);
   }
 
 }

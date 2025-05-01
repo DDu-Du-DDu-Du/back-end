@@ -1,6 +1,5 @@
 package com.ddudu.infrastructure.persistence.repository.repeat_ddudu;
 
-import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RepeatDduduRepository extends JpaRepository<RepeatDduduEntity, Long>,
     RepeatDduduQueryRepository {
 
-  List<RepeatDduduEntity> findAllByGoal(GoalEntity goal);
+  List<RepeatDduduEntity> findAllByGoalId(Long goalId);
 
 }

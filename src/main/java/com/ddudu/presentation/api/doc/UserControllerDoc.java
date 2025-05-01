@@ -46,10 +46,4 @@ public interface UserControllerDoc {
   )
   ResponseEntity<MeResponse> validateToken(Long loginId);
 
-  @Operation(summary = "팔로잉 거절")
-  @ApiResponse(
-      responseCode = "204"
-  )
-  ResponseEntity<Void> deleteFollowing(Long loginId, Long id, Long followingId);
-
 }

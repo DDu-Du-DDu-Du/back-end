@@ -7,7 +7,6 @@ import com.ddudu.application.port.out.repeat_ddudu.RepeatDduduLoaderPort;
 import com.ddudu.application.port.out.repeat_ddudu.SaveRepeatDduduPort;
 import com.ddudu.application.port.out.repeat_ddudu.UpdateRepeatDduduPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
-import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import com.ddudu.infrastructure.persistence.repository.repeat_ddudu.RepeatDduduRepository;
@@ -40,7 +39,7 @@ public class RepeatDduduPersistenceAdapter implements SaveRepeatDduduPort, Repea
 
   @Override
   public List<RepeatDdudu> getAllByGoal(Goal goal) {
-    return repeatDduduRepository.findAllByGoal(GoalEntity.from(goal))
+    return repeatDduduRepository.findAllByGoalId(goal.getId())
         .stream()
         .map(RepeatDduduEntity::toDomain)
         .toList();

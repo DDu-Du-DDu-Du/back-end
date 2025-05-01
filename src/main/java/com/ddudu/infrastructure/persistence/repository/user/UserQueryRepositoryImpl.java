@@ -21,7 +21,7 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
     return jpaQueryFactory.select(userEntity, authProviderEntity)
         .from(userEntity)
         .join(authProviderEntity)
-        .on(authProviderEntity.user.eq(userEntity))
+        .on(authProviderEntity.userId.eq(userEntity.id))
         .where(userEntity.id.eq(id))
         .transform(
             GroupBy.groupBy(userEntity)
