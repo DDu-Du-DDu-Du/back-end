@@ -2,7 +2,6 @@ package com.ddudu.infrastructure.persistence.repository.repeat_ddudu;
 
 import static com.ddudu.infrastructure.persistence.entity.QRepeatDduduEntity.repeatDduduEntity;
 
-import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +15,10 @@ public class RepeatDduduQueryRepositoryImpl implements RepeatDduduQueryRepositor
   private final EntityManager entityManager;
 
   @Override
-  public void deleteAllByGoal(GoalEntity goal) {
+  public void deleteAllByGoal(Long goalId) {
     jpaQueryFactory
         .delete(repeatDduduEntity)
-        .where(repeatDduduEntity.goal.eq(goal))
+        .where(repeatDduduEntity.goalId.eq(goalId))
         .execute();
 
     entityManager.flush();

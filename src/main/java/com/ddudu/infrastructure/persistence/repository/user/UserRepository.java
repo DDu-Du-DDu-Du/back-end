@@ -5,6 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long>, UserQueryRepository {
 
-  boolean existsByUsername(String existsByOptionalUsername);
-
 }

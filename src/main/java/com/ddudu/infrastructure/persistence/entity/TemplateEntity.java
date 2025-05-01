@@ -22,24 +22,39 @@ public class TemplateEntity extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "goal_id")
-  private GoalEntity goal;
+  @Column(name = "goal_id")
+  private Long goalId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "created_by", nullable = false)
-  private UserEntity user;
+  @Column(
+      name = "user_id",
+      nullable = false
+  )
+  private Long userId;
 
-  @Column(name = "title", nullable = false, length = 50)
+  @Column(
+      name = "title",
+      nullable = false,
+      length = 50
+  )
   private String title;
 
-  @Column(name = "description", nullable = false, length = 1000)
+  @Column(
+      name = "description",
+      nullable = false,
+      length = 1000
+  )
   private String description;
 
-  @Column(name = "time_estimation", length = 20)
+  @Column(
+      name = "time_estimation",
+      length = 20
+  )
   private String timeEstimation;
 
-  @Column(name = "sharing_message", length = 100)
+  @Column(
+      name = "sharing_message",
+      length = 100
+  )
   private String sharingMessage;
 
 }

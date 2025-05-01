@@ -3,6 +3,9 @@ package com.ddudu.infrastructure.persistence.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,10 +15,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TemplateLikeEntity extends BaseEntity {
 
-  @EmbeddedId
-  private TemplateLikeId id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-  @Column(name = "is_liked", nullable = false, columnDefinition = "TINYINT(1)")
-  boolean isLiked;
+  @Column(
+      name = "user_id",
+      nullable = false
+  )
+  private Long userId;
+
+  @Column(
+      name = "template_id",
+      nullable = false
+  )
+  private Long templateId;
+
+  @Column(
+      name = "is_liked",
+      nullable = false,
+      columnDefinition = "TINYINT(1)"
+  )
+  private boolean isLiked;
 
 }

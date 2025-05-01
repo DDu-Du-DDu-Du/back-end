@@ -39,7 +39,7 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
     UserEntity savedUser = userRepository.save(UserEntity.from(user));
 
     List<AuthProvider> savedProviders = authProviders.stream()
-        .map(provider -> saveAuthProvider(provider, savedUser))
+        .map(provider -> saveAuthProvider(provider, savedUser.getId()))
         .toList();
 
     return savedUser.toDomainWith(savedProviders);
@@ -54,11 +54,11 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
       return Optional.empty();
     }
 
-    User user = providerEntity.get()
-        .getUser()
-        .toDomain();
+    Long userId = providerEntity.get()
+        .getUserId();
 
-    return Optional.of(user);
+    return userRepository.findById(userId)
+        .map(UserEntity::toDomain);
   }
 
   @Override
@@ -67,8 +67,8 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
         .map(FullUser::toDomain);
   }
 
-  private AuthProvider saveAuthProvider(AuthProvider authProvider, UserEntity user) {
-    AuthProviderEntity entity = AuthProviderEntity.from(authProvider, user);
+  private AuthProvider saveAuthProvider(AuthProvider authProvider, Long userId) {
+    AuthProviderEntity entity = AuthProviderEntity.from(authProvider, userId);
 
     return authProviderRepository.save(entity)
         .toDomain();

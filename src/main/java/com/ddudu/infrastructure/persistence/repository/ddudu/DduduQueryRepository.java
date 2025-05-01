@@ -6,38 +6,35 @@ import com.ddudu.application.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.dto.stats.StatsBaseDto;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
-import com.ddudu.infrastructure.persistence.entity.GoalEntity;
-import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DduduQueryRepository {
 
-  List<DduduEntity> findTodosByDate(
-      LocalDateTime startDate, LocalDateTime endDate, UserEntity user
+  List<DduduEntity> findDdudusByDate(
+      LocalDateTime startDate, LocalDateTime endDate, Long userId
   );
 
   List<DduduCompletionResponse> findDdudusCompletion(
-      LocalDate startDate, LocalDate endDate, UserEntity user,
+      LocalDate startDate, LocalDate endDate, Long userId,
       List<PrivacyType> privacyTypes
   );
 
-  void deleteAllByGoal(GoalEntity goal);
+  void deleteAllByGoalId(Long goalId);
 
   List<DduduCursorDto> findScrollDdudus(
       Long userId, ScrollRequest request, String query, Boolean isMine, Boolean isFollower
   );
 
   List<DduduEntity> findAllByDateAndUserAndPrivacyTypes(
-      LocalDate date, UserEntity from, List<PrivacyType> accessiblePrivacyTypes
+      LocalDate date, Long userId, List<PrivacyType> accessiblePrivacyTypes
   );
 
-  void deleteAllByRepeatDdudu(RepeatDduduEntity repeatDdudu);
+  void deleteAllByRepeatDduduId(Long repeatDduduId);
 
   List<StatsBaseDto> findStatsBaseOfUser(
-      UserEntity user, GoalEntity goal, LocalDate from, LocalDate to
+      Long userId, Long goalId, LocalDate from, LocalDate to
   );
 
 }

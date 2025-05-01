@@ -9,7 +9,6 @@ import com.ddudu.application.port.out.goal.SaveGoalPort;
 import com.ddudu.application.port.out.goal.UpdateGoalPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.GoalEntity;
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import com.ddudu.infrastructure.persistence.repository.goal.GoalRepository;
 import com.google.common.collect.Lists;
@@ -64,7 +63,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
 
   @Override
   public List<Goal> findAllByUserAndPrivacyTypes(User user) {
-    return goalRepository.findAllByUser(UserEntity.from(user))
+    return goalRepository.findAllByUserId(user.getId())
         .stream()
         .map(GoalEntity::toDomain)
         .toList();
@@ -73,7 +72,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   @Override
   public List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes) {
     return goalRepository.findAllByUserAndPrivacyTypes(
-            UserEntity.from(user),
+            user.getId(),
             privacyTypes
         )
         .stream()
@@ -89,7 +88,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
       privacyTypes.add(PrivacyType.FOLLOWER);
     }
 
-    return goalRepository.findAllByUserAndPrivacyTypes(UserEntity.from(user), privacyTypes)
+    return goalRepository.findAllByUserAndPrivacyTypes(user.getId(), privacyTypes)
         .stream()
         .map(GoalEntity::toDomain)
         .toList();
@@ -107,7 +106,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
 
   @Override
   public void deleteWithDdudus(Goal goal) {
-    dduduRepository.deleteAllByGoal(GoalEntity.from(goal));
+    dduduRepository.deleteAllByGoalId(goal.getId());
     goalRepository.delete(GoalEntity.from(goal));
   }
 

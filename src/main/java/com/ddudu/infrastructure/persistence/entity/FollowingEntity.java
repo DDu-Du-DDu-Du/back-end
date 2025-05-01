@@ -1,63 +1,52 @@
 package com.ddudu.infrastructure.persistence.entity;
 
-import com.ddudu.old.persistence.util.FakeValueGenerator;
-import com.ddudu.old.user.domain.Following;
 import com.ddudu.application.domain.user.domain.enums.FollowingStatus;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "followings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
+@Getter
 public class FollowingEntity extends BaseEntity {
 
-  @EmbeddedId
-  private FollowingId id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-  @Column(name = "status", nullable = false, columnDefinition = "VARCHAR", length = 20)
+  @Column(
+      name = "followerId",
+      nullable = false
+  )
+  private Long followerId;
+
+  @Column(
+      name = "followeeId",
+      nullable = false
+  )
+  private Long followeeId;
+
+  @Column(
+      name = "status",
+      nullable = false,
+      columnDefinition = "VARCHAR",
+      length = 20
+  )
   @Enumerated(EnumType.STRING)
   private FollowingStatus status;
-
-  @Builder
-  public FollowingEntity(
-      UserEntity follower, UserEntity followee, FollowingStatus status,
-      LocalDateTime createdAt, LocalDateTime updatedAt
-  ) {
-    super(createdAt, updatedAt);
-
-    this.id = new FollowingId(follower, followee);
-    this.status = status;
-  }
-
-  public static FollowingEntity from(Following following) {
-    return FollowingEntity.builder()
-        .follower(UserEntity.from(following.getFollower()))
-        .followee(UserEntity.from(following.getFollowee()))
-        .status(following.getStatus())
-        .createdAt(following.getCreatedAt())
-        .updatedAt(following.getUpdatedAt())
-        .build();
-  }
-
-  public Following toDomain() {
-    return Following.builder()
-        .id(FakeValueGenerator.id())
-        .follower(id.getFollower()
-            .toDomain())
-        .followee(id.getFollowee()
-            .toDomain())
-        .status(status)
-        .createdAt(getCreatedAt())
-        .updatedAt(getUpdatedAt())
-        .build();
-  }
 
 }

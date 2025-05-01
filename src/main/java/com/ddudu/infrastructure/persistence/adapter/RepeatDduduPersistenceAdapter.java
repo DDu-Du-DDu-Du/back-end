@@ -69,14 +69,14 @@ public class RepeatDduduPersistenceAdapter implements SaveRepeatDduduPort, Repea
 
   @Override
   public void deleteWithDdudus(RepeatDdudu repeatDdudu) {
-    dduduRepository.deleteAllByRepeatDdudu(RepeatDduduEntity.from(repeatDdudu));
+    dduduRepository.deleteAllByRepeatDduduId(repeatDdudu.getId());
     repeatDduduRepository.delete(RepeatDduduEntity.from(repeatDdudu));
   }
 
   @Override
   public void deleteAllWithDdudusByGoal(Goal goal) {
-    dduduRepository.deleteAllByGoal(GoalEntity.from(goal));
-    repeatDduduRepository.deleteAllByGoal(GoalEntity.from(goal));
+    dduduRepository.deleteAllByGoalId(goal.getId());
+    repeatDduduRepository.deleteAllByGoal(goal.getId());
   }
 
 }

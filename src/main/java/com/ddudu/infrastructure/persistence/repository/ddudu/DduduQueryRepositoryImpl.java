@@ -12,9 +12,6 @@ import com.ddudu.application.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.dto.stats.StatsBaseDto;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
-import com.ddudu.infrastructure.persistence.entity.GoalEntity;
-import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Order;
@@ -47,24 +44,24 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   private final EntityManager entityManager;
 
   @Override
-  public List<DduduEntity> findTodosByDate(
-      LocalDateTime startDate, LocalDateTime endDate, UserEntity user
+  public List<DduduEntity> findDdudusByDate(
+      LocalDateTime startDate, LocalDateTime endDate, Long userId
   ) {
     return jpaQueryFactory
         .selectFrom(dduduEntity)
-        .join(dduduEntity.goal)
-        .fetchJoin()
+        .join(goalEntity)
+        .on(dduduEntity.goalId.eq(goalEntity.id))
         .where(
             dduduEntity.beginAt.goe(LocalTime.from(startDate)),
             dduduEntity.beginAt.lt(LocalTime.from(endDate)),
-            userEq(user)
+            dduduEntity.userId.eq(userId)
         )
         .fetch();
   }
 
   @Override
   public List<DduduCompletionResponse> findDdudusCompletion(
-      LocalDate startDate, LocalDate endDate, UserEntity user,
+      LocalDate startDate, LocalDate endDate, Long userId,
       List<PrivacyType> privacyTypes
   ) {
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
@@ -93,9 +90,8 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
                 .as("uncompletedTodos")
         )
         .from(dduduEntity)
-        .join(dduduEntity.goal)
         .on(
-            dduduEntity.goal.user.eq(user),
+            dduduEntity.userId.eq(userId),
             privacyTypesIn(privacyTypes)
         )
         .where(
@@ -121,7 +117,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     BooleanExpression cursorFilter = getCursorFilter(request.getOrder(), request.getCursor());
     Predicate openness = getOpenness(isMine, isFollower);
     BooleanBuilder condition = new BooleanBuilder(cursorFilter)
-        .and(dduduEntity.user.id.eq(userId))
+        .and(dduduEntity.userId.eq(userId))
         .and(openness);
 
     if (StringUtils.isNotBlank(query)) {
@@ -140,25 +136,25 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   @Override
   public List<DduduEntity> findAllByDateAndUserAndPrivacyTypes(
-      LocalDate date, UserEntity user, List<PrivacyType> accessiblePrivacyTypes
+      LocalDate date, Long userId, List<PrivacyType> accessiblePrivacyTypes
   ) {
     return jpaQueryFactory
         .selectFrom(dduduEntity)
-        .join(dduduEntity.goal)
-        .fetchJoin()
+        .join(goalEntity)
+        .on(dduduEntity.goalId.eq(goalEntity.id))
         .where(
             scheduledOnEq(date),
-            userEq(user),
+            dduduEntity.userId.eq(userId),
             privacyTypesIn(accessiblePrivacyTypes)
         )
         .fetch();
   }
 
   @Override
-  public void deleteAllByGoal(GoalEntity goal) {
+  public void deleteAllByGoalId(Long goalId) {
     jpaQueryFactory
         .delete(dduduEntity)
-        .where(dduduEntity.goal.eq(goal))
+        .where(dduduEntity.goalId.eq(goalId))
         .execute();
 
     entityManager.flush();
@@ -166,11 +162,11 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   @Override
-  public void deleteAllByRepeatDdudu(RepeatDduduEntity repeatDdudu) {
+  public void deleteAllByRepeatDduduId(Long repeatDduduId) {
     jpaQueryFactory
         .delete(dduduEntity)
         .where(
-            dduduEntity.repeatDdudu.eq(repeatDdudu),
+            dduduEntity.repeatDduduId.eq(repeatDduduId),
             dduduEntity.status.eq(DduduStatus.UNCOMPLETED)
         )
         .execute();
@@ -181,20 +177,20 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   @Override
   public List<StatsBaseDto> findStatsBaseOfUser(
-      UserEntity user, GoalEntity goal, LocalDate from, LocalDate to
+      Long userId, Long goalId, LocalDate from, LocalDate to
   ) {
-    BooleanBuilder condition = new BooleanBuilder(goalEntity.user.eq(user))
+    BooleanBuilder condition = new BooleanBuilder(goalEntity.userId.eq(userId))
         .and(dduduEntity.scheduledOn.between(from, to));
 
-    if (Objects.nonNull(goal)) {
-      condition.and(goalEntity.eq(goal));
+    if (Objects.nonNull(goalId)) {
+      condition.and(dduduEntity.goalId.eq(goalId));
     }
 
     return jpaQueryFactory
         .select(projectionStatsBase())
         .from(dduduEntity)
         .join(goalEntity)
-        .on(dduduEntity.goal.eq(goalEntity))
+        .on(dduduEntity.goalId.eq(goalEntity.id))
         .where(condition)
         .orderBy(dduduEntity.scheduledOn.yearMonth()
             .asc(), dduduEntity.scheduledOn.asc(), dduduEntity.status.asc())
@@ -202,7 +198,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   private Predicate getOpenness(boolean isMine, boolean isFollower) {
-    EnumPath<PrivacyType> privacyType = dduduEntity.goal.privacyType;
+    EnumPath<PrivacyType> privacyType = goalEntity.privacyType;
 
     if (isMine) {
       return null;
@@ -258,11 +254,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   private BooleanExpression privacyTypesIn(List<PrivacyType> accessiblePrivacyTypes) {
-    return dduduEntity.goal.privacyType.in(accessiblePrivacyTypes);
-  }
-
-  private BooleanExpression userEq(UserEntity from) {
-    return dduduEntity.user.eq(from);
+    return goalEntity.privacyType.in(accessiblePrivacyTypes);
   }
 
   private BooleanExpression scheduledOnEq(LocalDate date) {

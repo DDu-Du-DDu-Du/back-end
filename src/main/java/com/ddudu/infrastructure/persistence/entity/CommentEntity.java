@@ -23,15 +23,22 @@ public class CommentEntity extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "template_id", nullable = false)
-  private TemplateEntity template;
+  @Column(
+      name = "template_id",
+      nullable = false
+  )
+  private Long templateId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity user;
+  @Column(
+      name = "user_id",
+      nullable = false
+  )
+  private Long userId;
 
-  @Column(name = "contents", nullable = false)
+  @Column(
+      name = "contents",
+      nullable = false
+  )
   private String contents;
 
 }

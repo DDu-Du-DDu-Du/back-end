@@ -17,24 +17,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationEntity extends BaseEntity {
 
-  private static final boolean DEFAULT_IS_READ = false;
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "receiver_id", nullable = false)
+  @JoinColumn(
+      name = "receiver_id",
+      nullable = false
+  )
   private UserEntity receiver;
 
-  @Column(name = "message", nullable = false)
+  @Column(
+      name = "message",
+      nullable = false
+  )
   private String message;
 
-  @Column(name = "type", nullable = false, length = 15)
+  @Column(
+      name = "type",
+      nullable = false,
+      length = 15
+  )
   private String type;
 
-  @Column(name = "is_read", nullable = false)
+  @Column(
+      name = "is_read",
+      nullable = false
+  )
   private boolean isRead;
 
 }

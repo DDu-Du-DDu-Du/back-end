@@ -40,12 +40,11 @@ public class GoalEntity extends BaseEntity {
   )
   private String name;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
+  @Column(
       name = "user_id",
       nullable = false
   )
-  private UserEntity user;
+  private Long userId;
 
   @Column(
       name = "status",
@@ -77,16 +76,10 @@ public class GoalEntity extends BaseEntity {
     return GoalEntity.builder()
         .id(goal.getId())
         .name(goal.getName())
-        .user(UserEntity.withOnlyId(goal.getUserId()))
+        .userId(goal.getUserId())
         .status(goal.getStatus())
         .color(goal.getColor())
         .privacyType(goal.getPrivacyType())
-        .build();
-  }
-
-  public static GoalEntity withOnlyId(Long goalId) {
-    return GoalEntity.builder()
-        .id(goalId)
         .build();
   }
 
@@ -94,7 +87,7 @@ public class GoalEntity extends BaseEntity {
     return Goal.builder()
         .id(id)
         .name(name)
-        .userId(user.getId())
+        .userId(userId)
         .status(status)
         .color(color)
         .privacyType(privacyType)
@@ -103,7 +96,7 @@ public class GoalEntity extends BaseEntity {
 
   public GoalEntity update(Goal goal) {
     this.name = goal.getName();
-    this.user = UserEntity.withOnlyId(goal.getUserId());
+    this.userId = goal.getUserId();
     this.status = goal.getStatus();
     this.color = goal.getColor();
     this.privacyType = goal.getPrivacyType();

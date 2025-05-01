@@ -8,7 +8,6 @@ import com.ddudu.application.port.out.period_goal.SavePeriodGoalPort;
 import com.ddudu.application.port.out.period_goal.UpdatePeriodGoalPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.entity.PeriodGoalEntity;
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.period_goal.PeriodGoalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -31,8 +30,8 @@ public class PeriodGoalPersistenceAdapter implements SavePeriodGoalPort, PeriodG
 
   @Override
   public Optional<PeriodGoal> getOptionalByDate(User user, LocalDate date, PeriodGoalType type) {
-    return periodGoalRepository.findByUserAndPlanDateAndType(
-            UserEntity.from(user),
+    return periodGoalRepository.findByUserIdAndPlanDateAndType(
+            user.getId(),
             date,
             type.name()
         )

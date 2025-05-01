@@ -18,13 +18,19 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor
 public class BaseEntity {
 
-  private static final Boolean DEFAULT_IS_DELETED = false;
-
-  @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP")
+  @Column(
+      name = "created_at",
+      nullable = false,
+      columnDefinition = "TIMESTAMP"
+  )
   @CreatedDate
   private LocalDateTime createdAt;
 
-  @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP")
+  @Column(
+      name = "updated_at",
+      nullable = false,
+      columnDefinition = "TIMESTAMP"
+  )
   @LastModifiedDate
   private LocalDateTime updatedAt;
 

@@ -22,11 +22,17 @@ public class TagEntity {
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "template_id", nullable = false)
-  private TemplateEntity template;
+  @Column(
+      name = "template_id",
+      nullable = false
+  )
+  private Long template;
 
-  @Column(name = "name", length = 50, nullable = false)
+  @Column(
+      name = "name",
+      length = 50,
+      nullable = false
+  )
   private String name;
 
 }

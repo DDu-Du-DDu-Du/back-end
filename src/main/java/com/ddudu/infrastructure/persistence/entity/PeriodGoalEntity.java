@@ -1,8 +1,11 @@
 package com.ddudu.infrastructure.persistence.entity;
 
 import com.ddudu.application.domain.period_goal.domain.PeriodGoal;
+import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,26 +33,37 @@ public class PeriodGoalEntity extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private UserEntity user;
+  @Column(
+      name = "user_id",
+      nullable = false
+  )
+  private Long userId;
 
   @Column(name = "contents")
   private String contents;
 
-  @Column(name = "type", nullable = false, length = 15)
-  private String type;
+  @Column(
+      name = "type",
+      nullable = false,
+      columnDefinition = "VARCHAR",
+      length = 15
+  )
+  @Enumerated(EnumType.STRING)
+  private PeriodGoalType type;
 
-  @Column(name = "plan_date", nullable = false, columnDefinition = "DATE")
+  @Column(
+      name = "plan_date",
+      nullable = false,
+      columnDefinition = "DATE"
+  )
   private LocalDate planDate;
 
   public static PeriodGoalEntity from(PeriodGoal periodGoal) {
     return PeriodGoalEntity.builder()
         .id(periodGoal.getId())
-        .user(UserEntity.withOnlyId(periodGoal.getUserId()))
+        .userId(periodGoal.getUserId())
         .contents(periodGoal.getContents())
-        .type(periodGoal.getType()
-            .name())
+        .type(periodGoal.getType())
         .planDate(periodGoal.getPlanDate())
         .build();
   }
@@ -57,7 +71,7 @@ public class PeriodGoalEntity extends BaseEntity {
   public PeriodGoal toDomain() {
     return PeriodGoal.builder()
         .id(id)
-        .userId(user.getId())
+        .userId(userId)
         .contents(contents)
         .type(type)
         .planDate(planDate)

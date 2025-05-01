@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DduduRepository extends JpaRepository<DduduEntity, Long>, DduduQueryRepository {
 
-  List<DduduEntity> findAllByGoal(GoalEntity goalEntity);
-
   List<DduduEntity> findAllByRepeatDdudu(RepeatDduduEntity repeatDduduEntity);
 
 }

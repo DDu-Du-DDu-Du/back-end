@@ -22,19 +22,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
-public class AuthProviderEntity {
+public class AuthProviderEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
+  @Column(
       name = "user_id",
       nullable = false
   )
-  private UserEntity user;
+  private Long userId;
 
   @Column(
       name = "provider_type",
@@ -49,9 +48,9 @@ public class AuthProviderEntity {
   )
   private String providerId;
 
-  public static AuthProviderEntity from(AuthProvider authProvider, UserEntity user) {
+  public static AuthProviderEntity from(AuthProvider authProvider, Long userId) {
     return AuthProviderEntity.builder()
-        .user(user)
+        .userId(userId)
         .providerId(authProvider.getProviderId())
         .providerType(authProvider.getProviderType())
         .build();
@@ -61,6 +60,7 @@ public class AuthProviderEntity {
     return AuthProvider.builder()
         .providerId(providerId)
         .providerType(providerType)
+        .userId(userId)
         .build();
   }
 

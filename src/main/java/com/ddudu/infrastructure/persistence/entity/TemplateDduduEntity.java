@@ -16,18 +16,24 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "template_ddudus")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TemplateTodoEntity extends BaseEntity {
+public class TemplateDduduEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "template_id", nullable = false)
-  private TemplateEntity template;
+  @Column(
+      name = "template_id",
+      nullable = false
+  )
+  private Long template;
 
-  @Column(name = "name", length = 50, nullable = false)
+  @Column(
+      name = "name",
+      length = 50,
+      nullable = false
+  )
   private String name;
 
   @Column(name = "begin_at")
@@ -36,7 +42,11 @@ public class TemplateTodoEntity extends BaseEntity {
   @Column(name = "end_at")
   private LocalDateTime endAt;
 
-  @Column(name = "day_number", nullable = false, columnDefinition = "INT")
+  @Column(
+      name = "day_number",
+      nullable = false,
+      columnDefinition = "INT"
+  )
   private int dayNumber;
 
 }

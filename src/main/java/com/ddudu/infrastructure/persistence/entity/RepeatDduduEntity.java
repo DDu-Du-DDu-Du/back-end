@@ -37,12 +37,12 @@ public class RepeatDduduEntity extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
+  @Column(
       name = "goal_id",
       nullable = false
   )
-  private GoalEntity goal;
+  private Long goalId;
+
   @Column(
       name = "name",
       length = 50,
@@ -95,10 +95,7 @@ public class RepeatDduduEntity extends BaseEntity {
   public static RepeatDduduEntity from(RepeatDdudu repeatDdudu) {
     return RepeatDduduEntity.builder()
         .id(repeatDdudu.getId())
-        .goal(GoalEntity.builder()
-            .id(repeatDdudu.getGoalId())
-            .build()
-        )
+        .goalId(repeatDdudu.getGoalId())
         .name(repeatDdudu.getName())
         .repeatType(repeatDdudu.getRepeatType())
         .repeatInfo(repeatDdudu.getRepeatPattern())
@@ -112,7 +109,7 @@ public class RepeatDduduEntity extends BaseEntity {
   public RepeatDdudu toDomain() {
     return RepeatDdudu.builder()
         .id(id)
-        .goalId(goal.getId())
+        .goalId(goalId)
         .name(name)
         .repeatType(repeatType)
         .repeatPattern(repeatInfo)

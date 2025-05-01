@@ -21,9 +21,7 @@ import com.ddudu.application.port.out.goal.MonthlyStatsPort;
 import com.ddudu.infrastructure.annotation.DrivenAdapter;
 import com.ddudu.infrastructure.persistence.dto.DduduCursorDto;
 import com.ddudu.infrastructure.persistence.entity.DduduEntity;
-import com.ddudu.infrastructure.persistence.entity.GoalEntity;
 import com.ddudu.infrastructure.persistence.entity.RepeatDduduEntity;
-import com.ddudu.infrastructure.persistence.entity.UserEntity;
 import com.ddudu.infrastructure.persistence.repository.ddudu.DduduRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -70,7 +68,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
       LocalDate date, User user, List<PrivacyType> accessiblePrivacyTypes
   ) {
     return dduduRepository.findAllByDateAndUserAndPrivacyTypes(
-            date, UserEntity.from(user), accessiblePrivacyTypes)
+            date, user.getId(), accessiblePrivacyTypes)
         .stream()
         .map(DduduEntity::toDomain)
         .toList();
@@ -121,7 +119,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public void deleteAllByRepeatDdudu(RepeatDdudu repeatDdudu) {
-    dduduRepository.deleteAllByRepeatDdudu(RepeatDduduEntity.from(repeatDdudu));
+    dduduRepository.deleteAllByRepeatDduduId(repeatDdudu.getId());
   }
 
   private ScrollResponse<SimpleDduduSearchDto> getScrollResponse(
@@ -150,16 +148,16 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
       LocalDate startDate, LocalDate endDate, User user, List<PrivacyType> privacyTypes
   ) {
     return dduduRepository.findDdudusCompletion(
-        startDate, endDate, UserEntity.from(user), privacyTypes);
+        startDate, endDate, user.getId(), privacyTypes);
   }
 
   @Override
   public List<StatsBaseDto> collectMonthlyStats(
       User user, Goal goal, LocalDate from, LocalDate to
   ) {
-    GoalEntity goalEntity = Objects.nonNull(goal) ? GoalEntity.from(goal) : null;
+    Long goalId = Objects.nonNull(goal) ? goal.getId() : null;
 
-    return dduduRepository.findStatsBaseOfUser(UserEntity.from(user), goalEntity, from, to);
+    return dduduRepository.findStatsBaseOfUser(user.getId(), goal.getId(), from, to);
   }
 
 }

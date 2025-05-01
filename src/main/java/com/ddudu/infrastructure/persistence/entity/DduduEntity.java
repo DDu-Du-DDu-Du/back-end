@@ -1,19 +1,14 @@
 package com.ddudu.infrastructure.persistence.entity;
 
-import static java.util.Objects.isNull;
-
 import com.ddudu.application.domain.ddudu.domain.Ddudu;
 import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,20 +31,17 @@ public class DduduEntity extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
+  @Column(
       name = "goal_id",
       nullable = false
   )
-  private GoalEntity goal;
+  private Long goalId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private UserEntity user;
+  @Column(name = "user_id")
+  private Long userId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "repeat_ddudu_id")
-  private RepeatDduduEntity repeatDdudu;
+  @Column(name = "repeat_ddudu_id")
+  private Long repeatDduduId;
 
   @Column(
       name = "name",
@@ -95,16 +87,9 @@ public class DduduEntity extends BaseEntity {
   public static DduduEntity from(Ddudu ddudu) {
     return DduduEntity.builder()
         .id(ddudu.getId())
-        .goal(GoalEntity.builder()
-            .id(ddudu.getGoalId())
-            .build())
-        .user(UserEntity.builder()
-            .id(ddudu.getUserId())
-            .build())
-        .repeatDdudu(
-            isNull(ddudu.getRepeatDduduId()) ? null : RepeatDduduEntity.builder()
-                .id(ddudu.getRepeatDduduId())
-                .build())
+        .goalId(ddudu.getGoalId())
+        .userId(ddudu.getUserId())
+        .repeatDduduId(ddudu.getRepeatDduduId())
         .name(ddudu.getName())
         .status(ddudu.getStatus())
         .isPostponed(ddudu.isPostponed())
@@ -117,9 +102,9 @@ public class DduduEntity extends BaseEntity {
   public Ddudu toDomain() {
     return Ddudu.builder()
         .id(id)
-        .userId(user.getId())
-        .goalId(goal.getId())
-        .repeatDduduId(isNull(repeatDdudu) ? null : repeatDdudu.getId())
+        .userId(userId)
+        .goalId(goalId)
+        .repeatDduduId(repeatDduduId)
         .name(name)
         .status(status)
         .isPostponed(isPostponed)
