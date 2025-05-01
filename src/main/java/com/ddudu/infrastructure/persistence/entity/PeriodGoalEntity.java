@@ -1,7 +1,6 @@
 package com.ddudu.infrastructure.persistence.entity;
 
 import com.ddudu.application.domain.period_goal.domain.PeriodGoal;
-import com.ddudu.old.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

@@ -3,7 +3,6 @@ package com.ddudu.infrastructure.persistence.entity;
 import com.ddudu.application.domain.goal.domain.Goal;
 import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
 import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.old.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

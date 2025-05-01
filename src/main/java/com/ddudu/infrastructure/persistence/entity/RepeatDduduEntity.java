@@ -4,7 +4,6 @@ import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
 import com.ddudu.application.domain.repeat_ddudu.domain.RepeatPattern;
 import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
 import com.ddudu.infrastructure.persistence.converter.RepeatPatternConverter;
-import com.ddudu.old.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;

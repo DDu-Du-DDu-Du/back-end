@@ -7,7 +7,7 @@ import static com.ddudu.old.persistence.entity.QFollowingEntity.followingEntity;
 import com.ddudu.infrastructure.persistence.dto.FullUser;
 import com.ddudu.infrastructure.persistence.entity.QUserEntity;
 import com.ddudu.infrastructure.persistence.entity.UserEntity;
-import com.ddudu.old.user.domain.FollowingStatus;
+import com.ddudu.application.domain.user.domain.enums.FollowingStatus;
 import com.ddudu.old.user.domain.UserSearchType;
 import com.ddudu.old.user.dto.FollowingSearchType;
 import com.querydsl.core.BooleanBuilder;
