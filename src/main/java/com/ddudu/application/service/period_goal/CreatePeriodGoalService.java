@@ -2,6 +2,7 @@ package com.ddudu.application.service.period_goal;
 
 import com.ddudu.application.annotation.UseCase;
 import com.ddudu.application.domain.period_goal.domain.PeriodGoal;
+import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
 import com.ddudu.application.domain.period_goal.exception.PeriodGoalErrorCode;
 import com.ddudu.application.domain.user.domain.User;
 import com.ddudu.application.dto.period_goal.request.CreatePeriodGoalRequest;
@@ -24,10 +25,11 @@ public class CreatePeriodGoalService implements CreatePeriodGoalUseCase {
     User user = userLoaderPort.getUserOrElseThrow(
         userId, PeriodGoalErrorCode.USER_NOT_EXISTING.getCodeName());
 
+    PeriodGoalType type = PeriodGoalType.from(request.type());
     PeriodGoal periodGoal = PeriodGoal.builder()
         .contents(request.contents())
         .userId(user.getId())
-        .type(request.type())
+        .type(type)
         .planDate(request.planDate())
         .build();
 

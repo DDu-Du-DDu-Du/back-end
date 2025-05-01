@@ -23,19 +23,20 @@ public final class PeriodGoal {
   private final Long userId;
   private final String contents;
   private final PeriodGoalType type;
+
   @Getter(AccessLevel.NONE)
   private final PeriodGoalDate planDate;
 
   @Builder
-  public PeriodGoal(
-      Long id, Long userId, String contents, String type, LocalDate planDate
+  private PeriodGoal(
+      Long id, Long userId, String contents, PeriodGoalType type, LocalDate planDate
   ) {
-    validate(userId, contents, type);
+    validate(userId, contents);
 
     this.id = id;
     this.userId = userId;
     this.contents = contents;
-    this.type = PeriodGoalType.from(type);
+    this.type = type;
     this.planDate = PeriodGoalDate.of(this.type, planDate);
   }
 
@@ -43,10 +44,9 @@ public final class PeriodGoal {
     return planDate.getDate();
   }
 
-  private void validate(Long userId, String contents, String type) {
+  private void validate(Long userId, String contents) {
     validateUser(userId);
     validateContents(contents);
-    validateType(type);
   }
 
   private void validateUser(Long userId) {
@@ -55,10 +55,6 @@ public final class PeriodGoal {
 
   private void validateContents(String contents) {
     checkArgument(isNotBlank(contents), PeriodGoalErrorCode.CONTENTS_NOT_EXISTING.getCodeName());
-  }
-
-  private void validateType(String type) {
-    checkArgument(nonNull(type), PeriodGoalErrorCode.PERIOD_GOAL_TYPE_NOT_EXISTING.getCodeName());
   }
 
   public void validateCreator(Long userId) {
@@ -82,7 +78,7 @@ public final class PeriodGoal {
         .id(this.id)
         .userId(this.userId)
         .contents(this.contents)
-        .type(this.type.name())
+        .type(this.type)
         .planDate(this.planDate.getDate());
   }
 
