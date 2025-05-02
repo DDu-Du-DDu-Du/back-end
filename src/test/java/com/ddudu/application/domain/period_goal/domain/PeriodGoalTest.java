@@ -40,7 +40,7 @@ class PeriodGoalTest {
       PeriodGoal periodGoal = PeriodGoal.builder()
           .userId(userId)
           .contents(contents)
-          .type(type.name())
+          .type(type)
           .planDate(planDate)
           .build();
 
@@ -56,7 +56,7 @@ class PeriodGoalTest {
       ThrowingCallable create = () -> PeriodGoal.builder()
           .contents(contents)
           .userId(null)
-          .type(type.name())
+          .type(type)
           .planDate(planDate)
           .build();
 
@@ -72,7 +72,7 @@ class PeriodGoalTest {
       ThrowingCallable create = () -> PeriodGoal.builder()
           .contents(null)
           .userId(userId)
-          .type(type.name())
+          .type(type)
           .planDate(planDate)
           .build();
 
@@ -80,22 +80,6 @@ class PeriodGoalTest {
       assertThatThrownBy(create)
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining(PeriodGoalErrorCode.CONTENTS_NOT_EXISTING.getCodeName());
-    }
-
-    @Test
-    void 기간_목표_타입_없이는_기간_목표를_생성할_수_없다() {
-      // when
-      ThrowingCallable create = () -> PeriodGoal.builder()
-          .contents(contents)
-          .userId(userId)
-          .type(null)
-          .planDate(planDate)
-          .build();
-
-      // then
-      assertThatThrownBy(create)
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining(PeriodGoalErrorCode.PERIOD_GOAL_TYPE_NOT_EXISTING.getCodeName());
     }
 
   }

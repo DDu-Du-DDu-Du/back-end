@@ -33,7 +33,7 @@ public class PeriodGoalPersistenceAdapter implements SavePeriodGoalPort, PeriodG
     return periodGoalRepository.findByUserIdAndPlanDateAndType(
             user.getId(),
             date,
-            type.name()
+            type
         )
         .map(PeriodGoalEntity::toDomain);
   }

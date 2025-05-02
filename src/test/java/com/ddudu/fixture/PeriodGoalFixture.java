@@ -23,7 +23,7 @@ public class PeriodGoalFixture extends BaseFixture {
     return PeriodGoal.builder()
         .userId(user.getId())
         .contents(contents)
-        .type(type.name())
+        .type(type)
         .planDate(date)
         .build();
   }
@@ -32,7 +32,7 @@ public class PeriodGoalFixture extends BaseFixture {
     return PeriodGoal.builder()
         .id(getRandomId())
         .userId(user.getId())
-        .type(getRandomType().name())
+        .type(getRandomType())
         .contents(getRandomSentenceWithMax(255))
         .planDate(LocalDate.now())
         .build();
