@@ -29,13 +29,13 @@ public class FollowingEntity extends BaseEntity {
   private Long id;
 
   @Column(
-      name = "followerId",
+      name = "follower_id",
       nullable = false
   )
   private Long followerId;
 
   @Column(
-      name = "followeeId",
+      name = "followee_id",
       nullable = false
   )
   private Long followeeId;
