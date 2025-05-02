@@ -61,8 +61,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   @Override
   public List<DduduCompletionResponse> findDdudusCompletion(
-      LocalDate startDate, LocalDate endDate, Long userId,
-      List<PrivacyType> privacyTypes
+      LocalDate startDate, LocalDate endDate, Long userId, List<PrivacyType> privacyTypes
   ) {
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
         LocalDate.class, "{0}", dduduEntity.scheduledOn);
@@ -90,13 +89,13 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
                 .as("uncompletedTodos")
         )
         .from(dduduEntity)
-        .on(
-            dduduEntity.userId.eq(userId),
-            privacyTypesIn(privacyTypes)
-        )
+        .join(goalEntity)
+        .on(dduduEntity.goalId.eq(goalEntity.id))
         .where(
-            dduduEntity.scheduledOn.goe(LocalDate.from(startDate)),
-            dduduEntity.scheduledOn.lt(LocalDate.from(endDate))
+            dduduEntity.userId.eq(userId),
+            privacyTypesIn(privacyTypes),
+            dduduEntity.scheduledOn.goe(startDate),
+            dduduEntity.scheduledOn.lt(endDate)
         )
         .groupBy(dateTemplate)
         .fetch()
