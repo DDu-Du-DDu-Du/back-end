@@ -3,10 +3,12 @@ package com.ddudu.application.domain.repeat_ddudu.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu.RepeatDduduBuilder;
-import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
-import com.ddudu.application.domain.repeat_ddudu.exception.RepeatDduduErrorCode;
-import com.ddudu.application.dto.repeat_ddudu.RepeatPatternDto;
+import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
+import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu.RepeatDduduBuilder;
+import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
+import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
+import com.ddudu.application.planning.repeatddudu.dto.RepeatPatternDto;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import java.time.LocalDate;

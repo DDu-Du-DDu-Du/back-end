@@ -2,10 +2,11 @@ package com.ddudu.application.domain.repeat_ddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
-import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
-import com.ddudu.application.dto.repeat_ddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
+import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
+import com.ddudu.application.planning.repeatddudu.dto.request.CreateRepeatDduduRequest;
+import com.ddudu.domain.planning.repeatddudu.service.RepeatDduduDomainService;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import java.time.LocalDate;

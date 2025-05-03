@@ -3,10 +3,11 @@ package com.ddudu.application.domain.goal.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.goal.request.CreateGoalRequest;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
+import com.ddudu.domain.planning.goal.service.GoalDomainService;
+import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.application.planning.goal.dto.request.CreateGoalRequest;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;

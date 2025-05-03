@@ -2,7 +2,8 @@ package com.ddudu.application.domain.authentication.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.domain.authentication.domain.vo.UserFamily;
+import com.ddudu.domain.user.auth.aggregate.RefreshToken;
+import com.ddudu.domain.user.auth.aggregate.vo.UserFamily;
 import com.ddudu.fixture.UserFixture;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;

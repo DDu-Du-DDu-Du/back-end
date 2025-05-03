@@ -2,11 +2,13 @@ package com.ddudu.application.domain.authentication.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.config.JwtConfig;
-import com.ddudu.application.config.properties.JwtProperties;
-import com.ddudu.application.domain.authentication.domain.RefreshToken;
-import com.ddudu.application.domain.authentication.domain.vo.UserFamily;
-import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.bootstrap.common.config.JwtConfig;
+import com.ddudu.application.common.config.JwtProperties;
+import com.ddudu.domain.user.auth.aggregate.RefreshToken;
+import com.ddudu.domain.user.auth.aggregate.vo.UserFamily;
+import com.ddudu.domain.user.auth.service.AuthDomainService;
+import com.ddudu.bootstrap.userapi.auth.jwt.SpringOAuth2JwtIssuer;
+import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.UserFixture;
 import com.ddudu.support.TestProperties;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -18,7 +20,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 @SpringJUnitConfig(
-    value = {TestProperties.class, JwtConfig.class, JwtIssuer.class, AuthDomainService.class},
+    value = {TestProperties.class, JwtConfig.class, SpringOAuth2JwtIssuer.class, AuthDomainService.class},
     initializers = ConfigDataApplicationContextInitializer.class
 )
 @DisplayNameGeneration(ReplaceUnderscores.class)
@@ -28,7 +30,7 @@ class AuthDomainServiceTest {
   JwtProperties jwtProperties;
 
   @Autowired
-  JwtIssuer jwtIssuer;
+  SpringOAuth2JwtIssuer springOAuth2JwtIssuer;
 
   @Autowired
   AuthDomainService authDomainService;

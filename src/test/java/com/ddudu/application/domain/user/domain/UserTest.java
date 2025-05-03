@@ -3,10 +3,11 @@ package com.ddudu.application.domain.user.domain;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
-import com.ddudu.application.domain.user.domain.User.UserBuilder;
-import com.ddudu.application.domain.user.domain.enums.RandomUserAdjective;
-import com.ddudu.application.domain.user.domain.enums.RandomUserAnimal;
-import com.ddudu.application.domain.user.exception.UserErrorCode;
+import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.domain.user.user.aggregate.User.UserBuilder;
+import com.ddudu.domain.user.user.aggregate.enums.RandomUserAdjective;
+import com.ddudu.domain.user.user.aggregate.enums.RandomUserAnimal;
+import com.ddudu.domain.user.user.exception.UserErrorCode;
 import com.ddudu.fixture.UserFixture;
 import java.util.UUID;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;

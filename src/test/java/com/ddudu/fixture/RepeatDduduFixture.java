@@ -1,12 +1,12 @@
 package com.ddudu.fixture;
 
-import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.repeat_ddudu.domain.DailyRepeatPattern;
-import com.ddudu.application.domain.repeat_ddudu.domain.MonthlyRepeatPattern;
-import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
-import com.ddudu.application.domain.repeat_ddudu.domain.RepeatPattern;
-import com.ddudu.application.domain.repeat_ddudu.domain.WeeklyRepeatPattern;
-import com.ddudu.application.domain.repeat_ddudu.domain.enums.RepeatType;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.repeatddudu.aggregate.DailyRepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.MonthlyRepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
+import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.WeeklyRepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Arrays;

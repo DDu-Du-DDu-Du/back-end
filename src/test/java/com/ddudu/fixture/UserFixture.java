@@ -1,13 +1,13 @@
 package com.ddudu.fixture;
 
-import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.domain.user.domain.enums.Authority;
-import com.ddudu.application.domain.user.domain.enums.ProviderType;
-import com.ddudu.application.domain.user.domain.enums.RandomUserAdjective;
-import com.ddudu.application.domain.user.domain.enums.RandomUserAnimal;
-import com.ddudu.application.domain.user.domain.enums.UserStatus;
-import com.ddudu.application.domain.user.domain.vo.AuthProvider;
-import com.ddudu.application.domain.user.domain.vo.Options;
+import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.domain.user.user.aggregate.enums.Authority;
+import com.ddudu.domain.user.user.aggregate.enums.ProviderType;
+import com.ddudu.domain.user.user.aggregate.enums.RandomUserAdjective;
+import com.ddudu.domain.user.user.aggregate.enums.RandomUserAnimal;
+import com.ddudu.domain.user.user.aggregate.enums.UserStatus;
+import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
+import com.ddudu.domain.user.user.aggregate.vo.Options;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;

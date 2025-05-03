@@ -5,9 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
-import com.ddudu.application.domain.ddudu.domain.Ddudu.DduduBuilder;
-import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
-import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu.DduduBuilder;
+import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
 import com.ddudu.fixture.DduduFixture;
 import java.time.LocalDate;
 import java.time.LocalTime;

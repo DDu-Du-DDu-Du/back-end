@@ -3,8 +3,9 @@ package com.ddudu.application.domain.authentication.domain.vo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-import com.ddudu.application.domain.authentication.domain.vo.UserFamily.UserFamilyBuilder;
-import com.ddudu.application.domain.authentication.exception.AuthErrorCode;
+import com.ddudu.domain.user.auth.aggregate.vo.UserFamily;
+import com.ddudu.domain.user.auth.aggregate.vo.UserFamily.UserFamilyBuilder;
+import com.ddudu.domain.user.auth.exception.AuthErrorCode;
 import com.ddudu.fixture.UserFixture;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;

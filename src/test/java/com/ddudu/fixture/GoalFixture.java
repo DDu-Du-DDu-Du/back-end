@@ -1,9 +1,9 @@
 package com.ddudu.fixture;
 
-import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
+import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
+import com.ddudu.domain.user.user.aggregate.User;
 import com.google.common.collect.Lists;
 import java.util.List;
 import lombok.AccessLevel;

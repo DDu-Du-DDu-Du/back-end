@@ -3,10 +3,11 @@ package com.ddudu.application.domain.goal.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.ddudu.application.domain.goal.domain.enums.GoalStatus;
-import com.ddudu.application.domain.goal.domain.enums.PrivacyType;
-import com.ddudu.application.domain.goal.exception.GoalErrorCode;
-import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
+import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
+import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
+import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import java.util.List;

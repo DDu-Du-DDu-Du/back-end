@@ -1,8 +1,8 @@
 package com.ddudu.fixture;
 
-import com.ddudu.application.domain.period_goal.domain.PeriodGoal;
-import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
-import com.ddudu.application.domain.user.domain.User;
+import com.ddudu.domain.planning.periodgoal.aggregate.PeriodGoal;
+import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
+import com.ddudu.domain.user.user.aggregate.User;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

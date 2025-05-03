@@ -3,8 +3,9 @@ package com.ddudu.application.domain.period_goal.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
-import com.ddudu.application.domain.period_goal.exception.PeriodGoalErrorCode;
+import com.ddudu.domain.planning.periodgoal.aggregate.PeriodGoal;
+import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
+import com.ddudu.domain.planning.periodgoal.exception.PeriodGoalErrorCode;
 import com.ddudu.fixture.PeriodGoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;

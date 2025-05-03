@@ -2,7 +2,8 @@ package com.ddudu.application.domain.period_goal.domain.vo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.domain.period_goal.domain.enums.PeriodGoalType;
+import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
+import com.ddudu.domain.planning.periodgoal.aggregate.vo.PeriodGoalDate;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;

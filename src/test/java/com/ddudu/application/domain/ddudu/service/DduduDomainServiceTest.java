@@ -2,11 +2,12 @@ package com.ddudu.application.domain.ddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
-import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
-import com.ddudu.application.dto.stats.StatsBaseDto;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.ddudu.service.DduduDomainService;
+import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.application.planning.ddudu.dto.request.CreateDduduRequest;
+import com.ddudu.application.stats.dto.StatsBaseDto;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;

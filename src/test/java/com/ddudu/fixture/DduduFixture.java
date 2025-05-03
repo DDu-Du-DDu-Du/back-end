@@ -1,10 +1,10 @@
 package com.ddudu.fixture;
 
-import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.ddudu.domain.Ddudu.DduduBuilder;
-import com.ddudu.application.domain.ddudu.domain.enums.DduduStatus;
-import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.repeat_ddudu.domain.RepeatDdudu;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu.DduduBuilder;
+import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -3,10 +3,11 @@ package com.ddudu.application.service.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.domain.user.exception.UserErrorCode;
-import com.ddudu.application.dto.user.MeResponse;
-import com.ddudu.application.port.out.auth.SignUpPort;
+import com.ddudu.application.user.user.service.GetMyInfoService;
+import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.domain.user.user.exception.UserErrorCode;
+import com.ddudu.application.user.user.dto.response.MeResponse;
+import com.ddudu.application.user.auth.port.out.SignUpPort;
 import com.ddudu.fixture.UserFixture;
 import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;

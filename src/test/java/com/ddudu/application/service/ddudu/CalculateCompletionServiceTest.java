@@ -1,18 +1,19 @@
 package com.ddudu.application.service.ddudu;
 
-import static com.ddudu.application.domain.goal.domain.enums.PrivacyType.PRIVATE;
-import static com.ddudu.application.domain.goal.domain.enums.PrivacyType.PUBLIC;
+import static com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType.PRIVATE;
+import static com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType.PUBLIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
-import com.ddudu.application.domain.ddudu.domain.Ddudu;
-import com.ddudu.application.domain.ddudu.exception.DduduErrorCode;
-import com.ddudu.application.domain.goal.domain.Goal;
-import com.ddudu.application.domain.user.domain.User;
-import com.ddudu.application.dto.ddudu.response.DduduCompletionResponse;
-import com.ddudu.application.port.out.auth.SignUpPort;
-import com.ddudu.application.port.out.ddudu.SaveDduduPort;
-import com.ddudu.application.port.out.goal.SaveGoalPort;
+import com.ddudu.application.stats.service.CalculateCompletionService;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.application.stats.dto.response.DduduCompletionResponse;
+import com.ddudu.application.user.auth.port.out.SignUpPort;
+import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
+import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
