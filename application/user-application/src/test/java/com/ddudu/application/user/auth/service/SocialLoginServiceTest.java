@@ -1,0 +1,124 @@
+package com.ddudu.application.user.auth.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.domain.user.user.aggregate.enums.ProviderType;
+import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
+import com.ddudu.application.user.auth.dto.request.SocialRequest;
+import com.ddudu.application.user.auth.dto.response.TokenResponse;
+import com.ddudu.application.user.auth.port.out.SignUpPort;
+import com.ddudu.application.user.auth.port.out.SocialResourcePort;
+import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
+import com.ddudu.application.user.user.port.out.UserLoaderPort;
+import com.ddudu.fixture.UserFixture;
+import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+
+@SpringBootTest
+@Transactional
+@DisplayNameGeneration(ReplaceUnderscores.class)
+class SocialLoginServiceTest {
+
+  @Autowired
+  SocialLoginService socialLoginService;
+
+  @MockBean
+  SocialResourcePort socialResourcePort;
+
+  @Autowired
+  SignUpPort signUpPort;
+
+  @Autowired
+  UserLoaderPort userLoaderPort;
+
+  @Autowired
+  GoalLoaderPort goalLoaderPort;
+
+  @Autowired
+  JwtDecoder jwtDecoder;
+
+  SocialRequest request;
+  AuthProvider authProvider;
+
+  @BeforeEach
+  void setUp() {
+    String socialToken = UUID.randomUUID()
+        .toString();
+    request = new SocialRequest(socialToken, ProviderType.KAKAO.name());
+    authProvider = UserFixture.createRandomAuthProvider();
+  }
+
+  @Test
+  void 유저가_존재하면_엑세스_토큰을_발급한다() {
+    // given
+    User user = signUpPort.save(UserFixture.createRandomSocialUser(authProvider));
+
+    Mockito.when(socialResourcePort.retrieveSocialResource(ArgumentMatchers.any(SocialRequest.class)))
+        .thenReturn(authProvider);
+
+    // when
+    TokenResponse response = socialLoginService.login(request);
+
+    // then
+    String accessToken = response.accessToken();
+    Long actual = user.getId();
+    Long expected = jwtDecoder.decode(accessToken)
+        .getClaim("user");
+
+    Assertions.assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  void 유저가_존재하지_않으면_생성_후_엑세스_토큰을_발급한다() {
+    // given
+    Mockito.when(socialResourcePort.retrieveSocialResource(ArgumentMatchers.any(SocialRequest.class)))
+        .thenReturn(authProvider);
+
+    // when
+    TokenResponse response = socialLoginService.login(request);
+
+    // then
+    Optional<User> user = userLoaderPort.loadSocialUser(authProvider);
+
+    Assertions.assertThat(user).isPresent();
+
+    Long actual = user.get()
+        .getId();
+    Long expected = jwtDecoder.decode(response.accessToken())
+        .getClaim("user");
+
+    Assertions.assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  void 유저가_생성된_경우_기본_목표가_생성된다() {
+    // given
+    Mockito.when(socialResourcePort.retrieveSocialResource(ArgumentMatchers.any(SocialRequest.class)))
+        .thenReturn(authProvider);
+
+    // when
+    socialLoginService.login(request);
+
+    // then
+    User user = userLoaderPort.loadSocialUser(authProvider)
+        .get();
+    List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(user);
+
+    Assertions.assertThat(goals).hasSize(3);
+  }
+
+}
