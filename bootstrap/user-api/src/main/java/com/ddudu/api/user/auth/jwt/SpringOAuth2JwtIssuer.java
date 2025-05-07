@@ -1,6 +1,6 @@
 package com.ddudu.api.user.auth.jwt;
 
-import com.ddudu.application.user.auth.port.in.JwtIssuer;
+import com.ddudu.application.port.auth.in.JwtIssuer;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -43,6 +44,13 @@ public class SpringOAuth2JwtIssuer implements JwtIssuer {
     Jwt jwt = jwtEncoder.encode(jwtEncoderParameters);
 
     return jwt.getTokenValue();
+  }
+
+  @Override
+  public Map<String, Object> setSub(Map<String, Object> claim, Object sub) {
+    claim.put(JwtClaimNames.SUB, sub);
+
+    return claim;
   }
 
 }
