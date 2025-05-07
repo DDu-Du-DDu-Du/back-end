@@ -1,15 +1,14 @@
 package com.ddudu.infra.mysql.planning.goal.adapter;
 
+import com.ddudu.common.annotation.DrivenAdapter;
+import com.ddudu.application.port.goal.out.DeleteGoalPort;
+import com.ddudu.application.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.port.goal.out.SaveGoalPort;
+import com.ddudu.application.port.goal.out.UpdateGoalPort;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.goal.port.out.DeleteGoalPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.planning.goal.port.out.UpdateGoalPort;
-import com.ddudu.application.common.annotation.DrivenAdapter;
-import com.ddudu.infra.mysql.planning.goal.entity.GoalEntity;
 import com.ddudu.infra.mysql.planning.ddudu.repository.DduduRepository;
+import com.ddudu.infra.mysql.planning.goal.entity.GoalEntity;
 import com.ddudu.infra.mysql.planning.goal.repository.GoalRepository;
 import com.google.common.collect.Lists;
 import jakarta.persistence.EntityNotFoundException;
@@ -62,17 +61,17 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public List<Goal> findAllByUserAndPrivacyTypes(User user) {
-    return goalRepository.findAllByUserId(user.getId())
+  public List<Goal> findAllByUserAndPrivacyTypes(Long userId) {
+    return goalRepository.findAllByUserId(userId)
         .stream()
         .map(GoalEntity::toDomain)
         .toList();
   }
 
   @Override
-  public List<Goal> findAllByUserAndPrivacyTypes(User user, List<PrivacyType> privacyTypes) {
+  public List<Goal> findAllByUserAndPrivacyTypes(Long userId, List<PrivacyType> privacyTypes) {
     return goalRepository.findAllByUserAndPrivacyTypes(
-            user.getId(),
+            userId,
             privacyTypes
         )
         .stream()
@@ -81,14 +80,14 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public List<Goal> findAccessibleGoals(User user, boolean isFollower) {
+  public List<Goal> findAccessibleGoals(Long userId, boolean isFollower) {
     List<PrivacyType> privacyTypes = Lists.newArrayList(PrivacyType.PUBLIC);
 
     if (isFollower) {
       privacyTypes.add(PrivacyType.FOLLOWER);
     }
 
-    return goalRepository.findAllByUserAndPrivacyTypes(user.getId(), privacyTypes)
+    return goalRepository.findAllByUserAndPrivacyTypes(userId, privacyTypes)
         .stream()
         .map(GoalEntity::toDomain)
         .toList();
