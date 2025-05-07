@@ -1,33 +1,36 @@
 package com.ddudu.infra.mysql.planning.ddudu.adapter;
 
+import com.ddudu.aggregate.BaseStats;
+import com.ddudu.aggregate.MonthlyStats;
+import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
+import com.ddudu.common.annotation.DrivenAdapter;
+import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.port.ddudu.out.DduduSearchPort;
+import com.ddudu.application.port.ddudu.out.DduduUpdatePort;
+import com.ddudu.application.port.ddudu.out.DeleteDduduPort;
+import com.ddudu.application.port.ddudu.out.RepeatDduduPort;
+import com.ddudu.application.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.port.stats.out.DduduStatsPort;
+import com.ddudu.application.port.stats.out.MonthlyStatsPort;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.ddudu.dto.SimpleDduduSearchDto;
-import com.ddudu.application.stats.dto.response.DduduCompletionResponse;
-import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
-import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
-import com.ddudu.application.stats.dto.StatsBaseDto;
-import com.ddudu.application.planning.ddudu.port.out.DduduLoaderPort;
-import com.ddudu.application.planning.ddudu.port.out.DduduSearchPort;
-import com.ddudu.application.stats.port.out.DduduStatsPort;
-import com.ddudu.application.planning.ddudu.port.out.DduduUpdatePort;
-import com.ddudu.application.planning.ddudu.port.out.DeleteDduduPort;
-import com.ddudu.application.planning.ddudu.port.out.RepeatDduduPort;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.MonthlyStatsPort;
-import com.ddudu.application.common.annotation.DrivenAdapter;
 import com.ddudu.infra.mysql.planning.ddudu.dto.DduduCursorDto;
 import com.ddudu.infra.mysql.planning.ddudu.entity.DduduEntity;
 import com.ddudu.infra.mysql.planning.ddudu.repository.DduduRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
@@ -64,10 +67,9 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public List<Ddudu> getDailyDdudus(
-      LocalDate date, User user, List<PrivacyType> accessiblePrivacyTypes
+      LocalDate date, Long userId, List<PrivacyType> accessiblePrivacyTypes
   ) {
-    return dduduRepository.findAllByDateAndUserAndPrivacyTypes(
-            date, user.getId(), accessiblePrivacyTypes)
+    return dduduRepository.findAllByDateAndUserAndPrivacyTypes(date, userId, accessiblePrivacyTypes)
         .stream()
         .map(DduduEntity::toDomain)
         .toList();
@@ -144,19 +146,32 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public List<DduduCompletionResponse> calculateDdudusCompletion(
-      LocalDate startDate, LocalDate endDate, User user, List<PrivacyType> privacyTypes
+      LocalDate startDate, LocalDate endDate, Long userId, List<PrivacyType> privacyTypes
   ) {
     return dduduRepository.findDdudusCompletion(
-        startDate, endDate, user.getId(), privacyTypes);
+        startDate, endDate, userId, privacyTypes);
   }
 
   @Override
-  public List<StatsBaseDto> collectMonthlyStats(
-      User user, Goal goal, LocalDate from, LocalDate to
+  public Map<YearMonth, MonthlyStats> collectMonthlyStats(
+      Long userId, Goal goal, LocalDate from, LocalDate to
   ) {
     Long goalId = Objects.nonNull(goal) ? goal.getId() : null;
+    List<BaseStats> stats = dduduRepository.findStatsBaseOfUser(userId, goalId, from, to);
 
-    return dduduRepository.findStatsBaseOfUser(user.getId(), goalId, from, to);
+    return stats.stream()
+        .collect(Collectors.groupingBy(stat -> YearMonth.from(stat.getScheduledOn())))
+        .entrySet()
+        .stream()
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            monthlyStatsEntry -> MonthlyStats.builder()
+                .userId(userId)
+                .yearMonth(monthlyStatsEntry.getKey())
+                .stats(monthlyStatsEntry.getValue())
+                .build()
+            )
+        );
   }
 
 }

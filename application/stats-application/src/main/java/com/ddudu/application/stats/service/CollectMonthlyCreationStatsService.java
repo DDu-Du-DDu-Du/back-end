@@ -1,19 +1,18 @@
 package com.ddudu.application.stats.service;
 
-import com.ddudu.application.common.annotation.UseCase;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
+import com.ddudu.aggregate.MonthlyStats;
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.application.dto.stats.CompletionPerGoalDto;
+import com.ddudu.application.dto.stats.response.GenericStatsResponse;
+import com.ddudu.application.port.stats.in.CollectMonthlyCreationStatsUseCase;
+import com.ddudu.application.port.stats.out.MonthlyStatsPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.stats.dto.CompletionPerGoalDto;
-import com.ddudu.application.stats.dto.StatsBaseDto;
-import com.ddudu.application.stats.dto.response.MonthlyStatsResponse;
-import com.ddudu.application.stats.port.in.CollectMonthlyCreationStatsUseCase;
-import com.ddudu.application.planning.goal.port.out.MonthlyStatsPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,7 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
   private final MonthlyStatsPort monthlyStatsPort;
 
   @Override
-  public MonthlyStatsResponse<CompletionPerGoalDto> collectCreation(
+  public GenericStatsResponse<CompletionPerGoalDto> collectCreation(
       Long loginId, YearMonth yearMonth
   ) {
     User user = userLoaderPort.getUserOrElseThrow(
@@ -40,19 +39,23 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
 
     LocalDate from = yearMonth.atDay(FIRST_DATE);
     LocalDate to = yearMonth.atEndOfMonth();
-    List<StatsBaseDto> stats = monthlyStatsPort.collectMonthlyStats(user, null, from, to);
-    List<CompletionPerGoalDto> completions = countPerGoalId(stats);
+    MonthlyStats monthlyStats = monthlyStatsPort.collectMonthlyStats(user.getId(), null, from, to)
+        .get(yearMonth);
+    List<CompletionPerGoalDto> completions = wrapCompletions(monthlyStats);
 
-    return MonthlyStatsResponse.from(completions);
+    return GenericStatsResponse.from(completions);
   }
 
-  private List<CompletionPerGoalDto> countPerGoalId(List<StatsBaseDto> stats) {
-    return stats.stream()
-        .collect(Collectors.groupingBy(StatsBaseDto::goalId, Collectors.summingInt(toAdd -> 1)))
+  private List<CompletionPerGoalDto> wrapCompletions(MonthlyStats monthlyStats) {
+    return monthlyStats.countPerGoal()
         .entrySet()
         .stream()
-        .map(completion -> CompletionPerGoalDto.from(completion.getKey(), completion.getValue()))
-        .sorted((first, second) -> second.count() - first.count())
+        .map(countPerGoalEntry ->
+            CompletionPerGoalDto.from(
+                countPerGoalEntry.getKey(),
+                countPerGoalEntry.getValue()
+            )
+        )
         .toList();
   }
 
