@@ -1,7 +1,11 @@
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
 rootProject.name = "ddudu"
 
 include(
     // bootstrap
+    "bootstrap:bootstrap-gateway",
     "bootstrap:bootstrap-common",
     "bootstrap:user-api",
     "bootstrap:stats-api",
@@ -14,7 +18,6 @@ include(
     "application:planning-application",
 
     // domain
-    "domain:domain-common",
     "domain:user-domain",
     "domain:stats-domain",
     "domain:planning-domain",
@@ -24,5 +27,8 @@ include(
     "infra:user-infra-mysql",
     "infra:stats-infra-mysql",
     "infra:planning-infra-mysql",
-    "infra:user-infra-external-api"
+    "infra:user-infra-external-api",
+
+    // common
+    "common"
 )

@@ -1,7 +1,8 @@
 package com.ddudu.bootstrap.common.exception;
 
-import com.ddudu.domain.common.exception.DefaultErrorCode;
-import com.ddudu.domain.common.exception.ErrorCode;
+import com.ddudu.common.exception.DefaultErrorCode;
+import com.ddudu.common.exception.ErrorCode;
+import com.ddudu.common.exception.ErrorCodeParser;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Arrays;
 import java.util.List;
@@ -108,60 +109,6 @@ public class GlobalExceptionHandler {
     }
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(response);
-  }
-
-  @ExceptionHandler(BadRequestException.class)
-  public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
-    log.warn(e.getMessage(), e);
-
-    ErrorResponse response = ErrorResponse.from(e);
-
-    return ResponseEntity.badRequest()
-        .body(response);
-  }
-
-  @ExceptionHandler(ForbiddenException.class)
-  public ResponseEntity<ErrorResponse> handleForbiddenException(
-      ForbiddenException e
-  ) {
-    log.warn(e.getMessage(), e);
-
-    ErrorResponse response = ErrorResponse.from(e);
-
-    return ResponseEntity.status(HttpStatus.FORBIDDEN)
-        .body(response);
-  }
-
-  @ExceptionHandler(DataNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFoundException e) {
-    log.warn(e.getMessage(), e);
-
-    ErrorResponse response = ErrorResponse.from(e);
-
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(response);
-  }
-
-  @ExceptionHandler(DuplicateResourceException.class)
-  public ResponseEntity<ErrorResponse> handleDuplicateResourceException(
-      DuplicateResourceException e
-  ) {
-    log.warn(e.getMessage(), e);
-
-    ErrorResponse response = ErrorResponse.from(e);
-
-    return ResponseEntity.status(HttpStatus.CONFLICT)
-        .body(response);
-  }
-
-  @ExceptionHandler(BusinessException.class)
-  public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
-    log.error(e.getMessage(), e);
-
-    ErrorResponse response = ErrorResponse.from(NOT_YET_HANDLED_EXCEPTION_CODE, e.getMessage());
-
-    return ResponseEntity.badRequest()
         .body(response);
   }
 
