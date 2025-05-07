@@ -1,45 +1,37 @@
 package com.ddudu.domain.planning.repeatddudu.service;
 
-import com.ddudu.domain.common.annotation.DomainService;
+import com.ddudu.common.annotation.DomainService;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
-import com.ddudu.application.planning.goal.dto.request.CreateRepeatDduduRequestWithoutGoal;
-import com.ddudu.application.planning.repeatddudu.dto.RepeatPatternDto;
-import com.ddudu.application.planning.repeatddudu.dto.request.CreateRepeatDduduRequest;
-import com.ddudu.application.planning.repeatddudu.dto.request.UpdateRepeatDduduRequest;
+import com.ddudu.domain.planning.repeatddudu.dto.CreateRepeatDduduCommand;
+import com.ddudu.domain.planning.repeatddudu.dto.UpdateRepeatDduduCommand;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 
 @DomainService
 @RequiredArgsConstructor
 public class RepeatDduduDomainService {
 
-  public RepeatDdudu create(CreateRepeatDduduRequest request) {
-    return RepeatDdudu.builder()
-        .name(request.name())
-        .goalId(request.goalId())
-        .startDate(request.startDate())
-        .endDate(request.endDate())
-        .repeatType(RepeatType.from(request.repeatType()))
-        .repeatPatternDto(RepeatPatternDto.from(request))
-        .beginAt(request.beginAt())
-        .endAt(request.endAt())
-        .build();
-  }
+  public RepeatDdudu create(Long goalId, CreateRepeatDduduCommand command) {
+    RepeatType repeatType = RepeatType.from(command.repeatType());
+    RepeatPattern repeatPattern = repeatType.createRepeatPattern(command.repeatDaysOfWeek(),
+        command.repeatDaysOfMonth(), command.lastDayOfMonth());
+    Long goalIdFinal = Objects.requireNonNullElse(goalId, command.goalId());
 
-  public RepeatDdudu create(Long goalId, CreateRepeatDduduRequestWithoutGoal request) {
     return RepeatDdudu.builder()
-        .name(request.name())
-        .goalId(goalId)
-        .startDate(request.startDate())
-        .endDate(request.endDate())
-        .repeatType(RepeatType.from(request.repeatType()))
-        .repeatPatternDto(RepeatPatternDto.from(request))
-        .beginAt(request.beginAt())
-        .endAt(request.endAt())
+        .name(command.name())
+        .goalId(goalIdFinal)
+        .startDate(command.startDate())
+        .endDate(command.endDate())
+        .repeatType(repeatType)
+        .repeatPattern(repeatPattern)
+        .beginAt(command.beginAt())
+        .endAt(command.endAt())
         .build();
   }
 
@@ -78,21 +70,19 @@ public class RepeatDduduDomainService {
         .toList();
   }
 
-  public RepeatDdudu update(RepeatDdudu repeatDdudu, UpdateRepeatDduduRequest request) {
-    RepeatPatternDto repeatPatternDto = new RepeatPatternDto(
-        request.repeatDaysOfWeek(),
-        request.repeatDaysOfMonth(),
-        request.lastDayOfMonth()
-    );
+  public RepeatDdudu update(RepeatDdudu repeatDdudu, UpdateRepeatDduduCommand command) {
+    RepeatType repeatType = RepeatType.from(command.repeatType());
+    RepeatPattern repeatPattern = repeatType.createRepeatPattern(command.repeatDaysOfWeek(),
+        command.repeatDaysOfMonth(), command.lastDayOfMonth());
 
     return repeatDdudu.update(
-        request.name(),
-        RepeatType.from(request.repeatType()),
-        repeatPatternDto,
-        request.startDate(),
-        request.endDate(),
-        request.beginAt(),
-        request.endAt()
+        command.name(),
+        repeatType,
+        repeatPattern,
+        command.startDate(),
+        command.endDate(),
+        command.beginAt(),
+        command.endAt()
     );
   }
 

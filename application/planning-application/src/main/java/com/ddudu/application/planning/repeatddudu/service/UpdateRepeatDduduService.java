@@ -1,17 +1,17 @@
 package com.ddudu.application.planning.repeatddudu.service;
 
-import com.ddudu.application.common.annotation.UseCase;
+import com.ddudu.common.annotation.UseCase;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
+import com.ddudu.common.exception.RepeatDduduErrorCode;
 import com.ddudu.domain.planning.repeatddudu.service.RepeatDduduDomainService;
-import com.ddudu.application.planning.repeatddudu.dto.request.UpdateRepeatDduduRequest;
-import com.ddudu.application.planning.repeatddudu.port.in.UpdateRepeatDduduUseCase;
-import com.ddudu.application.planning.ddudu.port.out.DeleteDduduPort;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.planning.repeatddudu.port.out.RepeatDduduLoaderPort;
-import com.ddudu.application.planning.repeatddudu.port.out.UpdateRepeatDduduPort;
+import com.ddudu.application.dto.repeatddudu.request.UpdateRepeatDduduRequest;
+import com.ddudu.application.port.repeatddudu.in.UpdateRepeatDduduUseCase;
+import com.ddudu.application.port.ddudu.out.DeleteDduduPort;
+import com.ddudu.application.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.port.repeatddudu.out.RepeatDduduLoaderPort;
+import com.ddudu.application.port.repeatddudu.out.UpdateRepeatDduduPort;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +38,7 @@ public class UpdateRepeatDduduService implements UpdateRepeatDduduUseCase {
     goal.validateGoalCreator(loginId);
 
     repeatDdudu = updateRepeatDduduPort.update(
-        repeatDduduDomainService.update(repeatDdudu, request));
+        repeatDduduDomainService.update(repeatDdudu, request.toCommand()));
 
     deleteDduduPort.deleteAllByRepeatDdudu(repeatDdudu);
     saveDduduPort.saveAll(

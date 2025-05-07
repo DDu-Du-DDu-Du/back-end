@@ -1,15 +1,15 @@
 package com.ddudu.application.planning.repeatddudu.service;
 
-import com.ddudu.application.common.annotation.UseCase;
+import com.ddudu.common.annotation.UseCase;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
+import com.ddudu.common.exception.RepeatDduduErrorCode;
 import com.ddudu.domain.planning.repeatddudu.service.RepeatDduduDomainService;
-import com.ddudu.application.planning.repeatddudu.dto.request.CreateRepeatDduduRequest;
-import com.ddudu.application.planning.repeatddudu.port.in.CreateRepeatDduduUseCase;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.planning.repeatddudu.port.out.SaveRepeatDduduPort;
+import com.ddudu.application.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.port.repeatddudu.in.CreateRepeatDduduUseCase;
+import com.ddudu.application.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.port.repeatddudu.out.SaveRepeatDduduPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +37,7 @@ public class CreateRepeatDduduService implements CreateRepeatDduduUseCase {
 
     // 4. 반복 뚜두 생성 후 저장
     RepeatDdudu repeatDdudu = saveRepeatDduduPort.save(
-        repeatDduduDomainService.create(request));
+        repeatDduduDomainService.create(goal.getId(), request.toCommand()));
 
     // 5. (반복되는) 뚜두 생성 후 저장
     saveDduduPort.saveAll(

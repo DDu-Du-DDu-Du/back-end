@@ -1,20 +1,20 @@
 package com.ddudu.application.planning.goal.service;
 
-import com.ddudu.application.common.annotation.UseCase;
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.application.dto.goal.request.CreateGoalRequest;
+import com.ddudu.application.dto.goal.request.CreateRepeatDduduRequestWithoutGoal;
+import com.ddudu.application.dto.goal.response.GoalIdResponse;
+import com.ddudu.application.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.planning.repeatddudu.service.CreateRepeatDduduService;
+import com.ddudu.application.port.goal.in.CreateGoalUseCase;
+import com.ddudu.application.port.goal.out.SaveGoalPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.service.GoalDomainService;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.goal.dto.request.CreateGoalRequest;
-import com.ddudu.application.planning.goal.dto.request.CreateRepeatDduduRequestWithoutGoal;
-import com.ddudu.application.planning.goal.dto.response.GoalIdResponse;
-import com.ddudu.application.planning.repeatddudu.dto.request.CreateRepeatDduduRequest;
-import com.ddudu.application.planning.goal.port.in.CreateGoalUseCase;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
-import com.ddudu.application.planning.repeatddudu.service.CreateRepeatDduduService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ public class CreateGoalService implements CreateGoalUseCase {
         userId, GoalErrorCode.USER_NOT_EXISTING.getCodeName());
 
     // 2. 목표 생성 후 저장
-    Goal goal = saveGoalPort.save(goalDomainService.create(user, request));
+    Goal goal = saveGoalPort.save(goalDomainService.create(user.getId(), request.toCommand()));
 
     // 3. 반복 뚜두 생성 후 저장
     // TODO: 반복 뚜두 생성 부분을 비동기로 변경

@@ -1,17 +1,17 @@
 package com.ddudu.application.planning.ddudu.service;
 
-import com.ddudu.application.common.annotation.UseCase;
+import com.ddudu.common.annotation.UseCase;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
+import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.ddudu.service.DduduDomainService;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.ddudu.dto.request.CreateDduduRequest;
-import com.ddudu.application.planning.ddudu.dto.response.BasicDduduResponse;
-import com.ddudu.application.planning.ddudu.port.in.CreateDduduUseCase;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
+import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
+import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.port.ddudu.in.CreateDduduUseCase;
+import com.ddudu.application.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +23,6 @@ public class CreateDduduService implements CreateDduduUseCase {
   private final UserLoaderPort userLoaderPort;
   private final GoalLoaderPort goalLoaderPort;
   private final SaveDduduPort saveDduduPort;
-
   private final DduduDomainService dduduDomainService;
 
   @Override
@@ -41,7 +40,7 @@ public class CreateDduduService implements CreateDduduUseCase {
     validateGoalNotDone(goal);
 
     // 4. 뚜두 생성 후 저장
-    Ddudu ddudu = dduduDomainService.create(user, request);
+    Ddudu ddudu = dduduDomainService.create(user.getId(), request.toCommand());
     return BasicDduduResponse.from(saveDduduPort.save(ddudu));
   }
 
