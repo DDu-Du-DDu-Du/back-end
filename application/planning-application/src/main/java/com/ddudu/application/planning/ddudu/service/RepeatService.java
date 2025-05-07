@@ -1,14 +1,14 @@
 package com.ddudu.application.planning.ddudu.service;
 
-import com.ddudu.application.common.annotation.UseCase;
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
+import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
+import com.ddudu.application.port.ddudu.in.RepeatUseCase;
+import com.ddudu.application.port.ddudu.out.RepeatDduduPort;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
-import com.ddudu.application.planning.ddudu.dto.request.RepeatAnotherDayRequest;
-import com.ddudu.application.planning.ddudu.dto.response.RepeatAnotherDayResponse;
-import com.ddudu.application.planning.ddudu.port.in.RepeatUseCase;
-import com.ddudu.application.planning.ddudu.port.out.RepeatDduduPort;
-import jakarta.transaction.Transactional;
+import com.ddudu.common.exception.DduduErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor

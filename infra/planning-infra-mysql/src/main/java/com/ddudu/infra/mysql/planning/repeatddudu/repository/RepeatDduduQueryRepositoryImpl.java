@@ -1,6 +1,6 @@
 package com.ddudu.infra.mysql.planning.repeatddudu.repository;
 
-import static com.ddudu.infra.planningmysql.repeatddudu.entity.QRepeatDduduEntity.repeatDduduEntity;
+import static com.ddudu.infra.mysql.planning.repeatddudu.entity.QRepeatDduduEntity.repeatDduduEntity;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

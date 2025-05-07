@@ -2,12 +2,12 @@ package com.ddudu.domain.user.user.aggregate;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.ddudu.domain.user.user.aggregate.enums.Authority;
+import com.ddudu.common.dto.Authority;
 import com.ddudu.domain.user.user.aggregate.enums.UserStatus;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
 import com.ddudu.domain.user.user.aggregate.vo.Options;
-import com.ddudu.domain.user.user.exception.UserErrorCode;
-import io.micrometer.common.util.StringUtils;
+import com.ddudu.common.exception.UserErrorCode;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

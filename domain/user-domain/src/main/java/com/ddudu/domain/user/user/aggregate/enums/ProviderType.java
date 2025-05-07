@@ -1,6 +1,6 @@
 package com.ddudu.domain.user.user.aggregate.enums;
 
-import com.ddudu.domain.user.user.exception.UserErrorCode;
+import com.ddudu.common.exception.UserErrorCode;
 import java.util.Arrays;
 
 public enum ProviderType {

@@ -1,6 +1,6 @@
 package com.ddudu.domain.user.user.service;
 
-import com.ddudu.domain.common.annotation.DomainService;
+import com.ddudu.common.annotation.DomainService;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAdjective;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAnimal;

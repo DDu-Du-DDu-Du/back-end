@@ -3,8 +3,8 @@ package com.ddudu.domain.planning.periodgoal.aggregate.enums;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
-import com.ddudu.domain.planning.periodgoal.exception.PeriodGoalErrorCode;
+import com.ddudu.common.exception.GoalErrorCode;
+import com.ddudu.common.exception.PeriodGoalErrorCode;
 import java.util.Arrays;
 
 public enum PeriodGoalType {

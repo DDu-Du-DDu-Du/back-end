@@ -1,16 +1,16 @@
 package com.ddudu.application.planning.ddudu.service;
 
-import com.ddudu.application.common.annotation.UseCase;
-import com.ddudu.domain.planning.ddudu.aggregate.DduduList;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.application.planning.ddudu.model.DduduList;
+import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.enums.Relationship;
-import com.ddudu.application.planning.ddudu.dto.GoalGroupedDdudus;
-import com.ddudu.application.planning.ddudu.port.in.GetDailyDdudusByGoalUseCase;
-import com.ddudu.application.planning.ddudu.port.out.DduduLoaderPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.port.ddudu.in.GetDailyDdudusByGoalUseCase;
+import com.ddudu.application.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +39,10 @@ public class GetDailyDdudusByGoalService implements GetDailyDdudusByGoalUseCase 
 
     // 3. 뚜두 조회
     DduduList ddudus = new DduduList(
-        dduduLoaderPort.getDailyDdudus(date, user, accessiblePrivacyTypes));
+        dduduLoaderPort.getDailyDdudus(date, user.getId(), accessiblePrivacyTypes));
 
     return ddudus.getDdudusWithGoal(
-        goalLoaderPort.findAllByUserAndPrivacyTypes(user, accessiblePrivacyTypes)
+        goalLoaderPort.findAllByUserAndPrivacyTypes(user.getId(), accessiblePrivacyTypes)
     );
   }
 

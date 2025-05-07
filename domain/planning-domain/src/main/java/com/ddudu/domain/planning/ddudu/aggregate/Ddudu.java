@@ -5,7 +5,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
+import com.ddudu.common.exception.DduduErrorCode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;

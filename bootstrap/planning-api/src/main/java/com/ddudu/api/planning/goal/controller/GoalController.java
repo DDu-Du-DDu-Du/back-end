@@ -1,26 +1,23 @@
 package com.ddudu.api.planning.goal.controller;
 
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
-import com.ddudu.application.planning.goal.dto.request.ChangeGoalStatusRequest;
-import com.ddudu.application.planning.goal.dto.request.CreateGoalRequest;
-import com.ddudu.application.planning.goal.dto.request.UpdateGoalRequest;
-import com.ddudu.application.planning.goal.dto.response.BasicGoalResponse;
-import com.ddudu.application.planning.goal.dto.response.GoalIdResponse;
-import com.ddudu.application.planning.goal.dto.response.GoalWithRepeatDduduResponse;
-import com.ddudu.application.planning.goal.port.in.ChangeGoalStatusUseCase;
-import com.ddudu.application.planning.goal.port.in.CreateGoalUseCase;
-import com.ddudu.application.planning.goal.port.in.DeleteGoalUseCase;
-import com.ddudu.application.planning.goal.port.in.RetrieveAllGoalsUseCase;
-import com.ddudu.application.planning.goal.port.in.RetrieveGoalUseCase;
-import com.ddudu.application.planning.goal.port.in.UpdateGoalUseCase;
-import com.ddudu.bootstrap.common.annotation.Login;
 import com.ddudu.api.planning.goal.doc.GoalControllerDoc;
-import com.ddudu.bootstrap.common.exception.ForbiddenException;
+import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
+import com.ddudu.application.dto.goal.request.CreateGoalRequest;
+import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
+import com.ddudu.application.dto.goal.response.GoalIdResponse;
+import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
+import com.ddudu.application.port.goal.in.ChangeGoalStatusUseCase;
+import com.ddudu.application.port.goal.in.CreateGoalUseCase;
+import com.ddudu.application.port.goal.in.DeleteGoalUseCase;
+import com.ddudu.application.port.goal.in.RetrieveAllGoalsUseCase;
+import com.ddudu.application.port.goal.in.RetrieveGoalUseCase;
+import com.ddudu.application.port.goal.in.UpdateGoalUseCase;
+import com.ddudu.bootstrap.common.annotation.Login;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -91,7 +88,7 @@ public class GoalController implements GoalControllerDoc {
       @RequestParam
       Long userId
   ) {
-    checkAuthority(loginId, userId);
+    // TODO: privacy type 별 허용 목표로 조정
     List<BasicGoalResponse> response = retrieveAllGoalsUseCase.findAllByUser(userId);
 
     return ResponseEntity.ok(response);
@@ -150,12 +147,6 @@ public class GoalController implements GoalControllerDoc {
 
     return ResponseEntity.noContent()
         .build();
-  }
-
-  private void checkAuthority(Long loginId, Long userId) {
-    if (!Objects.equals(loginId, userId)) {
-      throw new ForbiddenException(GoalErrorCode.INVALID_AUTHORITY);
-    }
   }
 
 }

@@ -1,19 +1,20 @@
 package com.ddudu.application.planning.ddudu.service;
 
-import com.ddudu.application.common.annotation.UseCase;
-import com.ddudu.domain.planning.ddudu.aggregate.Timetable;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.application.planning.ddudu.model.Timetable;
+import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.enums.Relationship;
-import com.ddudu.application.planning.ddudu.dto.GoalGroupedDdudus;
-import com.ddudu.application.planning.ddudu.dto.TimeGroupedDdudus;
-import com.ddudu.application.planning.ddudu.dto.response.TimetableResponse;
-import com.ddudu.application.planning.ddudu.port.in.GetTimetableUseCase;
-import com.ddudu.application.planning.ddudu.port.out.DduduLoaderPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
+import com.ddudu.application.dto.ddudu.response.TimetableResponse;
+import com.ddudu.application.port.ddudu.in.GetTimetableUseCase;
+import com.ddudu.application.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,12 +43,11 @@ public class GetTimetableService implements
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
     // 3. 타임 테이블 조회
-    Timetable timetable = new Timetable(
-        dduduLoaderPort.getDailyDdudus(date, user, accessiblePrivacyTypes));
+    List<Ddudu> ddudus = dduduLoaderPort.getDailyDdudus(date, user.getId(), accessiblePrivacyTypes);
+    Timetable timetable = new Timetable(ddudus);
 
     // 4. 응답 생성 (데이터 변환)
-    List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(
-        user, accessiblePrivacyTypes);
+    List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(user.getId(), accessiblePrivacyTypes);
     List<TimeGroupedDdudus> assignedDdudus = timetable.getTimeGroupedDdudus(goals);
     List<GoalGroupedDdudus> unassignedDdudus = timetable.getUnassignedDdudusWithGoal(goals);
 

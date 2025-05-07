@@ -2,12 +2,12 @@ package com.ddudu.domain.user.user.aggregate.vo;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.enums.ProviderType;
-import com.ddudu.domain.user.user.exception.UserErrorCode;
-import io.micrometer.common.util.StringUtils;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 public class AuthProvider {

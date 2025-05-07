@@ -1,13 +1,13 @@
 package com.ddudu.infra.mysql.planning.ddudu.repository;
 
-import static com.ddudu.infra.planningmysql.ddudu.entity.QDduduEntity.dduduEntity;
-import static com.ddudu.infra.planningmysql.goal.entity.QGoalEntity.goalEntity;
+import static com.ddudu.infra.mysql.planning.ddudu.entity.QDduduEntity.dduduEntity;
+import static com.ddudu.infra.mysql.planning.goal.entity.QGoalEntity.goalEntity;
 
+import com.ddudu.aggregate.BaseStats;
 import com.ddudu.application.common.dto.scroll.OrderType;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
-import com.ddudu.application.planning.ddudu.dto.SimpleDduduSearchDto;
-import com.ddudu.application.stats.dto.StatsBaseDto;
-import com.ddudu.application.stats.dto.response.DduduCompletionResponse;
+import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.infra.mysql.planning.ddudu.dto.DduduCursorDto;
@@ -175,7 +175,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   @Override
-  public List<StatsBaseDto> findStatsBaseOfUser(
+  public List<BaseStats> findStatsBaseOfUser(
       Long userId, Long goalId, LocalDate from, LocalDate to
   ) {
     BooleanBuilder condition = new BooleanBuilder(goalEntity.userId.eq(userId))
@@ -260,9 +260,9 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     return dduduEntity.scheduledOn.eq(date);
   }
 
-  private ConstructorExpression<StatsBaseDto> projectionStatsBase() {
+  private ConstructorExpression<BaseStats> projectionStatsBase() {
     return Projections.constructor(
-        StatsBaseDto.class,
+        BaseStats.class,
         dduduEntity.id,
         goalEntity.id,
         dduduEntity.status,

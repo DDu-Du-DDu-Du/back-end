@@ -1,12 +1,12 @@
 package com.ddudu.application.planning.goal.service;
 
-import com.ddudu.application.common.annotation.UseCase;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.goal.dto.response.BasicGoalResponse;
-import com.ddudu.application.planning.goal.port.in.RetrieveAllGoalsUseCase;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
+import com.ddudu.application.port.goal.in.RetrieveAllGoalsUseCase;
+import com.ddudu.application.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ public class RetrieveAllGoalsService implements RetrieveAllGoalsUseCase {
     User user = userLoaderPort.getUserOrElseThrow(
         userId, GoalErrorCode.USER_NOT_EXISTING.getCodeName());
 
-    return goalLoaderPort.findAllByUserAndPrivacyTypes(user)
+    return goalLoaderPort.findAllByUserAndPrivacyTypes(user.getId())
         .stream()
         .map(BasicGoalResponse::from)
         .toList();

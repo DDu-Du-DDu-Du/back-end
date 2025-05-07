@@ -1,8 +1,8 @@
 package com.ddudu.api.user.auth.doc;
 
-import com.ddudu.domain.user.user.aggregate.enums.ProviderType;
-import com.ddudu.application.user.auth.dto.request.TokenRefreshRequest;
-import com.ddudu.application.user.auth.dto.response.TokenResponse;
+import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
+import com.ddudu.application.dto.auth.request.TokenRefreshRequest;
+import com.ddudu.application.dto.auth.response.TokenResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -24,10 +24,7 @@ public interface AuthControllerDoc {
   @Parameter(
       name = "providerType",
       in = ParameterIn.PATH,
-      schema = @Schema(
-          implementation = ProviderType.class,
-          defaultValue = "KAKAO"
-      )
+      schema = @Schema(allowableValues = {"KAKAO"})
   )
   ResponseEntity<TokenResponse> login(String socialToken, String providerType);
 

@@ -1,7 +1,7 @@
 package com.ddudu.infra.mysql.user.user.repository;
 
-import static com.ddudu.infra.usermysql.user.entity.QAuthProviderEntity.authProviderEntity;
-import static com.ddudu.infra.usermysql.user.entity.QUserEntity.userEntity;
+import static com.ddudu.infra.mysql.user.user.entity.QAuthProviderEntity.authProviderEntity;
+import static com.ddudu.infra.mysql.user.user.entity.QUserEntity.userEntity;
 
 import com.ddudu.infra.mysql.user.user.dto.FullUser;
 import com.querydsl.core.group.GroupBy;

@@ -1,6 +1,6 @@
 package com.ddudu.infra.mysql.planning.goal.repository;
 
-import static com.ddudu.infra.planningmysql.goal.entity.QGoalEntity.goalEntity;
+import static com.ddudu.infra.mysql.planning.goal.entity.QGoalEntity.goalEntity;
 
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.infra.mysql.planning.goal.entity.GoalEntity;

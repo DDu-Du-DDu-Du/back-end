@@ -1,12 +1,12 @@
 package com.ddudu.application.planning.repeatddudu.service;
 
-import com.ddudu.application.common.annotation.UseCase;
+import com.ddudu.common.annotation.UseCase;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
-import com.ddudu.application.planning.repeatddudu.port.in.DeleteRepeatDduduUseCase;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.planning.repeatddudu.port.out.DeleteRepeatDduduPort;
-import com.ddudu.application.planning.repeatddudu.port.out.RepeatDduduLoaderPort;
+import com.ddudu.common.exception.RepeatDduduErrorCode;
+import com.ddudu.application.port.repeatddudu.in.DeleteRepeatDduduUseCase;
+import com.ddudu.application.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.port.repeatddudu.out.DeleteRepeatDduduPort;
+import com.ddudu.application.port.repeatddudu.out.RepeatDduduLoaderPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

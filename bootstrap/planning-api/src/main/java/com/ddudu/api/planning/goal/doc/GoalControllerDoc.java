@@ -1,12 +1,13 @@
 package com.ddudu.api.planning.goal.doc;
 
-import com.ddudu.application.planning.goal.dto.request.ChangeGoalStatusRequest;
-import com.ddudu.application.planning.goal.dto.request.CreateGoalRequest;
-import com.ddudu.application.planning.goal.dto.request.UpdateGoalRequest;
-import com.ddudu.application.planning.goal.dto.response.BasicGoalResponse;
-import com.ddudu.application.planning.goal.dto.response.GoalIdResponse;
-import com.ddudu.application.planning.goal.dto.response.GoalWithRepeatDduduResponse;
-import com.ddudu.bootstrap.userapi.auth.doc.AuthErrorExamples;
+import com.ddudu.application.dto.goal.request.ChangeGoalStatusRequest;
+import com.ddudu.application.dto.goal.request.CreateGoalRequest;
+import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
+import com.ddudu.application.dto.goal.response.GoalIdResponse;
+import com.ddudu.application.dto.goal.response.GoalWithRepeatDduduResponse;
+import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
+import com.ddudu.bootstrap.common.doc.examples.GoalErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

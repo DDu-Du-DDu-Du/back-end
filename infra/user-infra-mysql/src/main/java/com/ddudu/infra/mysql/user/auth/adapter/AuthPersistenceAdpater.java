@@ -1,9 +1,9 @@
 package com.ddudu.infra.mysql.user.auth.adapter;
 
 import com.ddudu.domain.user.auth.aggregate.RefreshToken;
-import com.ddudu.application.user.auth.port.out.TokenLoaderPort;
-import com.ddudu.application.user.auth.port.out.TokenManipulationPort;
-import com.ddudu.application.common.annotation.DrivenAdapter;
+import com.ddudu.application.port.auth.out.TokenLoaderPort;
+import com.ddudu.application.port.auth.out.TokenManipulationPort;
+import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.infra.mysql.user.auth.entiy.RefreshTokenEntity;
 import com.ddudu.infra.mysql.user.auth.repository.RefreshTokenRepository;
 import java.util.List;

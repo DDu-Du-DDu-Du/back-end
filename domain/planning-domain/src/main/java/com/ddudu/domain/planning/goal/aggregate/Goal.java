@@ -8,7 +8,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.planning.goal.aggregate.vo.Color;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
+import com.ddudu.common.exception.GoalErrorCode;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.ddudu.infra.mysql.user.auth.repository;
 
-import static com.ddudu.infra.usermysql.auth.entiy.QRefreshTokenEntity.refreshTokenEntity;
+import static com.ddudu.infra.mysql.user.auth.entiy.QRefreshTokenEntity.refreshTokenEntity;
 
 import com.ddudu.infra.mysql.user.auth.entiy.RefreshTokenEntity;
 import com.querydsl.core.BooleanBuilder;

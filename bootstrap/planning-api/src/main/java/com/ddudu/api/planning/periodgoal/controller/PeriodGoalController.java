@@ -2,14 +2,14 @@ package com.ddudu.api.planning.periodgoal.controller;
 
 import static java.util.Objects.isNull;
 
-import com.ddudu.application.planning.periodgoal.dto.request.CreatePeriodGoalRequest;
-import com.ddudu.application.planning.periodgoal.dto.request.UpdatePeriodGoalRequest;
-import com.ddudu.application.planning.periodgoal.dto.response.PeriodGoalSummary;
-import com.ddudu.application.planning.periodgoal.port.in.CreatePeriodGoalUseCase;
-import com.ddudu.application.planning.periodgoal.port.in.RetrievePeriodGoalUseCase;
-import com.ddudu.application.planning.periodgoal.port.in.UpdatePeriodGoalUseCase;
+import com.ddudu.application.dto.IdResponse;
+import com.ddudu.application.dto.periodgoal.request.CreatePeriodGoalRequest;
+import com.ddudu.application.dto.periodgoal.request.UpdatePeriodGoalRequest;
+import com.ddudu.application.dto.periodgoal.response.PeriodGoalSummary;
+import com.ddudu.application.port.periodgoal.in.CreatePeriodGoalUseCase;
+import com.ddudu.application.port.periodgoal.in.RetrievePeriodGoalUseCase;
+import com.ddudu.application.port.periodgoal.in.UpdatePeriodGoalUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
-import com.ddudu.bootstrap.common.dto.response.IdResponse;
 import com.ddudu.api.planning.periodgoal.doc.PeriodGoalControllerDoc;
 import jakarta.validation.Valid;
 import java.net.URI;

@@ -6,7 +6,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
 import com.ddudu.domain.planning.periodgoal.aggregate.vo.PeriodGoalDate;
-import com.ddudu.domain.planning.periodgoal.exception.PeriodGoalErrorCode;
+import com.ddudu.common.exception.PeriodGoalErrorCode;
 import java.time.LocalDate;
 import java.util.Objects;
 import lombok.AccessLevel;

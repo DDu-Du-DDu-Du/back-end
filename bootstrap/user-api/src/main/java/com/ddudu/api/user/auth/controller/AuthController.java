@@ -1,10 +1,10 @@
 package com.ddudu.api.user.auth.controller;
 
-import com.ddudu.application.user.auth.dto.request.SocialRequest;
-import com.ddudu.application.user.auth.dto.request.TokenRefreshRequest;
-import com.ddudu.application.user.auth.dto.response.TokenResponse;
-import com.ddudu.application.user.auth.port.in.SocialLoginUseCase;
-import com.ddudu.application.user.auth.port.in.TokenRefreshUseCase;
+import com.ddudu.application.dto.auth.request.SocialRequest;
+import com.ddudu.application.dto.auth.request.TokenRefreshRequest;
+import com.ddudu.application.dto.auth.response.TokenResponse;
+import com.ddudu.application.port.auth.in.SocialLoginUseCase;
+import com.ddudu.application.port.auth.in.TokenRefreshUseCase;
 import com.ddudu.api.user.auth.doc.AuthControllerDoc;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;

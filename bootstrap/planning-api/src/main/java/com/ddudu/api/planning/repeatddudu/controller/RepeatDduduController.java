@@ -1,12 +1,12 @@
 package com.ddudu.api.planning.repeatddudu.controller;
 
-import com.ddudu.application.planning.repeatddudu.dto.request.CreateRepeatDduduRequest;
-import com.ddudu.application.planning.repeatddudu.dto.request.UpdateRepeatDduduRequest;
-import com.ddudu.application.planning.repeatddudu.port.in.CreateRepeatDduduUseCase;
-import com.ddudu.application.planning.repeatddudu.port.in.DeleteRepeatDduduUseCase;
-import com.ddudu.application.planning.repeatddudu.port.in.UpdateRepeatDduduUseCase;
+import com.ddudu.application.dto.IdResponse;
+import com.ddudu.application.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.dto.repeatddudu.request.UpdateRepeatDduduRequest;
+import com.ddudu.application.port.repeatddudu.in.CreateRepeatDduduUseCase;
+import com.ddudu.application.port.repeatddudu.in.DeleteRepeatDduduUseCase;
+import com.ddudu.application.port.repeatddudu.in.UpdateRepeatDduduUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
-import com.ddudu.bootstrap.common.dto.response.IdResponse;
 import com.ddudu.api.planning.repeatddudu.doc.RepeatDduduControllerDoc;
 import jakarta.validation.Valid;
 import java.net.URI;

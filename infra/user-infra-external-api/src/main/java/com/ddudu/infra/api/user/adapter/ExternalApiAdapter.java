@@ -1,9 +1,9 @@
 package com.ddudu.infra.api.user.adapter;
 
+import com.ddudu.application.dto.auth.request.SocialRequest;
+import com.ddudu.application.port.auth.out.SocialResourcePort;
+import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
-import com.ddudu.application.user.auth.dto.request.SocialRequest;
-import com.ddudu.application.user.auth.port.out.SocialResourcePort;
-import com.ddudu.application.common.annotation.DrivenAdapter;
 import com.ddudu.infra.api.user.handler.SocialResourceHandler;
 import com.ddudu.infra.api.user.response.SocialResource;
 import lombok.RequiredArgsConstructor;

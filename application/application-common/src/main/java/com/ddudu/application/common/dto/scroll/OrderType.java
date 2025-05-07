@@ -1,4 +1,4 @@
-package com.ddudu.application.common.scroll;
+package com.ddudu.application.common.dto.scroll;
 
 import java.util.Arrays;
 import java.util.Objects;

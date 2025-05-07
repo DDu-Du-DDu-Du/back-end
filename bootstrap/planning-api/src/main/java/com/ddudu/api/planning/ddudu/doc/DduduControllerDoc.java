@@ -1,20 +1,20 @@
 package com.ddudu.api.planning.ddudu.doc;
 
-import com.ddudu.application.planning.ddudu.dto.GoalGroupedDdudus;
-import com.ddudu.application.planning.ddudu.dto.SimpleDduduSearchDto;
-import com.ddudu.application.planning.ddudu.dto.request.ChangeNameRequest;
-import com.ddudu.application.planning.ddudu.dto.request.CreateDduduRequest;
-import com.ddudu.application.planning.ddudu.dto.request.DduduSearchRequest;
-import com.ddudu.application.planning.ddudu.dto.request.MoveDateRequest;
-import com.ddudu.application.planning.ddudu.dto.request.PeriodSetupRequest;
-import com.ddudu.application.planning.ddudu.dto.request.RepeatAnotherDayRequest;
-import com.ddudu.application.stats.dto.response.DduduCompletionResponse;
-import com.ddudu.application.planning.ddudu.dto.response.DduduDetailResponse;
-import com.ddudu.application.planning.ddudu.dto.response.RepeatAnotherDayResponse;
-import com.ddudu.application.planning.ddudu.dto.response.TimetableResponse;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
-import com.ddudu.bootstrap.common.dto.response.IdResponse;
-import com.ddudu.bootstrap.userapi.auth.doc.AuthErrorExamples;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.dto.ddudu.request.ChangeNameRequest;
+import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
+import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
+import com.ddudu.application.dto.ddudu.request.MoveDateRequest;
+import com.ddudu.application.dto.ddudu.request.PeriodSetupRequest;
+import com.ddudu.application.dto.ddudu.request.RepeatAnotherDayRequest;
+import com.ddudu.application.dto.ddudu.response.DduduDetailResponse;
+import com.ddudu.application.dto.ddudu.response.RepeatAnotherDayResponse;
+import com.ddudu.application.dto.ddudu.response.TimetableResponse;
+import com.ddudu.bootstrap.common.doc.examples.DduduErrorExamples;
+import com.ddudu.application.dto.IdResponse;
+import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -239,111 +238,6 @@ public interface DduduControllerDoc {
       }
   )
   ResponseEntity<TimetableResponse> getDailyTimetable(Long loginId, Long userId, LocalDate date);
-
-
-  @Operation(summary = "주간 뚜두 완료도 조회")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
-          ),
-          @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
-              content = @Content(
-                  examples = @ExampleObject(
-                      name = "5002",
-                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
-                  )
-              )
-          ),
-          @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
-              content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2008",
-                          description = "로그인 사용자 아이디가 유효하지 않는 경우",
-                          value = DduduErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
-                      ),
-                      @ExampleObject(
-                          name = "2006",
-                          description = "타겟 사용자 아이디가 유효하지 않는 경우",
-                          value = DduduErrorExamples.DDUDU_USER_NOT_EXISTING
-                      )
-                  }
-              )
-          )
-      }
-  )
-  @Parameters(
-      {
-          @Parameter(
-              name = "userId",
-              description = "조회할 뚜두의 사용자 식별자 (기본값: 로그인한 사용자)",
-              in = ParameterIn.QUERY
-          ),
-          @Parameter(
-              name = "date",
-              description = "조회할 날짜 (기본값: 오늘)",
-              in = ParameterIn.QUERY
-          )
-      }
-  )
-  ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
-      Long loginId, Long userId, LocalDate date
-  );
-
-  @Operation(summary = "월간 뚜두 완료도 조회")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
-          ),
-          @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
-              content = @Content(
-                  examples = @ExampleObject(
-                      name = "5002",
-                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
-                  )
-              )
-          ),
-          @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
-              content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2008",
-                          description = "로그인 사용자 아이디가 유효하지 않는 경우",
-                          value = DduduErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
-                      ),
-                      @ExampleObject(
-                          name = "2006",
-                          description = "타겟 사용자 아이디가 유효하지 않는 경우",
-                          value = DduduErrorExamples.DDUDU_USER_NOT_EXISTING
-                      )
-                  }
-              )
-          )
-      }
-  )
-  @Parameters(
-      {
-          @Parameter(
-              name = "userId",
-              description = "조회할 뚜두의 사용자 식별자 (기본값: 로그인한 사용자)",
-              in = ParameterIn.QUERY
-          ),
-          @Parameter(
-              name = "date",
-              description = "조회할 달 (기본값: 이번 달)",
-              in = ParameterIn.QUERY
-          )
-      }
-  )
-  ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
-      Long loginId, Long userId, YearMonth yearMonth
-  );
 
   @Operation(summary = "뚜두 이름(내용) 변경")
   @ApiResponses(

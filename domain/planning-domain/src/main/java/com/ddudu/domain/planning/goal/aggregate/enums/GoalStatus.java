@@ -3,7 +3,7 @@ package com.ddudu.domain.planning.goal.aggregate.enums;
 
 import static java.util.Objects.isNull;
 
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
+import com.ddudu.common.exception.GoalErrorCode;
 import java.util.Arrays;
 
 public enum GoalStatus {

@@ -1,29 +1,29 @@
 package com.ddudu.application.user.auth.service;
 
-import com.ddudu.application.common.annotation.UseCase;
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.application.dto.auth.request.TokenRefreshRequest;
+import com.ddudu.application.dto.auth.response.TokenResponse;
+import com.ddudu.application.port.auth.in.TokenRefreshUseCase;
+import com.ddudu.application.port.auth.out.TokenLoaderPort;
+import com.ddudu.application.port.auth.out.TokenManipulationPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
 import com.ddudu.domain.user.auth.aggregate.RefreshToken;
 import com.ddudu.domain.user.auth.aggregate.vo.UserFamily;
-import com.ddudu.domain.user.auth.exception.AuthErrorCode;
+import com.ddudu.common.exception.AuthErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.user.auth.dto.request.TokenRefreshRequest;
-import com.ddudu.application.user.auth.dto.response.TokenResponse;
-import com.ddudu.application.user.auth.port.in.TokenRefreshUseCase;
-import com.ddudu.application.user.auth.port.out.TokenLoaderPort;
-import com.ddudu.application.user.auth.port.out.TokenManipulationPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional(dontRollbackOn = UnsupportedOperationException.class)
+@Transactional(noRollbackFor = UnsupportedOperationException.class)
 public class TokenRefreshService implements TokenRefreshUseCase {
 
   private final TokenLoaderPort tokenLoaderPort;
   private final TokenManipulationPort tokenManipulationPort;
-  private final AuthDomainService authDomainService;
+  private final TokenManager tokenManager;
   private final UserLoaderPort userLoaderPort;
 
   @Override
@@ -44,8 +44,8 @@ public class TokenRefreshService implements TokenRefreshUseCase {
             String.valueOf(currentRefreshToken.getUserId())
         ));
 
-    String accessToken = authDomainService.createAccessToken(user);
-    RefreshToken newRefreshToken = authDomainService.createRefreshToken(
+    String accessToken = tokenManager.createAccessToken(user);
+    RefreshToken newRefreshToken = tokenManager.createRefreshToken(
         user, currentRefreshToken.getFamily());
 
     tokenManipulationPort.save(newRefreshToken);
@@ -54,7 +54,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
   }
 
   private List<RefreshToken> getTokenFamilyOf(String refreshToken) {
-    UserFamily decoded = authDomainService.decodeRefreshToken(refreshToken);
+    UserFamily decoded = tokenManager.decodeRefreshToken(refreshToken);
 
     return tokenLoaderPort.loadByUserFamily(
         decoded.getUserId(), decoded.getFamily());

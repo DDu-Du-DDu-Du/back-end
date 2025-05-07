@@ -2,7 +2,7 @@ package com.ddudu.domain.planning.goal.aggregate.enums;
 
 import static java.util.Objects.isNull;
 
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.user.user.aggregate.enums.Relationship;
 import java.util.Arrays;
 import java.util.List;

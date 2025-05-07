@@ -1,10 +1,11 @@
 package com.ddudu.api.planning.repeatddudu.doc;
 
-import com.ddudu.application.planning.repeatddudu.dto.request.CreateRepeatDduduRequest;
-import com.ddudu.application.planning.repeatddudu.dto.request.UpdateRepeatDduduRequest;
-import com.ddudu.bootstrap.common.dto.response.IdResponse;
-import com.ddudu.bootstrap.userapi.auth.doc.AuthErrorExamples;
-import com.ddudu.api.planning.goal.doc.GoalErrorExamples;
+import com.ddudu.application.dto.IdResponse;
+import com.ddudu.application.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.dto.repeatddudu.request.UpdateRepeatDduduRequest;
+import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
+import com.ddudu.bootstrap.common.doc.examples.RepeatDduduErrorExamples;
+import com.ddudu.bootstrap.common.doc.examples.GoalErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

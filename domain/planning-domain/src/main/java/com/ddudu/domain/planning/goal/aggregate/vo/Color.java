@@ -3,7 +3,7 @@ package com.ddudu.domain.planning.goal.aggregate.vo;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
+import com.ddudu.common.exception.GoalErrorCode;
 import java.util.regex.Pattern;
 import lombok.Getter;
 

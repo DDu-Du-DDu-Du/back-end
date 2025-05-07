@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 public enum Relationship {
-  ME((user, targetUser) -> user.equals(targetUser)),
+  ME(User::equals),
   FOLLOWER((user, targetUser) -> false),
   NONE((user, targetUser) -> true);
 

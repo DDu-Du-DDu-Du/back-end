@@ -2,7 +2,7 @@ package com.ddudu.domain.user.auth.aggregate.vo;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.ddudu.domain.user.auth.exception.AuthErrorCode;
+import com.ddudu.common.exception.AuthErrorCode;
 import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;

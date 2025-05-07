@@ -2,9 +2,9 @@ package com.ddudu.infra.mysql.user.user.adapter;
 
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
-import com.ddudu.application.common.annotation.DrivenAdapter;
+import com.ddudu.application.port.auth.out.SignUpPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.infra.mysql.user.user.dto.FullUser;
 import com.ddudu.infra.mysql.user.user.entity.AuthProviderEntity;
 import com.ddudu.infra.mysql.user.user.entity.UserEntity;

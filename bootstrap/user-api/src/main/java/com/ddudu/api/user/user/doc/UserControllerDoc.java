@@ -1,7 +1,8 @@
 package com.ddudu.api.user.user.doc;
 
-import com.ddudu.application.user.user.dto.response.MeResponse;
-import com.ddudu.api.user.auth.doc.AuthErrorExamples;
+import com.ddudu.application.dto.user.response.MeResponse;
+import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
+import com.ddudu.bootstrap.common.doc.examples.UserErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

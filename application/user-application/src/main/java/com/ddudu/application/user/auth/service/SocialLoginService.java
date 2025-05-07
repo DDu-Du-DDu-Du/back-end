@@ -1,31 +1,31 @@
 package com.ddudu.application.user.auth.service;
 
-import com.ddudu.application.common.annotation.UseCase;
+import com.ddudu.common.annotation.UseCase;
 import com.ddudu.domain.user.auth.aggregate.RefreshToken;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.service.GoalDomainService;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
 import com.ddudu.domain.user.user.service.UserDomainService;
-import com.ddudu.application.user.auth.dto.request.SocialRequest;
-import com.ddudu.application.user.auth.dto.response.TokenResponse;
-import com.ddudu.application.user.auth.port.in.SocialLoginUseCase;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.user.auth.port.out.SocialResourcePort;
-import com.ddudu.application.user.auth.port.out.TokenManipulationPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
-import jakarta.transaction.Transactional;
+import com.ddudu.application.dto.auth.request.SocialRequest;
+import com.ddudu.application.dto.auth.response.TokenResponse;
+import com.ddudu.application.port.auth.in.SocialLoginUseCase;
+import com.ddudu.application.port.auth.out.SignUpPort;
+import com.ddudu.application.port.auth.out.SocialResourcePort;
+import com.ddudu.application.port.auth.out.TokenManipulationPort;
+import com.ddudu.application.port.goal.out.SaveGoalPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
 @Transactional
 public class SocialLoginService implements SocialLoginUseCase {
 
-  private final AuthDomainService authDomainService;
+  private final TokenManager tokenManager;
   private final UserDomainService userDomainService;
   private final GoalDomainService goalDomainService;
   private final SocialResourcePort socialResourcePort;
@@ -47,16 +47,16 @@ public class SocialLoginService implements SocialLoginUseCase {
     User newUser = userDomainService.createFirstUser(authProvider);
     User user = signUpPort.save(newUser);
 
-    List<Goal> defaultGoals = goalDomainService.createDefaultGoals(user);
+    List<Goal> defaultGoals = goalDomainService.createDefaultGoals(user.getId());
     saveGoalPort.saveAll(defaultGoals);
 
     return createTokenSet(user);
   }
 
   private TokenResponse createTokenSet(User user) {
-    String accessToken = authDomainService.createAccessToken(user);
+    String accessToken = tokenManager.createAccessToken(user);
     Integer nextFamily = tokenManipulationPort.getNextFamilyOfUser(user.getId());
-    RefreshToken refreshToken = authDomainService.createRefreshToken(user, nextFamily);
+    RefreshToken refreshToken = tokenManager.createRefreshToken(user, nextFamily);
 
     tokenManipulationPort.save(refreshToken);
 
