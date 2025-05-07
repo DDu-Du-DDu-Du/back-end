@@ -1,16 +1,20 @@
 package com.ddudu.domain.planning.repeatddudu.aggregate.enums;
 
-import static java.util.Objects.isNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.nonNull;
 
-import com.ddudu.domain.planning.repeatddudu.aggregate.DailyRepeatPattern;
-import com.ddudu.domain.planning.repeatddudu.aggregate.MonthlyRepeatPattern;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatPattern;
-import com.ddudu.domain.planning.repeatddudu.aggregate.WeeklyRepeatPattern;
-import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
-import com.ddudu.application.planning.repeatddudu.dto.RepeatPatternDto;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.DailyRepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.MonthlyRepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatInfo;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.WeeklyRepeatPattern;
+import com.ddudu.common.exception.RepeatDduduErrorCode;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public enum RepeatType {
   DAILY(request -> new DailyRepeatPattern()),
   WEEKLY(request -> new WeeklyRepeatPattern(request.repeatDaysOfWeek())),
@@ -19,16 +23,10 @@ public enum RepeatType {
       request.lastDayOfMonth()
   ));
 
-  private final Function<RepeatPatternDto, RepeatPattern> createPattern;
-
-  RepeatType(Function<RepeatPatternDto, RepeatPattern> createPattern) {
-    this.createPattern = createPattern;
-  }
+  private final Function<RepeatInfo, RepeatPattern> createPattern;
 
   public static RepeatType from(String value) {
-    if (isNull(value)) {
-      return null;
-    }
+    checkArgument(nonNull(value), RepeatDduduErrorCode.NULL_REPEAT_TYPE.getCodeName());
 
     return Arrays.stream(RepeatType.values())
         .filter(type -> value.toUpperCase()
@@ -39,7 +37,13 @@ public enum RepeatType {
                 RepeatDduduErrorCode.INVALID_REPEAT_TYPE.getCodeName()));
   }
 
-  public RepeatPattern createRepeatPattern(RepeatPatternDto request) {
-    return createPattern.apply(request);
+  public RepeatPattern createRepeatPattern(
+      List<String> repeatDaysOfWeek,
+      List<Integer> repeatDaysOfMonth,
+      Boolean lastDayOfMonth
+  ) {
+    RepeatInfo repeatInfo = new RepeatInfo(repeatDaysOfWeek, repeatDaysOfMonth, lastDayOfMonth);
+
+    return createPattern.apply(repeatInfo);
   }
 }
