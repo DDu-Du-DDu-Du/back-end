@@ -5,6 +5,8 @@ plugins {
 
 dependencies {
     implementation(project(":bootstrap:bootstrap-common"))
+    implementation(project(":application:application-common"))
+    implementation(project(":common"))
     implementation(project(":application:stats-application"))
 
     implementation("org.springframework.boot:spring-boot-starter-security")

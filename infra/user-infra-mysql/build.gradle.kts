@@ -4,6 +4,8 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":common"))
+    implementation(project(":infra:infra-mysql-common"))
     implementation(project(":application:application-common"))
     implementation(project(":application:user-application"))
     implementation(project(":domain:user-domain"))

@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":domain:domain-common"))
+    implementation(project(":common"))
 
     implementation("net.datafaker:datafaker:2.0.2")
 }

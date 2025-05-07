@@ -6,6 +6,9 @@ plugins {
 
 dependencies {
     implementation(project(":application:application-common"))
+    implementation(project(":common"))
+    implementation(project(":domain:planning-domain"))
+    implementation(project(":domain:user-domain"))
     implementation(project(":domain:stats-domain"))
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
