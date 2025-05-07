@@ -1,15 +1,15 @@
-package com.ddudu.domain.planning.ddudu.aggregate;
+package com.ddudu.application.planning.ddudu.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
 
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.dto.goal.response.BasicGoalResponse;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
-import com.ddudu.application.planning.ddudu.dto.GoalGroupedDdudus;
-import com.ddudu.application.planning.ddudu.dto.response.BasicDduduResponse;
-import com.ddudu.application.planning.goal.dto.response.BasicGoalResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

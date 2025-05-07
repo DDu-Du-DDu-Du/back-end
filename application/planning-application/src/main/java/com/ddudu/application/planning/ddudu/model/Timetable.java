@@ -1,13 +1,14 @@
-package com.ddudu.domain.planning.ddudu.aggregate;
+package com.ddudu.application.planning.ddudu.model;
 
-import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
 
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.application.planning.ddudu.dto.DduduForTimetable;
-import com.ddudu.application.planning.ddudu.dto.GoalGroupedDdudus;
-import com.ddudu.application.planning.ddudu.dto.TimeGroupedDdudus;
+import com.ddudu.application.dto.ddudu.DduduForTimetable;
+import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +33,14 @@ public class Timetable {
   }
 
   public List<TimeGroupedDdudus> getTimeGroupedDdudus(List<Goal> goals) {
-    Map<Long, String> goalToColor = mapGoalsToColors(goals);
+    Map<Long, String> goalColorMap = mapGoalsToColors(goals);
 
     return timetable.entrySet()
         .stream()
         .map(entry ->
             TimeGroupedDdudus.of(
                 LocalTime.of(entry.getKey(), 0),
-                toDduduForTimetableList(entry.getValue(), goalToColor)
+                toDduduForTimetableList(entry.getValue(), goalColorMap)
             )
         )
         .toList();
@@ -55,10 +56,10 @@ public class Timetable {
   }
 
   private List<DduduForTimetable> toDduduForTimetableList(
-      List<Ddudu> ddudus, Map<Long, String> goalToColor
+      List<Ddudu> ddudus, Map<Long, String> goalColorMap
   ) {
     return ddudus.stream()
-        .map((ddudu) -> DduduForTimetable.of(ddudu, goalToColor.get(ddudu.getGoalId())))
+        .map((ddudu) -> DduduForTimetable.of(ddudu, goalColorMap.get(ddudu.getGoalId())))
         .toList();
   }
 
