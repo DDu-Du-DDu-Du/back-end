@@ -1,10 +1,11 @@
 package com.ddudu.infra.mysql.planning.repeatddudu.entity;
 
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatPattern;
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatInfo;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
 import com.ddudu.infra.mysql.common.entity.BaseEntity;
-import com.ddudu.infra.mysql.planning.repeatddudu.converter.RepeatPatternConverter;
+import com.ddudu.infra.mysql.planning.repeatddudu.converter.RepeatInfoConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -57,12 +58,12 @@ public class RepeatDduduEntity extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private RepeatType repeatType;
 
-  @Convert(converter = RepeatPatternConverter.class)
+  @Convert(converter = RepeatInfoConverter.class)
   @Column(
       name = "repeat_info",
       columnDefinition = "VARCHAR(500)"
   )
-  private RepeatPattern repeatInfo;
+  private RepeatInfoEntity repeatInfoEntity;
 
   @Column(
       name = "start_date",
@@ -91,12 +92,15 @@ public class RepeatDduduEntity extends BaseEntity {
   private LocalTime endAt;
 
   public static RepeatDduduEntity from(RepeatDdudu repeatDdudu) {
+    RepeatInfo repeatInfo = repeatDdudu.getRepeatInfo();
+    RepeatInfoEntity repeatInfoEntity = RepeatInfoEntity.from(repeatInfo);
+
     return RepeatDduduEntity.builder()
         .id(repeatDdudu.getId())
         .goalId(repeatDdudu.getGoalId())
         .name(repeatDdudu.getName())
         .repeatType(repeatDdudu.getRepeatType())
-        .repeatInfo(repeatDdudu.getRepeatPattern())
+        .repeatInfoEntity(repeatInfoEntity)
         .startDate(repeatDdudu.getStartDate())
         .endDate(repeatDdudu.getEndDate())
         .beginAt(repeatDdudu.getBeginAt())
@@ -110,7 +114,7 @@ public class RepeatDduduEntity extends BaseEntity {
         .goalId(goalId)
         .name(name)
         .repeatType(repeatType)
-        .repeatPattern(repeatInfo)
+        .repeatPattern(createRepeatPattern())
         .startDate(startDate)
         .endDate(endDate)
         .beginAt(beginAt)
@@ -119,13 +123,23 @@ public class RepeatDduduEntity extends BaseEntity {
   }
 
   public void update(RepeatDdudu repeatDdudu) {
+    RepeatInfo repeatInfo = repeatDdudu.getRepeatInfo();
+
     this.name = repeatDdudu.getName();
     this.repeatType = repeatDdudu.getRepeatType();
-    this.repeatInfo = repeatDdudu.getRepeatPattern();
+    this.repeatInfoEntity = RepeatInfoEntity.from(repeatInfo);
     this.startDate = repeatDdudu.getStartDate();
     this.endDate = repeatDdudu.getEndDate();
     this.beginAt = repeatDdudu.getBeginAt();
     this.endAt = repeatDdudu.getEndAt();
+  }
+
+  private RepeatPattern createRepeatPattern() {
+    return repeatType.createRepeatPattern(
+        repeatInfoEntity.repeatDaysOfWeek(),
+        repeatInfoEntity.repeatDaysOfMonth(),
+        repeatInfoEntity.lastDayOfMonth()
+    );
   }
 
 }
