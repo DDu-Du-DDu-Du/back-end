@@ -2,7 +2,6 @@ package com.ddudu.application.common.config;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 @ConfigurationProperties("jwt")

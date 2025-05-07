@@ -1,8 +1,8 @@
-package com.ddudu.bootstrap.common.config;
+package com.ddudu.api.user.auth.config;
 
-import com.ddudu.domain.user.user.aggregate.enums.Authority;
-import com.ddudu.bootstrap.common.filter.SocialAuthenticationFilter;
-import com.ddudu.bootstrap.common.token.converter.JwtConverter;
+import com.ddudu.api.user.auth.jwt.AuthorityProxy;
+import com.ddudu.api.user.auth.filter.SocialAuthenticationFilter;
+import com.ddudu.api.user.auth.jwt.converter.JwtConverter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,8 @@ public class WebSecurityConfig {
 
   @Bean
   public SecurityFilterChain restFilterChain(
-      HttpSecurity http, JwtConverter jwtConverter,
+      HttpSecurity http,
+      JwtConverter jwtConverter,
       SocialAuthenticationFilter socialAuthenticationFilter
   )
       throws Exception {
@@ -44,7 +45,7 @@ public class WebSecurityConfig {
         .httpBasic(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable)
         .anonymous(anonymous -> anonymous
-            .authorities(Collections.singletonList(Authority.GUEST)))
+            .authorities(Collections.singletonList(AuthorityProxy.GUEST)))
         .oauth2ResourceServer(oauth2 -> oauth2
             .jwt(jwt -> jwt
                 .jwtAuthenticationConverter(jwtConverter)))

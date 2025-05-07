@@ -1,8 +1,8 @@
-package com.ddudu.bootstrap.common.resolver;
+package com.ddudu.api.user.auth.resolver;
 
-import com.ddudu.domain.user.auth.exception.AuthErrorCode;
+import com.ddudu.api.user.auth.jwt.JwtAuthToken;
+import com.ddudu.common.exception.AuthErrorCode;
 import com.ddudu.bootstrap.common.annotation.Login;
-import com.ddudu.bootstrap.common.token.JwtAuthToken;
 import java.util.Objects;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;

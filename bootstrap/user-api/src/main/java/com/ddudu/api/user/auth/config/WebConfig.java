@@ -1,6 +1,6 @@
-package com.ddudu.bootstrap.common.config;
+package com.ddudu.api.user.auth.config;
 
-import com.ddudu.bootstrap.common.resolver.LoginUserArgumentResolver;
+import com.ddudu.api.user.auth.resolver.LoginUserArgumentResolver;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

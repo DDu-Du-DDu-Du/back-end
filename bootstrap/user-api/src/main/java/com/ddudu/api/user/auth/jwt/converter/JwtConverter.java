@@ -1,6 +1,6 @@
-package com.ddudu.bootstrap.common.token.converter;
+package com.ddudu.api.user.auth.jwt.converter;
 
-import com.ddudu.bootstrap.common.token.JwtAuthToken;
+import com.ddudu.api.user.auth.jwt.JwtAuthToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

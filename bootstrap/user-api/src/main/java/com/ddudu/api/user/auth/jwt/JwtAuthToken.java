@@ -1,8 +1,8 @@
-package com.ddudu.bootstrap.common.token;
+package com.ddudu.api.user.auth.jwt;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.ddudu.domain.user.auth.exception.AuthErrorCode;
+import com.ddudu.common.exception.AuthErrorCode;
 import java.util.Collections;
 import java.util.Objects;
 import org.springframework.security.core.GrantedAuthority;

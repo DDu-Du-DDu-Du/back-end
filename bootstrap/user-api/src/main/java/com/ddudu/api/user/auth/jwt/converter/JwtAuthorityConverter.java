@@ -1,7 +1,7 @@
-package com.ddudu.bootstrap.common.token.converter;
+package com.ddudu.api.user.auth.jwt.converter;
 
-import com.ddudu.domain.user.auth.exception.AuthErrorCode;
-import com.ddudu.domain.user.user.aggregate.enums.Authority;
+import com.ddudu.api.user.auth.jwt.AuthorityProxy;
+import com.ddudu.common.exception.AuthErrorCode;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -17,7 +17,7 @@ public class JwtAuthorityConverter implements Converter<Jwt, GrantedAuthority> {
     String authorityName = jwt.getClaimAsString(AUTHORITY_CLAIM_NAME);
 
     try {
-      return Authority.valueOf(authorityName);
+      return AuthorityProxy.valueOf(authorityName);
     } catch (NullPointerException e) {
       throw new IllegalArgumentException(AuthErrorCode.INVALID_TOKEN_AUTHORITY.getCodeName());
     }
