@@ -1,18 +1,23 @@
 package com.ddudu.application.stats.service;
 
-import com.ddudu.application.common.annotation.UseCase;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
+import static java.util.Objects.isNull;
+
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.application.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.port.stats.in.CalculateCompletionUseCase;
+import com.ddudu.application.port.stats.out.DduduStatsPort;
+import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
+import com.ddudu.domain.planning.repeatddudu.util.DayOfWeekUtil;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.enums.Relationship;
-import com.ddudu.application.stats.dto.response.DduduCompletionResponse;
-import com.ddudu.application.stats.port.in.CalculateCompletionUseCase;
-import com.ddudu.application.stats.port.out.DduduStatsPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +31,40 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
   private final DduduStatsPort dduduStatsPort;
 
   @Override
-  public List<DduduCompletionResponse> calculate(
-      Long loginId, Long userId, LocalDate from, LocalDate to
+  public List<DduduCompletionResponse> calculateWeekly(Long loginId, Long userId, LocalDate date) {
+    LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
+    LocalDate afterOneWeek = firstDayOfWeek.plusDays(7);
+
+    return calculate(loginId, userId, firstDayOfWeek, afterOneWeek);
+  }
+
+  @Override
+  public List<DduduCompletionResponse> calculateMonthly(
+      Long loginId,
+      Long userId,
+      YearMonth yearMonth
+  ) {
+    LocalDate firstDayOfMonth = isNull(yearMonth) ? YearMonth.now()
+        .atDay(1) : yearMonth.atDay(1);
+    LocalDate afterOneMonth = firstDayOfMonth.plusMonths(1);
+
+    return calculate(loginId, userId, firstDayOfMonth, afterOneMonth);
+  }
+
+  private List<DduduCompletionResponse> calculate(
+      Long loginId,
+      Long userId,
+      LocalDate from,
+      LocalDate to
   ) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
-    User user = userLoaderPort.getUserOrElseThrow(
-        userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+    User user = loginUser;
+
+    if (Objects.nonNull(userId)) {
+      user = userLoaderPort.getUserOrElseThrow(
+          userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+    }
 
     return generateCompletions(from, to, loginUser, user);
   }
@@ -44,7 +76,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
     Map<LocalDate, DduduCompletionResponse> completionByDate = dduduStatsPort.calculateDdudusCompletion(
-            startDate, endDate, user, accessiblePrivacyTypes)
+            startDate, endDate, user.getId(), accessiblePrivacyTypes)
         .stream()
         .collect(Collectors.toMap(DduduCompletionResponse::date, response -> response));
 

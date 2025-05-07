@@ -1,13 +1,19 @@
 package com.ddudu.api.stats.controller;
 
-import com.ddudu.application.stats.dto.CompletionPerGoalDto;
-import com.ddudu.application.stats.dto.response.MonthlyStatsResponse;
-import com.ddudu.application.stats.dto.response.MonthlyStatsSummaryResponse;
-import com.ddudu.application.stats.port.in.CollectMonthlyCreationStatsUseCase;
-import com.ddudu.application.stats.port.in.CollectMonthlyStatsSummaryUseCase;
-import com.ddudu.bootstrap.common.annotation.Login;
+import static java.util.Objects.isNull;
+
 import com.ddudu.api.stats.doc.StatsControllerDoc;
+import com.ddudu.application.dto.stats.CompletionPerGoalDto;
+import com.ddudu.application.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.dto.stats.response.GenericStatsResponse;
+import com.ddudu.application.dto.stats.response.MonthlyStatsSummaryResponse;
+import com.ddudu.application.port.stats.in.CalculateCompletionUseCase;
+import com.ddudu.application.port.stats.in.CollectMonthlyCreationStatsUseCase;
+import com.ddudu.application.port.stats.in.CollectMonthlyStatsSummaryUseCase;
+import com.ddudu.bootstrap.common.annotation.Login;
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +29,56 @@ public class StatsController implements StatsControllerDoc {
 
   private final CollectMonthlyStatsSummaryUseCase collectMonthlyStatsSummaryUseCase;
   private final CollectMonthlyCreationStatsUseCase collectMonthlyCreationStatsUseCase;
+  private final CalculateCompletionUseCase calculateCompletionUseCase;
+
+  /**
+   * 월별 뚜두 완료율 조회 API (달성 뚜두 수 / 생성 뚜두 수)
+   */
+  @GetMapping("/monthly")
+  public ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
+      @Login
+      Long loginId,
+      @RequestParam(required = false)
+      Long userId,
+      @RequestParam(
+          value = "date",
+          required = false
+      )
+      @DateTimeFormat(pattern = "yyyy-MM")
+      YearMonth yearMonth
+  ) {
+    List<DduduCompletionResponse> response = calculateCompletionUseCase.calculateMonthly(
+        loginId,
+        userId,
+        yearMonth
+    );
+
+    return ResponseEntity.ok(response);
+  }
+
+  /**
+   * 주간 뚜두 완료율 조회 API
+   */
+  @GetMapping("/completion/weekly")
+  public ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
+      @Login
+      Long loginId,
+      @RequestParam(required = false)
+      Long userId,
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM-dd")
+      LocalDate date
+  ) {
+    userId = isNull(userId) ? loginId : userId;
+
+    List<DduduCompletionResponse> response = calculateCompletionUseCase.calculateWeekly(
+        loginId,
+        userId,
+        date
+    );
+
+    return ResponseEntity.ok(response);
+  }
 
   @GetMapping
   public ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(
@@ -39,14 +95,14 @@ public class StatsController implements StatsControllerDoc {
   }
 
   @GetMapping("/completion")
-  public ResponseEntity<MonthlyStatsResponse<CompletionPerGoalDto>> collectCreation(
+  public ResponseEntity<GenericStatsResponse<CompletionPerGoalDto>> collectCreation(
       @Login
       Long loginId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
-    MonthlyStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsUseCase.collectCreation(
+    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsUseCase.collectCreation(
         loginId, yearMonth);
 
     return ResponseEntity.ok(response);
