@@ -5,8 +5,9 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
-import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
-import com.ddudu.application.planning.repeatddudu.dto.RepeatPatternDto;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatInfo;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
+import com.ddudu.common.exception.RepeatDduduErrorCode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -34,10 +35,17 @@ public final class RepeatDdudu {
 
   @Builder
   private RepeatDdudu(
-      Long id, Long goalId, String name, RepeatType repeatType, RepeatPattern repeatPattern,
-      LocalDate startDate, LocalDate endDate, LocalTime beginAt, LocalTime endAt
+      Long id,
+      Long goalId,
+      String name,
+      RepeatType repeatType,
+      RepeatPattern repeatPattern,
+      LocalDate startDate,
+      LocalDate endDate,
+      LocalTime beginAt,
+      LocalTime endAt
   ) {
-    validate(goalId, name, repeatType, startDate, endDate, beginAt, endAt);
+    validate(goalId, name, startDate, endDate, beginAt, endAt);
 
     this.id = id;
     this.goalId = goalId;
@@ -54,12 +62,15 @@ public final class RepeatDdudu {
     return repeatPattern.calculateRepeatDates(startDate, endDate);
   }
 
+  public RepeatInfo getRepeatInfo() {
+    return repeatPattern.getInfo();
+  }
+
   private void validate(
-      Long goalId, String name, RepeatType repeatType, LocalDate startDate, LocalDate endDate,
+      Long goalId, String name, LocalDate startDate, LocalDate endDate,
       LocalTime beginAt, LocalTime endAt
   ) {
     checkArgument(nonNull(goalId), RepeatDduduErrorCode.NULL_GOAL_VALUE.getCodeName());
-    checkArgument(nonNull(repeatType), RepeatDduduErrorCode.NULL_REPEAT_TYPE.getCodeName());
     validateName(name);
     validatePeriodOfRepeat(startDate, endDate);
     validatePeriodOfTime(beginAt, endAt);
@@ -92,7 +103,7 @@ public final class RepeatDdudu {
   }
 
   public RepeatDdudu update(
-      String name, RepeatType repeatType, RepeatPatternDto repeatPatternDto, LocalDate startDate,
+      String name, RepeatType repeatType, RepeatPattern repeatPattern, LocalDate startDate,
       LocalDate endDate, LocalTime beginAt, LocalTime endAt
   ) {
     return RepeatDdudu.builder()
@@ -100,7 +111,7 @@ public final class RepeatDdudu {
         .goalId(goalId)
         .name(name)
         .repeatType(repeatType)
-        .repeatPatternDto(repeatPatternDto)
+        .repeatPattern(repeatPattern)
         .startDate(startDate)
         .endDate(endDate)
         .beginAt(beginAt)

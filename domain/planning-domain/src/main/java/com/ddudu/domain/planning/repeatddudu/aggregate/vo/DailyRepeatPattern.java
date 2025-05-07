@@ -1,10 +1,15 @@
-package com.ddudu.domain.planning.repeatddudu.aggregate;
+package com.ddudu.domain.planning.repeatddudu.aggregate.vo;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class DailyRepeatPattern implements RepeatPattern {
+
+  @Override
+  public RepeatInfo getInfo() {
+    return RepeatInfo.day();
+  }
 
   @Override
   public List<LocalDate> calculateRepeatDates(LocalDate startDate, LocalDate endDate) {

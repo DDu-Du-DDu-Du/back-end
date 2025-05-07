@@ -1,11 +1,10 @@
-package com.ddudu.domain.planning.repeatddudu.aggregate;
+package com.ddudu.domain.planning.repeatddudu.aggregate.vo;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ddudu.common.exception.RepeatDduduErrorCode;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
@@ -16,9 +15,8 @@ import java.util.stream.Stream;
 public class MonthlyRepeatPattern implements RepeatPattern {
 
   private static final Boolean DEFAULT_LAST_DAY = false;
-  @JsonProperty
+
   private final List<Integer> repeatDaysOfMonth;
-  @JsonProperty
   private final Boolean lastDay;
 
   public MonthlyRepeatPattern(
@@ -28,6 +26,11 @@ public class MonthlyRepeatPattern implements RepeatPattern {
     validate(repeatDaysOfMonth, lastDay);
     this.repeatDaysOfMonth = isNull(repeatDaysOfMonth) ? List.of() : repeatDaysOfMonth;
     this.lastDay = isNull(lastDay) ? DEFAULT_LAST_DAY : lastDay;
+  }
+
+  @Override
+  public RepeatInfo getInfo() {
+    return RepeatInfo.month(repeatDaysOfMonth, lastDay);
   }
 
   @Override

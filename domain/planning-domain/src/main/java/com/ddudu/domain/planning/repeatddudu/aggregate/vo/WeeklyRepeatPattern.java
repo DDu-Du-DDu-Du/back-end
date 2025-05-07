@@ -1,11 +1,10 @@
-package com.ddudu.domain.planning.repeatddudu.aggregate;
+package com.ddudu.domain.planning.repeatddudu.aggregate.vo;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 
-import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
+import com.ddudu.common.exception.RepeatDduduErrorCode;
 import com.ddudu.domain.planning.repeatddudu.util.DayOfWeekUtil;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
@@ -13,14 +12,23 @@ import java.util.stream.Stream;
 
 public class WeeklyRepeatPattern implements RepeatPattern {
 
-  @JsonProperty
   private final List<DayOfWeek> repeatDaysOfWeek;
 
   public WeeklyRepeatPattern(
       List<String> repeatDaysOfWeek
   ) {
     validate(repeatDaysOfWeek);
+
     this.repeatDaysOfWeek = DayOfWeekUtil.toDaysOfWeek(repeatDaysOfWeek);
+  }
+
+  @Override
+  public RepeatInfo getInfo() {
+    List<String> daysOfWeek = repeatDaysOfWeek.stream()
+        .map(DayOfWeek::name)
+        .toList();
+
+    return RepeatInfo.week(daysOfWeek);
   }
 
   @Override
