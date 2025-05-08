@@ -3,8 +3,7 @@ package com.ddudu.fixture;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.domain.user.user.aggregate.User;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,25 +30,25 @@ public class GoalFixture extends BaseFixture {
         .build();
   }
 
-  public static Goal createRandomGoalWithUser(User user) {
+  public static Goal createRandomGoalWithUser(Long userId) {
     return getGoalBuilder()
-        .userId(user.getId())
+        .userId(userId)
         .build();
   }
 
-  public static List<Goal> createRandomGoalsWithUser(User user, int size) {
-    List<Goal> goals = Lists.newArrayList();
+  public static List<Goal> createRandomGoalsWithUser(Long userId, int size) {
+    List<Goal> goals = new ArrayList<>();
 
     for (int i = 0; i < size; i++) {
-      goals.add(createRandomGoalWithUser(user));
+      goals.add(createRandomGoalWithUser(userId));
     }
 
     return goals;
   }
 
-  public static Goal createRandomGoalWithUserAndPrivacyType(User user, PrivacyType privacyType) {
+  public static Goal createRandomGoalWithUserAndPrivacyType(Long userId, PrivacyType privacyType) {
     return getGoalBuilder()
-        .userId(user.getId())
+        .userId(userId)
         .privacyType(privacyType)
         .build();
   }
@@ -57,7 +56,7 @@ public class GoalFixture extends BaseFixture {
   private static Goal.GoalBuilder getGoalBuilder() {
     return Goal.builder()
         .name(getRandomSentenceWithMax(50))
-        .userId(UserFixture.getRandomId())
+        .userId(getRandomId())
         .color(getRandomColor())
         .privacyType(getRandomPrivacyType());
   }

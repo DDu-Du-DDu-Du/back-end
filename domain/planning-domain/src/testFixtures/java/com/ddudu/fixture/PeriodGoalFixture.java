@@ -2,7 +2,6 @@ package com.ddudu.fixture;
 
 import com.ddudu.domain.planning.periodgoal.aggregate.PeriodGoal;
 import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
-import com.ddudu.domain.user.user.aggregate.User;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -18,20 +17,23 @@ public class PeriodGoalFixture extends BaseFixture {
   }
 
   public static PeriodGoal createPeriodGoal(
-      User user, String contents, PeriodGoalType type, LocalDate date
+      Long userId,
+      String contents,
+      PeriodGoalType type,
+      LocalDate date
   ) {
     return PeriodGoal.builder()
-        .userId(user.getId())
+        .userId(userId)
         .contents(contents)
         .type(type)
         .planDate(date)
         .build();
   }
 
-  public static PeriodGoal createRandomPeriodGoal(User user) {
+  public static PeriodGoal createRandomPeriodGoal(Long userId) {
     return PeriodGoal.builder()
         .id(getRandomId())
-        .userId(user.getId())
+        .userId(userId)
         .type(getRandomType())
         .contents(getRandomSentenceWithMax(255))
         .planDate(LocalDate.now())

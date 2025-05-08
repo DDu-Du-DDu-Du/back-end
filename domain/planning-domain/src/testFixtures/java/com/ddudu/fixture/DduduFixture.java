@@ -5,9 +5,9 @@ import com.ddudu.domain.planning.ddudu.aggregate.Ddudu.DduduBuilder;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,9 +16,11 @@ import lombok.NoArgsConstructor;
 public class DduduFixture extends BaseFixture {
 
   public static List<Ddudu> createDifferentDdudusWithGoal(
-      Goal goal, int completedCount, int uncompletedCount
+      Goal goal,
+      int completedCount,
+      int uncompletedCount
   ) {
-    List<Ddudu> ddudus = Lists.newArrayList();
+    List<Ddudu> ddudus = new ArrayList<>();
 
     ddudus.addAll(createMultipleDdudusWithGoal(goal, completedCount));
     ddudus.addAll(createMultipleDdudusWithGoal(goal, uncompletedCount, DduduStatus.UNCOMPLETED));
@@ -31,7 +33,7 @@ public class DduduFixture extends BaseFixture {
   }
 
   private static List<Ddudu> createMultipleDdudusWithGoal(Goal goal, int size, DduduStatus status) {
-    List<Ddudu> ddudus = Lists.newArrayList();
+    List<Ddudu> ddudus = new ArrayList<>();
 
     for (int i = 0; i < size; i++) {
       ddudus.add(createRandomDduduWithStatus(goal, status));
@@ -56,7 +58,10 @@ public class DduduFixture extends BaseFixture {
   }
 
   public static Ddudu createRandomDduduWithReference(
-      Long goalId, Long userId, Boolean isPostponed, DduduStatus status
+      Long goalId,
+      Long userId,
+      Boolean isPostponed,
+      DduduStatus status
   ) {
     return getDduduBuilder()
         .goalId(goalId)
@@ -67,7 +72,9 @@ public class DduduFixture extends BaseFixture {
   }
 
   public static Ddudu createRandomDduduWithStatusAndSchedule(
-      Goal goal, DduduStatus status, LocalDate scheduledOn
+      Goal goal,
+      DduduStatus status,
+      LocalDate scheduledOn
   ) {
     return getDduduBuilder()
         .goalId(goal.getId())
@@ -86,7 +93,9 @@ public class DduduFixture extends BaseFixture {
   }
 
   public static Ddudu createRandomDduduWithGoalAndTime(
-      Goal goal, LocalTime beginAt, LocalTime endAt
+      Goal goal,
+      LocalTime beginAt,
+      LocalTime endAt
   ) {
     return getDduduBuilder()
         .goalId(goal.getId())
@@ -104,8 +113,7 @@ public class DduduFixture extends BaseFixture {
         .build();
   }
 
-  public static DduduBuilder getDduduBuilder(
-  ) {
+  public static DduduBuilder getDduduBuilder() {
     return Ddudu.builder()
         .id(getRandomId())
         .name(getRandomSentenceWithMax(50))

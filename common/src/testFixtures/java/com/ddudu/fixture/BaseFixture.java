@@ -1,6 +1,13 @@
 package com.ddudu.fixture;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.datafaker.Faker;
@@ -53,6 +60,43 @@ public class BaseFixture {
     return faker.color()
         .hex()
         .substring(1);
+  }
+
+  public static LocalDateTime getRandomDateTime() {
+    return faker.date()
+        .birthday()
+        .toLocalDateTime();
+  }
+
+  public static LocalDateTime getPastDateTime(int pastScope, TimeUnit timeUnit) {
+    return faker.date()
+        .past(pastScope, timeUnit)
+        .toLocalDateTime();
+  }
+
+  public static LocalDateTime getFutureDateTime(int futureScope, TimeUnit timeUnit) {
+    return faker.date()
+        .future(futureScope, timeUnit)
+        .toLocalDateTime();
+  }
+
+  public static LocalDateTime getRandomDateTimeBetween(LocalDateTime from, LocalDateTime to) {
+    Timestamp pastTimestamp = Timestamp.valueOf(from);
+    Timestamp futureTimestamp = Timestamp.valueOf(to);
+
+    return faker.date()
+        .between(pastTimestamp, futureTimestamp)
+        .toLocalDateTime();
+  }
+
+  public static LocalDateTime getRandomDateTimeInScopeFromNow(int dayScope) {
+    LocalDateTime now = LocalDateTime.now();
+    Timestamp past = Timestamp.valueOf(now.minusDays(dayScope));
+    Timestamp future = Timestamp.valueOf(now.plusDays(dayScope));
+
+    return faker.date()
+        .between(past, future)
+        .toLocalDateTime();
   }
 
 }

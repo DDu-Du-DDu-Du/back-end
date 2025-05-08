@@ -1,7 +1,7 @@
 package com.ddudu.fixture;
 
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.domain.user.user.aggregate.enums.Authority;
+import com.ddudu.common.dto.Authority;
 import com.ddudu.domain.user.user.aggregate.enums.ProviderType;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAdjective;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAnimal;

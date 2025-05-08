@@ -1,11 +1,11 @@
 package com.ddudu.fixture;
 
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.repeatddudu.aggregate.DailyRepeatPattern;
-import com.ddudu.domain.planning.repeatddudu.aggregate.MonthlyRepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.DailyRepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.MonthlyRepeatPattern;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatPattern;
-import com.ddudu.domain.planning.repeatddudu.aggregate.WeeklyRepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.WeeklyRepeatPattern;
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -21,7 +21,10 @@ import lombok.NoArgsConstructor;
 public class RepeatDduduFixture extends BaseFixture {
 
   public static RepeatDdudu createRepeatDdudu(
-      RepeatType repeatType, RepeatPattern repeatPattern, LocalDate startDate, LocalDate endDate
+      RepeatType repeatType,
+      RepeatPattern repeatPattern,
+      LocalDate startDate,
+      LocalDate endDate
   ) {
     return RepeatDdudu.builder()
         .goalId(GoalFixture.getRandomId())
@@ -34,7 +37,9 @@ public class RepeatDduduFixture extends BaseFixture {
   }
 
   public static RepeatDdudu createRepeatDduduWithGoal(
-      Goal goal, LocalDate startDate, LocalDate endDate
+      Goal goal,
+      LocalDate startDate,
+      LocalDate endDate
   ) {
     RepeatType repeatType = getRandomRepeatType();
 
