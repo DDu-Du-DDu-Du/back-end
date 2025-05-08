@@ -1,13 +1,12 @@
 package com.ddudu.domain.planning.periodgoal.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.common.exception.PeriodGoalErrorCode;
 import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
-import com.ddudu.domain.planning.periodgoal.exception.PeriodGoalErrorCode;
 import com.ddudu.fixture.PeriodGoalFixture;
-import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -28,7 +27,7 @@ class PeriodGoalTest {
 
     @BeforeEach
     void setUp() {
-      userId = UserFixture.getRandomId();
+      userId = PeriodGoalFixture.getRandomId();
       contents = PeriodGoalFixture.getRandomSentenceWithMax(255);
       type = PeriodGoalFixture.getRandomType();
       planDate = LocalDate.now();

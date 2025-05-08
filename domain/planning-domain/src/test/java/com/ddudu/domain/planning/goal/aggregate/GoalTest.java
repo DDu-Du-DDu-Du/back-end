@@ -5,11 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.BaseFixture;
 import com.ddudu.fixture.GoalFixture;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -73,12 +74,13 @@ class GoalTest {
 
     @ParameterizedTest
     @NullSource
-    void 사용자는_필수값이다(User invalidUser) {
+    void 사용자는_필수값이다(Long invalidUserId) {
       // when then
       Assertions.assertThatThrownBy(() -> Goal.builder()
-          .name(name)
-          .user(invalidUser)
-          .build())
+              .name(name)
+              .userId(invalidUserId)
+              .build()
+          )
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage(GoalErrorCode.NULL_USER.getCodeName());
     }
@@ -88,9 +90,9 @@ class GoalTest {
     void 목표명은_필수값이며_빈_문자열일_수_없다(String invalidName) {
       // when then
       Assertions.assertThatThrownBy(() -> Goal.builder()
-          .name(invalidName)
-          .userId(userId)
-          .build())
+              .name(invalidName)
+              .userId(userId)
+              .build())
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage(GoalErrorCode.BLANK_NAME.getCodeName());
     }
@@ -100,9 +102,9 @@ class GoalTest {
     void 목표명은_50자를_초과할_수_없다(String longName) {
       // when then
       Assertions.assertThatThrownBy(() -> Goal.builder()
-          .name(longName)
-          .userId(userId)
-          .build())
+              .name(longName)
+              .userId(userId)
+              .build())
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage(GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
     }
@@ -132,12 +134,12 @@ class GoalTest {
 
       // when then
       Assertions.assertThatThrownBy(() ->
-          Goal.builder()
-              .name(name)
-              .userId(userId)
-              .color(invalidColor)
-              .build()
-      )
+              Goal.builder()
+                  .name(name)
+                  .userId(userId)
+                  .color(invalidColor)
+                  .build()
+          )
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage(GoalErrorCode.INVALID_COLOR_FORMAT.getCodeName());
 

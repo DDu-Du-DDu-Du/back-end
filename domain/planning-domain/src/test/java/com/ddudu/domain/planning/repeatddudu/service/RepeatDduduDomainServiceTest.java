@@ -5,25 +5,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
-import com.ddudu.application.planning.repeatddudu.dto.request.CreateRepeatDduduRequest;
+import com.ddudu.domain.planning.repeatddudu.dto.CreateRepeatDduduCommand;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import java.time.LocalDate;
 import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@SpringJUnitConfig(RepeatDduduDomainService.class)
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class RepeatDduduDomainServiceTest {
-
-  @Autowired
-  RepeatDduduDomainService repeatDduduDomainService;
+  
+  static RepeatDduduDomainService repeatDduduDomainService;
+  
+  @BeforeAll
+  static void setUp() {
+    repeatDduduDomainService = new RepeatDduduDomainService();
+  }
 
   @Nested
   class 반복_뚜두_생성_테스트 {
@@ -45,7 +48,7 @@ class RepeatDduduDomainServiceTest {
     @Test
     void 데일리_반복_뚜두를_생성한다() {
       // given
-      CreateRepeatDduduRequest request = new CreateRepeatDduduRequest(
+      CreateRepeatDduduCommand command = new CreateRepeatDduduCommand(
           name,
           goalId,
           RepeatType.DAILY.name(),
@@ -59,7 +62,7 @@ class RepeatDduduDomainServiceTest {
       );
 
       // when
-      RepeatDdudu actual = repeatDduduDomainService.create(request);
+      RepeatDdudu actual = repeatDduduDomainService.create(null, command);
 
       // then
       assertThat(actual).extracting("name", "goalId", "repeatType", "startDate", "endDate")
@@ -69,7 +72,7 @@ class RepeatDduduDomainServiceTest {
     @Test
     void 위클리_반복_뚜두를_생성한다() {
       // given
-      CreateRepeatDduduRequest request = new CreateRepeatDduduRequest(
+      CreateRepeatDduduCommand command = new CreateRepeatDduduCommand(
           name,
           goalId,
           RepeatType.WEEKLY.name(),
@@ -83,7 +86,7 @@ class RepeatDduduDomainServiceTest {
       );
 
       // when
-      RepeatDdudu actual = repeatDduduDomainService.create(request);
+      RepeatDdudu actual = repeatDduduDomainService.create(null, command);
 
       // then
       assertThat(actual).extracting("name", "goalId", "repeatType", "startDate", "endDate")
@@ -93,7 +96,7 @@ class RepeatDduduDomainServiceTest {
     @Test
     void 먼슬리_반복_뚜두를_생성한다() {
       // given
-      CreateRepeatDduduRequest request = new CreateRepeatDduduRequest(
+      CreateRepeatDduduCommand command = new CreateRepeatDduduCommand(
           name,
           goalId,
           RepeatType.MONTHLY.name(),
@@ -107,7 +110,7 @@ class RepeatDduduDomainServiceTest {
       );
 
       // when
-      RepeatDdudu actual = repeatDduduDomainService.create(request);
+      RepeatDdudu actual = repeatDduduDomainService.create(goalId, command);
 
       // then
       assertThat(actual).extracting("name", "goalId", "repeatType", "startDate", "endDate")

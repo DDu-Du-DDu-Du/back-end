@@ -5,19 +5,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
 import com.ddudu.fixture.UserFixture;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@SpringJUnitConfig(UserDomainService.class)
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class UserDomainServiceTest {
 
-  @Autowired
-  UserDomainService userDomainService;
+  static UserDomainService userDomainService;
+
+  @BeforeAll
+  static void setUp() {
+    userDomainService = new UserDomainService();
+  }
 
   @Nested
   class 회원_생성_테스트 {

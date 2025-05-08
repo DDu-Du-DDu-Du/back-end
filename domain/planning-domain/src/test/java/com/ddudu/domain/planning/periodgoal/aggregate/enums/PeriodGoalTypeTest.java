@@ -2,7 +2,7 @@ package com.ddudu.domain.planning.periodgoal.aggregate.enums;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.ddudu.domain.planning.periodgoal.exception.PeriodGoalErrorCode;
+import com.ddudu.common.exception.PeriodGoalErrorCode;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;

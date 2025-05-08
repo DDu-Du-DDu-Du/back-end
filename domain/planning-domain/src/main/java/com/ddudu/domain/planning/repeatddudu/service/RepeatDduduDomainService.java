@@ -21,7 +21,7 @@ public class RepeatDduduDomainService {
     RepeatType repeatType = RepeatType.from(command.repeatType());
     RepeatPattern repeatPattern = repeatType.createRepeatPattern(command.repeatDaysOfWeek(),
         command.repeatDaysOfMonth(), command.lastDayOfMonth());
-    Long goalIdFinal = Objects.requireNonNullElse(goalId, command.goalId());
+    Long goalIdFinal = Objects.nonNull(goalId) ?  goalId : command.goalId();
 
     return RepeatDdudu.builder()
         .name(command.name())

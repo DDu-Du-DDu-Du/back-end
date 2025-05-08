@@ -1,16 +1,14 @@
 package com.ddudu.domain.planning.ddudu.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatNoException;
 
+import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu.DduduBuilder;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
 import com.ddudu.fixture.DduduFixture;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -220,11 +218,11 @@ class DduduTest {
         // then
         assertThat(actual)
             .hasFieldOrPropertyWithValue("id", ddudu.getId())
-            .hasFieldOrPropertyWithValue("user", ddudu.getUser())
+            .hasFieldOrPropertyWithValue("userId", ddudu.getUserId())
             .hasFieldOrPropertyWithValue("name", ddudu.getName())
             .hasFieldOrPropertyWithValue("isPostponed", ddudu.isPostponed())
             .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
-            .hasFieldOrPropertyWithValue("goal", ddudu.getGoal())
+            .hasFieldOrPropertyWithValue("goalId", ddudu.getGoalId())
             .hasFieldOrPropertyWithValue("beginAt", now)
             .hasFieldOrPropertyWithValue("endAt", now.plusHours(1));
       }
