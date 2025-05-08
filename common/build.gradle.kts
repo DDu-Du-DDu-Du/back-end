@@ -1,7 +1,7 @@
 plugins {
     id("ddudu.java-conventions")
+    id("ddudu.test-fixtures-conventions")
     id("java-library")
-    id("java-test-fixtures")
 }
 
 dependencies {
