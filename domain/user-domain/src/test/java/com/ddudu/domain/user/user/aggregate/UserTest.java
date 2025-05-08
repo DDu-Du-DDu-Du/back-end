@@ -51,7 +51,8 @@ class UserTest {
       ThrowingCallable build = builder::build;
 
       // then
-      Assertions.assertThatNoException().isThrownBy(build);
+      Assertions.assertThatNoException()
+          .isThrownBy(build);
     }
 
     @ParameterizedTest
@@ -67,7 +68,8 @@ class UserTest {
       ThrowingCallable build = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(build)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(build)
           .withMessage(UserErrorCode.BLANK_NICKNAME.getCodeName());
     }
 
@@ -83,7 +85,8 @@ class UserTest {
       ThrowingCallable build = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(build)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(build)
           .withMessage(UserErrorCode.EXCESSIVE_NICKNAME_LENGTH.getCodeName());
     }
 
@@ -100,7 +103,8 @@ class UserTest {
       ThrowingCallable build = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(build)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(build)
           .withMessage(UserErrorCode.BLANK_USERNAME.getCodeName());
     }
 
@@ -116,7 +120,8 @@ class UserTest {
       ThrowingCallable build = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(build)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(build)
           .withMessage(UserErrorCode.EXCESSIVE_USERNAME_LENGTH.getCodeName());
     }
 
@@ -133,7 +138,8 @@ class UserTest {
       ThrowingCallable build = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(build)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(build)
           .withMessage(UserErrorCode.EXCESSIVE_INTRODUCTION_LENGTH.getCodeName());
     }
 
@@ -150,7 +156,8 @@ class UserTest {
       ThrowingCallable build = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(build)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(build)
           .withMessage(UserErrorCode.EXCESSIVE_PROFILE_IMAGE_URL_LENGTH.getCodeName());
     }
 
