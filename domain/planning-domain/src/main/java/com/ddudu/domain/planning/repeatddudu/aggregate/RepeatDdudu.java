@@ -45,7 +45,7 @@ public final class RepeatDdudu {
       LocalTime beginAt,
       LocalTime endAt
   ) {
-    validate(goalId, name, startDate, endDate, beginAt, endAt);
+    validate(goalId, repeatType, name, startDate, endDate, beginAt, endAt);
 
     this.id = id;
     this.goalId = goalId;
@@ -67,9 +67,15 @@ public final class RepeatDdudu {
   }
 
   private void validate(
-      Long goalId, String name, LocalDate startDate, LocalDate endDate,
-      LocalTime beginAt, LocalTime endAt
+      Long goalId,
+      RepeatType repeatType,
+      String name,
+      LocalDate startDate,
+      LocalDate endDate,
+      LocalTime beginAt,
+      LocalTime endAt
   ) {
+    checkArgument(nonNull(repeatType), RepeatDduduErrorCode.NULL_REPEAT_TYPE.getCodeName());
     checkArgument(nonNull(goalId), RepeatDduduErrorCode.NULL_GOAL_VALUE.getCodeName());
     validateName(name);
     validatePeriodOfRepeat(startDate, endDate);

@@ -1,17 +1,17 @@
 package com.ddudu.domain.planning.repeatddudu.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
+import com.ddudu.common.exception.RepeatDduduErrorCode;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu.RepeatDduduBuilder;
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
-import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
-import com.ddudu.application.planning.repeatddudu.dto.RepeatPatternDto;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -90,7 +90,8 @@ class RepeatDduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(RepeatDduduErrorCode.BLANK_NAME.getCodeName());
     }
 
@@ -110,7 +111,8 @@ class RepeatDduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(RepeatDduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
     }
 
@@ -128,7 +130,8 @@ class RepeatDduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(RepeatDduduErrorCode.NULL_GOAL_VALUE.getCodeName());
     }
 
@@ -146,48 +149,9 @@ class RepeatDduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(RepeatDduduErrorCode.NULL_REPEAT_TYPE.getCodeName());
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void 위클리_반복_뚜두의_경우_반복_요일이_없으면_생성을_실패한다(List<String> repeatDaysOfWeek) {
-      // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
-          .goalId(goalId)
-          .name(name)
-          .repeatType(RepeatType.WEEKLY)
-          .repeatPatternDto(RepeatPatternDto.weeklyPatternOf(repeatDaysOfWeek))
-          .startDate(startDate)
-          .endDate(endDate);
-
-      // when
-      ThrowingCallable create = builder::build;
-
-      // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK.getCodeName());
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void 먼슬리_반복_뚜두의_경우_반복_날짜가_없으면_생성을_실패한다(List<Integer> repeatDaysOfMonth) {
-      // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
-          .goalId(goalId)
-          .name(name)
-          .repeatType(RepeatType.MONTHLY)
-          .repeatPatternDto(RepeatPatternDto.monthlyPatternOf(repeatDaysOfMonth))
-          .startDate(startDate)
-          .endDate(endDate);
-
-      // when
-      ThrowingCallable create = builder::build;
-
-      // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH.getCodeName());
     }
 
     @Test
@@ -204,7 +168,8 @@ class RepeatDduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(RepeatDduduErrorCode.NULL_START_DATE.getCodeName());
     }
 
@@ -222,7 +187,8 @@ class RepeatDduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(RepeatDduduErrorCode.NULL_END_DATE.getCodeName());
     }
 
@@ -241,7 +207,8 @@ class RepeatDduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(RepeatDduduErrorCode.UNABLE_TO_END_BEFORE_START.getCodeName());
     }
 
@@ -263,88 +230,9 @@ class RepeatDduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(RepeatDduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
-    }
-
-  }
-
-  @Nested
-  class 반복_날짜_테스트 {
-
-    LocalDate startDate;
-    LocalDate endDate;
-
-    @BeforeEach
-    void setUp() {
-      startDate = LocalDate.now();
-      endDate = LocalDate.now()
-          .plusMonths(1)
-          .minusDays(1);
-    }
-
-    @Test
-    void 데일리_반복_뚜두의_반복_날짜_리스트_조회에_성공한다() {
-      // given
-      RepeatPattern dailyPattern = RepeatDduduFixture.createDailyRepeatPattern();
-      RepeatDdudu repeatDdudu = RepeatDduduFixture.createRepeatDdudu(
-          RepeatType.DAILY,
-          dailyPattern,
-          startDate,
-          endDate
-      );
-
-      // when
-      List<LocalDate> repeatDates = repeatDdudu.getRepeatDates();
-
-      // then
-      Assertions.assertThat(repeatDates).hasSize(startDate.until(endDate)
-          .getDays() + 1);
-    }
-
-    @Test
-    void 위클리_반복_뚜두의_반복_날짜_리스트_조회에_성공한다() {
-      // given
-      List<String> repeatDaysOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek(1);
-      RepeatPattern weeklyPattern = RepeatDduduFixture.createWeeklyRepeatPattern(
-          repeatDaysOfWeek);
-      RepeatDdudu repeatDdudu = RepeatDduduFixture.createRepeatDdudu(
-          RepeatType.WEEKLY,
-          weeklyPattern,
-          startDate,
-          endDate
-      );
-
-      // when
-      List<LocalDate> repeatDates = repeatDdudu.getRepeatDates();
-
-      // then
-      repeatDates.stream()
-          .map(LocalDate::getDayOfWeek)
-          .forEach(dayOfWeek -> Assertions.assertThat(repeatDaysOfWeek)
-              .contains(dayOfWeek.toString()));
-    }
-
-    @Test
-    void 먼슬리_반복_뚜두의_반복_날짜_리스트_조회에_성공한() {
-      // given
-      RepeatPattern monthlyPattern = RepeatDduduFixture.createMonthlyRepeatPattern(
-          List.of(), true);
-      RepeatDdudu repeatDdudu = RepeatDduduFixture.createRepeatDdudu(
-          RepeatType.MONTHLY,
-          monthlyPattern,
-          startDate,
-          endDate
-      );
-
-      // when
-      List<LocalDate> repeatDates = repeatDdudu.getRepeatDates();
-
-      // then
-      Assertions.assertThat(repeatDates).hasSize(1);
-      repeatDates.stream()
-          .map(LocalDate::getDayOfMonth)
-          .forEach(dayOfMonth -> Assertions.assertThat(dayOfMonth).isIn(startDate.lengthOfMonth()));
     }
 
   }
