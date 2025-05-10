@@ -2,11 +2,11 @@ package com.ddudu.application.stats.service;
 
 import com.ddudu.aggregate.MonthlyStats;
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.application.dto.stats.CompletionPerGoalDto;
-import com.ddudu.application.dto.stats.response.GenericStatsResponse;
-import com.ddudu.application.port.stats.in.CollectMonthlyCreationStatsUseCase;
-import com.ddudu.application.port.stats.out.MonthlyStatsPort;
-import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.application.common.dto.stats.CompletionPerGoalDto;
+import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
+import com.ddudu.application.common.port.stats.in.CollectMonthlyCreationStatsUseCase;
+import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
 import java.time.LocalDate;

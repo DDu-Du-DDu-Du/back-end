@@ -5,11 +5,11 @@ import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import com.ddudu.common.exception.RepeatDduduErrorCode;
 import com.ddudu.domain.planning.repeatddudu.service.RepeatDduduDomainService;
-import com.ddudu.application.dto.repeatddudu.request.CreateRepeatDduduRequest;
-import com.ddudu.application.port.repeatddudu.in.CreateRepeatDduduUseCase;
-import com.ddudu.application.port.ddudu.out.SaveDduduPort;
-import com.ddudu.application.port.goal.out.GoalLoaderPort;
-import com.ddudu.application.port.repeatddudu.out.SaveRepeatDduduPort;
+import com.ddudu.application.common.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.common.port.repeatddudu.in.CreateRepeatDduduUseCase;
+import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.common.port.repeatddudu.out.SaveRepeatDduduPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

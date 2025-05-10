@@ -1,10 +1,10 @@
 package com.ddudu.application.planning.periodgoal.service;
 
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.application.dto.periodgoal.request.CreatePeriodGoalRequest;
-import com.ddudu.application.port.periodgoal.in.CreatePeriodGoalUseCase;
-import com.ddudu.application.port.periodgoal.out.SavePeriodGoalPort;
-import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.application.common.dto.periodgoal.request.CreatePeriodGoalRequest;
+import com.ddudu.application.common.port.periodgoal.in.CreatePeriodGoalUseCase;
+import com.ddudu.application.common.port.periodgoal.out.SavePeriodGoalPort;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.domain.planning.periodgoal.aggregate.PeriodGoal;
 import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
 import com.ddudu.common.exception.PeriodGoalErrorCode;

@@ -1,9 +1,9 @@
 package com.ddudu.infra.mysql.planning.periodgoal.adapter;
 
 import com.ddudu.common.annotation.DrivenAdapter;
-import com.ddudu.application.port.periodgoal.out.PeriodGoalLoaderPort;
-import com.ddudu.application.port.periodgoal.out.SavePeriodGoalPort;
-import com.ddudu.application.port.periodgoal.out.UpdatePeriodGoalPort;
+import com.ddudu.application.common.port.periodgoal.out.PeriodGoalLoaderPort;
+import com.ddudu.application.common.port.periodgoal.out.SavePeriodGoalPort;
+import com.ddudu.application.common.port.periodgoal.out.UpdatePeriodGoalPort;
 import com.ddudu.domain.planning.periodgoal.aggregate.PeriodGoal;
 import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
 import com.ddudu.infra.mysql.planning.periodgoal.entity.PeriodGoalEntity;

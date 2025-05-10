@@ -6,9 +6,9 @@ import static java.util.stream.Collectors.groupingBy;
 
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.application.dto.ddudu.DduduForTimetable;
-import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
-import com.ddudu.application.dto.ddudu.TimeGroupedDdudus;
+import com.ddudu.application.common.dto.ddudu.DduduForTimetable;
+import com.ddudu.application.common.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.common.dto.ddudu.TimeGroupedDdudus;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;

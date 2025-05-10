@@ -4,11 +4,11 @@ import com.ddudu.common.annotation.UseCase;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.common.exception.GoalErrorCode;
-import com.ddudu.application.dto.goal.request.UpdateGoalRequest;
-import com.ddudu.application.dto.goal.response.GoalIdResponse;
-import com.ddudu.application.port.goal.in.UpdateGoalUseCase;
-import com.ddudu.application.port.goal.out.GoalLoaderPort;
-import com.ddudu.application.port.goal.out.UpdateGoalPort;
+import com.ddudu.application.common.dto.goal.request.UpdateGoalRequest;
+import com.ddudu.application.common.dto.goal.response.GoalIdResponse;
+import com.ddudu.application.common.port.goal.in.UpdateGoalUseCase;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.common.port.goal.out.UpdateGoalPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

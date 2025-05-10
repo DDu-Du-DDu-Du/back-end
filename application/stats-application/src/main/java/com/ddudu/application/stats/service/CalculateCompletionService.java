@@ -3,10 +3,10 @@ package com.ddudu.application.stats.service;
 import static java.util.Objects.isNull;
 
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.application.dto.stats.response.DduduCompletionResponse;
-import com.ddudu.application.port.stats.in.CalculateCompletionUseCase;
-import com.ddudu.application.port.stats.out.DduduStatsPort;
-import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
+import com.ddudu.application.common.port.stats.out.DduduStatsPort;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.planning.repeatddudu.util.DayOfWeekUtil;

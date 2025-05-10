@@ -4,11 +4,11 @@ import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.dto.ddudu.SimpleDduduSearchDto;
-import com.ddudu.application.dto.ddudu.request.DduduSearchRequest;
-import com.ddudu.application.port.ddudu.in.DduduSearchUseCase;
-import com.ddudu.application.port.ddudu.out.DduduSearchPort;
-import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.common.dto.ddudu.request.DduduSearchRequest;
+import com.ddudu.application.common.port.ddudu.in.DduduSearchUseCase;
+import com.ddudu.application.common.port.ddudu.out.DduduSearchPort;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,8 +1,8 @@
 package com.ddudu.api.user.user.controller;
 
 import com.ddudu.api.user.user.doc.UserControllerDoc;
-import com.ddudu.application.dto.user.response.MeResponse;
-import com.ddudu.application.port.user.in.GetMyInfoUseCase;
+import com.ddudu.application.common.dto.user.response.MeResponse;
+import com.ddudu.application.common.port.user.in.GetMyInfoUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

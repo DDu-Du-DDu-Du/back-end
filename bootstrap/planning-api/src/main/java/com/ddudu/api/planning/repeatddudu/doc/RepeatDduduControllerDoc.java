@@ -1,8 +1,8 @@
 package com.ddudu.api.planning.repeatddudu.doc;
 
-import com.ddudu.application.dto.IdResponse;
-import com.ddudu.application.dto.repeatddudu.request.CreateRepeatDduduRequest;
-import com.ddudu.application.dto.repeatddudu.request.UpdateRepeatDduduRequest;
+import com.ddudu.application.common.dto.IdResponse;
+import com.ddudu.application.common.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.common.dto.repeatddudu.request.UpdateRepeatDduduRequest;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.RepeatDduduErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.GoalErrorExamples;

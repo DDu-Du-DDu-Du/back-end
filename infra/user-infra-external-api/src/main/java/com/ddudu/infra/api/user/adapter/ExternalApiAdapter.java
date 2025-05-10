@@ -1,7 +1,7 @@
 package com.ddudu.infra.api.user.adapter;
 
-import com.ddudu.application.dto.auth.request.SocialRequest;
-import com.ddudu.application.port.auth.out.SocialResourcePort;
+import com.ddudu.application.common.dto.auth.request.SocialRequest;
+import com.ddudu.application.common.port.auth.out.SocialResourcePort;
 import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
 import com.ddudu.infra.api.user.handler.SocialResourceHandler;

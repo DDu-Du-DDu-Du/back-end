@@ -4,9 +4,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
 
-import com.ddudu.application.dto.ddudu.GoalGroupedDdudus;
-import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
-import com.ddudu.application.dto.goal.response.BasicGoalResponse;
+import com.ddudu.application.common.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.common.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.common.dto.goal.response.BasicGoalResponse;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;

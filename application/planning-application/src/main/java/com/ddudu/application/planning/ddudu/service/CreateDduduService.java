@@ -6,12 +6,12 @@ import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.ddudu.service.DduduDomainService;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.dto.ddudu.request.CreateDduduRequest;
-import com.ddudu.application.dto.ddudu.response.BasicDduduResponse;
-import com.ddudu.application.port.ddudu.in.CreateDduduUseCase;
-import com.ddudu.application.port.ddudu.out.SaveDduduPort;
-import com.ddudu.application.port.goal.out.GoalLoaderPort;
-import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.application.common.dto.ddudu.request.CreateDduduRequest;
+import com.ddudu.application.common.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.common.port.ddudu.in.CreateDduduUseCase;
+import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

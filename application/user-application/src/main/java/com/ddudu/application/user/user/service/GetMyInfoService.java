@@ -3,9 +3,9 @@ package com.ddudu.application.user.user.service;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.common.exception.UserErrorCode;
-import com.ddudu.application.dto.user.response.MeResponse;
-import com.ddudu.application.port.user.in.GetMyInfoUseCase;
-import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.application.common.dto.user.response.MeResponse;
+import com.ddudu.application.common.port.user.in.GetMyInfoUseCase;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import lombok.RequiredArgsConstructor;
 
 @UseCase

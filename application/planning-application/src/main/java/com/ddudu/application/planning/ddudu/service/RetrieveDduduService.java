@@ -3,9 +3,9 @@ package com.ddudu.application.planning.ddudu.service;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.application.dto.ddudu.response.DduduDetailResponse;
-import com.ddudu.application.port.ddudu.in.RetrieveDduduUseCase;
-import com.ddudu.application.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.dto.ddudu.response.DduduDetailResponse;
+import com.ddudu.application.common.port.ddudu.in.RetrieveDduduUseCase;
+import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,12 +1,13 @@
 package com.ddudu.application.user.auth.service;
 
+import com.ddudu.application.user.auth.jwt.TokenManager;
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.application.dto.auth.request.TokenRefreshRequest;
-import com.ddudu.application.dto.auth.response.TokenResponse;
-import com.ddudu.application.port.auth.in.TokenRefreshUseCase;
-import com.ddudu.application.port.auth.out.TokenLoaderPort;
-import com.ddudu.application.port.auth.out.TokenManipulationPort;
-import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.application.common.dto.auth.request.TokenRefreshRequest;
+import com.ddudu.application.common.dto.auth.response.TokenResponse;
+import com.ddudu.application.common.port.auth.in.TokenRefreshUseCase;
+import com.ddudu.application.common.port.auth.out.TokenLoaderPort;
+import com.ddudu.application.common.port.auth.out.TokenManipulationPort;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.domain.user.auth.aggregate.RefreshToken;
 import com.ddudu.domain.user.auth.aggregate.vo.UserFamily;
 import com.ddudu.common.exception.AuthErrorCode;

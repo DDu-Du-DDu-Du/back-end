@@ -1,8 +1,8 @@
 package com.ddudu.api.user.auth.doc;
 
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
-import com.ddudu.application.dto.auth.request.TokenRefreshRequest;
-import com.ddudu.application.dto.auth.response.TokenResponse;
+import com.ddudu.application.common.dto.auth.request.TokenRefreshRequest;
+import com.ddudu.application.common.dto.auth.response.TokenResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

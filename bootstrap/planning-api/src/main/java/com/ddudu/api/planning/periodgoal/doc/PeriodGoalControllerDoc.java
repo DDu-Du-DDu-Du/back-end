@@ -1,9 +1,9 @@
 package com.ddudu.api.planning.periodgoal.doc;
 
-import com.ddudu.application.dto.IdResponse;
-import com.ddudu.application.dto.periodgoal.request.CreatePeriodGoalRequest;
-import com.ddudu.application.dto.periodgoal.request.UpdatePeriodGoalRequest;
-import com.ddudu.application.dto.periodgoal.response.PeriodGoalSummary;
+import com.ddudu.application.common.dto.IdResponse;
+import com.ddudu.application.common.dto.periodgoal.request.CreatePeriodGoalRequest;
+import com.ddudu.application.common.dto.periodgoal.request.UpdatePeriodGoalRequest;
+import com.ddudu.application.common.dto.periodgoal.response.PeriodGoalSummary;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.PeriodGoalErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;

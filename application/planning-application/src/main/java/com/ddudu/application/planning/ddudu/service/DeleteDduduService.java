@@ -1,9 +1,9 @@
 package com.ddudu.application.planning.ddudu.service;
 
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.application.port.ddudu.in.DeleteDduduUseCase;
-import com.ddudu.application.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.port.ddudu.out.DeleteDduduPort;
+import com.ddudu.application.common.port.ddudu.in.DeleteDduduUseCase;
+import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.DeleteDduduPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

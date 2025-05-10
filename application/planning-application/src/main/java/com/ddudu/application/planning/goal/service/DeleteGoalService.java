@@ -1,10 +1,10 @@
 package com.ddudu.application.planning.goal.service;
 
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.application.port.goal.in.DeleteGoalUseCase;
-import com.ddudu.application.port.goal.out.DeleteGoalPort;
-import com.ddudu.application.port.goal.out.GoalLoaderPort;
-import com.ddudu.application.port.repeatddudu.out.DeleteRepeatDduduPort;
+import com.ddudu.application.common.port.goal.in.DeleteGoalUseCase;
+import com.ddudu.application.common.port.goal.out.DeleteGoalPort;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.common.port.repeatddudu.out.DeleteRepeatDduduPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 

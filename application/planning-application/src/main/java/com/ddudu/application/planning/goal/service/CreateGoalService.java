@@ -1,14 +1,14 @@
 package com.ddudu.application.planning.goal.service;
 
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.application.dto.goal.request.CreateGoalRequest;
-import com.ddudu.application.dto.goal.request.CreateRepeatDduduRequestWithoutGoal;
-import com.ddudu.application.dto.goal.response.GoalIdResponse;
-import com.ddudu.application.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.common.dto.goal.request.CreateGoalRequest;
+import com.ddudu.application.common.dto.goal.request.CreateRepeatDduduRequestWithoutGoal;
+import com.ddudu.application.common.dto.goal.response.GoalIdResponse;
+import com.ddudu.application.common.dto.repeatddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.application.planning.repeatddudu.service.CreateRepeatDduduService;
-import com.ddudu.application.port.goal.in.CreateGoalUseCase;
-import com.ddudu.application.port.goal.out.SaveGoalPort;
-import com.ddudu.application.port.user.out.UserLoaderPort;
+import com.ddudu.application.common.port.goal.in.CreateGoalUseCase;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.service.GoalDomainService;

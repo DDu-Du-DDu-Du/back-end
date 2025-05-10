@@ -2,7 +2,7 @@ package com.ddudu.infra.mysql.planning.ddudu.repository;
 
 import com.ddudu.aggregate.BaseStats;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
-import com.ddudu.application.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.infra.mysql.planning.ddudu.dto.DduduCursorDto;
 import com.ddudu.infra.mysql.planning.ddudu.entity.DduduEntity;
