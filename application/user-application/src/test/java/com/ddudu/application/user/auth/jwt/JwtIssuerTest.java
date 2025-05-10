@@ -1,15 +1,13 @@
-package com.ddudu.api.user.auth.jwt;
+package com.ddudu.application.user.auth.jwt;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNoException;
-
-import com.ddudu.bootstrap.common.config.JwtConfig;
-import com.ddudu.domain.user.user.aggregate.enums.Authority;
+import com.ddudu.application.user.auth.config.JwtConfig;
+import com.ddudu.application.user.auth.config.TestJwtConfig;
+import com.ddudu.common.dto.Authority;
 import com.ddudu.fixture.UserFixture;
-import com.ddudu.support.TestProperties;
 import com.google.common.collect.Maps;
 import java.time.Duration;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -20,14 +18,14 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 @SpringJUnitConfig(
-    value = {TestProperties.class, JwtConfig.class, SpringOAuth2JwtIssuer.class},
+    value = {TestJwtConfig.class, JwtConfig.class, JwtIssuer.class},
     initializers = ConfigDataApplicationContextInitializer.class
 )
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class SpringOAuth2JwtIssuerTest {
+class JwtIssuerTest {
 
   @Autowired
-  SpringOAuth2JwtIssuer springOAuth2JwtIssuer;
+  JwtIssuer jwtIssuer;
 
   @Autowired
   JwtDecoder jwtDecoder;
@@ -41,7 +39,7 @@ class SpringOAuth2JwtIssuerTest {
     claims.put("auth", Authority.NORMAL);
 
     // when
-    String jwt = springOAuth2JwtIssuer.issue(claims, Duration.ofMinutes(15));
+    String jwt = jwtIssuer.issue(claims, Duration.ofMinutes(15));
 
     // then
     Assertions.assertThat(jwt).isNotBlank();
