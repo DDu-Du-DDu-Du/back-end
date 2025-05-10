@@ -1,32 +1,32 @@
 package com.ddudu.application.user.auth.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
+import com.ddudu.application.common.dto.auth.request.SocialRequest;
+import com.ddudu.application.common.dto.auth.response.TokenResponse;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.auth.out.SocialResourcePort;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
+import com.ddudu.application.user.auth.jwt.TokenManager;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.enums.ProviderType;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
-import com.ddudu.application.user.auth.dto.request.SocialRequest;
-import com.ddudu.application.user.auth.dto.response.TokenResponse;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.user.auth.port.out.SocialResourcePort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -47,6 +47,9 @@ class SocialLoginServiceTest {
 
   @Autowired
   GoalLoaderPort goalLoaderPort;
+
+  @Autowired
+  TokenManager tokenManager;
 
   @Autowired
   JwtDecoder jwtDecoder;
@@ -74,12 +77,11 @@ class SocialLoginServiceTest {
     TokenResponse response = socialLoginService.login(request);
 
     // then
-    String accessToken = response.accessToken();
-    Long actual = user.getId();
-    Long expected = jwtDecoder.decode(accessToken)
-        .getClaim("user");
+    String actual = response.accessToken();
+    String expected = tokenManager.createAccessToken(user);
 
-    Assertions.assertThat(actual).isEqualTo(expected);
+    Assertions.assertThat(actual)
+        .isEqualTo(expected);
   }
 
   @Test
@@ -94,14 +96,16 @@ class SocialLoginServiceTest {
     // then
     Optional<User> user = userLoaderPort.loadSocialUser(authProvider);
 
-    Assertions.assertThat(user).isPresent();
+    Assertions.assertThat(user)
+        .isPresent();
 
-    Long actual = user.get()
+    Long expected = user.get()
         .getId();
-    Long expected = jwtDecoder.decode(response.accessToken())
+    Long actual = jwtDecoder.decode(response.accessToken())
         .getClaim("user");
 
-    Assertions.assertThat(actual).isEqualTo(expected);
+    Assertions.assertThat(actual)
+        .isEqualTo(expected);
   }
 
   @Test
@@ -116,9 +120,10 @@ class SocialLoginServiceTest {
     // then
     User user = userLoaderPort.loadSocialUser(authProvider)
         .get();
-    List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(user);
+    List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(user.getId());
 
-    Assertions.assertThat(goals).hasSize(3);
+    Assertions.assertThat(goals)
+        .hasSize(3);
   }
 
 }

@@ -1,21 +1,23 @@
 package com.ddudu.application.user.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.common.dto.user.response.MeResponse;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.auth.out.SocialResourcePort;
+import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.domain.user.user.exception.UserErrorCode;
-import com.ddudu.application.user.user.dto.response.MeResponse;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -27,6 +29,9 @@ class GetMyInfoServiceTest {
 
   @Autowired
   SignUpPort signUpPort;
+
+  @MockBean
+  SocialResourcePort socialResourcePort;
 
   @Test
   void 내_정보_불러오기를_성공한다() {
