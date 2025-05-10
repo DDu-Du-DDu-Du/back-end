@@ -30,16 +30,6 @@ val copyMainSecret by tasks.registering(Copy::class) {
     into(layout.buildDirectory.dir("resources/main"))
 }
 
-val copyTestSecret by tasks.registering(Copy::class) {
-    from("${rootProject.projectDir}/secrets/test")
-    include("application*.yaml")
-    into(layout.buildDirectory.dir("resources/test"))
-}
-
 tasks.named("processResources") {
     dependsOn(copyMainSecret)
-}
-
-tasks.named("processResources") {
-    dependsOn(copyTestSecret)
 }
