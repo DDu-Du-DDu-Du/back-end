@@ -4,9 +4,9 @@ import static com.ddudu.infra.mysql.planning.ddudu.entity.QDduduEntity.dduduEnti
 import static com.ddudu.infra.mysql.planning.goal.entity.QGoalEntity.goalEntity;
 
 import com.ddudu.aggregate.BaseStats;
+import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.scroll.OrderType;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
-import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
@@ -14,6 +14,8 @@ import com.ddudu.infra.mysql.planning.ddudu.dto.DduduCursorDto;
 import com.ddudu.infra.mysql.planning.ddudu.entity.DduduEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ConstructorExpression;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
@@ -176,7 +178,10 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   @Override
   public List<BaseStats> findStatsBaseOfUser(
-      Long userId, Long goalId, LocalDate from, LocalDate to
+      Long userId,
+      Long goalId,
+      LocalDate from,
+      LocalDate to
   ) {
     BooleanBuilder condition = new BooleanBuilder(goalEntity.userId.eq(userId))
         .and(dduduEntity.scheduledOn.between(from, to));
@@ -191,8 +196,10 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .join(goalEntity)
         .on(dduduEntity.goalId.eq(goalEntity.id))
         .where(condition)
-        .orderBy(dduduEntity.scheduledOn.yearMonth()
-            .asc(), dduduEntity.scheduledOn.asc(), dduduEntity.status.asc())
+        .orderBy(
+            dduduEntity.scheduledOn.yearMonth()
+                .asc(), dduduEntity.scheduledOn.asc(), dduduEntity.status.asc()
+        )
         .fetch();
   }
 
@@ -261,11 +268,18 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   private ConstructorExpression<BaseStats> projectionStatsBase() {
+    Expression<com.ddudu.aggregate.enums.DduduStatus> status = ExpressionUtils.as(
+        dduduEntity.status.when(DduduStatus.COMPLETE)
+            .then(com.ddudu.aggregate.enums.DduduStatus.COMPLETE)
+            .otherwise(com.ddudu.aggregate.enums.DduduStatus.UNCOMPLETED),
+        "status"
+    );
+
     return Projections.constructor(
         BaseStats.class,
-        dduduEntity.id,
+        dduduEntity.id.as("dduduId"),
         goalEntity.id,
-        dduduEntity.status,
+        status,
         dduduEntity.isPostponed,
         dduduEntity.scheduledOn
     );
