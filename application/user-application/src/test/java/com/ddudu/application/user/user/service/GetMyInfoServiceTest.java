@@ -30,9 +30,6 @@ class GetMyInfoServiceTest {
   @Autowired
   SignUpPort signUpPort;
 
-  @MockBean
-  SocialResourcePort socialResourcePort;
-
   @Test
   void 내_정보_불러오기를_성공한다() {
     // given

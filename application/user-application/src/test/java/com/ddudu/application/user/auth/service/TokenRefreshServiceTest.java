@@ -47,9 +47,6 @@ class TokenRefreshServiceTest {
   @Autowired
   SignUpPort signUpPort;
 
-  @MockBean
-  SocialResourcePort socialResourcePort;
-
   User user;
   int family;
 
