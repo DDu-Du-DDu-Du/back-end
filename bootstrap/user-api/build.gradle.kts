@@ -13,4 +13,6 @@ dependencies {
     implementation("org.springframework.security:spring-security-oauth2-resource-server")
     implementation("org.springframework.security:spring-security-oauth2-jose")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+
+    testImplementation("net.datafaker:datafaker:2.0.2")
 }

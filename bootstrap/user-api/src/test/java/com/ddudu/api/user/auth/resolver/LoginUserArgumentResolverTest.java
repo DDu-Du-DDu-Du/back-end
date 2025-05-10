@@ -1,26 +1,25 @@
-package com.ddudu.bootstrap.common.resolver;
+package com.ddudu.api.user.auth.resolver;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
-import com.ddudu.domain.user.auth.exception.AuthErrorCode;
-import com.ddudu.domain.user.user.aggregate.enums.Authority;
+import com.ddudu.api.user.auth.jwt.AuthorityProxy;
+import com.ddudu.api.user.auth.jwt.JwtAuthToken;
 import com.ddudu.bootstrap.common.annotation.Login;
-import com.ddudu.bootstrap.common.token.JwtAuthToken;
+import com.ddudu.common.exception.AuthErrorCode;
 import java.time.Instant;
 import java.util.Collections;
 import net.datafaker.Faker;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.context.SecurityContext;
@@ -75,7 +74,7 @@ class LoginUserArgumentResolverTest {
     Long userId = faker.random()
         .nextLong();
     Jwt jwt = createJWT();
-    JwtAuthToken token = new JwtAuthToken(jwt, Authority.NORMAL, userId);
+    JwtAuthToken token = new JwtAuthToken(jwt, AuthorityProxy.NORMAL, userId);
 
     BDDMockito.given(securityContext.getAuthentication()).willReturn(token);
     SecurityContextHolder.setContext(securityContext);
@@ -103,10 +102,7 @@ class LoginUserArgumentResolverTest {
   }
 
   private static Jwt createJWT() {
-    return new Jwt(
-        "tokenValue", Instant.now(), Instant.now()
-        .plusSeconds(300), Collections.singletonMap("header", "header"),
-        Collections.singletonMap("claim", "claim")
+    return new Jwt("tokenValue", Instant.now(), Instant.now().plusSeconds(300), Collections.singletonMap("header", "header"), Collections.singletonMap("claim", "claim")
     );
   }
 
