@@ -1,16 +1,15 @@
 package com.ddudu.application.stats.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
+import com.ddudu.application.common.dto.stats.CompletionPerGoalDto;
+import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.stats.dto.CompletionPerGoalDto;
-import com.ddudu.application.stats.dto.response.MonthlyStatsResponse;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
@@ -20,6 +19,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -53,7 +53,7 @@ class CollectMonthlyCreationStatsServiceTest {
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
-    goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user, 5));
+    goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user.getId(), 5));
     sizes = new ArrayList<>();
 
     for (int i = 0; i < 5; i++) {
@@ -62,8 +62,10 @@ class CollectMonthlyCreationStatsServiceTest {
 
     Iterator<Integer> sizeIterator = sizes.iterator();
 
-    goals.forEach(goal -> saveDduduPort.saveAll(
-        DduduFixture.createMultipleDdudusWithGoal(goal, sizeIterator.next())));
+    goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(
+        goal,
+        sizeIterator.next()
+    )));
 
     sizes.sort(Comparator.reverseOrder());
   }
@@ -74,15 +76,19 @@ class CollectMonthlyCreationStatsServiceTest {
     YearMonth thisMonth = YearMonth.now();
 
     // when
-    MonthlyStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
-        user.getId(), thisMonth);
+    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
+        user.getId(),
+        thisMonth
+    );
 
     // then
     List<CompletionPerGoalDto> actual = response.contents();
     Iterator<Integer> sizeIterator = sizes.iterator();
 
-    Assertions.assertThat(actual.size()).isEqualTo(goals.size());
-    Assertions.assertThat(actual).allMatch(goal -> goal.count() == sizeIterator.next());
+    Assertions.assertThat(actual.size())
+        .isEqualTo(goals.size());
+    Assertions.assertThat(actual)
+        .allMatch(goal -> goal.count() == sizeIterator.next());
   }
 
   @Test
@@ -92,8 +98,7 @@ class CollectMonthlyCreationStatsServiceTest {
         .minusMonths(1);
 
     // when
-    MonthlyStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
-        user.getId(), lastMonth);
+    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(user.getId(), lastMonth);
 
     // then
     assertThat(response.isEmpty()).isTrue();
@@ -104,15 +109,16 @@ class CollectMonthlyCreationStatsServiceTest {
     // given
 
     // when
-    MonthlyStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
-        user.getId(), null);
+    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(user.getId(), null);
 
     // then
     List<CompletionPerGoalDto> actual = response.contents();
     Iterator<Integer> sizeIterator = sizes.iterator();
 
-    Assertions.assertThat(actual.size()).isEqualTo(goals.size());
-    Assertions.assertThat(actual).allMatch(goal -> goal.count() == sizeIterator.next());
+    Assertions.assertThat(actual.size())
+        .isEqualTo(goals.size());
+    Assertions.assertThat(actual)
+        .allMatch(goal -> goal.count() == sizeIterator.next());
   }
 
   @Test
@@ -122,11 +128,11 @@ class CollectMonthlyCreationStatsServiceTest {
     YearMonth thisMonth = YearMonth.now();
 
     // when
-    ThrowingCallable collect = () -> collectMonthlyCreationStatsService.collectCreation(
-        invalidId, thisMonth);
+    ThrowingCallable collect = () -> collectMonthlyCreationStatsService.collectCreation(invalidId, thisMonth);
 
     // then
-    Assertions.assertThatExceptionOfType(MissingResourceException.class).isThrownBy(collect)
+    Assertions.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(collect)
         .withMessage(DduduErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
