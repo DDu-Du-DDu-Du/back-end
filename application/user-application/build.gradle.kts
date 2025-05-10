@@ -10,7 +10,25 @@ dependencies {
     implementation(project(":domain:planning-domain"))
     implementation(project(":domain:user-domain"))
 
-    implementation("org.springframework.security:spring-security-oauth2-resource-server")
+    implementation("org.springframework.security:spring-security-oauth2-jose")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework:spring-tx")
+
+    // application test fixtures
+    testImplementation(testFixtures(project(":common")))
+    testImplementation(testFixtures(project(":domain:user-domain")))
+
+    // For integration test, instead of mocking
+    testImplementation(project(":infra:user-infra-mysql"))
+    testImplementation(project(":infra:planning-infra-mysql"))
+}
+
+val copyTestSecret by tasks.registering(Copy::class) {
+    from("${rootProject.projectDir}/secrets/test")
+    include("application*.yaml")
+    into(layout.buildDirectory.dir("resources/test"))
+}
+
+tasks.test {
+    dependsOn(copyTestSecret)
 }
