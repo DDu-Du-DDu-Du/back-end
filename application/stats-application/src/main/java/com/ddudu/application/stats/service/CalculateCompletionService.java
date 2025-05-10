@@ -70,17 +70,25 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
   }
 
   private List<DduduCompletionResponse> generateCompletions(
-      LocalDate startDate, LocalDate endDate, User loginUser, User user
+      LocalDate startDate,
+      LocalDate endDate,
+      User loginUser,
+      User user
   ) {
     Relationship relationship = Relationship.getRelationship(loginUser, user);
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
     Map<LocalDate, DduduCompletionResponse> completionByDate = dduduStatsPort.calculateDdudusCompletion(
-            startDate, endDate, user.getId(), accessiblePrivacyTypes)
+            startDate,
+            endDate,
+            user.getId(),
+            accessiblePrivacyTypes
+        )
         .stream()
         .collect(Collectors.toMap(DduduCompletionResponse::date, response -> response));
 
     List<DduduCompletionResponse> completionList = new ArrayList<>();
+
     for (LocalDate currentDate = startDate; currentDate.isBefore(endDate);
         currentDate = currentDate.plusDays(1)) {
       DduduCompletionResponse response = completionByDate.getOrDefault(
