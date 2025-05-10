@@ -19,6 +19,10 @@ dependencies {
     testImplementation(testFixtures(project(":domain:user-domain")))
     testImplementation(testFixtures(project(":domain:stats-domain")))
     testImplementation(testFixtures(project(":domain:planning-domain")))
+
+    // For integration test, instead of mocking
+    testImplementation(project(":infra:user-infra-mysql"))
+    testImplementation(project(":infra:planning-infra-mysql"))
 }
 
 val copyTestSecret by tasks.registering(Copy::class) {
