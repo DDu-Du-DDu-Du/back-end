@@ -1,25 +1,24 @@
 package com.ddudu.application.planning.ddudu.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
+import com.ddudu.application.common.dto.ddudu.DduduForTimetable;
+import com.ddudu.application.common.dto.ddudu.response.TimetableResponse;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.ddudu.dto.DduduForTimetable;
-import com.ddudu.application.planning.ddudu.dto.response.TimetableResponse;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.MissingResourceException;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -59,16 +59,19 @@ class GetDailyDdudusByTimeServiceTest {
   @Test
   void 주어진_날짜에_자신의_시간별_뚜두_리스트_조회를_성공한다() {
     // given
-    Goal goal = saveGoalPort.save(
-        GoalFixture.createRandomGoalWithUserAndPrivacyType(user, PrivacyType.PRIVATE));
-    Ddudu ddudu = saveDduduPort.save(
-        DduduFixture.createRandomDduduWithGoalAndTime(goal, beginAt, endAt));
-
+    Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
+        user.getId(),
+        PrivacyType.PRIVATE
+    ));
+    Ddudu ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoalAndTime(
+        goal,
+        beginAt,
+        endAt
+    ));
     LocalDate date = LocalDate.now();
 
     // when
-    TimetableResponse response = getTimetableService.get(
-        user.getId(), user.getId(), date);
+    TimetableResponse response = getTimetableService.get(user.getId(), user.getId(), date);
 
     // then
     int countOfTime = response.timetable()
@@ -81,8 +84,10 @@ class GetDailyDdudusByTimeServiceTest {
         .ddudus()
         .get(0);
 
-    AssertionsForClassTypes.assertThat(countOfTime).isEqualTo(1);
-    AssertionsForClassTypes.assertThat(earliestTime).isEqualTo(beginAt);
+    AssertionsForClassTypes.assertThat(countOfTime)
+        .isEqualTo(1);
+    AssertionsForClassTypes.assertThat(earliestTime)
+        .isEqualTo(beginAt);
     assertThat(firstOfEarliestTime.id()).isEqualTo(ddudu.getId());
     assertThat(response.unassignedDdudus()
         .get(0)
@@ -93,16 +98,15 @@ class GetDailyDdudusByTimeServiceTest {
   @Test
   void 시간이_설정되지_않은_뚜두_조회에_성공한다() {
     // given
-    Goal goal = saveGoalPort.save(
-        GoalFixture.createRandomGoalWithUserAndPrivacyType(user, PrivacyType.PRIVATE));
-    Ddudu ddudu = saveDduduPort.save(
-        DduduFixture.createRandomDduduWithGoal(goal));
-
+    Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
+        user.getId(),
+        PrivacyType.PRIVATE
+    ));
+    Ddudu ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
     LocalDate date = LocalDate.now();
 
     // when
-    TimetableResponse response = getTimetableService.get(
-        user.getId(), user.getId(), date);
+    TimetableResponse response = getTimetableService.get(user.getId(), user.getId(), date);
 
     // then
     assertThat(response.unassignedDdudus()
@@ -119,23 +123,28 @@ class GetDailyDdudusByTimeServiceTest {
   @Test
   void 다른_사용자의_시간별_뚜두_리스트를_조회할_경우_전체공개_목표의_뚜두만_조회한다() {
     // given
-    Goal publicGoal = saveGoalPort.save(
-        GoalFixture.createRandomGoalWithUserAndPrivacyType(user, PrivacyType.PUBLIC));
-    Ddudu publicDdudu = saveDduduPort.save(
-        DduduFixture.createRandomDduduWithGoalAndTime(publicGoal, beginAt, endAt));
+    Goal publicGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
+        user.getId(),
+        PrivacyType.PUBLIC
+    ));
+    Ddudu publicDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoalAndTime(
+        publicGoal,
+        beginAt,
+        endAt
+    ));
+    Goal privateGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
+        user.getId(),
+        PrivacyType.PRIVATE
+    ));
 
-    Goal privateGoal = saveGoalPort.save(
-        GoalFixture.createRandomGoalWithUserAndPrivacyType(user, PrivacyType.PRIVATE));
-    saveDduduPort.save(
-        DduduFixture.createRandomDduduWithGoalAndTime(privateGoal, beginAt, endAt));
+    saveDduduPort.save(DduduFixture.createRandomDduduWithGoalAndTime(privateGoal, beginAt, endAt));
 
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
     LocalDate date = LocalDate.now();
 
     // when
-    TimetableResponse response = getTimetableService.get(
-        anotherUser.getId(), user.getId(), date);
+    TimetableResponse response = getTimetableService.get(anotherUser.getId(), user.getId(), date);
 
     // then
     int countOfTime = response.timetable()
@@ -145,7 +154,8 @@ class GetDailyDdudusByTimeServiceTest {
         .ddudus()
         .get(0);
 
-    AssertionsForClassTypes.assertThat(countOfTime).isEqualTo(1);
+    AssertionsForClassTypes.assertThat(countOfTime)
+        .isEqualTo(1);
     assertThat(firstOfEarliestTime.id()).isEqualTo(publicDdudu.getId());
   }
 
@@ -157,7 +167,10 @@ class GetDailyDdudusByTimeServiceTest {
 
     // when
     ThrowingCallable findAllByDate = () -> getTimetableService.get(
-        invalidLoginId, user.getId(), date);
+        invalidLoginId,
+        user.getId(),
+        date
+    );
 
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
@@ -174,7 +187,10 @@ class GetDailyDdudusByTimeServiceTest {
 
     // when
     ThrowingCallable findAllByDate = () -> getTimetableService.get(
-        loginUserId, invalidUserId, date);
+        loginUserId,
+        invalidUserId,
+        date
+    );
 
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)

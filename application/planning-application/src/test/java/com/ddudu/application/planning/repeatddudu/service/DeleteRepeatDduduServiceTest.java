@@ -1,28 +1,25 @@
 package com.ddudu.application.planning.repeatddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
+import com.ddudu.application.common.port.repeatddudu.out.SaveRepeatDduduPort;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.ddudu.port.out.DduduLoaderPort;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.planning.repeatddudu.port.out.DeleteRepeatDduduPort;
-import com.ddudu.application.planning.repeatddudu.port.out.RepeatDduduLoaderPort;
-import com.ddudu.application.planning.repeatddudu.port.out.SaveRepeatDduduPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.util.Optional;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -30,6 +27,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -38,9 +36,6 @@ class DeleteRepeatDduduServiceTest {
 
   @Autowired
   DeleteRepeatDduduService deleteRepeatDduduService;
-
-  @Autowired
-  UserLoaderPort userLoaderPort;
 
   @Autowired
   RepeatDduduLoaderPort repeatDduduLoaderPort;
@@ -55,9 +50,6 @@ class DeleteRepeatDduduServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  DeleteRepeatDduduPort deleteRepeatDduduPort;
-
-  @Autowired
   DduduLoaderPort dduduLoaderPort;
 
   @Autowired
@@ -70,7 +62,7 @@ class DeleteRepeatDduduServiceTest {
   void setUp() {
     User user = signUpPort.save(UserFixture.createRandomUserWithId());
     userId = user.getId();
-    Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user));
+    Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     repeatDdudu = saveRepeatDduduPort.save(RepeatDduduFixture.createDailyRepeatDduduWithGoal(goal));
   }
 
@@ -81,8 +73,10 @@ class DeleteRepeatDduduServiceTest {
 
     // then
     Optional<RepeatDdudu> foundAfterDeleted = repeatDduduLoaderPort.getOptionalRepeatDdudu(
-        repeatDdudu.getId());
-    Assertions.assertThat(foundAfterDeleted).isEmpty();
+        repeatDdudu.getId()
+    );
+    Assertions.assertThat(foundAfterDeleted)
+        .isEmpty();
   }
 
   @Test
@@ -114,10 +108,13 @@ class DeleteRepeatDduduServiceTest {
 
     // when
     ThrowingCallable delete = () -> deleteRepeatDduduService.delete(
-        anotherUser.getId(), repeatDdudu.getId());
+        anotherUser.getId(),
+        repeatDdudu.getId()
+    );
 
     // then
-    Assertions.assertThatExceptionOfType(SecurityException.class).isThrownBy(delete)
+    Assertions.assertThatExceptionOfType(SecurityException.class)
+        .isThrownBy(delete)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 

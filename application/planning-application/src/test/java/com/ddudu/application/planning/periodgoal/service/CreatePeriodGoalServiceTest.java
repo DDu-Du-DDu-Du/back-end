@@ -1,20 +1,15 @@
 package com.ddudu.application.planning.periodgoal.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+import com.ddudu.application.common.dto.periodgoal.request.CreatePeriodGoalRequest;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.common.exception.PeriodGoalErrorCode;
 import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
-import com.ddudu.domain.planning.periodgoal.exception.PeriodGoalErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.periodgoal.dto.request.CreatePeriodGoalRequest;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.periodgoal.port.out.SavePeriodGoalPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import com.ddudu.fixture.PeriodGoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -22,6 +17,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -30,10 +26,7 @@ class CreatePeriodGoalServiceTest {
 
   @Autowired
   CreatePeriodGoalService createPeriodGoalService;
-  @Autowired
-  UserLoaderPort userLoaderPort;
-  @Autowired
-  SavePeriodGoalPort savePeriodGoalPort;
+
   @Autowired
   SignUpPort signUpPort;
 
@@ -58,7 +51,8 @@ class CreatePeriodGoalServiceTest {
     Long periodGoalId = createPeriodGoalService.create(user.getId(), request);
 
     // then
-    Assertions.assertThat(periodGoalId).isNotNull();
+    Assertions.assertThat(periodGoalId)
+        .isNotNull();
   }
 
   @Test

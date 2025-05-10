@@ -1,23 +1,20 @@
 package com.ddudu.application.planning.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.common.dto.goal.response.BasicGoalResponse;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.goal.dto.response.BasicGoalResponse;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.stream.IntStream;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -25,6 +22,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -33,12 +31,6 @@ class RetrieveAllGoalsServiceTest {
 
   @Autowired
   RetrieveAllGoalsService retrieveAllGoalsService;
-
-  @Autowired
-  UserLoaderPort userLoaderPort;
-
-  @Autowired
-  GoalLoaderPort goalLoaderPort;
 
   @Autowired
   SignUpPort signUpPort;
@@ -63,15 +55,19 @@ class RetrieveAllGoalsServiceTest {
     List<BasicGoalResponse> actual = retrieveAllGoalsService.findAllByUser(userId);
 
     // then
-    Assertions.assertThat(actual.size()).isEqualTo(goals.size());
+    Assertions.assertThat(actual.size())
+        .isEqualTo(goals.size());
+
     for (int i = 0; i < goals.size(); i++) {
       assertThat(actual.get(i))
           .extracting("id", "name", "status", "color")
-          .containsExactly(goals.get(i)
-              .getId(), goals.get(i)
-              .getName(), goals.get(i)
-              .getStatus(), goals.get(i)
-              .getColor());
+          .containsExactly(
+              goals.get(i)
+                  .getId(), goals.get(i)
+                  .getName(), goals.get(i)
+                  .getStatus(), goals.get(i)
+                  .getColor()
+          );
     }
   }
 
@@ -81,11 +77,11 @@ class RetrieveAllGoalsServiceTest {
     Long invalidLoginId = GoalFixture.getRandomId();
 
     // when
-    ThrowingCallable findAllByUser = () -> retrieveAllGoalsService.findAllByUser(
-        invalidLoginId);
+    ThrowingCallable findAllByUser = () -> retrieveAllGoalsService.findAllByUser(invalidLoginId);
 
     // then
-    Assertions.assertThatExceptionOfType(MissingResourceException.class).isThrownBy(findAllByUser)
+    Assertions.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(findAllByUser)
         .withMessage(GoalErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
@@ -96,7 +92,7 @@ class RetrieveAllGoalsServiceTest {
 
   private List<Goal> createAndSaveGoals(User user) {
     return IntStream.range(0, 3)
-        .mapToObj(i -> GoalFixture.createRandomGoalWithUser(user))
+        .mapToObj(i -> GoalFixture.createRandomGoalWithUser(user.getId()))
         .map(saveGoalPort::save)
         .sorted(Comparator.comparingLong(Goal::getId)
             .reversed())

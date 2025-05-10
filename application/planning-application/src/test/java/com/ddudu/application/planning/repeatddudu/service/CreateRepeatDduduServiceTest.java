@@ -1,27 +1,27 @@
 package com.ddudu.application.planning.repeatddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
+import com.ddudu.application.common.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
+import com.ddudu.common.exception.GoalErrorCode;
+import com.ddudu.common.exception.RepeatDduduErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
-import com.ddudu.domain.planning.repeatddudu.exception.RepeatDduduErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.repeatddudu.dto.request.CreateRepeatDduduRequest;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.ddudu.port.out.DduduLoaderPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.planning.repeatddudu.port.out.RepeatDduduLoaderPort;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -29,6 +29,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -37,12 +38,16 @@ class CreateRepeatDduduServiceTest {
 
   @Autowired
   CreateRepeatDduduService createRepeatDduduService;
+
   @Autowired
   RepeatDduduLoaderPort repeatDduduLoaderPort;
+
   @Autowired
   DduduLoaderPort dduduLoaderPort;
+
   @Autowired
   SignUpPort signUpPort;
+
   @Autowired
   SaveGoalPort saveGoalPort;
 
@@ -60,7 +65,7 @@ class CreateRepeatDduduServiceTest {
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
-    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user));
+    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     name = RepeatDduduFixture.getRandomSentenceWithMax(50);
     repeatType = RepeatDduduFixture.getRandomRepeatType();
     repeatDaysOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek();
@@ -91,6 +96,7 @@ class CreateRepeatDduduServiceTest {
     // then
     RepeatDdudu repeatDdudu = repeatDduduLoaderPort.getOptionalRepeatDdudu(repeatDduduId)
         .get();
+
     assertThat(repeatDdudu)
         .hasFieldOrPropertyWithValue("name", name)
         .hasFieldOrPropertyWithValue("goalId", goal.getId())
@@ -108,7 +114,9 @@ class CreateRepeatDduduServiceTest {
     RepeatDdudu repeatDdudu = repeatDduduLoaderPort.getOptionalRepeatDdudu(repeatDduduId)
         .get();
     List<Ddudu> ddudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudu);
-    Assertions.assertThat(ddudus).isNotEmpty();
+
+    Assertions.assertThat(ddudus)
+        .isNotEmpty();
   }
 
   @Test
@@ -132,7 +140,8 @@ class CreateRepeatDduduServiceTest {
     ThrowingCallable create = () -> createRepeatDduduService.create(user.getId(), request);
 
     // then
-    AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class).isThrownBy(create)
+    AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(create)
         .withMessage(RepeatDduduErrorCode.INVALID_GOAL.getCodeName());
   }
 
@@ -145,7 +154,8 @@ class CreateRepeatDduduServiceTest {
     ThrowingCallable create = () -> createRepeatDduduService.create(anotherUser.getId(), request);
 
     // then
-    AssertionsForClassTypes.assertThatExceptionOfType(SecurityException.class).isThrownBy(create)
+    AssertionsForClassTypes.assertThatExceptionOfType(SecurityException.class)
+        .isThrownBy(create)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 

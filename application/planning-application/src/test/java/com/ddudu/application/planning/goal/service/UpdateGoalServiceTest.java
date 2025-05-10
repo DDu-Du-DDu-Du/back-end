@@ -1,21 +1,19 @@
 package com.ddudu.application.planning.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.common.dto.goal.request.UpdateGoalRequest;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.goal.dto.request.UpdateGoalRequest;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -23,6 +21,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -31,9 +30,6 @@ class UpdateGoalServiceTest {
 
   @Autowired
   UpdateGoalService updateGoalService;
-
-  @Autowired
-  UserLoaderPort userLoaderPort;
 
   @Autowired
   GoalLoaderPort goalLoaderPort;
@@ -95,10 +91,14 @@ class UpdateGoalServiceTest {
 
     // when
     ThrowingCallable update = () -> updateGoalService.update(
-        anotherUser.getId(), goal.getId(), request);
+        anotherUser.getId(),
+        goal.getId(),
+        request
+    );
 
     // then
-    Assertions.assertThatExceptionOfType(SecurityException.class).isThrownBy(update)
+    Assertions.assertThatExceptionOfType(SecurityException.class)
+        .isThrownBy(update)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
@@ -109,7 +109,7 @@ class UpdateGoalServiceTest {
   }
 
   private Goal createAndSaveGoal(User user) {
-    Goal goal = GoalFixture.createRandomGoalWithUser(user);
+    Goal goal = GoalFixture.createRandomGoalWithUser(user.getId());
     return saveGoalPort.save(goal);
   }
 

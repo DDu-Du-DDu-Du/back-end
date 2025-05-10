@@ -1,25 +1,21 @@
 package com.ddudu.application.planning.ddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.application.common.dto.ddudu.request.ChangeNameRequest;
+import com.ddudu.application.common.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
-import com.ddudu.domain.planning.ddudu.exception.DduduErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.ddudu.dto.request.ChangeNameRequest;
-import com.ddudu.application.planning.ddudu.dto.response.BasicDduduResponse;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.ddudu.port.out.DduduLoaderPort;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -27,6 +23,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -45,12 +42,6 @@ class ChangeNameServiceTest {
   @Autowired
   SaveDduduPort saveDduduPort;
 
-  @Autowired
-  DduduLoaderPort dduduLoaderPort;
-
-  @Autowired
-  EntityManager entityManager;
-
   User user;
   Goal goal;
   Ddudu ddudu;
@@ -59,7 +50,7 @@ class ChangeNameServiceTest {
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
-    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user));
+    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
     request = new ChangeNameRequest(DduduFixture.getRandomSentenceWithMax(50));
   }
@@ -80,7 +71,10 @@ class ChangeNameServiceTest {
 
     // when
     ThrowingCallable changeName = () -> changeNameService.change(
-        user.getId(), ddudu.getId(), request);
+        user.getId(),
+        ddudu.getId(),
+        request
+    );
 
     // then
     Assertions.assertThatIllegalArgumentException()
@@ -94,8 +88,7 @@ class ChangeNameServiceTest {
     Long invalidId = DduduFixture.getRandomId();
 
     // when
-    ThrowingCallable changeName = () -> changeNameService.change(
-        user.getId(), invalidId, request);
+    ThrowingCallable changeName = () -> changeNameService.change(user.getId(), invalidId, request);
 
     // then
     Assertions.assertThatThrownBy(changeName)
@@ -110,7 +103,10 @@ class ChangeNameServiceTest {
 
     // when
     ThrowingCallable changeName = () -> changeNameService.change(
-        anotherUser.getId(), ddudu.getId(), request);
+        anotherUser.getId(),
+        ddudu.getId(),
+        request
+    );
 
     // then
     Assertions.assertThatThrownBy(changeName)

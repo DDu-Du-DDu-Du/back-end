@@ -1,21 +1,19 @@
 package com.ddudu.application.planning.periodgoal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.common.dto.periodgoal.request.UpdatePeriodGoalRequest;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.periodgoal.out.PeriodGoalLoaderPort;
+import com.ddudu.application.common.port.periodgoal.out.SavePeriodGoalPort;
+import com.ddudu.common.exception.PeriodGoalErrorCode;
 import com.ddudu.domain.planning.periodgoal.aggregate.PeriodGoal;
-import com.ddudu.domain.planning.periodgoal.exception.PeriodGoalErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.periodgoal.dto.request.UpdatePeriodGoalRequest;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.periodgoal.port.out.PeriodGoalLoaderPort;
-import com.ddudu.application.planning.periodgoal.port.out.SavePeriodGoalPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.PeriodGoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -23,6 +21,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -31,10 +30,10 @@ class UpdatePeriodGoalServiceTest {
 
   @Autowired
   UpdatePeriodGoalService updatePeriodGoalService;
-  @Autowired
-  UserLoaderPort userLoaderPort;
+
   @Autowired
   PeriodGoalLoaderPort periodGoalLoaderPort;
+
   @Autowired
   SignUpPort signUpPort;
 
@@ -49,7 +48,7 @@ class UpdatePeriodGoalServiceTest {
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
-    periodGoal = savePeriodGoalPort.save(PeriodGoalFixture.createRandomPeriodGoal(user));
+    periodGoal = savePeriodGoalPort.save(PeriodGoalFixture.createRandomPeriodGoal(user.getId()));
     newContents = PeriodGoalFixture.getRandomSentenceWithMax(255);
     request = new UpdatePeriodGoalRequest(newContents);
   }
@@ -60,8 +59,8 @@ class UpdatePeriodGoalServiceTest {
     Long updatedId = updatePeriodGoalService.update(user.getId(), periodGoal.getId(), request);
 
     // when
-    PeriodGoal actual = periodGoalLoaderPort.getOrElseThrow(
-        updatedId, "기간 목표가 존재하지 않습니다.");
+    PeriodGoal actual = periodGoalLoaderPort.getOrElseThrow(updatedId, "기간 목표가 존재하지 않습니다.");
+
     assertThat(actual)
         .hasFieldOrPropertyWithValue("contents", newContents);
   }
@@ -73,7 +72,10 @@ class UpdatePeriodGoalServiceTest {
 
     // when
     ThrowingCallable update = () -> updatePeriodGoalService.update(
-        user.getId(), invalidId, request);
+        user.getId(),
+        invalidId,
+        request
+    );
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
@@ -88,10 +90,14 @@ class UpdatePeriodGoalServiceTest {
 
     // when
     ThrowingCallable update = () -> updatePeriodGoalService.update(
-        anotherUser.getId(), periodGoal.getId(), request);
+        anotherUser.getId(),
+        periodGoal.getId(),
+        request
+    );
 
     // then
-    Assertions.assertThatExceptionOfType(SecurityException.class).isThrownBy(update)
+    Assertions.assertThatExceptionOfType(SecurityException.class)
+        .isThrownBy(update)
         .withMessage(PeriodGoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 

@@ -1,26 +1,24 @@
 package com.ddudu.application.planning.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import com.ddudu.application.common.dto.goal.response.GoalWithRepeatDduduResponse;
+import com.ddudu.application.common.dto.repeatddudu.RepeatDduduDto;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
+import com.ddudu.application.common.port.repeatddudu.out.SaveRepeatDduduPort;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.goal.dto.response.GoalWithRepeatDduduResponse;
-import com.ddudu.application.planning.repeatddudu.dto.RepeatDduduDto;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.planning.repeatddudu.port.out.RepeatDduduLoaderPort;
-import com.ddudu.application.planning.repeatddudu.port.out.SaveRepeatDduduPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -28,6 +26,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -36,12 +35,6 @@ class RetrieveGoalServiceTest {
 
   @Autowired
   RetrieveGoalService retrieveGoalService;
-
-  @Autowired
-  UserLoaderPort userLoaderPort;
-
-  @Autowired
-  GoalLoaderPort goalLoaderPort;
 
   @Autowired
   SignUpPort signUpPort;
@@ -73,7 +66,12 @@ class RetrieveGoalServiceTest {
     // then
     assertThat(actual).extracting("id", "name", "status", "color", "privacyType")
         .containsExactly(
-            goal.getId(), goal.getName(), goal.getStatus(), goal.getColor(), goal.getPrivacyType());
+            goal.getId(),
+            goal.getName(),
+            goal.getStatus(),
+            goal.getColor(),
+            goal.getPrivacyType()
+        );
   }
 
   @Test
@@ -83,7 +81,10 @@ class RetrieveGoalServiceTest {
     LocalDate endDate = LocalDate.now()
         .plusMonths(1);
     RepeatDdudu repeatDdudu = RepeatDduduFixture.createRepeatDduduWithGoal(
-        goal, startDate, endDate);
+        goal,
+        startDate,
+        endDate
+    );
 
     saveRepeatDduduPort.save(repeatDdudu);
 
@@ -95,11 +96,19 @@ class RetrieveGoalServiceTest {
         .get(0);
     RepeatDdudu actual = repeatDduduLoaderPort.getOptionalRepeatDdudu(first.id())
         .get();
-    assertThat(actual).extracting("name", "repeatType", "repeatPattern", "startDate", "endDate")
+
+    assertThat(actual).extracting("name", "repeatType", "startDate", "endDate")
         .containsExactly(
-            repeatDdudu.getName(), repeatDdudu.getRepeatType(), repeatDdudu.getRepeatPattern(),
-            repeatDdudu.getStartDate(), repeatDdudu.getEndDate()
+            repeatDdudu.getName(),
+            repeatDdudu.getRepeatType(),
+            repeatDdudu.getStartDate(),
+            repeatDdudu.getEndDate()
         );
+
+    RepeatPattern actualPattern = actual.getRepeatPattern();
+    RepeatPattern expectedPattern = repeatDdudu.getRepeatPattern();
+
+    assertThat(actualPattern).isInstanceOf(expectedPattern.getClass());
   }
 
   @Test
@@ -111,7 +120,8 @@ class RetrieveGoalServiceTest {
     ThrowingCallable getById = () -> retrieveGoalService.getById(userId, invalidId);
 
     // then
-    Assertions.assertThatExceptionOfType(MissingResourceException.class).isThrownBy(getById)
+    Assertions.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(getById)
         .withMessage(GoalErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
@@ -124,7 +134,8 @@ class RetrieveGoalServiceTest {
     ThrowingCallable getById = () -> retrieveGoalService.getById(anotherUser.getId(), goal.getId());
 
     // then
-    Assertions.assertThatExceptionOfType(SecurityException.class).isThrownBy(getById)
+    Assertions.assertThatExceptionOfType(SecurityException.class)
+        .isThrownBy(getById)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
@@ -134,7 +145,7 @@ class RetrieveGoalServiceTest {
   }
 
   private Goal createAndSaveGoal(User user) {
-    Goal goal = GoalFixture.createRandomGoalWithUser(user);
+    Goal goal = GoalFixture.createRandomGoalWithUser(user.getId());
     return saveGoalPort.save(goal);
   }
 

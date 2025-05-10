@@ -1,25 +1,22 @@
 package com.ddudu.application.planning.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.ddudu.port.out.DduduLoaderPort;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.DeleteGoalPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.util.Optional;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -27,6 +24,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -35,9 +33,6 @@ class DeleteGoalServiceTest {
 
   @Autowired
   DeleteGoalService deleteGoalService;
-
-  @Autowired
-  UserLoaderPort userLoaderPort;
 
   @Autowired
   GoalLoaderPort goalLoaderPort;
@@ -49,14 +44,10 @@ class DeleteGoalServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  DeleteGoalPort deleteGoalPort;
-
-  @Autowired
   DduduLoaderPort dduduLoaderPort;
 
   @Autowired
   SaveDduduPort saveDduduPort;
-
 
   Long userId;
   Goal goal;
@@ -65,7 +56,7 @@ class DeleteGoalServiceTest {
   void setUp() {
     User user = signUpPort.save(UserFixture.createRandomUserWithId());
     userId = user.getId();
-    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user));
+    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(userId));
   }
 
   @Test
@@ -75,7 +66,9 @@ class DeleteGoalServiceTest {
 
     // then
     Optional<Goal> foundAfterDeleted = goalLoaderPort.getOptionalGoal(goal.getId());
-    Assertions.assertThat(foundAfterDeleted).isEmpty();
+
+    Assertions.assertThat(foundAfterDeleted)
+        .isEmpty();
   }
 
   @Test
@@ -109,7 +102,8 @@ class DeleteGoalServiceTest {
     ThrowingCallable delete = () -> deleteGoalService.delete(anotherUser.getId(), goal.getId());
 
     // then
-    Assertions.assertThatExceptionOfType(SecurityException.class).isThrownBy(delete)
+    Assertions.assertThatExceptionOfType(SecurityException.class)
+        .isThrownBy(delete)
         .withMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 

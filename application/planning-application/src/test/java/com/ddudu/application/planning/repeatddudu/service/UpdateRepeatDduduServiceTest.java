@@ -2,33 +2,33 @@ package com.ddudu.application.planning.repeatddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.ddudu.application.common.dto.repeatddudu.request.UpdateRepeatDduduRequest;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.DduduUpdatePort;
+import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
+import com.ddudu.application.common.port.repeatddudu.out.SaveRepeatDduduPort;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
 import com.ddudu.domain.planning.repeatddudu.service.RepeatDduduDomainService;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.repeatddudu.dto.RepeatPatternDto;
-import com.ddudu.application.planning.repeatddudu.dto.request.UpdateRepeatDduduRequest;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.ddudu.port.out.DduduLoaderPort;
-import com.ddudu.application.planning.ddudu.port.out.DduduUpdatePort;
-import com.ddudu.application.planning.ddudu.port.out.SaveDduduPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.planning.repeatddudu.port.out.RepeatDduduLoaderPort;
-import com.ddudu.application.planning.repeatddudu.port.out.SaveRepeatDduduPort;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -37,20 +37,28 @@ class UpdateRepeatDduduServiceTest {
 
   @Autowired
   UpdateRepeatDduduService updateRepeatDduduService;
+
   @Autowired
   RepeatDduduDomainService repeatDduduDomainService;
+
   @Autowired
   RepeatDduduLoaderPort repeatDduduLoaderPort;
+
   @Autowired
   DduduLoaderPort dduduLoaderPort;
+
   @Autowired
   SaveGoalPort saveGoalPort;
+
   @Autowired
   SignUpPort signUpPort;
+
   @Autowired
   SaveRepeatDduduPort saveRepeatDduduPort;
+
   @Autowired
   SaveDduduPort saveDduduPort;
+
   @Autowired
   DduduUpdatePort dduduUpdatePort;
 
@@ -68,7 +76,7 @@ class UpdateRepeatDduduServiceTest {
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
-    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user));
+    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     nextMonday = LocalDate.now()
         .with(DayOfWeek.MONDAY)
         .plusDays(7);
@@ -78,8 +86,11 @@ class UpdateRepeatDduduServiceTest {
         RepeatDdudu.builder()
             .name("반복 뚜두")
             .repeatType(RepeatType.WEEKLY)
-            .repeatPatternDto(
-                RepeatPatternDto.weeklyPatternOf(List.of(originalRepeatDayOfWeek.name())))
+            .repeatPattern(RepeatType.WEEKLY.createRepeatPattern(
+                List.of(originalRepeatDayOfWeek.name()),
+                null,
+                null
+            ))
             .goalId(goal.getId())
             .startDate(nextMonday)
             .endDate(nextSunday)
@@ -114,8 +125,11 @@ class UpdateRepeatDduduServiceTest {
     assertThat(updated.getName()).isEqualTo(nameToUpdate);
 
     List<Ddudu> updatedDdudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudu);
-    Assertions.assertThat(updatedDdudus).hasSize(1);
-    Assertions.assertThat(updatedDdudus).extracting(Ddudu::getName)
+
+    Assertions.assertThat(updatedDdudus)
+        .hasSize(1);
+    Assertions.assertThat(updatedDdudus)
+        .extracting(Ddudu::getName)
         .containsExactly(nameToUpdate);
     assertThat(updatedDdudus.get(0)
         .getScheduledOn()
@@ -134,7 +148,9 @@ class UpdateRepeatDduduServiceTest {
 
     // then
     List<Ddudu> updatedDdudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudu);
-    Assertions.assertThat(updatedDdudus).hasSize(2);
+
+    Assertions.assertThat(updatedDdudus)
+        .hasSize(2);
     Assertions.assertThat(updatedDdudus)
         .extracting(ddudu -> ddudu.getScheduledOn()
             .getDayOfWeek())

@@ -1,35 +1,35 @@
 package com.ddudu.application.planning.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
+import com.ddudu.application.common.dto.goal.request.CreateGoalRequest;
+import com.ddudu.application.common.dto.goal.request.CreateRepeatDduduRequestWithoutGoal;
+import com.ddudu.application.common.dto.goal.response.GoalIdResponse;
+import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
+import com.ddudu.application.common.port.user.out.UserLoaderPort;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.domain.planning.goal.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.service.GoalDomainService;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.application.planning.goal.dto.request.CreateGoalRequest;
-import com.ddudu.application.planning.goal.dto.request.CreateRepeatDduduRequestWithoutGoal;
-import com.ddudu.application.planning.goal.dto.response.GoalIdResponse;
-import com.ddudu.application.user.auth.port.out.SignUpPort;
-import com.ddudu.application.planning.ddudu.port.out.DduduLoaderPort;
-import com.ddudu.application.planning.goal.port.out.GoalLoaderPort;
-import com.ddudu.application.planning.goal.port.out.SaveGoalPort;
-import com.ddudu.application.planning.repeatddudu.port.out.RepeatDduduLoaderPort;
-import com.ddudu.application.user.user.port.out.UserLoaderPort;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import jakarta.transaction.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -39,6 +39,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -47,15 +48,6 @@ class CreateGoalServiceTest {
 
   @Autowired
   CreateGoalService createGoalService;
-
-  @Autowired
-  GoalDomainService goalDomainService;
-
-  @Autowired
-  UserLoaderPort userLoaderPort;
-
-  @Autowired
-  SaveGoalPort saveGoalPort;
 
   @Autowired
   SignUpPort signUpPort;
@@ -92,6 +84,7 @@ class CreateGoalServiceTest {
 
     // then
     Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
     assertThat(actual.get()).extracting("name", "color", "privacyType")
         .containsExactly(name, color, privacyType);
   }
@@ -103,6 +96,7 @@ class CreateGoalServiceTest {
 
     // then
     Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
     assertThat(actual.get()
         .getId()).isNotNull();
   }
@@ -114,6 +108,7 @@ class CreateGoalServiceTest {
 
     // then
     Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
     assertThat(actual.get()
         .getStatus()).isEqualTo(GoalStatus.IN_PROGRESS);
   }
@@ -125,13 +120,18 @@ class CreateGoalServiceTest {
     String defaultColor = "191919";
 
     CreateGoalRequest request = new CreateGoalRequest(
-        name, invalidColor, privacyType.name(), new ArrayList<>());
+        name,
+        invalidColor,
+        privacyType.name(),
+        new ArrayList<>()
+    );
 
     // when
     GoalIdResponse expected = createGoalService.create(userId, request);
 
     // then
     Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
     assertThat(actual.get()
         .getColor()).isEqualTo(defaultColor);
   }
@@ -147,6 +147,7 @@ class CreateGoalServiceTest {
 
     // then
     Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
     assertThat(actual.get()
         .getPrivacyType()).isEqualTo(defaultPrivacyType);
   }
@@ -160,7 +161,8 @@ class CreateGoalServiceTest {
     ThrowingCallable create = () -> createGoalService.create(invalidUserId, request);
 
     // then
-    AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class).isThrownBy(create)
+    AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(create)
         .withMessage(GoalErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
@@ -194,13 +196,17 @@ class CreateGoalServiceTest {
     Goal goal = goalLoaderPort.getOptionalGoal(response.id())
         .get();
     List<RepeatDdudu> repeatDdudus = repeatDduduLoaderPort.getAllByGoal(goal);
-    Assertions.assertThat(repeatDdudus).hasSize(1);
+
+    Assertions.assertThat(repeatDdudus)
+        .hasSize(1);
     assertThat(repeatDdudus.get(0))
         .extracting("name", "repeatType", "startDate", "endDate")
         .containsExactly("반복 뚜두", RepeatType.WEEKLY, nextMonday, nextSunday);
 
     List<Ddudu> ddudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudus.get(0));
-    Assertions.assertThat(ddudus).hasSize(1);
+
+    Assertions.assertThat(ddudus)
+        .hasSize(1);
     assertThat(ddudus.get(0))
         .extracting(ddudu -> ddudu.getScheduledOn()
             .getDayOfWeek())
