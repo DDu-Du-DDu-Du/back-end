@@ -46,11 +46,11 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
     );
     MonthlyStatsSummaryDto lastMonthStats = MonthlyStatsSummaryDto.from(monthlyStats.getOrDefault(
         lastMonth,
-        getEmpty(user.getId(), lastMonth)
+        MonthlyStats.empty(user.getId(), lastMonth)
     ));
     MonthlyStatsSummaryDto thisMonthStats = MonthlyStatsSummaryDto.from(monthlyStats.getOrDefault(
         thisMonth,
-        getEmpty(user.getId(), thisMonth)
+        MonthlyStats.empty(user.getId(), thisMonth)
     ));
 
     return MonthlyStatsSummaryResponse.from(lastMonthStats, thisMonthStats);
@@ -72,13 +72,6 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
 
     return YearMonth.now()
         .atEndOfMonth();
-  }
-
-  private MonthlyStats getEmpty(Long userId, YearMonth yearMonth) {
-    return MonthlyStats.builder()
-        .userId(userId)
-        .yearMonth(yearMonth)
-        .build();
   }
 
 }

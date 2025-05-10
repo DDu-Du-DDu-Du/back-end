@@ -27,6 +27,13 @@ public class MonthlyStats {
     this.stats = Objects.requireNonNullElseGet(stats, Collections::emptyList);
   }
 
+  public static MonthlyStats empty(Long userId, YearMonth yearMonth) {
+    return MonthlyStats.builder()
+        .userId(userId)
+        .yearMonth(yearMonth)
+        .build();
+  }
+
   public Map<Long, Integer> countPerGoal() {
     return stats.stream()
         .collect(
