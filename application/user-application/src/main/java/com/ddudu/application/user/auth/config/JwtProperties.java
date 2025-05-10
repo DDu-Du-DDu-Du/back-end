@@ -1,4 +1,4 @@
-package com.ddudu.application.common.config;
+package com.ddudu.application.user.auth.config;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
