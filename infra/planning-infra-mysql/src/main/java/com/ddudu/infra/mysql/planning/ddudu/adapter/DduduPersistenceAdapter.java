@@ -154,7 +154,10 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public Map<YearMonth, MonthlyStats> collectMonthlyStats(
-      Long userId, Goal goal, LocalDate from, LocalDate to
+      Long userId,
+      Goal goal,
+      LocalDate from,
+      LocalDate to
   ) {
     Long goalId = Objects.nonNull(goal) ? goal.getId() : null;
     List<BaseStats> stats = dduduRepository.findStatsBaseOfUser(userId, goalId, from, to);
@@ -163,13 +166,12 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
         .collect(Collectors.groupingBy(stat -> YearMonth.from(stat.getScheduledOn())))
         .entrySet()
         .stream()
-        .collect(Collectors.toMap(
-            Map.Entry::getKey,
-            monthlyStatsEntry -> MonthlyStats.builder()
-                .userId(userId)
-                .yearMonth(monthlyStatsEntry.getKey())
-                .stats(monthlyStatsEntry.getValue())
-                .build()
+        .collect(Collectors.toMap(Map.Entry::getKey,
+                monthlyStatsEntry -> MonthlyStats.builder()
+                    .userId(userId)
+                    .yearMonth(monthlyStatsEntry.getKey())
+                    .stats(monthlyStatsEntry.getValue())
+                    .build()
             )
         );
   }

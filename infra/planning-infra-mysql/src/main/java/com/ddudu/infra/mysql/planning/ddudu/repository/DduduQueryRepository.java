@@ -12,29 +12,33 @@ import java.util.List;
 
 public interface DduduQueryRepository {
 
-  List<DduduEntity> findDdudusByDate(
-      LocalDateTime startDate, LocalDateTime endDate, Long userId
-  );
+  List<DduduEntity> findDdudusByDate(LocalDateTime startDate, LocalDateTime endDate, Long userId);
 
   List<DduduCompletionResponse> findDdudusCompletion(
-      LocalDate startDate, LocalDate endDate, Long userId,
+      LocalDate startDate,
+      LocalDate endDate,
+      Long userId,
       List<PrivacyType> privacyTypes
   );
 
   void deleteAllByGoalId(Long goalId);
 
   List<DduduCursorDto> findScrollDdudus(
-      Long userId, ScrollRequest request, String query, Boolean isMine, Boolean isFollower
+      Long userId,
+      ScrollRequest request,
+      String query,
+      Boolean isMine,
+      Boolean isFollower
   );
 
   List<DduduEntity> findAllByDateAndUserAndPrivacyTypes(
-      LocalDate date, Long userId, List<PrivacyType> accessiblePrivacyTypes
+      LocalDate date,
+      Long userId,
+      List<PrivacyType> accessiblePrivacyTypes
   );
 
   void deleteAllByRepeatDduduId(Long repeatDduduId);
 
-  List<BaseStats> findStatsBaseOfUser(
-      Long userId, Long goalId, LocalDate from, LocalDate to
-  );
+  List<BaseStats> findStatsBaseOfUser(Long userId, Long goalId, LocalDate from, LocalDate to);
 
 }

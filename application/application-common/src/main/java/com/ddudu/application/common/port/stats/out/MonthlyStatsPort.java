@@ -9,7 +9,10 @@ import java.util.Map;
 public interface MonthlyStatsPort {
 
   Map<YearMonth, MonthlyStats> collectMonthlyStats(
-      Long userId, Goal goal, LocalDate from, LocalDate to
+      Long userId,
+      Goal goal,
+      LocalDate from,
+      LocalDate to
   );
 
 }
