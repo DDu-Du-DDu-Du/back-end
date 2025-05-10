@@ -41,7 +41,7 @@ tasks.jacocoTestCoverageVerification {
                 minimum = BigDecimal("0.50")
             }
 
-            includes = listOf("*.service.*","*.*.service.*")
+            includes = listOf("*.service.*", "*.aggregate.*")
         }
     }
 }
