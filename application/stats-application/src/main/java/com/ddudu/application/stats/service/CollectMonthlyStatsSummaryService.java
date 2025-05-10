@@ -29,21 +29,29 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
   private final MonthlyStatsPort monthlyStatsPort;
 
   @Override
-  public MonthlyStatsSummaryResponse collectMonthlyTotalStats(
-      Long loginId, YearMonth yearMonth
-  ) {
+  public MonthlyStatsSummaryResponse collectMonthlyTotalStats(Long loginId, YearMonth yearMonth) {
     User user = userLoaderPort.getUserOrElseThrow(
-        loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        loginId,
+        DduduErrorCode.USER_NOT_EXISTING.getCodeName()
+    );
     LocalDate from = getFirstDateOfLastMonth(yearMonth);
     LocalDate to = getLastDateOfMonth(yearMonth);
     YearMonth lastMonth = YearMonth.from(from);
     YearMonth thisMonth = YearMonth.from(to);
-    Map<YearMonth, MonthlyStats> monthlyStats = monthlyStatsPort.collectMonthlyStats(user.getId(),
-        null, from, to);
-    MonthlyStatsSummaryDto lastMonthStats = MonthlyStatsSummaryDto.from(
-        monthlyStats.get(lastMonth));
-    MonthlyStatsSummaryDto thisMonthStats = MonthlyStatsSummaryDto.from(
-        monthlyStats.get(thisMonth));
+    Map<YearMonth, MonthlyStats> monthlyStats = monthlyStatsPort.collectMonthlyStats(
+        user.getId(),
+        null,
+        from,
+        to
+    );
+    MonthlyStatsSummaryDto lastMonthStats = MonthlyStatsSummaryDto.from(monthlyStats.getOrDefault(
+        lastMonth,
+        getEmpty(user.getId(), lastMonth)
+    ));
+    MonthlyStatsSummaryDto thisMonthStats = MonthlyStatsSummaryDto.from(monthlyStats.getOrDefault(
+        thisMonth,
+        getEmpty(user.getId(), thisMonth)
+    ));
 
     return MonthlyStatsSummaryResponse.from(lastMonthStats, thisMonthStats);
   }
@@ -66,5 +74,11 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
         .atEndOfMonth();
   }
 
+  private MonthlyStats getEmpty(Long userId, YearMonth yearMonth) {
+    return MonthlyStats.builder()
+        .userId(userId)
+        .yearMonth(yearMonth)
+        .build();
+  }
 
 }

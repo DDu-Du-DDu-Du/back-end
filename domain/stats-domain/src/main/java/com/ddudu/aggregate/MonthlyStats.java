@@ -2,6 +2,8 @@ package com.ddudu.aggregate;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,14 +13,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 @Getter
 public class MonthlyStats {
 
   private final Long userId;
   private final YearMonth yearMonth;
   private final List<BaseStats> stats;
+
+  @Builder
+  private MonthlyStats(Long userId, YearMonth yearMonth, List<BaseStats> stats) {
+    this.userId = userId;
+    this.yearMonth = yearMonth;
+    this.stats = Objects.requireNonNullElseGet(stats, Collections::emptyList);
+  }
 
   public Map<Long, Integer> countPerGoal() {
     return stats.stream()
