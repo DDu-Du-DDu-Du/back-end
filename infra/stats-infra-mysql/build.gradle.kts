@@ -13,7 +13,7 @@ dependencies {
 
 val querydslSrcDir = "src/main/generated"
 
-tasks.withType<JavaCompile> {
+tasks.compileJava {
     options.generatedSourceOutputDirectory.set(file(querydslSrcDir))
 }
 
