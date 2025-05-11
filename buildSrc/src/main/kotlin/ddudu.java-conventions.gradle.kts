@@ -33,7 +33,15 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.withType<Test> {
+tasks.compileJava {
+    options.encoding = "UTF-8"
+}
+
+tasks.compileTestJava {
+    options.encoding = "UTF-8"
+}
+
+tasks.test {
     useJUnitPlatform()
 }
 

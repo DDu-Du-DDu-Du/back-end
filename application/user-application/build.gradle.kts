@@ -29,6 +29,6 @@ val copyTestSecret by tasks.registering(Copy::class) {
     into(layout.buildDirectory.dir("resources/test"))
 }
 
-tasks.test {
+tasks.named("processResources") {
     dependsOn(copyTestSecret)
 }
