@@ -60,7 +60,7 @@ class DduduPeriodSetupServiceTest {
   void 뚜두_시작_및_종료시간을_설정한다() {
     // given
     LocalTime now = LocalTime.now();
-    PeriodSetupRequest request = new PeriodSetupRequest(now, now.plusHours(1));
+    PeriodSetupRequest request = new PeriodSetupRequest(now, LocalTime.MAX);
 
     // when
     dduduPeriodSetupService.setUpPeriod(user.getId(), ddudu.getId(), request);
@@ -69,14 +69,14 @@ class DduduPeriodSetupServiceTest {
     Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
 
     assertThat(actual.getBeginAt()).isEqualTo(now);
-    assertThat(actual.getEndAt()).isEqualTo(now.plusHours(1));
+    assertThat(actual.getEndAt()).isEqualTo(LocalTime.MAX);
   }
 
   @Test
   void 뚜두가_없으면_시간_설정을_실패한다() {
     // given
     LocalTime now = LocalTime.now();
-    PeriodSetupRequest request = new PeriodSetupRequest(now, now.plusHours(1));
+    PeriodSetupRequest request = new PeriodSetupRequest(now, LocalTime.MAX);
     long invalidId = DduduFixture.getRandomId();
 
     // when

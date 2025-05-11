@@ -213,7 +213,7 @@ class DduduTest {
         LocalTime now = LocalTime.now();
 
         // when
-        Ddudu actual = ddudu.setUpPeriod(now, now.plusHours(1));
+        Ddudu actual = ddudu.setUpPeriod(now, LocalTime.MAX);
 
         // then
         assertThat(actual)
@@ -224,7 +224,7 @@ class DduduTest {
             .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
             .hasFieldOrPropertyWithValue("goalId", ddudu.getGoalId())
             .hasFieldOrPropertyWithValue("beginAt", now)
-            .hasFieldOrPropertyWithValue("endAt", now.plusHours(1));
+            .hasFieldOrPropertyWithValue("endAt", LocalTime.MAX);
       }
 
       @Test

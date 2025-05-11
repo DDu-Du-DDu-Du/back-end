@@ -34,8 +34,16 @@ public class Ddudu {
 
   @Builder
   private Ddudu(
-      Long id, Long goalId, Long userId, Long repeatDduduId, String name, Boolean isPostponed,
-      DduduStatus status, String statusValue, LocalDate scheduledOn, LocalTime beginAt,
+      Long id,
+      Long goalId,
+      Long userId,
+      Long repeatDduduId,
+      String name,
+      Boolean isPostponed,
+      DduduStatus status,
+      String statusValue,
+      LocalDate scheduledOn,
+      LocalTime beginAt,
       LocalTime endAt
   ) {
     validate(goalId, userId, name, beginAt, endAt);
@@ -153,7 +161,9 @@ public class Ddudu {
   private void validateName(String name) {
     checkArgument(StringUtils.isNotBlank(name), DduduErrorCode.BLANK_NAME.getCodeName());
     checkArgument(
-        name.length() <= MAX_NAME_LENGTH, DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+        name.length() <= MAX_NAME_LENGTH,
+        DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName()
+    );
   }
 
   private void validatePeriod(LocalTime beginAt, LocalTime endAt) {
@@ -162,7 +172,9 @@ public class Ddudu {
     }
 
     checkArgument(
-        !beginAt.isAfter(endAt), DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
+        !beginAt.isAfter(endAt),
+        DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName()
+    );
   }
 
   private boolean isCreatedByUser(Long userId) {
