@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public enum Relationship {
   ME(User::equals),
-  FOLLOWER((user, targetUser) -> false),
+  FOLLOWER((user, targetUser) -> false), // TODO: Following 구현 후 구체화
   NONE((user, targetUser) -> true);
 
   private final BiPredicate<User, User> filter;

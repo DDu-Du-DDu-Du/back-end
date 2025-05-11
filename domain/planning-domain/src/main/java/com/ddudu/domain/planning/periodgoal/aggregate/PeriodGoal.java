@@ -29,7 +29,11 @@ public final class PeriodGoal {
 
   @Builder
   private PeriodGoal(
-      Long id, Long userId, String contents, PeriodGoalType type, LocalDate planDate
+      Long id,
+      Long userId,
+      String contents,
+      PeriodGoalType type,
+      LocalDate planDate
   ) {
     validate(userId, contents);
 
@@ -42,6 +46,18 @@ public final class PeriodGoal {
 
   public LocalDate getPlanDate() {
     return planDate.getDate();
+  }
+
+  public PeriodGoal update(String contents) {
+    return getFullBuilder()
+        .contents(contents)
+        .build();
+  }
+
+  public void validateCreator(Long userId) {
+    if (!isCreatedBy(userId)) {
+      throw new SecurityException(PeriodGoalErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
   }
 
   private void validate(Long userId, String contents) {
@@ -57,20 +73,8 @@ public final class PeriodGoal {
     checkArgument(isNotBlank(contents), PeriodGoalErrorCode.CONTENTS_NOT_EXISTING.getCodeName());
   }
 
-  public void validateCreator(Long userId) {
-    if (!isCreatedBy(userId)) {
-      throw new SecurityException(PeriodGoalErrorCode.INVALID_AUTHORITY.getCodeName());
-    }
-  }
-
-  public boolean isCreatedBy(Long userId) {
+  private boolean isCreatedBy(Long userId) {
     return Objects.equals(this.userId, userId);
-  }
-
-  public PeriodGoal update(String contents) {
-    return getFullBuilder()
-        .contents(contents)
-        .build();
   }
 
   private PeriodGoalBuilder getFullBuilder() {

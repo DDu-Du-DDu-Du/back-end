@@ -1,10 +1,13 @@
-package com.ddudu.domain.planning.periodgoal.aggregate.enums;
+package com.ddudu.domain.planning.goal.aggregate.enums;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.common.exception.PeriodGoalErrorCode;
+import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
+import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.PeriodGoalFixture;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -16,19 +19,19 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class PeriodGoalTypeTest {
+class GoalStatusTest {
 
   @Nested
-  class 기간_목표_타입_생성_테스트 {
+  class 목표_상태_생성_테스트 {
 
     @ParameterizedTest
-    @ValueSource(strings = {"MONTH", "month", "WEEK", "week"})
-    void 기간_목표를_생성한다(String value) {
+    @ValueSource(strings = {"IN_PROGRESS", "in_progress", "DONE", "done"})
+    void 목표_상태를_생성한다(String value) {
       // given
       String expected = value.toUpperCase();
 
       // when
-      PeriodGoalType actual = PeriodGoalType.from(value);
+      GoalStatus actual = GoalStatus.from(value);
 
       // then
       assertThat(actual.name()).isEqualTo(expected);
@@ -36,27 +39,25 @@ class PeriodGoalTypeTest {
 
     @ParameterizedTest
     @NullSource
-    void 기간_목표_타입_없이는_기간_목표를_생성할_수_없다(String type) {
+    void 기본_목표_상태는_진행중이다(String type) {
       // when
-      ThrowingCallable create = () -> PeriodGoalType.from(type);
+      GoalStatus actual = GoalStatus.from(type);
 
       // then
-      assertThatThrownBy(create)
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining(PeriodGoalErrorCode.PERIOD_GOAL_TYPE_NOT_EXISTING.getCodeName());
+      assertThat(actual).isEqualTo(GoalStatus.IN_PROGRESS);
     }
 
     @Test
-    void 잘못된_입력으로는_기간_목표_타입_생성을_실패한다() {
+    void 잘못된_입력으로는_목표_상태_생성을_실패한다() {
       // given
-      String value = PeriodGoalFixture.getRandomSentenceWithMax(10);
+      String value = GoalFixture.getRandomSentenceWithMax(10);
 
       // when
-      ThrowingCallable create = () -> PeriodGoalType.from(value);
+      ThrowingCallable create = () -> GoalStatus.from(value);
 
       // then
       assertThatIllegalArgumentException().isThrownBy(create)
-          .withMessage(PeriodGoalErrorCode.INVALID_PERIOD_GOAL_TYPE_STATUS.getCodeName());
+          .withMessage(GoalErrorCode.INVALID_GOAL_STATUS.getCodeName());
     }
 
   }

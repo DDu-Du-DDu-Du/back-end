@@ -41,9 +41,18 @@ public class User {
 
   @Builder
   private User(
-      Long id, String username, String nickname, String introduction, Authority authority,
-      UserStatus status, String profileImageUrl, List<AuthProvider> authProviders, Options options,
-      Boolean allowingFollowsAfterApproval, Boolean templateNotification, Boolean dduduNotification
+      Long id,
+      String username,
+      String nickname,
+      String introduction,
+      Authority authority,
+      UserStatus status,
+      String profileImageUrl,
+      List<AuthProvider> authProviders,
+      Options options,
+      Boolean allowingFollowsAfterApproval,
+      Boolean templateNotification,
+      Boolean dduduNotification
   ) {
     validate(nickname, username, introduction, profileImageUrl);
 
@@ -55,7 +64,8 @@ public class User {
     this.status = Objects.requireNonNullElse(status, UserStatus.ACTIVE);
     this.profileImageUrl = profileImageUrl;
     this.options = Objects.requireNonNullElse(
-        options, buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification)
+        options,
+        buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification)
     );
     this.authProviders = Objects.requireNonNullElse(authProviders, Collections.emptyList());
   }
@@ -85,12 +95,11 @@ public class User {
         .build();
   }
 
-  public void switchOptions() {
-    options.switchOptions();
-  }
-
   private void validate(
-      String nickname, String username, String introduction, String profileImageUrl
+      String nickname,
+      String username,
+      String introduction,
+      String profileImageUrl
   ) {
     validateNickname(nickname);
     validateUsername(username);
@@ -135,7 +144,9 @@ public class User {
   }
 
   private Options buildOptions(
-      Boolean allowingFollowsAfterApproval, Boolean templateNotification, Boolean dduduNotification
+      Boolean allowingFollowsAfterApproval,
+      Boolean templateNotification,
+      Boolean dduduNotification
   ) {
     return Options.builder()
         .allowingFollowsAfterApproval(allowingFollowsAfterApproval)

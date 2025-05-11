@@ -13,22 +13,16 @@ public class Options {
 
   @Builder
   private Options(
-      Boolean allowingFollowsAfterApproval, Boolean templateNotification, Boolean dduduNotification
+      Boolean allowingFollowsAfterApproval,
+      Boolean templateNotification,
+      Boolean dduduNotification
   ) {
-    this.allowingFollowsAfterApproval =
-        Objects.nonNull(allowingFollowsAfterApproval) ? allowingFollowsAfterApproval : false;
-    this.templateNotification = Objects.nonNull(templateNotification) ? templateNotification : true;
-    this.dduduNotification = Objects.nonNull(dduduNotification) ? dduduNotification : true;
-  }
-
-  public Options() {
-    this(null, null, null);
-  }
-
-  public Options switchOptions() {
-    return Options.builder()
-        .allowingFollowsAfterApproval(!this.allowingFollowsAfterApproval)
-        .build();
+    this.allowingFollowsAfterApproval = Objects.requireNonNullElse(
+        allowingFollowsAfterApproval,
+        false
+    );
+    this.templateNotification = Objects.requireNonNullElse(templateNotification, true);
+    this.dduduNotification = Objects.requireNonNullElse(dduduNotification, true);
   }
 
 }

@@ -19,7 +19,6 @@ public enum GoalStatus {
         .filter(status -> value.toUpperCase()
             .equals(status.name()))
         .findFirst()
-        .orElseThrow(
-            () -> new IllegalArgumentException(GoalErrorCode.INVALID_GOAL_STATUS.getCodeName()));
+        .orElseThrow(() -> new IllegalArgumentException(GoalErrorCode.INVALID_GOAL_STATUS.getCodeName()));
   }
 }

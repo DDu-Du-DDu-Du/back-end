@@ -3,7 +3,6 @@ package com.ddudu.domain.planning.periodgoal.aggregate.enums;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 
-import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.common.exception.PeriodGoalErrorCode;
 import java.util.Arrays;
 
@@ -18,8 +17,7 @@ public enum PeriodGoalType {
         .filter(status -> value.toUpperCase()
             .equals(status.name()))
         .findFirst()
-        .orElseThrow(
-            () -> new IllegalArgumentException(GoalErrorCode.INVALID_GOAL_STATUS.getCodeName()));
+        .orElseThrow(() -> new IllegalArgumentException(PeriodGoalErrorCode.INVALID_PERIOD_GOAL_TYPE_STATUS.getCodeName()));
   }
 
   private static void validateType(String type) {
