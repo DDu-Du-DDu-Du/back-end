@@ -69,3 +69,9 @@ jobs:
           reporter: github-pr-review
           checkstyle_config: './config/checkstyle/checkstyle.xml'
           level: warning
+
+      - name: 테스트 리포트 작성
+        uses: mikepenz/action-junit-report@v5
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
