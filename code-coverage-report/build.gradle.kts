@@ -9,6 +9,10 @@ val jacocoModules = rootProject.allprojects.filter {
     it.displayName.contains("-application") || it.displayName.contains("-domain")
 }
 
+tasks.bootJar {
+    enabled = false
+}
+
 repositories {
     mavenCentral()
 }
