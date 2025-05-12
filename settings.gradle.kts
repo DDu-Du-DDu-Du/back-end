@@ -30,5 +30,8 @@ include(
     "infra:user-infra-external-api",
 
     // common
-    "common"
+    "common",
+
+    // coverage report
+    "code-coverage-report"
 )
