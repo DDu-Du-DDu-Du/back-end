@@ -1,14 +1,15 @@
 package com.ddudu.fixture;
 
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
+import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
 import com.ddudu.domain.planning.repeatddudu.aggregate.vo.DailyRepeatPattern;
 import com.ddudu.domain.planning.repeatddudu.aggregate.vo.MonthlyRepeatPattern;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
 import com.ddudu.domain.planning.repeatddudu.aggregate.vo.WeeklyRepeatPattern;
-import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -73,11 +74,14 @@ public class RepeatDduduFixture extends BaseFixture {
   }
 
   public static RepeatPattern createRandomRepeatPattern(RepeatType type) {
+    int lastDay = YearMonth.now()
+        .atEndOfMonth()
+        .getDayOfMonth();
     return switch (type) {
       case DAILY -> createDailyRepeatPattern();
       case WEEKLY -> createWeeklyRepeatPattern(getRandomRepeatDaysOfWeek());
       case MONTHLY -> createMonthlyRepeatPattern(
-          getRandomRepeatDaysOfMonth(), false
+          getRandomRepeatDaysOfMonth(1, lastDay), false
       );
     };
   }
@@ -91,7 +95,8 @@ public class RepeatDduduFixture extends BaseFixture {
   }
 
   public static RepeatPattern createMonthlyRepeatPattern(
-      List<Integer> repeatDaysOfMonth, boolean lastDayOfMonth
+      List<Integer> repeatDaysOfMonth,
+      boolean lastDayOfMonth
   ) {
     return new MonthlyRepeatPattern(repeatDaysOfMonth, lastDayOfMonth);
   }
@@ -113,8 +118,8 @@ public class RepeatDduduFixture extends BaseFixture {
         .toList();
   }
 
-  public static List<Integer> getRandomRepeatDaysOfMonth() {
-    int numberOfDaysToRepeat = getRandomInt(1, 31);
+  public static List<Integer> getRandomRepeatDaysOfMonth(int from, int to) {
+    int numberOfDaysToRepeat = getRandomInt(from, to);
     return getRandomRepeatDaysOfMonth(numberOfDaysToRepeat);
   }
 

@@ -18,6 +18,7 @@ import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.MissingResourceException;
 import org.assertj.core.api.Assertions;
@@ -67,13 +68,18 @@ class CreateRepeatDduduServiceTest {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     name = RepeatDduduFixture.getRandomSentenceWithMax(50);
-    repeatType = RepeatDduduFixture.getRandomRepeatType();
-    repeatDaysOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek();
-    repeatDaysOfMonth = RepeatDduduFixture.getRandomRepeatDaysOfMonth();
-    lastDayOfMonth = true;
     startDate = LocalDate.now();
     endDate = LocalDate.now()
         .plusMonths(1);
+    repeatType = RepeatDduduFixture.getRandomRepeatType();
+    repeatDaysOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek();
+    repeatDaysOfMonth = RepeatDduduFixture.getRandomRepeatDaysOfMonth(
+        startDate.getDayOfMonth(),
+        YearMonth.now()
+            .atEndOfMonth()
+            .getDayOfMonth()
+    );
+    lastDayOfMonth = true;
     request = new CreateRepeatDduduRequest(
         name,
         goal.getId(),
