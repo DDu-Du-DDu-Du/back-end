@@ -15,8 +15,6 @@ public interface DduduLoaderPort {
 
   List<Ddudu> getRepeatedDdudus(RepeatDdudu repeatDdudu);
 
-  List<Ddudu> getDailyDdudus(
-      LocalDate date, Long userId, List<PrivacyType> accessiblePrivacyTypes
-  );
+  List<Ddudu> getDailyDdudus(LocalDate date, Long userId, List<PrivacyType> accessiblePrivacyTypes);
 
 }

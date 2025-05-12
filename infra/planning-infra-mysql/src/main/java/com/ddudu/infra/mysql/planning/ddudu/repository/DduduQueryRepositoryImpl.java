@@ -113,7 +113,11 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   }
 
   public List<DduduCursorDto> findScrollDdudus(
-      Long userId, ScrollRequest request, String query, Boolean isMine, Boolean isFollower
+      Long userId,
+      ScrollRequest request,
+      String query,
+      Boolean isMine,
+      Boolean isFollower
   ) {
     BooleanExpression cursorFilter = getCursorFilter(request.getOrder(), request.getCursor());
     Predicate openness = getOpenness(isMine, isFollower);
@@ -238,13 +242,16 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   private ConstructorExpression<DduduCursorDto> projectDduduCursor(OrderType orderType) {
     StringExpression cursor = getCursor(orderType);
 
-    return Projections.constructor(
-        DduduCursorDto.class, cursor, projectSimpleDdudu());
+    return Projections.constructor(DduduCursorDto.class, cursor, projectSimpleDdudu());
   }
 
   private ConstructorExpression<SimpleDduduSearchDto> projectSimpleDdudu() {
     return Projections.constructor(
-        SimpleDduduSearchDto.class, dduduEntity.id, dduduEntity.name, dduduEntity.scheduledOn);
+        SimpleDduduSearchDto.class,
+        dduduEntity.id,
+        dduduEntity.name,
+        dduduEntity.scheduledOn
+    );
   }
 
   private StringExpression getCursor(OrderType orderType) {

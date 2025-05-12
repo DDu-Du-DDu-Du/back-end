@@ -2,10 +2,9 @@ package com.ddudu.infra.mysql.planning.ddudu.adapter;
 
 import com.ddudu.aggregate.BaseStats;
 import com.ddudu.aggregate.MonthlyStats;
+import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
-import com.ddudu.common.annotation.DrivenAdapter;
-import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.DduduSearchPort;
@@ -15,6 +14,7 @@ import com.ddudu.application.common.port.ddudu.out.RepeatDduduPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.stats.out.DduduStatsPort;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
+import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
@@ -105,10 +105,18 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public ScrollResponse<SimpleDduduSearchDto> search(
-      Long userId, ScrollRequest request, String query, Boolean isMine
+      Long userId,
+      ScrollRequest request,
+      String query,
+      Boolean isMine
   ) {
     List<DduduCursorDto> ddudusWithCursor = dduduRepository.findScrollDdudus(
-        userId, request, query, isMine, false);
+        userId,
+        request,
+        query,
+        isMine,
+        false
+    );
 
     return getScrollResponse(ddudusWithCursor, request.getSize());
   }
@@ -124,7 +132,8 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   }
 
   private ScrollResponse<SimpleDduduSearchDto> getScrollResponse(
-      List<DduduCursorDto> ddudusWithCursor, int size
+      List<DduduCursorDto> ddudusWithCursor,
+      int size
   ) {
     List<SimpleDduduSearchDto> simpleDdudus = ddudusWithCursor.stream()
         .limit(size)
@@ -166,7 +175,8 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
         .collect(Collectors.groupingBy(stat -> YearMonth.from(stat.getScheduledOn())))
         .entrySet()
         .stream()
-        .collect(Collectors.toMap(Map.Entry::getKey,
+        .collect(Collectors.toMap(
+                Map.Entry::getKey,
                 monthlyStatsEntry -> MonthlyStats.builder()
                     .userId(userId)
                     .yearMonth(monthlyStatsEntry.getKey())
