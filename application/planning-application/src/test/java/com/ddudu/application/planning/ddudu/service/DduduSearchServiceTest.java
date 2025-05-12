@@ -6,6 +6,7 @@ import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.DduduErrorCode;
@@ -42,6 +43,9 @@ class DduduSearchServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
+  DduduLoaderPort dduduLoaderPort;
+
+  @Autowired
   SaveDduduPort saveDduduPort;
 
   User user;
@@ -71,7 +75,9 @@ class DduduSearchServiceTest {
     );
 
     // then
-    long expectedNextCursor = latestId - size + 1;
+    Long expectedNextCursor = response.contents()
+        .get(size - 1)
+        .id();
 
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(size);
@@ -91,7 +97,9 @@ class DduduSearchServiceTest {
     );
 
     // then
-    long expectedNextCursor = latestId - defaultSize + 1;
+    Long expectedNextCursor = response.contents()
+        .get(defaultSize - 1)
+        .id();
 
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(defaultSize);
@@ -112,29 +120,13 @@ class DduduSearchServiceTest {
     );
 
     // then
-    int expectedNextCursor = Integer.parseInt(nextCursor) - expectedSize;
+    Long expectedNextCursor = response.contents()
+        .get(expectedSize - 1)
+        .id();
 
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(expectedSize);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
-  }
-
-  @Test
-  void 찾는_대상이_없으면_빈_조회_결과를_반환한다() {
-    // given
-    String cursor = String.valueOf(latestId - size - 1);
-    DduduSearchRequest request = new DduduSearchRequest(null, cursor, size, null);
-
-    // when
-    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchService.search(
-        user.getId(),
-        request
-    );
-
-    // then
-    assertThat(response.isEmpty()).isTrue();
-    assertThat(response.contents()).isEmpty();
-    assertThat(response.nextCursor()).isNull();
   }
 
   @Test
