@@ -20,3 +20,7 @@ repositories {
 dependencies {
     jacocoModules.forEach { jacocoAggregation(it) }
 }
+
+tasks.check {
+    dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
+}
