@@ -68,6 +68,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           checkstyle_config: './config/checkstyle/checkstyle.xml'
+          properties_file: './config/checkstly/checkstyle.properties'
           level: warning
 
       - name: 테스트 리포트 작성
