@@ -62,11 +62,13 @@ jobs:
           min-coverage-changed-files: 60
           update-comment: true
 
-      - name: 체크스타일 리포트 작성
-        uses: lcollins/checkstyle-github-action@v2.0.0
+      - name: 체크스타일 작성
+        uses: dbelyaev/action-checkstyle@master
         with:
-          path: '**/build/reports/checkstyle/**.xml'
-          title: 📝 Checkstyle report
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          checkstyle_config: './config/checkstyle/checkstyle.xml'
+          level: warning
 
       - name: 테스트 리포트 작성
         uses: mikepenz/action-junit-report@v4
