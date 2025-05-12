@@ -69,8 +69,3 @@ jobs:
           reporter: github-pr-review
           checkstyle_config: './config/checkstyle/checkstyle.xml'
           level: warning
-
-      - name: 테스트 리포트 작성
-        uses: mikepenz/action-junit-report@v4
-        with:
-          report_paths: '**/build/test-results/test/TEST-*.xml'
