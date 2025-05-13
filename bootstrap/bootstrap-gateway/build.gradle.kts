@@ -1,6 +1,7 @@
 plugins {
     id("ddudu.java-conventions")
     id("ddudu.spring-conventions")
+    id("org.flywaydb.flyway") version "11.8.1"
 }
 
 tasks.bootJar {
@@ -22,6 +23,13 @@ dependencies {
     implementation(project(":bootstrap:stats-api"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+}
+
+flyway {
+    url = "jdbc:mysql://localhost:13307/ddudu"
+    user = "root"
+    password = "1234"
+    locations = arrayOf("filesystem:src/main/resources/db/migration")
 }
 
 val copyMainSecret by tasks.registering(Copy::class) {
