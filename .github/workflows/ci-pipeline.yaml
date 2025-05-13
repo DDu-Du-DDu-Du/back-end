@@ -34,16 +34,6 @@ jobs:
           distribution: 'corretto'
 
       - name: Gradle 캐싱
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle
-
-      - name: Gradle 셋업
         uses: gradle/actions/setup-gradle@v3
 
       - name: 빌드 권한 부여
