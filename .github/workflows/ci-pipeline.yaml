@@ -34,20 +34,13 @@ jobs:
           distribution: 'corretto'
 
       - name: Gradle 캐싱
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle
-
-      - name: Gradle 셋업
         uses: gradle/actions/setup-gradle@v3
 
       - name: 빌드 권한 부여
         run: chmod +x gradlew
+
+      - name: 테스트 DB 마이그레이션
+        run: ./gradlew :bootstrap:bootstrap-gateway:flywayMigrate
 
       - name: 프로젝트 빌드
         run: ./gradlew build --parallel
@@ -56,19 +49,23 @@ jobs:
         uses: madrapps/jacoco-report@v1.6.1
         with:
           title: 📊 Jacoco Test Coverage
-          paths: ${{ github.workspace }}/**/build/jacocoReports/jacoco.xml
+          paths: ${{ github.workspace }}/**/build/reports/jacoco/**/testCodeCoverageReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 60
           min-coverage-changed-files: 60
           update-comment: true
 
-      - name: 체크스타일 리포트 작성
-        uses: lcollins/checkstyle-github-action@v2.0.0
+      - name: 체크스타일 작성
+        uses: dbelyaev/action-checkstyle@master
         with:
-          path: '**/build/reports/checkstyle/**.xml'
-          title: 📝 Checkstyle report
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          checkstyle_config: './config/checkstyle/checkstyle.xml'
+          properties_file: './config/checkstyle/checkstyle.properties'
+          level: warning
 
       - name: 테스트 리포트 작성
-        uses: mikepenz/action-junit-report@v4
+        uses: mikepenz/action-junit-report@v5
+        if: success() || failure() # always run even if the previous step fails
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'

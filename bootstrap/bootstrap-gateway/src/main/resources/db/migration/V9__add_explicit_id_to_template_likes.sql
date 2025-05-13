@@ -1,0 +1,4 @@
+ALTER TABLE template_likes
+    DROP PRIMARY KEY,
+    ADD COLUMN id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST,
+    ADD CONSTRAINT uq_user_template UNIQUE (user_id, template_id);

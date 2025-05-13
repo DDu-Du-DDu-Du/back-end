@@ -223,10 +223,11 @@ gradle-app.setting
 DduDuStyle.xml
 
 # Ignore QueryDSL generated files
-/src/main/generated/
+/**/**/src/main/generated/
 
-# IntelliJ EnvFile
-scripts/**/.env
+# Dot env
+.env
+.env.*
 
 # Secrets
 src/**/application*.yaml
