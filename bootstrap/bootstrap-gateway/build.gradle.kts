@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath("org.flywaydb:flyway-mysql:11.8.1")
+    }
+}
+
 plugins {
     id("ddudu.java-conventions")
     id("ddudu.spring-conventions")
