@@ -98,7 +98,10 @@ class CollectMonthlyCreationStatsServiceTest {
         .minusMonths(1);
 
     // when
-    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(user.getId(), lastMonth);
+    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
+        user.getId(),
+        lastMonth
+    );
 
     // then
     assertThat(response.isEmpty()).isTrue();
@@ -109,7 +112,10 @@ class CollectMonthlyCreationStatsServiceTest {
     // given
 
     // when
-    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(user.getId(), null);
+    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
+        user.getId(),
+        null
+    );
 
     // then
     List<CompletionPerGoalDto> actual = response.contents();
@@ -128,7 +134,10 @@ class CollectMonthlyCreationStatsServiceTest {
     YearMonth thisMonth = YearMonth.now();
 
     // when
-    ThrowingCallable collect = () -> collectMonthlyCreationStatsService.collectCreation(invalidId, thisMonth);
+    ThrowingCallable collect = () -> collectMonthlyCreationStatsService.collectCreation(
+        invalidId,
+        thisMonth
+    );
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)

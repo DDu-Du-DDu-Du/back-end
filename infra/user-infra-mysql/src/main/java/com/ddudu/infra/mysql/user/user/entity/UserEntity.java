@@ -1,8 +1,8 @@
 package com.ddudu.infra.mysql.user.user.entity;
 
+import com.ddudu.common.dto.Authority;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.User.UserBuilder;
-import com.ddudu.common.dto.Authority;
 import com.ddudu.domain.user.user.aggregate.enums.UserStatus;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
 import com.ddudu.infra.mysql.common.entity.BaseEntity;

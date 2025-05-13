@@ -1,5 +1,8 @@
 package com.ddudu.application.user.auth.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.ddudu.application.common.dto.auth.request.SocialRequest;
 import com.ddudu.application.common.dto.auth.response.TokenResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
@@ -20,8 +23,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -70,7 +71,7 @@ class SocialLoginServiceTest {
     // given
     User user = signUpPort.save(UserFixture.createRandomSocialUser(authProvider));
 
-    Mockito.when(socialResourcePort.retrieveSocialResource(ArgumentMatchers.any(SocialRequest.class)))
+    when(socialResourcePort.retrieveSocialResource(any(SocialRequest.class)))
         .thenReturn(authProvider);
 
     // when
@@ -87,7 +88,7 @@ class SocialLoginServiceTest {
   @Test
   void 유저가_존재하지_않으면_생성_후_엑세스_토큰을_발급한다() {
     // given
-    Mockito.when(socialResourcePort.retrieveSocialResource(ArgumentMatchers.any(SocialRequest.class)))
+    when(socialResourcePort.retrieveSocialResource(any(SocialRequest.class)))
         .thenReturn(authProvider);
 
     // when
@@ -111,7 +112,7 @@ class SocialLoginServiceTest {
   @Test
   void 유저가_생성된_경우_기본_목표가_생성된다() {
     // given
-    Mockito.when(socialResourcePort.retrieveSocialResource(ArgumentMatchers.any(SocialRequest.class)))
+    when(socialResourcePort.retrieveSocialResource(any(SocialRequest.class)))
         .thenReturn(authProvider);
 
     // when

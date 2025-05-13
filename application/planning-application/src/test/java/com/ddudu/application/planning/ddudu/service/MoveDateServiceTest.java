@@ -80,7 +80,10 @@ class MoveDateServiceTest {
     // given
     LocalDate yesterday = LocalDate.now()
         .minusDays(1);
-    Ddudu pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithSchedule(goal, yesterday));
+    Ddudu pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithSchedule(
+        goal,
+        yesterday
+    ));
     MoveDateRequest request = new MoveDateRequest(LocalDate.now());
 
     // when
@@ -97,7 +100,10 @@ class MoveDateServiceTest {
     // given
     LocalDate twoDaysAgo = LocalDate.now()
         .minusDays(2);
-    Ddudu pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithSchedule(goal, twoDaysAgo));
+    Ddudu pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithSchedule(
+        goal,
+        twoDaysAgo
+    ));
     LocalDate yesterday = LocalDate.now()
         .minusDays(1);
     MoveDateRequest request = new MoveDateRequest(yesterday);
@@ -121,7 +127,8 @@ class MoveDateServiceTest {
     ThrowingCallable moveDate = () -> moveDateService.moveDate(user.getId(), invalidId, request);
 
     // then
-    Assertions.assertThatExceptionOfType(MissingResourceException.class).isThrownBy(moveDate)
+    Assertions.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(moveDate)
         .withMessage(DduduErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 

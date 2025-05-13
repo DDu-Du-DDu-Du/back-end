@@ -70,7 +70,13 @@ class CreateDduduServiceTest {
     // then
     Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(response.id(), "할 일이 생성되지 않았습니다.");
     assertThat(actual).extracting(
-            "name", "scheduledOn", "goalId", "userId", "status", "isPostponed")
+            "name",
+            "scheduledOn",
+            "goalId",
+            "userId",
+            "status",
+            "isPostponed"
+        )
         .containsExactly(
             name, scheduledOn, goal.getId(), user.getId(), DduduStatus.UNCOMPLETED, false);
   }
@@ -122,9 +128,16 @@ class CreateDduduServiceTest {
   void 본인의_목표가_아닌_경우_예외가_발생한다() {
     // given
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
-    Goal goalOfAnotherUser = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(anotherUser.getId()));
+    Goal goalOfAnotherUser = saveGoalPort.save(
+        GoalFixture.createRandomGoalWithUser(
+            anotherUser.getId()
+        )
+    );
     CreateDduduRequest request = new CreateDduduRequest(
-        goalOfAnotherUser.getId(), name, scheduledOn);
+        goalOfAnotherUser.getId(),
+        name,
+        scheduledOn
+    );
 
     // when
     ThrowingCallable create = () -> createDduduService.create(user.getId(), request);

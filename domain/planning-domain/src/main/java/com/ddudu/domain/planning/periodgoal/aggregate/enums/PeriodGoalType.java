@@ -17,7 +17,9 @@ public enum PeriodGoalType {
         .filter(status -> value.toUpperCase()
             .equals(status.name()))
         .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException(PeriodGoalErrorCode.INVALID_PERIOD_GOAL_TYPE_STATUS.getCodeName()));
+        .orElseThrow(() -> new IllegalArgumentException(
+            PeriodGoalErrorCode.INVALID_PERIOD_GOAL_TYPE_STATUS.getCodeName()
+        ));
   }
 
   private static void validateType(String type) {

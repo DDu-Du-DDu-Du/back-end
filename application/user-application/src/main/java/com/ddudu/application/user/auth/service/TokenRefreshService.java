@@ -33,7 +33,9 @@ public class TokenRefreshService implements TokenRefreshUseCase {
     RefreshToken currentRefreshToken = tokenFamily.stream()
         .filter(token -> token.hasSameTokenValue(request.refreshToken()))
         .findFirst()
-        .orElseThrow(() -> new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName()));
+        .orElseThrow(() -> new UnsupportedOperationException(
+            AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName()
+        ));
 
     validateNotUsed(tokenFamily, currentRefreshToken);
 
