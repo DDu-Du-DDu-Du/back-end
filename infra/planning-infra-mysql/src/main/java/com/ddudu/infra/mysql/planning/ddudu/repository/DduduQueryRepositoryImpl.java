@@ -141,7 +141,9 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   @Override
   public List<DduduEntity> findAllByDateAndUserAndPrivacyTypes(
-      LocalDate date, Long userId, List<PrivacyType> accessiblePrivacyTypes
+      LocalDate date,
+      Long userId,
+      List<PrivacyType> accessiblePrivacyTypes
   ) {
     return jpaQueryFactory
         .selectFrom(dduduEntity)

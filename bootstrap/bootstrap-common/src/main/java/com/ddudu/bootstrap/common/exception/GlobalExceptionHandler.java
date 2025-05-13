@@ -22,7 +22,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RequiredArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
-  // TODO: minimize custom exceptions in the handler parameters
 
   private static final int INVALID_INPUT_CODE = 1;
   private static final int INVALID_INPUT_TYPE_CODE = 2;

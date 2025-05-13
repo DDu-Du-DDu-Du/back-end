@@ -19,7 +19,7 @@ public enum RandomUserAnimal {
   DINGO("딩고"),
   KOALA("코알라"),
   FERRET("페럿"),
-  PAROT("앵무새");
+  PARROT("앵무새");
 
   private static final Random RANDOM = new Random();
 

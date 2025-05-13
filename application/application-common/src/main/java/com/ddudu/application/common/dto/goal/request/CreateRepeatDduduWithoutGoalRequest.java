@@ -16,7 +16,10 @@ public record CreateRepeatDduduWithoutGoalRequest(
         example = "물 한 컵 마시기"
     )
     @NotNull(message = "6001 BLANK_NAME")
-    @Size(max = 50, message = "6006 EXCESSIVE_NAME_LENGTH")
+    @Size(
+        max = 50,
+        message = "6006 EXCESSIVE_NAME_LENGTH"
+    )
     String name,
     @Schema(
         name = "repeatType",

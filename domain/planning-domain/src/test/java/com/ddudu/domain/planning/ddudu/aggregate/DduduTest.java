@@ -89,7 +89,8 @@ class DduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(DduduErrorCode.BLANK_NAME.getCodeName());
     }
 
@@ -106,7 +107,8 @@ class DduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
     }
 
@@ -121,7 +123,8 @@ class DduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
     }
 
@@ -136,7 +139,8 @@ class DduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(DduduErrorCode.NULL_USER.getCodeName());
     }
 
@@ -155,7 +159,8 @@ class DduduTest {
       ThrowingCallable create = builder::build;
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(create)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
           .withMessage(DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
     }
 
@@ -186,7 +191,8 @@ class DduduTest {
         ThrowingCallable check = () -> ddudu.validateDduduCreator(userId);
 
         // then
-        Assertions.assertThatNoException().isThrownBy(check);
+        Assertions.assertThatNoException()
+            .isThrownBy(check);
       }
 
       @Test
@@ -198,7 +204,8 @@ class DduduTest {
         ThrowingCallable check = () -> ddudu.validateDduduCreator(wrongUserId);
 
         // then
-        Assertions.assertThatExceptionOfType(SecurityException.class).isThrownBy(check)
+        Assertions.assertThatExceptionOfType(SecurityException.class)
+            .isThrownBy(check)
             .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
       }
 
@@ -313,7 +320,8 @@ class DduduTest {
         ThrowingCallable moveDate = () -> ddudu.moveDate(null);
 
         // then
-        Assertions.assertThatIllegalArgumentException().isThrownBy(moveDate)
+        Assertions.assertThatIllegalArgumentException()
+            .isThrownBy(moveDate)
             .withMessage(DduduErrorCode.NULL_DATE_TO_MOVE.getCodeName());
       }
 
@@ -390,7 +398,8 @@ class DduduTest {
         ThrowingCallable changeName = () -> ddudu.changeName(longName);
 
         // then
-        Assertions.assertThatIllegalArgumentException().isThrownBy(changeName)
+        Assertions.assertThatIllegalArgumentException()
+            .isThrownBy(changeName)
             .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
       }
 
@@ -443,7 +452,8 @@ class DduduTest {
       ThrowingCallable reproduce = () -> ddudu.reproduceOnDate(newDate);
 
       // then
-      Assertions.assertThatIllegalArgumentException().isThrownBy(reproduce)
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(reproduce)
           .withMessage(DduduErrorCode.UNABLE_TO_REPRODUCE_ON_SAME_DATE.getCodeName());
     }
 

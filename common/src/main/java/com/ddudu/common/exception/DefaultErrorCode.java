@@ -15,4 +15,9 @@ public class DefaultErrorCode implements ErrorCode {
     this.message = message;
   }
 
+  @Override
+  public String getCodeName() {
+    return this.code + " DEFAULT";
+  }
+
 }

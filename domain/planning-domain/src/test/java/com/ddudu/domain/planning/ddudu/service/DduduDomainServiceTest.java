@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class DduduDomainServiceTest {
-  
+
   static DduduDomainService dduduDomainService;
-  
+
   @BeforeAll
   static void setUp() {
     dduduDomainService = new DduduDomainService();

@@ -3,7 +3,7 @@ package com.ddudu.api.planning.ddudu.controller;
 import static java.util.Objects.isNull;
 
 import com.ddudu.api.planning.ddudu.doc.DduduControllerDoc;
-import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.common.dto.IdResponse;
 import com.ddudu.application.common.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.ddudu.request.ChangeNameRequest;
@@ -16,6 +16,7 @@ import com.ddudu.application.common.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.common.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.common.dto.ddudu.response.TimetableResponse;
+import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.port.ddudu.in.ChangeNameUseCase;
 import com.ddudu.application.common.port.ddudu.in.CreateDduduUseCase;
 import com.ddudu.application.common.port.ddudu.in.DduduSearchUseCase;
@@ -28,7 +29,6 @@ import com.ddudu.application.common.port.ddudu.in.RepeatUseCase;
 import com.ddudu.application.common.port.ddudu.in.RetrieveDduduUseCase;
 import com.ddudu.application.common.port.ddudu.in.SwitchStatusUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
-import com.ddudu.application.common.dto.IdResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
@@ -99,8 +99,7 @@ public class DduduController implements DduduControllerDoc {
     userId = isNull(userId) ? loginId : userId;
     date = isNull(date) ? LocalDate.now() : date;
 
-    List<GoalGroupedDdudus> response = getDailyDdudusByGoalUseCase.get(
-        loginId, userId, date);
+    List<GoalGroupedDdudus> response = getDailyDdudusByGoalUseCase.get(loginId, userId, date);
     return ResponseEntity.ok(response);
   }
 
@@ -120,8 +119,7 @@ public class DduduController implements DduduControllerDoc {
     userId = isNull(userId) ? loginId : userId;
     date = isNull(date) ? LocalDate.now() : date;
 
-    TimetableResponse response = getTimetableUseCase.get(
-        loginId, userId, date);
+    TimetableResponse response = getTimetableUseCase.get(loginId, userId, date);
     return ResponseEntity.ok(response);
   }
 
@@ -236,8 +234,7 @@ public class DduduController implements DduduControllerDoc {
       @RequestBody
       RepeatAnotherDayRequest request
   ) {
-    RepeatAnotherDayResponse response = repeatUseCase.repeatOnAnotherDay(
-        loginId, id, request);
+    RepeatAnotherDayResponse response = repeatUseCase.repeatOnAnotherDay(loginId, id, request);
     URI uri = URI.create("/api/ddudus/" + response.id());
 
     return ResponseEntity.created(uri)

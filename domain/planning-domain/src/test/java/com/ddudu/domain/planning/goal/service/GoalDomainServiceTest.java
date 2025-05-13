@@ -18,9 +18,9 @@ import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class GoalDomainServiceTest {
-  
+
   static GoalDomainService goalDomainService;
-  
+
   @BeforeAll
   static void setUp() {
     goalDomainService = new GoalDomainService();

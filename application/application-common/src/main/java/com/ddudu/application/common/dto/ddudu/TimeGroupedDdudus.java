@@ -8,8 +8,15 @@ import lombok.Builder;
 
 @Builder
 public record TimeGroupedDdudus(
-    @Schema(type = "string", pattern = "HH:mm", example = "14:00")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @Schema(
+        type = "string",
+        pattern = "HH:mm",
+        example = "14:00"
+    )
+    @JsonFormat(
+        shape = JsonFormat.Shape.STRING,
+        pattern = "HH:mm"
+    )
     LocalTime beginAt,
     List<DduduForTimetable> ddudus
 ) {

@@ -1,7 +1,7 @@
 package com.ddudu.api.user.auth.config;
 
-import com.ddudu.api.user.auth.jwt.AuthorityProxy;
 import com.ddudu.api.user.auth.filter.SocialAuthenticationFilter;
+import com.ddudu.api.user.auth.jwt.AuthorityProxy;
 import com.ddudu.api.user.auth.jwt.converter.JwtConverter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,10 +56,15 @@ public class WebSecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(
-        List.of("*"));
-    configuration.setAllowedMethods(
-        Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    configuration.setAllowedOrigins(List.of("*"));
+    configuration.setAllowedMethods(Arrays.asList(
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+    ));
     configuration.setAllowedHeaders(List.of("*"));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);

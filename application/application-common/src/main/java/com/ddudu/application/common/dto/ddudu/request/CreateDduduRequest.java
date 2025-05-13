@@ -12,18 +12,21 @@ public record CreateDduduRequest(
     @Positive(message = "2014 NEGATIVE_OR_ZERO_GOAL_ID")
     Long goalId,
     @NotBlank(message = "2002 BLANK_NAME")
-    @Size(max = 50, message = "2003 EXCESSIVE_NAME_LENGTH")
+    @Size(
+        max = 50,
+        message = "2003 EXCESSIVE_NAME_LENGTH"
+    )
     String name,
     @NotNull(message = "2015 NULL_SCHEDULED_DATE")
     LocalDate scheduledOn
 ) {
 
-    public CreateDduduCommand toCommand() {
-        return CreateDduduCommand.builder()
-            .goalId(goalId)
-            .name(name)
-            .scheduledOn(scheduledOn)
-            .build();
-    }
+  public CreateDduduCommand toCommand() {
+    return CreateDduduCommand.builder()
+        .goalId(goalId)
+        .name(name)
+        .scheduledOn(scheduledOn)
+        .build();
+  }
 
 }

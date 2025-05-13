@@ -17,7 +17,8 @@ public class HttpOperator {
   private final RestTemplate restTemplate;
 
   public ResponseEntity<String> operateExchangeWithGetMethod(
-      String accessToken, String destination
+      String accessToken,
+      String destination
   ) {
     HttpHeaders headers = new HttpHeaders();
 

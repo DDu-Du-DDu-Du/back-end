@@ -14,9 +14,7 @@ public class WeeklyRepeatPattern implements RepeatPattern {
 
   private final List<DayOfWeek> repeatDaysOfWeek;
 
-  public WeeklyRepeatPattern(
-      List<String> repeatDaysOfWeek
-  ) {
+  public WeeklyRepeatPattern(List<String> repeatDaysOfWeek) {
     validate(repeatDaysOfWeek);
 
     this.repeatDaysOfWeek = DayOfWeekUtil.toDaysOfWeek(repeatDaysOfWeek);

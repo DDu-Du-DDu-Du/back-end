@@ -2,7 +2,6 @@ package com.ddudu.application.common.port.periodgoal.out;
 
 import com.ddudu.domain.planning.periodgoal.aggregate.PeriodGoal;
 import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
-import com.ddudu.domain.user.user.aggregate.User;
 import java.time.LocalDate;
 import java.util.Optional;
 

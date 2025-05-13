@@ -94,7 +94,9 @@ public final class RepeatDdudu {
     checkArgument(nonNull(startDate), RepeatDduduErrorCode.NULL_START_DATE.getCodeName());
     checkArgument(nonNull(endDate), RepeatDduduErrorCode.NULL_END_DATE.getCodeName());
     checkArgument(
-        endDate.isAfter(startDate), RepeatDduduErrorCode.UNABLE_TO_END_BEFORE_START.getCodeName());
+        endDate.isAfter(startDate),
+        RepeatDduduErrorCode.UNABLE_TO_END_BEFORE_START.getCodeName()
+    );
   }
 
   private void validatePeriodOfTime(LocalTime beginAt, LocalTime endAt) {
@@ -109,8 +111,13 @@ public final class RepeatDdudu {
   }
 
   public RepeatDdudu update(
-      String name, RepeatType repeatType, RepeatPattern repeatPattern, LocalDate startDate,
-      LocalDate endDate, LocalTime beginAt, LocalTime endAt
+      String name,
+      RepeatType repeatType,
+      RepeatPattern repeatPattern,
+      LocalDate startDate,
+      LocalDate endDate,
+      LocalTime beginAt,
+      LocalTime endAt
   ) {
     return RepeatDdudu.builder()
         .id(id)

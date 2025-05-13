@@ -42,11 +42,13 @@ class JwtIssuerTest {
     String jwt = jwtIssuer.issue(claims, Duration.ofMinutes(15));
 
     // then
-    Assertions.assertThat(jwt).isNotBlank();
+    Assertions.assertThat(jwt)
+        .isNotBlank();
 
     ThrowingCallable decode = () -> jwtDecoder.decode(jwt);
 
-    Assertions.assertThatNoException().isThrownBy(decode);
+    Assertions.assertThatNoException()
+        .isThrownBy(decode);
   }
 
 }

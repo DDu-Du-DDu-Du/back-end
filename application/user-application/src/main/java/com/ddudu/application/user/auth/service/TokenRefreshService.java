@@ -1,16 +1,16 @@
 package com.ddudu.application.user.auth.service;
 
-import com.ddudu.application.user.auth.jwt.TokenManager;
-import com.ddudu.common.annotation.UseCase;
 import com.ddudu.application.common.dto.auth.request.TokenRefreshRequest;
 import com.ddudu.application.common.dto.auth.response.TokenResponse;
 import com.ddudu.application.common.port.auth.in.TokenRefreshUseCase;
 import com.ddudu.application.common.port.auth.out.TokenLoaderPort;
 import com.ddudu.application.common.port.auth.out.TokenManipulationPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
+import com.ddudu.application.user.auth.jwt.TokenManager;
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.common.exception.AuthErrorCode;
 import com.ddudu.domain.user.auth.aggregate.RefreshToken;
 import com.ddudu.domain.user.auth.aggregate.vo.UserFamily;
-import com.ddudu.common.exception.AuthErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -33,8 +33,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
     RefreshToken currentRefreshToken = tokenFamily.stream()
         .filter(token -> token.hasSameTokenValue(request.refreshToken()))
         .findFirst()
-        .orElseThrow(() -> new UnsupportedOperationException(
-            AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName()));
+        .orElseThrow(() -> new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName()));
 
     validateNotUsed(tokenFamily, currentRefreshToken);
 
@@ -47,7 +46,9 @@ public class TokenRefreshService implements TokenRefreshUseCase {
 
     String accessToken = tokenManager.createAccessToken(user);
     RefreshToken newRefreshToken = tokenManager.createRefreshToken(
-        user, currentRefreshToken.getFamily());
+        user,
+        currentRefreshToken.getFamily()
+    );
 
     tokenManipulationPort.save(newRefreshToken);
 
@@ -57,8 +58,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
   private List<RefreshToken> getTokenFamilyOf(String refreshToken) {
     UserFamily decoded = tokenManager.decodeRefreshToken(refreshToken);
 
-    return tokenLoaderPort.loadByUserFamily(
-        decoded.getUserId(), decoded.getFamily());
+    return tokenLoaderPort.loadByUserFamily(decoded.getUserId(), decoded.getFamily());
   }
 
   private void validateNotUsed(List<RefreshToken> tokenFamily, RefreshToken refreshToken) {

@@ -10,7 +10,7 @@ public enum OrderType {
     if (Objects.isNull(value)) {
       return LATEST;
     }
-    
+
     String upperValue = value.toUpperCase();
 
     return Arrays.stream(OrderType.values())

@@ -25,7 +25,9 @@ public class RestTemplateConfig {
   // TODO: dependencies clash with one in primary adapter (spring web & security).
   //  Module separation necessary.
   private ClientHttpResponse retry(
-      HttpRequest request, byte[] body, ClientHttpRequestExecution execution
+      HttpRequest request,
+      byte[] body,
+      ClientHttpRequestExecution execution
   ) {
     RetryTemplate retryTemplate = new RetryTemplate();
 

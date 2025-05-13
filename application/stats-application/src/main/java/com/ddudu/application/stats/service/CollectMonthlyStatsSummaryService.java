@@ -1,12 +1,12 @@
 package com.ddudu.application.stats.service;
 
 import com.ddudu.aggregate.MonthlyStats;
-import com.ddudu.common.annotation.UseCase;
 import com.ddudu.application.common.dto.stats.MonthlyStatsSummaryDto;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsSummaryUseCase;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
+import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
 import java.time.LocalDate;
@@ -14,12 +14,10 @@ import java.time.YearMonth;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
-@Service
 @Transactional(readOnly = true)
 public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSummaryUseCase {
 

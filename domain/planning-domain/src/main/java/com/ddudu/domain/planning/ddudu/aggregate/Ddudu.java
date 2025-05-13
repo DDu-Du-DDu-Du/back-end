@@ -4,8 +4,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
@@ -149,9 +149,7 @@ public class Ddudu {
         .endAt(this.endAt);
   }
 
-  private void validate(
-      Long goalId, Long userId, String name, LocalTime beginAt, LocalTime endAt
-  ) {
+  private void validate(Long goalId, Long userId, String name, LocalTime beginAt, LocalTime endAt) {
     checkArgument(Objects.nonNull(goalId), DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
     checkArgument(Objects.nonNull(userId), DduduErrorCode.NULL_USER.getCodeName());
     validateName(name);

@@ -67,7 +67,9 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public List<Ddudu> getDailyDdudus(
-      LocalDate date, Long userId, List<PrivacyType> accessiblePrivacyTypes
+      LocalDate date,
+      Long userId,
+      List<PrivacyType> accessiblePrivacyTypes
   ) {
     return dduduRepository.findAllByDateAndUserAndPrivacyTypes(date, userId, accessiblePrivacyTypes)
         .stream()
@@ -155,7 +157,10 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
 
   @Override
   public List<DduduCompletionResponse> calculateDdudusCompletion(
-      LocalDate startDate, LocalDate endDate, Long userId, List<PrivacyType> privacyTypes
+      LocalDate startDate,
+      LocalDate endDate,
+      Long userId,
+      List<PrivacyType> privacyTypes
   ) {
     return dduduRepository.findDdudusCompletion(
         startDate, endDate, userId, privacyTypes);

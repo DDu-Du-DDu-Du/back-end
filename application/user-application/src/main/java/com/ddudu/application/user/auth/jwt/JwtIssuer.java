@@ -37,7 +37,9 @@ public class JwtIssuer {
     claims.forEach(claimSet::claim);
 
     JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
-        jwsHeader, claimSet.build());
+        jwsHeader,
+        claimSet.build()
+    );
     Jwt jwt = jwtEncoder.encode(jwtEncoderParameters);
 
     return jwt.getTokenValue();

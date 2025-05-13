@@ -16,7 +16,9 @@ public class UserFamily {
   @Builder
   private UserFamily(Long userId, int family) {
     checkArgument(
-        Objects.nonNull(userId), AuthErrorCode.INVALID_USER_ID_FOR_REFRESH_TOKEN.getCodeName());
+        Objects.nonNull(userId),
+        AuthErrorCode.INVALID_USER_ID_FOR_REFRESH_TOKEN.getCodeName()
+    );
 
     this.userId = userId;
     this.family = family;
@@ -30,7 +32,9 @@ public class UserFamily {
     String[] userFamily = userFamilyValue.split("-");
 
     checkArgument(
-        userFamily.length == 2, AuthErrorCode.UNABLE_TO_PARSE_USER_FAMILY_VALUE.getCodeName());
+        userFamily.length == 2,
+        AuthErrorCode.UNABLE_TO_PARSE_USER_FAMILY_VALUE.getCodeName()
+    );
 
     this.userId = getUserId(userFamily[0]);
     this.family = getFamily(userFamily[1]);

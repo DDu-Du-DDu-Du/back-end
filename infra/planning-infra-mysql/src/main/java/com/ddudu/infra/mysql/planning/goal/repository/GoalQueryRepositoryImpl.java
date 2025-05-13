@@ -30,7 +30,8 @@ public class GoalQueryRepositoryImpl implements GoalQueryRepository {
 
   @Override
   public List<GoalEntity> findAllByUserAndPrivacyTypes(
-      Long userId, List<PrivacyType> privacyTypes
+      Long userId,
+      List<PrivacyType> privacyTypes
   ) {
     BooleanBuilder whereClause = new BooleanBuilder();
     whereClause.and(goalEntity.userId.eq(userId));

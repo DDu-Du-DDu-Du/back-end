@@ -1,11 +1,11 @@
 package com.ddudu.api.user.auth.controller;
 
+import com.ddudu.api.user.auth.doc.AuthControllerDoc;
 import com.ddudu.application.common.dto.auth.request.SocialRequest;
 import com.ddudu.application.common.dto.auth.request.TokenRefreshRequest;
 import com.ddudu.application.common.dto.auth.response.TokenResponse;
 import com.ddudu.application.common.port.auth.in.SocialLoginUseCase;
 import com.ddudu.application.common.port.auth.in.TokenRefreshUseCase;
-import com.ddudu.api.user.auth.doc.AuthControllerDoc;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

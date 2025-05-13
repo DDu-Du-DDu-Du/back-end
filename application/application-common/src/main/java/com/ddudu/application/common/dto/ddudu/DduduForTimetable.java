@@ -14,11 +14,25 @@ public record DduduForTimetable(
     DduduStatus status,
     Long goalId,
     String color,
-    @Schema(type = "string", pattern = "HH:mm", example = "14:00")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @Schema(
+        type = "string",
+        pattern = "HH:mm",
+        example = "14:00"
+    )
+    @JsonFormat(
+        shape = JsonFormat.Shape.STRING,
+        pattern = "HH:mm"
+    )
     LocalTime beginAt,
-    @Schema(type = "string", pattern = "HH:mm", example = "14:30")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @Schema(
+        type = "string",
+        pattern = "HH:mm",
+        example = "14:30"
+    )
+    @JsonFormat(
+        shape = JsonFormat.Shape.STRING,
+        pattern = "HH:mm"
+    )
     LocalTime endAt
 ) {
 

@@ -4,8 +4,8 @@ import com.ddudu.application.common.dto.IdResponse;
 import com.ddudu.application.common.dto.repeatddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.application.common.dto.repeatddudu.request.UpdateRepeatDduduRequest;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
-import com.ddudu.bootstrap.common.doc.examples.RepeatDduduErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.GoalErrorExamples;
+import com.ddudu.bootstrap.common.doc.examples.RepeatDduduErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -16,17 +16,23 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "Repeat Ddudu", description = "반복 뚜두 관련 API")
+@Tag(
+    name = "Repeat Ddudu",
+    description = "반복 뚜두 관련 API"
+)
 public interface RepeatDduduControllerDoc {
 
   @Operation(summary = "반복 뚜두 생성")
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "201", description = "CREATED", useReturnTypeSchema = true
+              responseCode = "201",
+              description = "CREATED",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -85,7 +91,8 @@ public interface RepeatDduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -94,7 +101,8 @@ public interface RepeatDduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "6014",
@@ -104,7 +112,8 @@ public interface RepeatDduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "6014",
@@ -122,10 +131,13 @@ public interface RepeatDduduControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -180,7 +192,8 @@ public interface RepeatDduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -189,7 +202,8 @@ public interface RepeatDduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "6014",
@@ -199,7 +213,8 @@ public interface RepeatDduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "6015",
@@ -210,17 +225,27 @@ public interface RepeatDduduControllerDoc {
           )
       }
   )
-  @Parameter(name = "id", description = "변경할 반복 뚜두 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "변경할 반복 뚜두 식별자",
+      in = ParameterIn.PATH
+  )
   ResponseEntity<IdResponse> update(Long loginId, Long id, UpdateRepeatDduduRequest request);
 
-  @Operation(summary = "반복 뚜두 삭제", description = "반복 뚜두 삭제 시 하위 뚜두도 함께 삭제 됩니다.")
+  @Operation(
+      summary = "반복 뚜두 삭제",
+      description = "반복 뚜두 삭제 시 하위 뚜두도 함께 삭제 됩니다."
+  )
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
+              responseCode = "204",
+              description = "NO_CONTENT",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -229,7 +254,8 @@ public interface RepeatDduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "6014",
@@ -239,7 +265,8 @@ public interface RepeatDduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "6015",
@@ -250,7 +277,11 @@ public interface RepeatDduduControllerDoc {
           )
       }
   )
-  @Parameter(name = "id", description = "삭제할 반복 뚜두 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "삭제할 반복 뚜두 식별자",
+      in = ParameterIn.PATH
+  )
   ResponseEntity<Void> delete(Long loginId, Long id);
 
 }

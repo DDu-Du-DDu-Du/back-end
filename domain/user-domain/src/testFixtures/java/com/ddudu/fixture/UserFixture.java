@@ -1,7 +1,7 @@
 package com.ddudu.fixture;
 
-import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.common.dto.Authority;
+import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.enums.ProviderType;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAdjective;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAnimal;
@@ -26,8 +26,13 @@ public class UserFixture extends BaseFixture {
   }
 
   public static User createRandomUser(
-      long id, String introduction, AuthProvider authProvider, Options options,
-      Boolean allowingFollowsAfterApproval, Boolean templateNotification, Boolean dduduNotification
+      long id,
+      String introduction,
+      AuthProvider authProvider,
+      Options options,
+      Boolean allowingFollowsAfterApproval,
+      Boolean templateNotification,
+      Boolean dduduNotification
   ) {
     String lowTime = UUID.randomUUID()
         .toString()

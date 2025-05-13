@@ -5,8 +5,6 @@ import java.time.YearMonth;
 
 public interface CollectMonthlyStatsSummaryUseCase {
 
-  MonthlyStatsSummaryResponse collectMonthlyTotalStats(
-      Long loginId, YearMonth yearMonth
-  );
+  MonthlyStatsSummaryResponse collectMonthlyTotalStats(Long loginId, YearMonth yearMonth);
 
 }

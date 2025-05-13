@@ -3,8 +3,8 @@ package com.ddudu.domain.planning.repeatddudu.service;
 import com.ddudu.common.annotation.DomainService;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
 import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
+import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
 import com.ddudu.domain.planning.repeatddudu.dto.CreateRepeatDduduCommand;
 import com.ddudu.domain.planning.repeatddudu.dto.UpdateRepeatDduduCommand;
 import java.time.LocalDateTime;
@@ -19,9 +19,12 @@ public class RepeatDduduDomainService {
 
   public RepeatDdudu create(Long goalId, CreateRepeatDduduCommand command) {
     RepeatType repeatType = RepeatType.from(command.repeatType());
-    RepeatPattern repeatPattern = repeatType.createRepeatPattern(command.repeatDaysOfWeek(),
-        command.repeatDaysOfMonth(), command.lastDayOfMonth());
-    Long goalIdFinal = Objects.nonNull(goalId) ?  goalId : command.goalId();
+    RepeatPattern repeatPattern = repeatType.createRepeatPattern(
+        command.repeatDaysOfWeek(),
+        command.repeatDaysOfMonth(),
+        command.lastDayOfMonth()
+    );
+    Long goalIdFinal = Objects.nonNull(goalId) ? goalId : command.goalId();
 
     return RepeatDdudu.builder()
         .name(command.name())
@@ -52,7 +55,9 @@ public class RepeatDduduDomainService {
   }
 
   public List<Ddudu> createRepeatedDdudusAfter(
-      Long userId, RepeatDdudu repeatDdudu, LocalDateTime now
+      Long userId,
+      RepeatDdudu repeatDdudu,
+      LocalDateTime now
   ) {
     return repeatDdudu.getRepeatDates()
         .stream()
@@ -72,8 +77,10 @@ public class RepeatDduduDomainService {
 
   public RepeatDdudu update(RepeatDdudu repeatDdudu, UpdateRepeatDduduCommand command) {
     RepeatType repeatType = RepeatType.from(command.repeatType());
-    RepeatPattern repeatPattern = repeatType.createRepeatPattern(command.repeatDaysOfWeek(),
-        command.repeatDaysOfMonth(), command.lastDayOfMonth());
+    RepeatPattern repeatPattern = repeatType.createRepeatPattern(
+        command.repeatDaysOfWeek(),
+        command.repeatDaysOfMonth(), command.lastDayOfMonth()
+    );
 
     return repeatDdudu.update(
         command.name(),

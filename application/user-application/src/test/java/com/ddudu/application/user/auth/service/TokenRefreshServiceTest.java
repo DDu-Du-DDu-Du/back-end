@@ -5,7 +5,6 @@ import static java.lang.Thread.sleep;
 import com.ddudu.application.common.dto.auth.request.TokenRefreshRequest;
 import com.ddudu.application.common.dto.auth.response.TokenResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.auth.out.SocialResourcePort;
 import com.ddudu.application.common.port.auth.out.TokenLoaderPort;
 import com.ddudu.application.common.port.auth.out.TokenManipulationPort;
 import com.ddudu.application.user.auth.jwt.TokenManager;
@@ -24,7 +23,6 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -71,7 +69,9 @@ class TokenRefreshServiceTest {
     // then
     UserFamily decoded = tokenManager.decodeRefreshToken(actual.refreshToken());
     List<RefreshToken> refreshTokens = tokenLoaderPort.loadByUserFamily(
-        decoded.getUserId(), decoded.getFamily());
+        decoded.getUserId(),
+        decoded.getFamily()
+    );
 
     Assertions.assertThat(refreshTokens)
         .anyMatch(token -> token.hasSameTokenValue(actual.refreshToken()));

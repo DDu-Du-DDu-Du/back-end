@@ -17,7 +17,10 @@ public record CreateRepeatDduduRequest(
         example = "물 한 컵 마시기"
     )
     @NotNull(message = "6001 BLANK_NAME")
-    @Size(max = 50, message = "6006 EXCESSIVE_NAME_LENGTH")
+    @Size(
+        max = 50,
+        message = "6006 EXCESSIVE_NAME_LENGTH"
+    )
     String name,
     @Schema(
         name = "goalId",
@@ -84,19 +87,19 @@ public record CreateRepeatDduduRequest(
     LocalTime endAt
 ) {
 
-    public CreateRepeatDduduCommand toCommand() {
-        return CreateRepeatDduduCommand.builder()
-            .beginAt(beginAt)
-            .endAt(endAt)
-            .endDate(endDate)
-            .goalId(goalId)
-            .lastDayOfMonth(lastDayOfMonth)
-            .name(name)
-            .repeatDaysOfMonth(repeatDaysOfMonth)
-            .repeatDaysOfWeek(repeatDaysOfWeek)
-            .repeatType(repeatType)
-            .startDate(startDate)
-            .build();
-    }
+  public CreateRepeatDduduCommand toCommand() {
+    return CreateRepeatDduduCommand.builder()
+        .beginAt(beginAt)
+        .endAt(endAt)
+        .endDate(endDate)
+        .goalId(goalId)
+        .lastDayOfMonth(lastDayOfMonth)
+        .name(name)
+        .repeatDaysOfMonth(repeatDaysOfMonth)
+        .repeatDaysOfWeek(repeatDaysOfWeek)
+        .repeatType(repeatType)
+        .startDate(startDate)
+        .build();
+  }
 
 }

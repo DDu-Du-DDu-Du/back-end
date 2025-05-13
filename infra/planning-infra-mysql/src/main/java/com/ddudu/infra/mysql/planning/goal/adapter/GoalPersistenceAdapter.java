@@ -1,10 +1,10 @@
 package com.ddudu.infra.mysql.planning.goal.adapter;
 
-import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.application.common.port.goal.out.DeleteGoalPort;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.goal.out.UpdateGoalPort;
+import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.infra.mysql.planning.ddudu.repository.DduduRepository;

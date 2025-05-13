@@ -18,17 +18,23 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "Period Goal", description = "이달/이주의 목표 관련 API")
+@Tag(
+    name = "Period Goal",
+    description = "이달/이주의 목표 관련 API"
+)
 public interface PeriodGoalControllerDoc {
 
   @Operation(summary = "기간 목표 생성")
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "201", description = "CREATED", useReturnTypeSchema = true
+              responseCode = "201",
+              description = "CREATED",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -47,7 +53,8 @@ public interface PeriodGoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -56,7 +63,8 @@ public interface PeriodGoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "4004",
@@ -73,10 +81,13 @@ public interface PeriodGoalControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -85,7 +96,8 @@ public interface PeriodGoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "4004",
@@ -118,10 +130,13 @@ public interface PeriodGoalControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = @ExampleObject(
                       name = "4001",
@@ -130,7 +145,8 @@ public interface PeriodGoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -139,7 +155,8 @@ public interface PeriodGoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "4006",
@@ -149,7 +166,8 @@ public interface PeriodGoalControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "4004",

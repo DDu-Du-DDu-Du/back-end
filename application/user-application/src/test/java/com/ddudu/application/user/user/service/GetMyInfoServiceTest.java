@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.user.response.MeResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.auth.out.SocialResourcePort;
 import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.UserFixture;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -56,7 +54,8 @@ class GetMyInfoServiceTest {
     ThrowingCallable getMyInfo = () -> getMyInfoService.getMyInfo(invalidId);
 
     // then
-    Assertions.assertThatExceptionOfType(MissingResourceException.class).isThrownBy(getMyInfo)
+    Assertions.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(getMyInfo)
         .withMessage(UserErrorCode.NO_TARGET_FOR_MY_INFO.getCodeName());
   }
 

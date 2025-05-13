@@ -55,7 +55,8 @@ class MonthlyStatsTest {
       int actual = monthlyStats.calculateAchievementPercentage();
 
       // then
-      Assertions.assertThat(actual).isEqualTo(expected);
+      Assertions.assertThat(actual)
+          .isEqualTo(expected);
     }
 
     @Test
@@ -67,7 +68,8 @@ class MonthlyStatsTest {
       int actual = emptyStats.calculateAchievementPercentage();
 
       // then
-      Assertions.assertThat(actual).isZero();
+      Assertions.assertThat(actual)
+          .isZero();
     }
 
   }
@@ -97,7 +99,8 @@ class MonthlyStatsTest {
       int actual = monthlyStats.calculateSustenanceCount();
 
       // then
-      Assertions.assertThat(actual).isEqualTo(completedSize);
+      Assertions.assertThat(actual)
+          .isEqualTo(completedSize);
     }
 
     @Test
@@ -109,7 +112,8 @@ class MonthlyStatsTest {
       int actual = emptyStats.calculateSustenanceCount();
 
       // then
-      Assertions.assertThat(actual).isZero();
+      Assertions.assertThat(actual)
+          .isZero();
     }
 
   }
@@ -137,7 +141,8 @@ class MonthlyStatsTest {
       int actual = monthlyStats.calculatePostponementCount();
 
       // then
-      Assertions.assertThat(actual).isEqualTo(uncompletedSize);
+      Assertions.assertThat(actual)
+          .isEqualTo(uncompletedSize);
     }
 
     @Test
@@ -149,7 +154,8 @@ class MonthlyStatsTest {
       int actual = emptyStats.calculatePostponementCount();
 
       // then
-      Assertions.assertThat(actual).isZero();
+      Assertions.assertThat(actual)
+          .isZero();
     }
 
   }
@@ -178,7 +184,8 @@ class MonthlyStatsTest {
       int actual = monthlyStats.calculateReattainmentCount();
 
       // then
-      Assertions.assertThat(actual).isEqualTo(expected);
+      Assertions.assertThat(actual)
+          .isEqualTo(expected);
     }
 
     @Test
@@ -190,7 +197,8 @@ class MonthlyStatsTest {
       int actual = emptyStats.calculateReattainmentCount();
 
       // then
-      Assertions.assertThat(actual).isZero();
+      Assertions.assertThat(actual)
+          .isZero();
     }
 
   }

@@ -1,11 +1,11 @@
 package com.ddudu.application.planning.ddudu.service;
 
-import com.ddudu.common.annotation.UseCase;
 import com.ddudu.application.common.port.ddudu.in.SwitchStatusUseCase;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.DduduUpdatePort;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +20,9 @@ public class SwitchStatusService implements SwitchStatusUseCase {
   @Override
   public void switchStatus(Long loginId, Long dduduId) {
     Ddudu ddudu = dduduLoaderPort.getDduduOrElseThrow(
-        dduduId, DduduErrorCode.ID_NOT_EXISTING.getCodeName());
+        dduduId,
+        DduduErrorCode.ID_NOT_EXISTING.getCodeName()
+    );
 
     ddudu.validateDduduCreator(loginId);
 

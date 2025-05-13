@@ -6,9 +6,6 @@ public interface ErrorCode {
 
   String getMessage();
 
-  // TODO: remove default after migration
-  default String getCodeName() {
-    return null;
-  }
+  String getCodeName();
 
 }

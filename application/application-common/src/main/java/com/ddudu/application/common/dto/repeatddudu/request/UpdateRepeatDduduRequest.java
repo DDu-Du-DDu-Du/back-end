@@ -17,7 +17,10 @@ public record UpdateRepeatDduduRequest(
         example = "물 한 컵 마시기"
     )
     @NotNull(message = "6001 BLANK_NAME")
-    @Size(max = 50, message = "6006 EXCESSIVE_NAME_LENGTH")
+    @Size(
+        max = 50,
+        message = "6006 EXCESSIVE_NAME_LENGTH"
+    )
     String name,
     @Schema(
         name = "repeatType",
@@ -77,18 +80,18 @@ public record UpdateRepeatDduduRequest(
     LocalTime endAt
 ) {
 
-    public UpdateRepeatDduduCommand toCommand() {
-        return UpdateRepeatDduduCommand.builder()
-            .beginAt(beginAt)
-            .endAt(endAt)
-            .endDate(endDate)
-            .lastDayOfMonth(lastDayOfMonth)
-            .name(name)
-            .repeatDaysOfMonth(repeatDaysOfMonth)
-            .repeatDaysOfWeek(repeatDaysOfWeek)
-            .repeatType(repeatType)
-            .startDate(startDate)
-            .build();
-    }
+  public UpdateRepeatDduduCommand toCommand() {
+    return UpdateRepeatDduduCommand.builder()
+        .beginAt(beginAt)
+        .endAt(endAt)
+        .endDate(endDate)
+        .lastDayOfMonth(lastDayOfMonth)
+        .name(name)
+        .repeatDaysOfMonth(repeatDaysOfMonth)
+        .repeatDaysOfWeek(repeatDaysOfWeek)
+        .repeatType(repeatType)
+        .startDate(startDate)
+        .build();
+  }
 
 }

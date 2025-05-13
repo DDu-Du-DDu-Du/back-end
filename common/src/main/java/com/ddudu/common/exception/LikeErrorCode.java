@@ -1,5 +1,10 @@
 package com.ddudu.common.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum LikeErrorCode implements ErrorCode {
   NULL_USER(7001, "사용자는 반드시 존재해야 합니다."),
   NULL_TODO(7002, "좋아요할 할 일은 반드시 존재해야 합니다."),
@@ -13,18 +18,8 @@ public enum LikeErrorCode implements ErrorCode {
   private final int code;
   private final String message;
 
-  LikeErrorCode(int code, String message) {
-    this.code = code;
-    this.message = message;
-  }
-
   @Override
-  public int getCode() {
-    return code;
-  }
-
-  @Override
-  public String getMessage() {
-    return message;
+  public String getCodeName() {
+    return this.code + " " + this.name();
   }
 }

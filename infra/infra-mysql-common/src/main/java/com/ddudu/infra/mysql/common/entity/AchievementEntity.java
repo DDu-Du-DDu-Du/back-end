@@ -19,13 +19,24 @@ public class AchievementEntity extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "name", nullable = false, length = 20)
+  @Column(
+      name = "name",
+      nullable = false,
+      length = 20
+  )
   private String name;
 
-  @Column(name = "description", nullable = false)
+  @Column(
+      name = "description",
+      nullable = false
+  )
   private String description;
 
-  @Column(name = "badge_image_url", nullable = false, length = 1024)
+  @Column(
+      name = "badge_image_url",
+      nullable = false,
+      length = 1024
+  )
   private String badgeImageUrl;
 
 }

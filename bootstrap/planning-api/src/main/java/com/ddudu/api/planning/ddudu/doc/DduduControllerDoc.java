@@ -1,6 +1,6 @@
 package com.ddudu.api.planning.ddudu.doc;
 
-import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.common.dto.IdResponse;
 import com.ddudu.application.common.dto.ddudu.GoalGroupedDdudus;
 import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.ddudu.request.ChangeNameRequest;
@@ -12,9 +12,9 @@ import com.ddudu.application.common.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.common.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.common.dto.ddudu.response.TimetableResponse;
-import com.ddudu.bootstrap.common.doc.examples.DduduErrorExamples;
-import com.ddudu.application.common.dto.IdResponse;
+import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
+import com.ddudu.bootstrap.common.doc.examples.DduduErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -29,15 +29,23 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "Ddudu", description = "뚜두 관련 API")
+@Tag(
+    name = "Ddudu",
+    description = "뚜두 관련 API"
+)
 public interface DduduControllerDoc {
 
   @Operation(summary = "뚜두 생성")
   @ApiResponses(
       value = {
-          @ApiResponse(responseCode = "201", description = "OK", useReturnTypeSchema = true),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "201",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -64,7 +72,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -73,7 +82,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "3009",
@@ -83,7 +93,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -107,10 +118,13 @@ public interface DduduControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -119,7 +133,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -139,14 +154,20 @@ public interface DduduControllerDoc {
   )
   ResponseEntity<DduduDetailResponse> getById(Long loginId, Long id);
 
-  @Operation(summary = "일간 뚜두 리스트 조회", description = "목표별로 그룹화된 일간 뚜두 리스트 조회 API")
+  @Operation(
+      summary = "일간 뚜두 리스트 조회",
+      description = "목표별로 그룹화된 일간 뚜두 리스트 조회 API"
+  )
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -155,7 +176,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -189,14 +211,20 @@ public interface DduduControllerDoc {
   )
   ResponseEntity<List<GoalGroupedDdudus>> getDailyList(Long loginId, Long userId, LocalDate date);
 
-  @Operation(summary = "일간 타임테이블 조회", description = "시간별로 그룹화된 일간 뚜두 리스트(타임 테이블) 조회 API")
+  @Operation(
+      summary = "일간 타임테이블 조회",
+      description = "시간별로 그룹화된 일간 뚜두 리스트(타임 테이블) 조회 API"
+  )
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -205,7 +233,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -243,10 +272,13 @@ public interface DduduControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "뚜두 이름(내용) 변경 실패",
+              responseCode = "400",
+              description = "뚜두 이름(내용) 변경 실패",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -262,7 +294,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -271,7 +304,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
@@ -281,7 +315,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
@@ -292,18 +327,28 @@ public interface DduduControllerDoc {
           )
       }
   )
-  @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
-  @Parameter(name = "id", description = "변경할 뚜두 식별자", in = ParameterIn.PATH)
+  @ApiResponse(
+      responseCode = "200",
+      useReturnTypeSchema = true
+  )
+  @Parameter(
+      name = "id",
+      description = "변경할 뚜두 식별자",
+      in = ParameterIn.PATH
+  )
   ResponseEntity<IdResponse> changeName(Long loginId, Long id, ChangeNameRequest request);
 
   @Operation(summary = "뚜두 상태 변경")
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
+              responseCode = "204",
+              description = "NO_CONTENT",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -312,7 +357,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
@@ -322,7 +368,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
@@ -333,17 +380,24 @@ public interface DduduControllerDoc {
           )
       }
   )
-  @Parameter(name = "id", description = "변경할 뚜두 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "변경할 뚜두 식별자",
+      in = ParameterIn.PATH
+  )
   ResponseEntity<Void> updateStatus(Long loginId, Long id);
 
   @Operation(summary = "뚜두 삭제")
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
+              responseCode = "204",
+              description = "NO_CONTENT",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -352,7 +406,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "403", description = "FORBIDDEN",
+              responseCode = "403",
+              description = "FORBIDDEN",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
@@ -363,17 +418,24 @@ public interface DduduControllerDoc {
           )
       }
   )
-  @Parameter(name = "id", description = "삭제할 뚜두 식별자", in = ParameterIn.PATH)
+  @Parameter(
+      name = "id",
+      description = "삭제할 뚜두 식별자",
+      in = ParameterIn.PATH
+  )
   ResponseEntity<Void> delete(Long loginId, Long id);
 
   @Operation(summary = "뚜두 시작/종료시간 설정")
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "204", description = "NO_CONTENT", useReturnTypeSchema = true
+              responseCode = "204",
+              description = "NO_CONTENT",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2010",
@@ -382,7 +444,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -391,7 +454,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
@@ -408,10 +472,13 @@ public interface DduduControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "204", description = "OK", useReturnTypeSchema = true
+              responseCode = "204",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -426,7 +493,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -435,7 +503,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
@@ -452,10 +521,13 @@ public interface DduduControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "201", description = "CREATED", useReturnTypeSchema = true
+              responseCode = "201",
+              description = "CREATED",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "400", description = "BAD_REQUEST",
+              responseCode = "400",
+              description = "BAD_REQUEST",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2013",
@@ -464,7 +536,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -473,7 +546,8 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
@@ -492,10 +566,13 @@ public interface DduduControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",

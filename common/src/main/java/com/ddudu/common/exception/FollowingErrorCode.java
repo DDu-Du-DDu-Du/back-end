@@ -1,5 +1,10 @@
 package com.ddudu.common.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum FollowingErrorCode implements ErrorCode {
   NULL_FOLLOWER(6001, "팔로워가 반드시 존재해야 합니다."),
   NULL_FOLLOWEE(6002, "팔로우 대상이 반드시 존재해야 합니다."),
@@ -16,18 +21,8 @@ public enum FollowingErrorCode implements ErrorCode {
   private final int code;
   private final String message;
 
-  FollowingErrorCode(int code, String message) {
-    this.code = code;
-    this.message = message;
-  }
-
   @Override
-  public int getCode() {
-    return code;
-  }
-
-  @Override
-  public String getMessage() {
-    return message;
+  public String getCodeName() {
+    return this.code + " " + this.name();
   }
 }

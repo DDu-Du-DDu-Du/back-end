@@ -2,7 +2,6 @@ package com.ddudu.application.common.port.goal.out;
 
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.domain.user.user.aggregate.User;
 import java.util.List;
 import java.util.Optional;
 

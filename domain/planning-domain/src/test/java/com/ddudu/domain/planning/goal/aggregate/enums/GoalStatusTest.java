@@ -2,13 +2,9 @@ package com.ddudu.domain.planning.goal.aggregate.enums;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ddudu.common.exception.GoalErrorCode;
-import com.ddudu.common.exception.PeriodGoalErrorCode;
-import com.ddudu.domain.planning.periodgoal.aggregate.enums.PeriodGoalType;
 import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.PeriodGoalFixture;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;

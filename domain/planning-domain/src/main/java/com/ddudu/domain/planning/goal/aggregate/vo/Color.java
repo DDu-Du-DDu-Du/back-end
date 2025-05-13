@@ -31,8 +31,10 @@ public class Color {
   }
 
   private void validate(String code) {
-    checkArgument(HEX_COLOR_CODE_PATTERN.matcher(code)
-        .matches(), GoalErrorCode.INVALID_COLOR_FORMAT.getCodeName());
+    checkArgument(
+        HEX_COLOR_CODE_PATTERN.matcher(code)
+            .matches(), GoalErrorCode.INVALID_COLOR_FORMAT.getCodeName()
+    );
   }
 
 }

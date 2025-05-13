@@ -6,7 +6,9 @@ import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
 public interface RepeatUseCase {
 
   RepeatAnotherDayResponse repeatOnAnotherDay(
-      Long loginId, Long dduduId, RepeatAnotherDayRequest request
+      Long loginId,
+      Long dduduId,
+      RepeatAnotherDayRequest request
   );
 
 }

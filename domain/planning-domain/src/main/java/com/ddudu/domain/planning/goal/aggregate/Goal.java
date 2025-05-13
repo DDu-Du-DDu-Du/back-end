@@ -5,10 +5,10 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.planning.goal.aggregate.vo.Color;
-import com.ddudu.common.exception.GoalErrorCode;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -35,7 +35,12 @@ public final class Goal {
 
   @Builder
   private Goal(
-      Long id, String name, Long userId, GoalStatus status, String color, PrivacyType privacyType
+      Long id,
+      String name,
+      Long userId,
+      GoalStatus status,
+      String color,
+      PrivacyType privacyType
   ) {
     validate(name, userId);
 
@@ -51,9 +56,7 @@ public final class Goal {
     return color.getCode();
   }
 
-  public Goal applyGoalUpdates(
-      String name, String color, PrivacyType privacyType
-  ) {
+  public Goal applyGoalUpdates(String name, String color, PrivacyType privacyType) {
     validateName(name);
 
     return Goal.builder()
@@ -99,7 +102,9 @@ public final class Goal {
   private void validateName(String name) {
     checkArgument(isNotBlank(name), GoalErrorCode.BLANK_NAME.getCodeName());
     checkArgument(
-        name.length() <= MAX_NAME_LENGTH, GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+        name.length() <= MAX_NAME_LENGTH,
+        GoalErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName()
+    );
   }
 
   private void validateUser(Long userId) {

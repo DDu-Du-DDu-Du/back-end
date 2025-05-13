@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PeriodGoalRepository extends JpaRepository<PeriodGoalEntity, Long> {
 
   Optional<PeriodGoalEntity> findByUserIdAndPlanDateAndType(
-      Long userId, LocalDate planDate, PeriodGoalType type
+      Long userId,
+      LocalDate planDate,
+      PeriodGoalType type
   );
 
 }

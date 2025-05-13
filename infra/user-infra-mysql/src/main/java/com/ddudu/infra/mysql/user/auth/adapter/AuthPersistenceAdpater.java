@@ -1,9 +1,9 @@
 package com.ddudu.infra.mysql.user.auth.adapter;
 
-import com.ddudu.domain.user.auth.aggregate.RefreshToken;
 import com.ddudu.application.common.port.auth.out.TokenLoaderPort;
 import com.ddudu.application.common.port.auth.out.TokenManipulationPort;
 import com.ddudu.common.annotation.DrivenAdapter;
+import com.ddudu.domain.user.auth.aggregate.RefreshToken;
 import com.ddudu.infra.mysql.user.auth.entiy.RefreshTokenEntity;
 import com.ddudu.infra.mysql.user.auth.repository.RefreshTokenRepository;
 import java.util.List;
@@ -18,8 +18,7 @@ public class AuthPersistenceAdpater implements TokenManipulationPort, TokenLoade
   @Override
   public Integer getNextFamilyOfUser(Long userId) {
     return refreshTokenRepository.getLastFamilyByUserId(userId)
-        .map(refreshTokenEntity -> refreshTokenEntity
-            .getFamily() + 1)
+        .map(refreshTokenEntity -> refreshTokenEntity.getFamily() + 1)
         .orElse(1);
   }
 

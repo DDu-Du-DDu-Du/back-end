@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class RepeatDduduDomainServiceTest {
-  
+
   static RepeatDduduDomainService repeatDduduDomainService;
-  
+
   @BeforeAll
   static void setUp() {
     repeatDduduDomainService = new RepeatDduduDomainService();
@@ -153,11 +153,13 @@ class RepeatDduduDomainServiceTest {
           userId, dailyRepeatDdudu);
 
       // then
-      Assertions.assertThat(ddudus).hasSize(startDate.until(endDate)
-          .getDays() + 1);
+      Assertions.assertThat(ddudus)
+          .hasSize(startDate.until(endDate)
+              .getDays() + 1);
       ddudus.stream()
           .map(Ddudu::getScheduledOn)
-          .forEach(date -> Assertions.assertThat(date).isBetween(startDate, endDate));
+          .forEach(date -> Assertions.assertThat(date)
+              .isBetween(startDate, endDate));
     }
 
     @Test
@@ -195,7 +197,9 @@ class RepeatDduduDomainServiceTest {
 
       // when
       List<Ddudu> ddudus = repeatDduduDomainService.createRepeatedDdudus(
-          userId, monthlyRepeatDdudu);
+          userId,
+          monthlyRepeatDdudu
+      );
 
       // then
       ddudus.stream()

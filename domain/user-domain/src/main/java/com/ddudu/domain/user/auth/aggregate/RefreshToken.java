@@ -18,10 +18,13 @@ public class RefreshToken {
   @Builder
   private RefreshToken(Long id, String tokenValue, UserFamily userFamily, Long userId, int family) {
     this.id = id;
-    this.userFamily = Objects.requireNonNullElseGet(userFamily, () -> UserFamily.builder()
-        .userId(userId)
-        .family(family)
-        .build());
+    this.userFamily = Objects.requireNonNullElseGet(
+        userFamily,
+        () -> UserFamily.builder()
+            .userId(userId)
+            .family(family)
+            .build()
+    );
     this.tokenValue = tokenValue;
   }
 

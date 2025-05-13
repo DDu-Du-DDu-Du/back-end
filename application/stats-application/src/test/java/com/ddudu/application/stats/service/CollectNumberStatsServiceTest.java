@@ -2,14 +2,14 @@ package com.ddudu.application.stats.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
-import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;

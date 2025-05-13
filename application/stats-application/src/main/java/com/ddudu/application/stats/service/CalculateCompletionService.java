@@ -2,11 +2,11 @@ package com.ddudu.application.stats.service;
 
 import static java.util.Objects.isNull;
 
-import com.ddudu.common.annotation.UseCase;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
 import com.ddudu.application.common.port.stats.out.DduduStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
+import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.planning.repeatddudu.util.DayOfWeekUtil;
@@ -58,12 +58,16 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
       LocalDate to
   ) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
-        loginId, DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+        loginId,
+        DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
+    );
     User user = loginUser;
 
     if (Objects.nonNull(userId)) {
       user = userLoaderPort.getUserOrElseThrow(
-          userId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+          userId,
+          DduduErrorCode.USER_NOT_EXISTING.getCodeName()
+      );
     }
 
     return generateCompletions(from, to, loginUser, user);

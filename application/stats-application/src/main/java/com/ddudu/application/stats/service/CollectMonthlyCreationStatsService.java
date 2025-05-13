@@ -32,7 +32,9 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
       YearMonth yearMonth
   ) {
     User user = userLoaderPort.getUserOrElseThrow(
-        loginId, DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        loginId,
+        DduduErrorCode.USER_NOT_EXISTING.getCodeName()
+    );
 
     if (Objects.isNull(yearMonth)) {
       yearMonth = YearMonth.now();

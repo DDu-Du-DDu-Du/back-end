@@ -1,12 +1,12 @@
 package com.ddudu.application.planning.ddudu.service;
 
-import com.ddudu.common.annotation.UseCase;
 import com.ddudu.application.common.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.common.port.ddudu.in.PeriodSetupUseCase;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.DduduUpdatePort;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +21,9 @@ public class PeriodSetupService implements PeriodSetupUseCase {
   @Override
   public void setUpPeriod(Long loginId, Long dduduId, PeriodSetupRequest request) {
     Ddudu ddudu = dduduLoaderPort.getDduduOrElseThrow(
-        dduduId, DduduErrorCode.ID_NOT_EXISTING.getCodeName());
+        dduduId,
+        DduduErrorCode.ID_NOT_EXISTING.getCodeName()
+    );
 
     ddudu.validateDduduCreator(loginId);
 

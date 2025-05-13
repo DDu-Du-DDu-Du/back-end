@@ -89,7 +89,9 @@ public class StatsController implements StatsControllerDoc {
       YearMonth yearMonth
   ) {
     MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryUseCase.collectMonthlyTotalStats(
-        loginId, yearMonth);
+        loginId,
+        yearMonth
+    );
 
     return ResponseEntity.ok(response);
   }
@@ -103,7 +105,9 @@ public class StatsController implements StatsControllerDoc {
       YearMonth yearMonth
   ) {
     GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsUseCase.collectCreation(
-        loginId, yearMonth);
+        loginId,
+        yearMonth
+    );
 
     return ResponseEntity.ok(response);
   }

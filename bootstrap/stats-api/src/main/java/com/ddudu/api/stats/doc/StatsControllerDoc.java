@@ -30,10 +30,13 @@ public interface StatsControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -42,7 +45,8 @@ public interface StatsControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = {
                       @ExampleObject(
@@ -82,10 +86,13 @@ public interface StatsControllerDoc {
   @ApiResponses(
       value = {
           @ApiResponse(
-              responseCode = "200", description = "OK", useReturnTypeSchema = true
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
           ),
           @ApiResponse(
-              responseCode = "401", description = "UNAUTHORIZED",
+              responseCode = "401",
+              description = "UNAUTHORIZED",
               content = @Content(
                   examples = @ExampleObject(
                       name = "5002",
@@ -94,7 +101,8 @@ public interface StatsControllerDoc {
               )
           ),
           @ApiResponse(
-              responseCode = "404", description = "NOT_FOUND",
+              responseCode = "404",
+              description = "NOT_FOUND",
               content = @Content(
                   examples = {
                       @ExampleObject(

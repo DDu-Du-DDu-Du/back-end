@@ -1,11 +1,7 @@
 package com.ddudu.fixture;
 
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;

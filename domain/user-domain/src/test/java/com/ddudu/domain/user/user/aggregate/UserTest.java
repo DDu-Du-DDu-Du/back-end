@@ -1,9 +1,9 @@
 package com.ddudu.domain.user.user.aggregate;
 
+import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.User.UserBuilder;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAdjective;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAnimal;
-import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.fixture.UserFixture;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;

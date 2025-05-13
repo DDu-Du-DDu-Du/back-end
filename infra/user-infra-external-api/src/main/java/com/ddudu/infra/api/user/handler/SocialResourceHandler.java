@@ -20,7 +20,9 @@ public class SocialResourceHandler {
   public SocialResource requestSocialResource(String accessToken, String providerType) {
     String destination = SocialResourceDestination.getDestinationBy(providerType);
     ResponseEntity<String> response = httpOperator.operateExchangeWithGetMethod(
-        accessToken, destination);
+        accessToken,
+        destination
+    );
 
     try {
       return objectMapper.readValue(response.getBody(), KakaoResource.class);

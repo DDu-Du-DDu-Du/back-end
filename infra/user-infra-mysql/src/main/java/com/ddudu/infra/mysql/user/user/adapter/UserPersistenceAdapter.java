@@ -1,10 +1,10 @@
 package com.ddudu.infra.mysql.user.user.adapter;
 
-import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.DrivenAdapter;
+import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
 import com.ddudu.infra.mysql.user.user.dto.FullUser;
 import com.ddudu.infra.mysql.user.user.entity.AuthProviderEntity;
 import com.ddudu.infra.mysql.user.user.entity.UserEntity;
@@ -48,7 +48,9 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
   @Override
   public Optional<User> loadSocialUser(AuthProvider authProvider) {
     Optional<AuthProviderEntity> providerEntity = authProviderRepository.findByProviderIdAndProviderType(
-        authProvider.getProviderId(), authProvider.getProviderType());
+        authProvider.getProviderId(),
+        authProvider.getProviderType()
+    );
 
     if (providerEntity.isEmpty()) {
       return Optional.empty();

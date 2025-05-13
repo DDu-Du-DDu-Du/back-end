@@ -1,14 +1,14 @@
 package com.ddudu.application.planning.goal.service;
 
-import com.ddudu.common.annotation.UseCase;
-import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
-import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.application.common.dto.goal.request.ChangeGoalStatusRequest;
 import com.ddudu.application.common.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.common.port.goal.in.ChangeGoalStatusUseCase;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.goal.out.UpdateGoalPort;
+import com.ddudu.common.annotation.UseCase;
+import com.ddudu.common.exception.GoalErrorCode;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
