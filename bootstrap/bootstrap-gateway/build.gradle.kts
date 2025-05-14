@@ -24,6 +24,7 @@ dependencies {
     implementation(project(":infra:stats-infra-mysql"))
     implementation(project(":infra:user-infra-mysql"))
     implementation(project(":infra:user-infra-external-api"))
+    implementation(project(":bootstrap:bootstrap-common"))
     implementation(project(":bootstrap:user-api"))
     implementation(project(":bootstrap:planning-api"))
     implementation(project(":bootstrap:stats-api"))
