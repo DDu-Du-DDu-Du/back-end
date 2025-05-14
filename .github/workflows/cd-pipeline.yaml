@@ -63,7 +63,7 @@ jobs:
 
       - name: 테스트 DB 구동
         uses: hoverkraft-tech/compose-action@v2.0.0
-        if: inputs.deployment_enabled == 'false'
+        if: ${{ !inputs.deployment_enabled }}
         with:
           compose-file: "./secrets/test/compose.yml"
 
@@ -76,7 +76,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: 테스트 DB 마이그레이션
-        if: inputs.deployment_enabled == 'false'
+        if: ${{ !inputs.deployment_enabled }}
         run: ./gradlew :bootstrap:bootstrap-gateway:flywayMigrate
 
       - name: 프로젝트 빌드
@@ -84,7 +84,7 @@ jobs:
 
       - name: AWS Credentials 설정
         uses: aws-actions/configure-aws-credentials@v4
-        if: inputs.deployment_enabled == 'true'
+        if: ${{ inputs.deployment_enabled }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -93,7 +93,7 @@ jobs:
       - name: ECR 로그인
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        if: inputs.deployment_enabled == 'true'
+        if: ${{ inputs.deployment_enabled }}
         with:
           registry-type: public
         env:
@@ -102,7 +102,7 @@ jobs:
 
       - name: Docker 이미지 빌드 후 배포
         id: build-docker
-        if: inputs.deployment_enabled == 'true'
+        if: ${{ inputs.deployment_enabled }}
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REGISTRY_ALIAS: ${{ inputs.ecr-registry-alias }}
@@ -117,7 +117,7 @@ jobs:
       - name: ECS Task Definition 생성
         id: render-task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
-        if: inputs.deployment_enabled == 'true'
+        if: ${{ inputs.deployment_enabled }}
         with:
           task-definition: ${{ inputs.task-definition }}
           container-name: ${{ inputs.ecs-container-name }}
@@ -125,7 +125,7 @@ jobs:
 
       - name: ECS Task 실행
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        if: inputs.deployment_enabled == 'true'
+        if: ${{ inputs.deployment_enabled }}
         with:
           task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
           service: ${{ inputs.ecs-service }}
@@ -134,7 +134,7 @@ jobs:
 
       - name: 배포 성공 알리미
         uses: slackapi/slack-github-action@v1.24.0
-        if: inputs.deployment_enabled == 'true' && inputs.alimi-enabled == 'true' && success()
+        if: ${{ inputs.deployment_enabled && inputs.alimi-enabled && success() }}
         with:
           payload: |
             {
