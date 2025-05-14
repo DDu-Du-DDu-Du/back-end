@@ -63,7 +63,7 @@ jobs:
 
       - name: 테스트 DB 구동
         uses: hoverkraft-tech/compose-action@v2.0.0
-        if: inputs.deployment_enabled == 'false
+        if: inputs.deployment_enabled == 'false'
         with:
           compose-file: "./secrets/test/compose.yml"
 
@@ -76,7 +76,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: 테스트 DB 마이그레이션
-        if: inputs.deployment_enabled == 'false
+        if: inputs.deployment_enabled == 'false'
         run: ./gradlew :bootstrap:bootstrap-gateway:flywayMigrate
 
       - name: 프로젝트 빌드
