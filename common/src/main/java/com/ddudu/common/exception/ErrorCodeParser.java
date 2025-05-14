@@ -14,6 +14,7 @@ public class ErrorCodeParser {
       case '1' -> UserErrorCode.valueOf(name);
       case '2' -> DduduErrorCode.valueOf(name);
       case '3' -> GoalErrorCode.valueOf(name);
+      case '4' -> PeriodGoalErrorCode.valueOf(name);
       case '5' -> AuthErrorCode.valueOf(name);
       case '6' -> FollowingErrorCode.valueOf(name);
       case '7' -> LikeErrorCode.valueOf(name);

@@ -1,11 +1,11 @@
 name: 개발 서버 배포 자동화
 
-on: workflow_dispatch
-#  pull_request:
-#    types:
-#      - closed
-#    branches:
-#      - main
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
 
 jobs:
   dev-deploy:
@@ -20,6 +20,7 @@ jobs:
       ecs-cluster: ddudu-dev-ecs-cluster
       alimi-enabled: ${{ contains(toJson(github.event.pull_request.labels.*.name), 'feature') }}
       swagger-url: http://ddudu-dev-alb-1593082408.ap-northeast-2.elb.amazonaws.com/docs
+      deployment_enabled: false
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}

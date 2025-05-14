@@ -6,6 +6,7 @@ on:
       - main
       - 'feat/**'
       - 'refactor/**'
+      - 'fix/**'
 
 permissions:
   contents: read
