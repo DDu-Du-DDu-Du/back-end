@@ -28,6 +28,10 @@ on:
       swagger-url:
         required: false
         type: string
+      deployment_enabled:
+        required: false
+        default: true
+        type: boolean
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -57,27 +61,20 @@ jobs:
           java-version: 17
           distribution: 'corretto'
 
-      - name: Gradle 캐싱
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle
-
       - name: Gradle 셋업
         uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: '${{ github.event.repository != null && github.base_ref != github.event.repository.default_branch }}'
 
       - name: 빌드 권한 부여
         run: chmod +x gradlew
 
       - name: 프로젝트 빌드
-        run: ./gradlew build -x test
+        run: ./gradlew build --parallel ${{ inputs.deployment_enabled == 'true' && '-x test' || '' }}
 
       - name: AWS Credentials 설정
         uses: aws-actions/configure-aws-credentials@v4
+        if: inputs.deployment_enabled
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -86,6 +83,7 @@ jobs:
       - name: ECR 로그인
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        if: inputs.deployment_enabled
         with:
           registry-type: public
         env:
@@ -94,6 +92,7 @@ jobs:
 
       - name: Docker 이미지 빌드 후 배포
         id: build-docker
+        if: inputs.deployment_enabled
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REGISTRY_ALIAS: ${{ inputs.ecr-registry-alias }}
@@ -108,6 +107,7 @@ jobs:
       - name: ECS Task Definition 생성
         id: render-task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
+        if: inputs.deployment_enabled
         with:
           task-definition: ${{ inputs.task-definition }}
           container-name: ${{ inputs.ecs-container-name }}
@@ -115,6 +115,7 @@ jobs:
 
       - name: ECS Task 실행
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        if: inputs.deployment_enabled
         with:
           task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
           service: ${{ inputs.ecs-service }}
@@ -123,7 +124,7 @@ jobs:
 
       - name: 배포 성공 알리미
         uses: slackapi/slack-github-action@v1.24.0
-        if: inputs.alimi-enabled && success()
+        if: inputs.deployment_enabled && inputs.alimi-enabled && success()
         with:
           payload: |
             {
