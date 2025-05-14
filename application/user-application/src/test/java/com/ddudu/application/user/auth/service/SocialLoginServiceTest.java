@@ -78,8 +78,16 @@ class SocialLoginServiceTest {
     TokenResponse response = socialLoginService.login(request);
 
     // then
-    String actual = response.accessToken();
-    String expected = tokenManager.createAccessToken(user);
+    String actual = String.join(
+        "",
+        response.accessToken()
+            .split("\\.")
+    );
+    String expected = String.join(
+        "",
+        tokenManager.createAccessToken(user)
+            .split("\\.")
+    );
 
     Assertions.assertThat(actual)
         .isEqualTo(expected);
