@@ -6,7 +6,7 @@ import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryRespon
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
@@ -155,7 +155,7 @@ class CollectNumberStatsServiceTest {
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(collect)
-        .withMessage(DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        .withMessage(StatsErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
 }

@@ -2,12 +2,12 @@ package com.ddudu.application.stats.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.stats.CompletionPerGoalDto;
+import com.ddudu.application.common.dto.stats.CreationCountPerGoalDto;
 import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
@@ -76,13 +76,13 @@ class CollectMonthlyCreationStatsServiceTest {
     YearMonth thisMonth = YearMonth.now();
 
     // when
-    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
+    GenericStatsResponse<CreationCountPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
         user.getId(),
         thisMonth
     );
 
     // then
-    List<CompletionPerGoalDto> actual = response.contents();
+    List<CreationCountPerGoalDto> actual = response.contents();
     Iterator<Integer> sizeIterator = sizes.iterator();
 
     Assertions.assertThat(actual.size())
@@ -98,7 +98,7 @@ class CollectMonthlyCreationStatsServiceTest {
         .minusMonths(1);
 
     // when
-    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
+    GenericStatsResponse<CreationCountPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
         user.getId(),
         lastMonth
     );
@@ -112,13 +112,13 @@ class CollectMonthlyCreationStatsServiceTest {
     // given
 
     // when
-    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
+    GenericStatsResponse<CreationCountPerGoalDto> response = collectMonthlyCreationStatsService.collectCreation(
         user.getId(),
         null
     );
 
     // then
-    List<CompletionPerGoalDto> actual = response.contents();
+    List<CreationCountPerGoalDto> actual = response.contents();
     Iterator<Integer> sizeIterator = sizes.iterator();
 
     Assertions.assertThat(actual.size())
@@ -142,7 +142,7 @@ class CollectMonthlyCreationStatsServiceTest {
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(collect)
-        .withMessage(DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        .withMessage(StatsErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
 }
