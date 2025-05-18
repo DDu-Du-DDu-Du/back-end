@@ -16,8 +16,11 @@ public class ErrorCodeParser {
       case '3' -> GoalErrorCode.valueOf(name);
       case '4' -> PeriodGoalErrorCode.valueOf(name);
       case '5' -> AuthErrorCode.valueOf(name);
-      case '6' -> FollowingErrorCode.valueOf(name);
+      case '6' -> RepeatDduduErrorCode.valueOf(name);
       case '7' -> LikeErrorCode.valueOf(name);
+      case '8' -> FollowingErrorCode.valueOf(name);
+      case '9' ->
+          code.charAt(1) != '9' ? StatsErrorCode.valueOf(name) : new DefaultErrorCode(message);
       default -> new DefaultErrorCode(message);
     };
   }
