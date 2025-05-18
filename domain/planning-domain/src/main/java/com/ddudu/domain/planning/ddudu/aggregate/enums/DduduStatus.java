@@ -11,7 +11,7 @@ public enum DduduStatus {
     return Arrays.stream(DduduStatus.values())
         .filter(status -> Objects.equals(value, status.name()))
         .findFirst()
-        .orElseGet(() -> DduduStatus.UNCOMPLETED);
+        .orElse(DduduStatus.UNCOMPLETED);
   }
 
   public DduduStatus switchStatus() {

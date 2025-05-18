@@ -8,7 +8,7 @@ import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.repeatddudu.util.DayOfWeekUtil;
@@ -174,7 +174,7 @@ class CalculateCompletionServiceTest {
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(findWeeklyCompletions)
-        .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+        .withMessage(StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -192,7 +192,7 @@ class CalculateCompletionServiceTest {
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(findWeeklyCompletions)
-        .withMessage(DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        .withMessage(StatsErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -210,7 +210,7 @@ class CalculateCompletionServiceTest {
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(findMonthlyCompletions)
-        .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+        .withMessage(StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -228,7 +228,7 @@ class CalculateCompletionServiceTest {
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(findMonthlyCompletions)
-        .withMessage(DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        .withMessage(StatsErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
 }

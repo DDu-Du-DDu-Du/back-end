@@ -7,7 +7,7 @@ import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
 import com.ddudu.application.common.port.stats.out.DduduStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.planning.repeatddudu.util.DayOfWeekUtil;
 import com.ddudu.domain.user.user.aggregate.User;
@@ -59,14 +59,14 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
   ) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId,
-        DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
+        StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
     );
     User user = loginUser;
 
     if (Objects.nonNull(userId)) {
       user = userLoaderPort.getUserOrElseThrow(
           userId,
-          DduduErrorCode.USER_NOT_EXISTING.getCodeName()
+          StatsErrorCode.USER_NOT_EXISTING.getCodeName()
       );
     }
 

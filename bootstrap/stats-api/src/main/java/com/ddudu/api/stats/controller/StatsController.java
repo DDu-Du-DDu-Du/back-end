@@ -3,7 +3,7 @@ package com.ddudu.api.stats.controller;
 import static java.util.Objects.isNull;
 
 import com.ddudu.api.stats.doc.StatsControllerDoc;
-import com.ddudu.application.common.dto.stats.CompletionPerGoalDto;
+import com.ddudu.application.common.dto.stats.CreationCountPerGoalDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
@@ -96,15 +96,15 @@ public class StatsController implements StatsControllerDoc {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/completion")
-  public ResponseEntity<GenericStatsResponse<CompletionPerGoalDto>> collectCreation(
+  @GetMapping("/creation")
+  public ResponseEntity<GenericStatsResponse<CreationCountPerGoalDto>> collectCreation(
       @Login
       Long loginId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
-    GenericStatsResponse<CompletionPerGoalDto> response = collectMonthlyCreationStatsUseCase.collectCreation(
+    GenericStatsResponse<CreationCountPerGoalDto> response = collectMonthlyCreationStatsUseCase.collectCreation(
         loginId,
         yearMonth
     );

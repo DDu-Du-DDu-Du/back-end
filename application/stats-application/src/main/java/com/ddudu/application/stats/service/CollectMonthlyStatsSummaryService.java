@@ -7,7 +7,7 @@ import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsSummaryUseC
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -30,7 +30,7 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
   public MonthlyStatsSummaryResponse collectMonthlyTotalStats(Long loginId, YearMonth yearMonth) {
     User user = userLoaderPort.getUserOrElseThrow(
         loginId,
-        DduduErrorCode.USER_NOT_EXISTING.getCodeName()
+        StatsErrorCode.USER_NOT_EXISTING.getCodeName()
     );
     LocalDate from = getFirstDateOfLastMonth(yearMonth);
     LocalDate to = getLastDateOfMonth(yearMonth);

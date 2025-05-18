@@ -1,13 +1,13 @@
 package com.ddudu.application.stats.service;
 
 import com.ddudu.aggregate.MonthlyStats;
-import com.ddudu.application.common.dto.stats.CompletionPerGoalDto;
+import com.ddudu.application.common.dto.stats.CreationCountPerGoalDto;
 import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyCreationStatsUseCase;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -27,13 +27,13 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
   private final MonthlyStatsPort monthlyStatsPort;
 
   @Override
-  public GenericStatsResponse<CompletionPerGoalDto> collectCreation(
+  public GenericStatsResponse<CreationCountPerGoalDto> collectCreation(
       Long loginId,
       YearMonth yearMonth
   ) {
     User user = userLoaderPort.getUserOrElseThrow(
         loginId,
-        DduduErrorCode.USER_NOT_EXISTING.getCodeName()
+        StatsErrorCode.USER_NOT_EXISTING.getCodeName()
     );
 
     if (Objects.isNull(yearMonth)) {
@@ -44,17 +44,17 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
     LocalDate to = yearMonth.atEndOfMonth();
     MonthlyStats monthlyStats = monthlyStatsPort.collectMonthlyStats(user.getId(), null, from, to)
         .getOrDefault(yearMonth, MonthlyStats.empty(user.getId(), yearMonth));
-    List<CompletionPerGoalDto> completions = wrapCompletions(monthlyStats);
+    List<CreationCountPerGoalDto> completions = wrapCompletions(monthlyStats);
 
     return GenericStatsResponse.from(completions);
   }
 
-  private List<CompletionPerGoalDto> wrapCompletions(MonthlyStats monthlyStats) {
+  private List<CreationCountPerGoalDto> wrapCompletions(MonthlyStats monthlyStats) {
     return monthlyStats.countPerGoal()
         .entrySet()
         .stream()
         .map(countPerGoalEntry ->
-            CompletionPerGoalDto.from(
+            CreationCountPerGoalDto.from(
                 countPerGoalEntry.getKey(),
                 countPerGoalEntry.getValue()
             )

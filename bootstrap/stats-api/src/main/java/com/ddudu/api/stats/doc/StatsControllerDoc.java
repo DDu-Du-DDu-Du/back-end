@@ -1,11 +1,11 @@
 package com.ddudu.api.stats.doc;
 
-import com.ddudu.application.common.dto.stats.CompletionPerGoalDto;
+import com.ddudu.application.common.dto.stats.CreationCountPerGoalDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
-import com.ddudu.bootstrap.common.doc.examples.DduduErrorExamples;
+import com.ddudu.bootstrap.common.doc.examples.StatsErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -50,14 +50,14 @@ public interface StatsControllerDoc {
               content = @Content(
                   examples = {
                       @ExampleObject(
-                          name = "2008",
+                          name = "9002",
                           description = "로그인 사용자 아이디가 유효하지 않는 경우",
-                          value = DduduErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                          value = StatsErrorExamples.STATS_LOGIN_USER_NOT_FOUND
                       ),
                       @ExampleObject(
-                          name = "2006",
+                          name = "9003",
                           description = "타겟 사용자 아이디가 유효하지 않는 경우",
-                          value = DduduErrorExamples.DDUDU_USER_NOT_EXISTING
+                          value = StatsErrorExamples.STATS_USER_NOT_FOUND
                       )
                   }
               )
@@ -106,14 +106,14 @@ public interface StatsControllerDoc {
               content = @Content(
                   examples = {
                       @ExampleObject(
-                          name = "2008",
+                          name = "9002",
                           description = "로그인 사용자 아이디가 유효하지 않는 경우",
-                          value = DduduErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                          value = StatsErrorExamples.STATS_LOGIN_USER_NOT_FOUND
                       ),
                       @ExampleObject(
-                          name = "2006",
+                          name = "9003",
                           description = "타겟 사용자 아이디가 유효하지 않는 경우",
-                          value = DduduErrorExamples.DDUDU_USER_NOT_EXISTING
+                          value = StatsErrorExamples.STATS_USER_NOT_FOUND
                       )
                   }
               )
@@ -161,9 +161,20 @@ public interface StatsControllerDoc {
               description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
-                      name = "2006",
-                      description = "로그인 사용자 아이디가 유효하지 않은 경우",
-                      value = DduduErrorExamples.DDUDU_USER_NOT_EXISTING
+                      name = "9002",
+                      description = "로그인 사용자 아이디가 유효하지 않는 경우",
+                      value = StatsErrorExamples.STATS_LOGIN_USER_NOT_FOUND
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "500",
+              description = "INTERNAL_SERVER_ERROR",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "9001",
+                      description = "서버 내부 문제로 뚜두 상태 파싱에 실패한 경우",
+                      value = StatsErrorExamples.STATS_INVALID_DDUDU_STATS
                   )
               )
           )
@@ -175,11 +186,9 @@ public interface StatsControllerDoc {
       in = ParameterIn.QUERY,
       example = "2024-08"
   )
-  ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(
-      Long loginId, YearMonth yearMonth
-  );
+  ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(Long loginId, YearMonth yearMonth);
 
-  @Operation(summary = "월별 목표들의 뚜두 생성 수 통계. Not Yet Implemented")
+  @Operation(summary = "월별 목표들의 뚜두 생성 수 통계")
   @ApiResponses(
       {
           @ApiResponse(
@@ -202,9 +211,20 @@ public interface StatsControllerDoc {
               description = "NOT_FOUND",
               content = @Content(
                   examples = @ExampleObject(
-                      name = "2006",
-                      description = "로그인 사용자 아이디가 유효하지 않은 경우",
-                      value = DduduErrorExamples.DDUDU_USER_NOT_EXISTING
+                      name = "9002",
+                      description = "로그인 사용자 아이디가 유효하지 않는 경우",
+                      value = StatsErrorExamples.STATS_LOGIN_USER_NOT_FOUND
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "500",
+              description = "INTERNAL_SERVER_ERROR",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "9001",
+                      description = "서버 내부 문제로 뚜두 상태 파싱에 실패한 경우",
+                      value = StatsErrorExamples.STATS_INVALID_DDUDU_STATS
                   )
               )
           )
@@ -216,8 +236,9 @@ public interface StatsControllerDoc {
       in = ParameterIn.QUERY,
       example = "2024-08"
   )
-  ResponseEntity<GenericStatsResponse<CompletionPerGoalDto>> collectCreation(
-      Long loginId, YearMonth yearMonth
+  ResponseEntity<GenericStatsResponse<CreationCountPerGoalDto>> collectCreation(
+      Long loginId,
+      YearMonth yearMonth
   );
 
 }
