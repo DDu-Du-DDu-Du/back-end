@@ -3,11 +3,13 @@ package com.ddudu.api.stats.controller;
 import static java.util.Objects.isNull;
 
 import com.ddudu.api.stats.doc.StatsControllerDoc;
+import com.ddudu.application.common.dto.stats.AchievementPerGoal;
 import com.ddudu.application.common.dto.stats.CreationCountPerGoalDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
+import com.ddudu.application.common.port.stats.in.CollectMonthlyAchievementUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyCreationStatsUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsSummaryUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
@@ -30,11 +32,12 @@ public class StatsController implements StatsControllerDoc {
   private final CollectMonthlyStatsSummaryUseCase collectMonthlyStatsSummaryUseCase;
   private final CollectMonthlyCreationStatsUseCase collectMonthlyCreationStatsUseCase;
   private final CalculateCompletionUseCase calculateCompletionUseCase;
+  private final CollectMonthlyAchievementUseCase collectMonthlyAchievementUseCase;
 
   /**
    * 월별 뚜두 완료율 조회 API (달성 뚜두 수 / 생성 뚜두 수)
    */
-  @GetMapping("/monthly")
+  @GetMapping("/completion/monthly")
   public ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
       @Login
       Long loginId,
@@ -105,6 +108,23 @@ public class StatsController implements StatsControllerDoc {
       YearMonth yearMonth
   ) {
     GenericStatsResponse<CreationCountPerGoalDto> response = collectMonthlyCreationStatsUseCase.collectCreation(
+        loginId,
+        yearMonth
+    );
+
+    return ResponseEntity.ok(response);
+  }
+
+  @Override
+  @GetMapping("/achievement")
+  public ResponseEntity<GenericStatsResponse<AchievementPerGoal>> collectAchievement(
+      @Login
+      Long loginId,
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM")
+      YearMonth yearMonth
+  ) {
+    GenericStatsResponse<AchievementPerGoal> response = collectMonthlyAchievementUseCase.collectAchievement(
         loginId,
         yearMonth
     );

@@ -23,4 +23,18 @@ public final class StatsErrorExamples {
       }
       """;
 
+  public static final String STATS_MONTHLY_STATS_EMPTY = """
+      {
+        "code": 9004,
+        "message": "월 통계 데이터가 없습니다."
+      }
+      """;
+
+  public static final String STATS_MONTHLY_MONTHLY_STATS_NOT_GROUPED_BY_GOAL = """
+      {
+        "code": 9005,
+        "message": "다른 목표의 스탯이 포함되어 있습니다."
+      }
+      """;
+
 }
