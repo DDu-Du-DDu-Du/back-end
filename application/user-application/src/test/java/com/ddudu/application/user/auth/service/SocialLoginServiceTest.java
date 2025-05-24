@@ -1,5 +1,6 @@
 package com.ddudu.application.user.auth.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -18,7 +19,6 @@ import com.ddudu.fixture.UserFixture;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,19 +79,13 @@ class SocialLoginServiceTest {
     TokenResponse response = socialLoginService.login(request);
 
     // then
-    String actual = String.join(
-        "",
-        response.accessToken()
-            .split("\\.")
-    );
-    String expected = String.join(
-        "",
-        tokenManager.createAccessToken(user)
-            .split("\\.")
-    );
+    Jwt jwt = jwtDecoder.decode(response.accessToken());
+    Long actualUser = jwt.getClaim("user");
+    String actualAuth = jwt.getClaim("auth");
 
-    Assertions.assertThat(actual)
-        .isEqualTo(expected);
+    assertThat(actualUser).isEqualTo(user.getId());
+    assertThat(actualAuth).isEqualTo(user.getAuthority()
+        .getAuthority());
   }
 
   @Test
@@ -105,7 +100,7 @@ class SocialLoginServiceTest {
     // then
     Optional<User> user = userLoaderPort.loadSocialUser(authProvider);
 
-    Assertions.assertThat(user)
+    assertThat(user)
         .isPresent();
 
     Long expected = user.get()
@@ -113,7 +108,7 @@ class SocialLoginServiceTest {
     Long actual = jwtDecoder.decode(response.accessToken())
         .getClaim("user");
 
-    Assertions.assertThat(actual)
+    assertThat(actual)
         .isEqualTo(expected);
   }
 
@@ -131,7 +126,7 @@ class SocialLoginServiceTest {
         .get();
     List<Goal> goals = goalLoaderPort.findAllByUserAndPrivacyTypes(user.getId());
 
-    Assertions.assertThat(goals)
+    assertThat(goals)
         .hasSize(3);
   }
 
