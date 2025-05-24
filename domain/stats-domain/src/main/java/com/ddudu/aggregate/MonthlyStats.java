@@ -1,5 +1,6 @@
 package com.ddudu.aggregate;
 
+import com.ddudu.common.exception.StatsErrorCode;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Collections;
@@ -31,17 +32,35 @@ public class MonthlyStats {
         .build();
   }
 
-  public Map<Long, Integer> countPerGoal() {
+  public Map<Long, MonthlyStats> groupByGoal() {
     return stats.stream()
         .collect(
             Collectors.groupingBy(
                 BaseStats::getGoalId,
                 Collectors.collectingAndThen(
                     Collectors.toList(),
-                    List::size
+                    goalStats -> MonthlyStats.builder()
+                        .userId(userId)
+                        .yearMonth(yearMonth)
+                        .stats(goalStats)
+                        .build()
                 )
             )
         );
+  }
+
+  public Long getGoalId() {
+    validateStatsUnderSameGoal();
+
+    return stats.get(0)
+        .getGoalId();
+  }
+
+  public String getGoalName() {
+    validateStatsUnderSameGoal();
+
+    return stats.get(0)
+        .getGoalName();
   }
 
   public int size() {
@@ -88,6 +107,22 @@ public class MonthlyStats {
         .count();
 
     return Math.round((float) reattained / stats.size() * 100);
+  }
+
+  private void validateStatsUnderSameGoal() {
+    if (stats.isEmpty()) {
+      throw new RuntimeException(StatsErrorCode.MONTHLY_STATS_EMPTY.getCodeName());
+    }
+
+    Long goalId = stats.get(0)
+        .getGoalId();
+
+    boolean allStatsUnderSameGoal = stats.stream()
+        .allMatch(baseStats -> baseStats.isUnderSameGoal(goalId));
+
+    if (!allStatsUnderSameGoal) {
+      throw new RuntimeException(StatsErrorCode.MONTHLY_STATS_NOT_GROUPED_BY_GOAL.getCodeName());
+    }
   }
 
 }
