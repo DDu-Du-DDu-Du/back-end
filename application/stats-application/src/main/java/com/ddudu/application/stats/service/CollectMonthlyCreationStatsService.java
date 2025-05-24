@@ -12,6 +12,7 @@ import com.ddudu.domain.user.user.aggregate.User;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,21 +45,16 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
     LocalDate to = yearMonth.atEndOfMonth();
     MonthlyStats monthlyStats = monthlyStatsPort.collectMonthlyStats(user.getId(), null, from, to)
         .getOrDefault(yearMonth, MonthlyStats.empty(user.getId(), yearMonth));
-    List<CreationCountPerGoalDto> completions = wrapCompletions(monthlyStats);
+    Map<Long, MonthlyStats> monthlyStatsPerGoal = monthlyStats.groupByGoal();
+    List<CreationCountPerGoalDto> completions = wrapCompletions(monthlyStatsPerGoal);
 
     return GenericStatsResponse.from(completions);
   }
 
-  private List<CreationCountPerGoalDto> wrapCompletions(MonthlyStats monthlyStats) {
-    return monthlyStats.countPerGoal()
-        .entrySet()
+  private List<CreationCountPerGoalDto> wrapCompletions(Map<Long, MonthlyStats> monthlyStats) {
+    return monthlyStats.values()
         .stream()
-        .map(countPerGoalEntry ->
-            CreationCountPerGoalDto.from(
-                countPerGoalEntry.getKey(),
-                countPerGoalEntry.getValue()
-            )
-        )
+        .map(CreationCountPerGoalDto::from)
         .sorted((first, second) -> second.count() - first.count())
         .toList();
   }
