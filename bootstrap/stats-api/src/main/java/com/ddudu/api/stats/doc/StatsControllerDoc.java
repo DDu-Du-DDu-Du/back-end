@@ -2,6 +2,7 @@ package com.ddudu.api.stats.doc;
 
 import com.ddudu.application.common.dto.stats.AchievementPerGoal;
 import com.ddudu.application.common.dto.stats.CreationCountPerGoalDto;
+import com.ddudu.application.common.dto.stats.SustenancePerGoal;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
@@ -303,6 +304,18 @@ public interface StatsControllerDoc {
       example = "2024-08"
   )
   ResponseEntity<GenericStatsResponse<AchievementPerGoal>> collectAchievement(
+      Long loginId,
+      YearMonth yearMonth
+  );
+
+  @Operation(summary = "월 별 목표들의 최대 지속도 통계")
+  @Parameter(
+      name = "yearMonth",
+      description = "통계 조회 대상 기간 월 (기본값: 이번 달)",
+      in = ParameterIn.QUERY,
+      example = "2024-08"
+  )
+  ResponseEntity<GenericStatsResponse<SustenancePerGoal>> collectSustenanceCount(
       Long loginId,
       YearMonth yearMonth
   );
