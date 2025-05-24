@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class CollectNumberStatsServiceTest {
+class CollectMonthlyStatsSummaryTest {
 
   @Autowired
   CollectMonthlyStatsSummaryService collectMonthlyStatsService;

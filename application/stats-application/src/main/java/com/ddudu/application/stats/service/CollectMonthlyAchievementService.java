@@ -1,9 +1,9 @@
 package com.ddudu.application.stats.service;
 
 import com.ddudu.aggregate.MonthlyStats;
-import com.ddudu.application.common.dto.stats.CreationCountPerGoalDto;
+import com.ddudu.application.common.dto.stats.AchievementPerGoal;
 import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
-import com.ddudu.application.common.port.stats.in.CollectMonthlyCreationStatsUseCase;
+import com.ddudu.application.common.port.stats.in.CollectMonthlyAchievementUseCase;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CollectMonthlyCreationStatsService implements CollectMonthlyCreationStatsUseCase {
+public class CollectMonthlyAchievementService implements CollectMonthlyAchievementUseCase {
 
   private static final int FIRST_DATE = 1;
 
@@ -28,7 +28,7 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
   private final MonthlyStatsPort monthlyStatsPort;
 
   @Override
-  public GenericStatsResponse<CreationCountPerGoalDto> collectCreation(
+  public GenericStatsResponse<AchievementPerGoal> collectAchievement(
       Long loginId,
       YearMonth yearMonth
   ) {
@@ -46,17 +46,13 @@ public class CollectMonthlyCreationStatsService implements CollectMonthlyCreatio
     MonthlyStats monthlyStats = monthlyStatsPort.collectMonthlyStats(user.getId(), null, from, to)
         .getOrDefault(yearMonth, MonthlyStats.empty(user.getId(), yearMonth));
     Map<Long, MonthlyStats> monthlyStatsPerGoal = monthlyStats.groupByGoal();
-    List<CreationCountPerGoalDto> completions = wrapCompletions(monthlyStatsPerGoal);
-
-    return GenericStatsResponse.from(completions);
-  }
-
-  private List<CreationCountPerGoalDto> wrapCompletions(Map<Long, MonthlyStats> monthlyStats) {
-    return monthlyStats.values()
+    List<AchievementPerGoal> achievements = monthlyStatsPerGoal.values()
         .stream()
-        .map(CreationCountPerGoalDto::from)
-        .sorted((first, second) -> second.count() - first.count())
+        .map(AchievementPerGoal::from)
+        .sorted((first, second) -> second.achievementPercentage() - first.achievementPercentage())
         .toList();
+
+    return GenericStatsResponse.from(achievements);
   }
 
 }

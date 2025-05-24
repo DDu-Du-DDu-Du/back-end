@@ -193,6 +193,7 @@ public final class BaseStatsFixture extends BaseFixture {
     return BaseStats.builder()
         .dduduId(dduduId)
         .goalId(goalId)
+        .goalName(goalId.toString())
         .status(status)
         .scheduledOn(scheduledOn)
         .isPostponed(isPostponed)

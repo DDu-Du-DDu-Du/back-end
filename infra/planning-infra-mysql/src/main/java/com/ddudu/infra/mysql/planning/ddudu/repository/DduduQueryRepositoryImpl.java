@@ -288,6 +288,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         BaseStats.class,
         dduduEntity.id.as("dduduId"),
         goalEntity.id,
+        goalEntity.name,
         status,
         dduduEntity.isPostponed,
         dduduEntity.scheduledOn
