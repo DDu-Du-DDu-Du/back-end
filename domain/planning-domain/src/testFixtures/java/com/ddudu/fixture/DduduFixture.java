@@ -7,6 +7,7 @@ import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -14,6 +15,19 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DduduFixture extends BaseFixture {
+
+  public static List<Ddudu> createConsecutiveCompletedDdudus(Goal goal, int count) {
+    LocalDate firstDate = YearMonth.now()
+        .atDay(1);
+    List<Ddudu> ddudus = new ArrayList<>();
+
+    for (int i = 0; i < count; i++) {
+      LocalDate scheduled = firstDate.plusDays(i);
+      ddudus.add(createRandomDduduWithStatusAndSchedule(goal, DduduStatus.COMPLETE, scheduled));
+    }
+
+    return ddudus;
+  }
 
   public static List<Ddudu> createDifferentDdudusWithGoal(
       Goal goal,

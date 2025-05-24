@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 import com.ddudu.api.stats.doc.StatsControllerDoc;
 import com.ddudu.application.common.dto.stats.AchievementPerGoal;
 import com.ddudu.application.common.dto.stats.CreationCountPerGoalDto;
+import com.ddudu.application.common.dto.stats.SustenancePerGoal;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
@@ -12,6 +13,7 @@ import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyAchievementUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyCreationStatsUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsSummaryUseCase;
+import com.ddudu.application.common.port.stats.in.CollectMonthlySustenanceUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -33,6 +35,7 @@ public class StatsController implements StatsControllerDoc {
   private final CollectMonthlyCreationStatsUseCase collectMonthlyCreationStatsUseCase;
   private final CalculateCompletionUseCase calculateCompletionUseCase;
   private final CollectMonthlyAchievementUseCase collectMonthlyAchievementUseCase;
+  private final CollectMonthlySustenanceUseCase collectMonthlySustenanceUseCase;
 
   /**
    * 월별 뚜두 완료율 조회 API (달성 뚜두 수 / 생성 뚜두 수)
@@ -125,6 +128,23 @@ public class StatsController implements StatsControllerDoc {
       YearMonth yearMonth
   ) {
     GenericStatsResponse<AchievementPerGoal> response = collectMonthlyAchievementUseCase.collectAchievement(
+        loginId,
+        yearMonth
+    );
+
+    return ResponseEntity.ok(response);
+  }
+
+  @Override
+  @GetMapping("/sustenance")
+  public ResponseEntity<GenericStatsResponse<SustenancePerGoal>> collectSustenanceCount(
+      @Login
+      Long loginId,
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM")
+      YearMonth yearMonth
+  ) {
+    GenericStatsResponse<SustenancePerGoal> response = collectMonthlySustenanceUseCase.collectSustenanceCount(
         loginId,
         yearMonth
     );
