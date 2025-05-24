@@ -138,7 +138,10 @@ public class StatsController implements StatsControllerDoc {
   @Override
   @GetMapping("/sustenance")
   public ResponseEntity<GenericStatsResponse<SustenancePerGoal>> collectSustenanceCount(
+      @Login
       Long loginId,
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
     GenericStatsResponse<SustenancePerGoal> response = collectMonthlySustenanceUseCase.collectSustenanceCount(
