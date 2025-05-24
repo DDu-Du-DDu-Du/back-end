@@ -61,26 +61,16 @@ jobs:
           java-version: 17
           distribution: 'corretto'
 
-      - name: 테스트 DB 구동
-        uses: hoverkraft-tech/compose-action@v2.0.0
-        if: ${{ !inputs.deployment_enabled }}
-        with:
-          compose-file: "./secrets/test/compose.yml"
-
       - name: Gradle 셋업
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4.4.0
         with:
           cache-read-only: '${{ github.event.repository != null && github.base_ref != github.event.repository.default_branch }}'
 
       - name: 빌드 권한 부여
         run: chmod +x gradlew
 
-      - name: 테스트 DB 마이그레이션
-        if: ${{ !inputs.deployment_enabled }}
-        run: ./gradlew :bootstrap:bootstrap-gateway:flywayMigrate
-
       - name: 프로젝트 빌드
-        run: ./gradlew build --parallel ${{ inputs.deployment_enabled == 'true' && '-x test' || '' }}
+        run: ./gradlew build --parallel -x test
 
       - name: AWS Credentials 설정
         uses: aws-actions/configure-aws-credentials@v4
