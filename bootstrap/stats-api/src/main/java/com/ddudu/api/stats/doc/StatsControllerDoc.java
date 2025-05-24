@@ -309,6 +309,59 @@ public interface StatsControllerDoc {
   );
 
   @Operation(summary = "월 별 목표들의 최대 지속도 통계")
+  @ApiResponses(
+      {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "9002",
+                      description = "로그인 사용자 아이디가 유효하지 않는 경우",
+                      value = StatsErrorExamples.STATS_LOGIN_USER_NOT_FOUND
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "500",
+              description = "INTERNAL_SERVER_ERROR",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "9001",
+                          description = "서버 내부 문제로 뚜두 상태 파싱에 실패한 경우",
+                          value = StatsErrorExamples.STATS_INVALID_DDUDU_STATS
+                      ),
+                      @ExampleObject(
+                          name = "9004",
+                          description = "서버 내부 문제로 뚜두 데이터가 없는 월의 통계 시도할 경우",
+                          value = StatsErrorExamples.STATS_MONTHLY_STATS_EMPTY
+                      ),
+                      @ExampleObject(
+                          name = "9005",
+                          description = "서버 내부 문제로 월의 통계 시도 시 다른 월의 뚜두가 포함될 경우",
+                          value = StatsErrorExamples.STATS_MONTHLY_MONTHLY_STATS_NOT_GROUPED_BY_GOAL
+                      )
+                  }
+              )
+          )
+      }
+  )
   @Parameter(
       name = "yearMonth",
       description = "통계 조회 대상 기간 월 (기본값: 이번 달)",
