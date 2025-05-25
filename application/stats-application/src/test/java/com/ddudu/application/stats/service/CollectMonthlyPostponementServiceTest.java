@@ -1,9 +1,9 @@
 package com.ddudu.application.stats.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
-import com.ddudu.application.common.dto.stats.SustenancePerGoal;
+import com.ddudu.application.common.dto.stats.PostponedPerGoal;
 import com.ddudu.application.common.dto.stats.response.GenericStatsResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
@@ -14,7 +14,6 @@ import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import com.ddudu.fixtures.MonthlyStatsFixture;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,10 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class CollectMonthlySustenanceServiceTest {
+class CollectMonthlyPostponementServiceTest {
 
   @Autowired
-  CollectMonthlySustenanceService collectMonthlySustenanceService;
+  CollectMonthlyPostponementService collectMonthlyPostponementService;
 
   @Autowired
   SignUpPort signUpPort;
@@ -49,59 +48,59 @@ class CollectMonthlySustenanceServiceTest {
 
   User user;
   List<Goal> goals;
-  List<Integer> expectedSustenanceCount;
+  YearMonth thisMonth;
+  List<Integer> postponedCounts;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user.getId(), 5));
-    expectedSustenanceCount = new ArrayList<>();
+    thisMonth = YearMonth.now();
+    postponedCounts = new ArrayList<>();
 
     for (int i = 0; i < goals.size(); i++) {
-      expectedSustenanceCount.add(MonthlyStatsFixture.getRandomInt(1, 10));
+      postponedCounts.add(DduduFixture.getRandomInt(0, 100));
     }
 
-    Iterator<Integer> iterator = expectedSustenanceCount.iterator();
+    Iterator<Integer> iterator = postponedCounts.iterator();
 
-    goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createConsecutiveCompletedDdudus(
+    goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createDdudusWithPostponedFlag(
         goal,
-        iterator.next()
+        iterator.next(),
+        DduduFixture.getRandomInt(1, 100)
     )));
 
-    expectedSustenanceCount.sort(Comparator.comparingInt(Integer::intValue)
-        .reversed());
+    postponedCounts.sort(Comparator.reverseOrder());
   }
 
   @Test
-  void 이번_달_지속한_뚜두_수_통계를_내림차순으로_반환한다() {
+  void 월_목표_별_미루기_통계를_반환한다() {
     // given
-    YearMonth thisMonth = YearMonth.now();
 
     // when
-    GenericStatsResponse<SustenancePerGoal> response = collectMonthlySustenanceService.collectSustenanceCount(
+    GenericStatsResponse<PostponedPerGoal> response = collectMonthlyPostponementService.collectPostponement(
         user.getId(),
         thisMonth
     );
 
     // then
-    List<SustenancePerGoal> actual = response.contents();
-    List<Integer> actualSustenanceCounts = actual.stream()
-        .map(SustenancePerGoal::sustenanceCount)
+    List<Integer> actual = response.contents()
+        .stream()
+        .map(PostponedPerGoal::postponementCount)
         .toList();
 
-    assertThat(actualSustenanceCounts).isEqualTo(expectedSustenanceCount);
+    assertThat(actual).isEqualTo(postponedCounts);
   }
 
   @Test
-  void 목표에_해당_월_지속한_뚜두가_없으면_통계에서_제외한다() {
+  void 미루기_뚜두가_없는_달이면_통계는_비어있다() {
     // given
-    YearMonth lastMonth = YearMonth.now()
-        .minusMonths(1);
+    YearMonth noDduduMonth = thisMonth.minusMonths(2);
 
     // when
-    GenericStatsResponse<SustenancePerGoal> response = collectMonthlySustenanceService.collectSustenanceCount(
+    GenericStatsResponse<PostponedPerGoal> response = collectMonthlyPostponementService.collectPostponement(
         user.getId(),
-        lastMonth
+        noDduduMonth
     );
 
     // then
@@ -110,32 +109,33 @@ class CollectMonthlySustenanceServiceTest {
 
   @Test
   void 날짜가_null이면_이번_달_통계를_반환한다() {
+    // given
+
     // when
-    GenericStatsResponse<SustenancePerGoal> response = collectMonthlySustenanceService.collectSustenanceCount(
+    GenericStatsResponse<PostponedPerGoal> response = collectMonthlyPostponementService.collectPostponement(
         user.getId(),
         null
     );
 
     // then
-    assertThat(response.contents()).hasSameSizeAs(goals);
+    assertThat(response.contents()).isNotEmpty();
   }
 
   @Test
   void 존재하지_않는_사용자_ID이면_예외를_던진다() {
     // given
-    long invalidId = GoalFixture.getRandomId();
-    YearMonth thisMonth = YearMonth.now();
+    Long invalidId = UserFixture.getRandomId();
 
     // when
-    ThrowingCallable call = () -> collectMonthlySustenanceService.collectSustenanceCount(
+    ThrowingCallable collect = () -> collectMonthlyPostponementService.collectPostponement(
         invalidId,
         thisMonth
     );
 
     // then
     assertThatExceptionOfType(MissingResourceException.class)
-        .isThrownBy(call)
-        .withMessage(StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+        .isThrownBy(collect)
+        .withMessage(StatsErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
 }

@@ -16,6 +16,34 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DduduFixture extends BaseFixture {
 
+  public static List<Ddudu> createDdudusWithPostponedFlag(Goal goal, int postponedCount, int notPostponedCount) {
+    List<Ddudu> ddudus = new ArrayList<>();
+
+    for (int i = 0; i < postponedCount; i++) {
+      LocalDate scheduledOn = YearMonth.now()
+          .atDay(getRandomInt(
+              1,
+              YearMonth.now()
+                  .lengthOfMonth()
+          ));
+
+      ddudus.add(createDduduWithScheduleAndPostponedFlag(goal, true, scheduledOn));
+    }
+
+    for (int i = 0; i < notPostponedCount; i++) {
+      LocalDate scheduledOn = YearMonth.now()
+          .atDay(getRandomInt(
+              1,
+              YearMonth.now()
+                  .lengthOfMonth()
+          ));
+
+      ddudus.add(createDduduWithScheduleAndPostponedFlag(goal, false, scheduledOn));
+    }
+
+    return ddudus;
+  }
+
   public static List<Ddudu> createConsecutiveCompletedDdudus(Goal goal, int count) {
     LocalDate firstDate = YearMonth.now()
         .atDay(1);
@@ -54,6 +82,15 @@ public class DduduFixture extends BaseFixture {
     }
 
     return ddudus;
+  }
+
+  public static Ddudu createDduduWithScheduleAndPostponedFlag(Goal goal, boolean isPostponed, LocalDate scheduledOn) {
+    return getDduduBuilder()
+        .userId(goal.getUserId())
+        .goalId(goal.getId())
+        .isPostponed(isPostponed)
+        .scheduledOn(scheduledOn)
+        .build();
   }
 
   public static Ddudu createRandomDduduWithStatus(Goal goal, DduduStatus status) {
