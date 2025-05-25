@@ -58,7 +58,7 @@ class CollectMonthlySustenanceServiceTest {
     expectedSustenanceCount = new ArrayList<>();
 
     for (int i = 0; i < goals.size(); i++) {
-      expectedSustenanceCount.add(MonthlyStatsFixture.getRandomInt(0, 10));
+      expectedSustenanceCount.add(MonthlyStatsFixture.getRandomInt(1, 10));
     }
 
     Iterator<Integer> iterator = expectedSustenanceCount.iterator();
@@ -117,7 +117,7 @@ class CollectMonthlySustenanceServiceTest {
     );
 
     // then
-    assertThat(response.contents()).isNotEmpty();
+    assertThat(response.contents()).hasSameSizeAs(goals);
   }
 
   @Test
