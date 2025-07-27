@@ -2,7 +2,7 @@ package com.ddudu.application.stats.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
+import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
@@ -30,10 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class CollectMonthlyStatsSummaryTest {
+class CollectMonthlyStatsReportTest {
 
   @Autowired
-  CollectMonthlyStatsSummaryService collectMonthlyStatsService;
+  CollectMonthlyStatsReportService collectMonthlyStatsService;
 
   @Autowired
   SignUpPort signUpPort;
@@ -89,7 +89,7 @@ class CollectMonthlyStatsSummaryTest {
     YearMonth thisMonth = YearMonth.now();
 
     // when
-    MonthlyStatsSummaryResponse response = collectMonthlyStatsService.collectMonthlyTotalStats(
+    MonthlyStatsReportResponse response = collectMonthlyStatsService.collectReport(
         user.getId(), thisMonth);
 
     // then
@@ -109,7 +109,7 @@ class CollectMonthlyStatsSummaryTest {
     YearMonth thisMonth = YearMonth.now();
 
     // when
-    MonthlyStatsSummaryResponse response = collectMonthlyStatsService.collectMonthlyTotalStats(
+    MonthlyStatsReportResponse response = collectMonthlyStatsService.collectReport(
         user.getId(),
         null
     );
@@ -132,7 +132,7 @@ class CollectMonthlyStatsSummaryTest {
         .minusMonths(1);
 
     // when
-    MonthlyStatsSummaryResponse response = collectMonthlyStatsService.collectMonthlyTotalStats(
+    MonthlyStatsReportResponse response = collectMonthlyStatsService.collectReport(
         user.getId(),
         lastMonth
     );
@@ -149,7 +149,7 @@ class CollectMonthlyStatsSummaryTest {
     YearMonth thisMonth = YearMonth.now();
 
     // when
-    ThrowingCallable collect = () -> collectMonthlyStatsService.collectMonthlyTotalStats(
+    ThrowingCallable collect = () -> collectMonthlyStatsService.collectReport(
         invalidId, thisMonth);
 
     // then

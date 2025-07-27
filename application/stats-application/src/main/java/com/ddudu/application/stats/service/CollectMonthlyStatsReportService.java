@@ -1,9 +1,9 @@
 package com.ddudu.application.stats.service;
 
 import com.ddudu.aggregate.MonthlyStats;
-import com.ddudu.application.common.dto.stats.MonthlyStatsSummaryDto;
-import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
-import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsSummaryUseCase;
+import com.ddudu.application.common.dto.stats.MonthlyStatsReportDto;
+import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
+import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsReportUseCase;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSummaryUseCase {
+public class CollectMonthlyStatsReportService implements CollectMonthlyStatsReportUseCase {
 
   private static final int FIRST_DATE = 1;
 
@@ -27,7 +27,7 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
   private final MonthlyStatsPort monthlyStatsPort;
 
   @Override
-  public MonthlyStatsSummaryResponse collectMonthlyTotalStats(Long loginId, YearMonth yearMonth) {
+  public MonthlyStatsReportResponse collectReport(Long loginId, YearMonth yearMonth) {
     User user = userLoaderPort.getUserOrElseThrow(
         loginId,
         StatsErrorCode.USER_NOT_EXISTING.getCodeName()
@@ -42,16 +42,16 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
         from,
         to
     );
-    MonthlyStatsSummaryDto lastMonthStats = MonthlyStatsSummaryDto.from(monthlyStats.getOrDefault(
+    MonthlyStatsReportDto lastMonthStats = MonthlyStatsReportDto.from(monthlyStats.getOrDefault(
         lastMonth,
         MonthlyStats.empty(user.getId(), lastMonth)
     ));
-    MonthlyStatsSummaryDto thisMonthStats = MonthlyStatsSummaryDto.from(monthlyStats.getOrDefault(
+    MonthlyStatsReportDto thisMonthStats = MonthlyStatsReportDto.from(monthlyStats.getOrDefault(
         thisMonth,
         MonthlyStats.empty(user.getId(), thisMonth)
     ));
 
-    return MonthlyStatsSummaryResponse.from(lastMonthStats, thisMonthStats);
+    return MonthlyStatsReportResponse.from(lastMonthStats, thisMonthStats);
   }
 
   private LocalDate getFirstDateOfLastMonth(YearMonth yearMonth) {
