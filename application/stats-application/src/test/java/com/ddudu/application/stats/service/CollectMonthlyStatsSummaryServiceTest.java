@@ -390,7 +390,11 @@ class CollectMonthlyStatsSummaryServiceTest {
         int totalPostponed = sizes.get(i);
         int reattainment = MonthlyStatsFixture.getRandomInt(1, totalPostponed);
 
-        saveDduduPort.saveAll(DduduFixture.createReattainedDdudus(goals.get(i), reattainment, totalPostponed));
+        saveDduduPort.saveAll(DduduFixture.createReattainedDdudus(
+            goals.get(i),
+            reattainment,
+            totalPostponed
+        ));
 
         reattainmentRates.add(Math.round((float) reattainment / totalPostponed * 100));
       }
