@@ -165,7 +165,7 @@ class MonthlyStatsTest {
       int expected = Math.round((float) completedSize / totalSize * 100);
 
       // when
-      int actual = monthlyStats.calculateAchievementPercentage();
+      int actual = monthlyStats.calculateAchievementRate();
 
       // then
       assertThat(actual)
@@ -178,7 +178,7 @@ class MonthlyStatsTest {
       MonthlyStats emptyStats = MonthlyStatsFixture.createEmptyStats(userId, YearMonth.now());
 
       // when
-      int actual = emptyStats.calculateAchievementPercentage();
+      int actual = emptyStats.calculateAchievementRate();
 
       // then
       assertThat(actual)
@@ -294,7 +294,7 @@ class MonthlyStatsTest {
       int expected = Math.round((float) completedSize / totalSize * 100);
 
       // when
-      int actual = monthlyStats.calculateReattainmentCount();
+      int actual = monthlyStats.calculateReattainmentRate();
 
       // then
       assertThat(actual)
@@ -307,7 +307,7 @@ class MonthlyStatsTest {
       MonthlyStats emptyStats = MonthlyStatsFixture.createEmptyStats(userId, YearMonth.now());
 
       // when
-      int actual = emptyStats.calculateReattainmentCount();
+      int actual = emptyStats.calculateReattainmentRate();
 
       // then
       assertThat(actual)

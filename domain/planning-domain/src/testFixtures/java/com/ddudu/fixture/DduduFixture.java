@@ -16,7 +16,39 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DduduFixture extends BaseFixture {
 
-  public static List<Ddudu> createDdudusWithPostponedFlag(Goal goal, int postponedCount, int notPostponedCount) {
+  public static List<Ddudu> createReattainedDdudus(
+      Goal goal,
+      int reattainedCount,
+      int totalPostponedCount
+  ) {
+    List<Ddudu> ddudus = new ArrayList<>();
+
+    for (int i = 0; i < reattainedCount; i++) {
+      ddudus.add(createRandomDduduWithReference(
+          goal.getId(),
+          goal.getUserId(),
+          true,
+          DduduStatus.COMPLETE
+      ));
+    }
+
+    for (int i = reattainedCount; i < totalPostponedCount; i++) {
+      ddudus.add(createRandomDduduWithReference(
+          goal.getId(),
+          goal.getUserId(),
+          true,
+          DduduStatus.UNCOMPLETED
+      ));
+    }
+
+    return ddudus;
+  }
+
+  public static List<Ddudu> createDdudusWithPostponedFlag(
+      Goal goal,
+      int postponedCount,
+      int notPostponedCount
+  ) {
     List<Ddudu> ddudus = new ArrayList<>();
 
     for (int i = 0; i < postponedCount; i++) {
@@ -84,7 +116,11 @@ public class DduduFixture extends BaseFixture {
     return ddudus;
   }
 
-  public static Ddudu createDduduWithScheduleAndPostponedFlag(Goal goal, boolean isPostponed, LocalDate scheduledOn) {
+  public static Ddudu createDduduWithScheduleAndPostponedFlag(
+      Goal goal,
+      boolean isPostponed,
+      LocalDate scheduledOn
+  ) {
     return getDduduBuilder()
         .userId(goal.getUserId())
         .goalId(goal.getId())

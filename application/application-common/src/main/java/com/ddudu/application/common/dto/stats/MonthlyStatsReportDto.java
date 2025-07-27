@@ -5,23 +5,23 @@ import java.time.YearMonth;
 import lombok.Builder;
 
 @Builder
-public record MonthlyStatsSummaryDto(
+public record MonthlyStatsReportDto(
     YearMonth yearMonth,
     int totalCount,
-    int achievementPercentage,
+    int achievementRate,
     int sustenanceCount,
     int postponementCount,
-    int reattainmentPercentage
+    int reattainmentRate
 ) {
 
-  public static MonthlyStatsSummaryDto from(MonthlyStats stats) {
-    return MonthlyStatsSummaryDto.builder()
+  public static MonthlyStatsReportDto from(MonthlyStats stats) {
+    return MonthlyStatsReportDto.builder()
         .yearMonth(stats.getYearMonth())
         .totalCount(stats.size())
-        .achievementPercentage(stats.calculateAchievementPercentage())
+        .achievementRate(stats.calculateAchievementRate())
         .sustenanceCount(stats.calculateSustenanceCount())
         .postponementCount(stats.calculatePostponementCount())
-        .reattainmentPercentage(stats.calculateReattainmentCount())
+        .reattainmentRate(stats.calculateReattainmentRate())
         .build();
   }
 

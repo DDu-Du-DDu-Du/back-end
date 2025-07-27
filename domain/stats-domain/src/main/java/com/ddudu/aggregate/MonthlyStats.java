@@ -67,7 +67,7 @@ public class MonthlyStats {
     return stats.size();
   }
 
-  public int calculateAchievementPercentage() {
+  public int calculateAchievementRate() {
     long achieved = stats.stream()
         .filter(BaseStats::isCompleted)
         .count();
@@ -97,7 +97,7 @@ public class MonthlyStats {
         .count();
   }
 
-  public int calculateReattainmentCount() {
+  public int calculateReattainmentRate() {
     List<BaseStats> postponed = stats.stream()
         .filter(BaseStats::isPostponed)
         .toList();
