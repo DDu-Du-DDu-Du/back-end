@@ -14,7 +14,6 @@ import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.repeatddudu.out.SaveRepeatDduduPort;
-import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
 import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
@@ -63,15 +62,15 @@ class CollectMonthlyAchievedDetailServiceTest {
   @Autowired
   SaveDduduPort saveDduduPort;
 
+  @Autowired
+  SaveRepeatDduduPort saveRepeatDduduPort;
+
+  @Autowired
+  RepeatDduduDomainService repeatDduduDomainService;
+
   User user;
   Goal goal;
   YearMonth thisMonth;
-  @Autowired
-  private SaveRepeatDduduPort saveRepeatDduduPort;
-  @Autowired
-  private RepeatDduduDomainService repeatDduduDomainService;
-  @Autowired
-  private MonthlyStatsPort monthlyStatsPort;
 
   @BeforeEach
   void setUp() {

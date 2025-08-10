@@ -94,7 +94,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         dduduEntity.id
     );
 
-    BooleanExpression condition = dduduEntity.userId.eq(userId);
+    BooleanBuilder condition = new BooleanBuilder(dduduEntity.userId.eq(userId));
 
     if (Objects.nonNull(goalId)) {
       condition.and(dduduEntity.goalId.eq(goalId));
@@ -242,7 +242,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         dduduEntity.status,
         DduduStatus.COMPLETE
     );
-    BooleanExpression condition = dduduEntity.goalId.eq(goalId)
+    BooleanBuilder condition = new BooleanBuilder(dduduEntity.goalId.eq(goalId))
         .and(dduduEntity.userId.eq(userId))
         .and(dduduEntity.scheduledOn.between(from, to));
 
