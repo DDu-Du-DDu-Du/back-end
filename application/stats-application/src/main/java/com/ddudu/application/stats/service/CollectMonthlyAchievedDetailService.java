@@ -72,7 +72,8 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
         toMonth,
         from,
         to,
-        user
+        user,
+        goal
     );
 
     return AchievedStatsDetailResponse.builder()
@@ -144,7 +145,8 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
       YearMonth toMonth,
       LocalDate from,
       LocalDate to,
-      User user
+      User user,
+      Goal goal
   ) {
     if (toMonth.isAfter(fromMonth)) {
       return GenericCalendarStats.from(false, Collections.emptyList());
@@ -154,6 +156,7 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
         from,
         to,
         user.getId(),
+        goal.getId(),
         Collections.singletonList(PrivacyType.PUBLIC)
     );
 

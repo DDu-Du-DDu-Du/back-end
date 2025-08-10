@@ -71,6 +71,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
       LocalDate startDate,
       LocalDate endDate,
       Long userId,
+      Long goalId,
       List<PrivacyType> privacyTypes
   ) {
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
@@ -93,6 +94,16 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         dduduEntity.id
     );
 
+    BooleanExpression condition = dduduEntity.userId.eq(userId);
+
+    if (Objects.nonNull(goalId)) {
+      condition.and(dduduEntity.goalId.eq(goalId));
+    }
+
+    condition.and(privacyTypesIn(privacyTypes))
+        .and(dduduEntity.scheduledOn.goe(startDate))
+        .and(dduduEntity.scheduledOn.lt(endDate));
+
     return jpaQueryFactory
         .select(
             dateTemplate
@@ -105,12 +116,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .from(dduduEntity)
         .join(goalEntity)
         .on(dduduEntity.goalId.eq(goalEntity.id))
-        .where(
-            dduduEntity.userId.eq(userId),
-            privacyTypesIn(privacyTypes),
-            dduduEntity.scheduledOn.goe(startDate),
-            dduduEntity.scheduledOn.lt(endDate)
-        )
+        .where(condition)
         .groupBy(dateTemplate)
         .fetch()
         .stream()

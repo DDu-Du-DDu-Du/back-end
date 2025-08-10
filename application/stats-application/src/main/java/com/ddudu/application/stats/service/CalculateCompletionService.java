@@ -86,6 +86,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
             startDate,
             endDate,
             user.getId(),
+            null,
             accessiblePrivacyTypes
         )
         .stream()

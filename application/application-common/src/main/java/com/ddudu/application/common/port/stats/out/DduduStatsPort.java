@@ -11,6 +11,7 @@ public interface DduduStatsPort {
       LocalDate startDate,
       LocalDate endDate,
       Long userId,
+      Long goalId,
       List<PrivacyType> privacyTypes
   );
 

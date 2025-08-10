@@ -139,9 +139,10 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
       LocalDate startDate,
       LocalDate endDate,
       Long userId,
+      Long goalId,
       List<PrivacyType> privacyTypes
   ) {
-    return dduduRepository.findDdudusCompletion(startDate, endDate, userId, privacyTypes);
+    return dduduRepository.findDdudusCompletion(startDate, endDate, userId, goalId, privacyTypes);
   }
 
   @Override
