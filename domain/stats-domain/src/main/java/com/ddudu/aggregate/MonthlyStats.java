@@ -1,13 +1,17 @@
 package com.ddudu.aggregate;
 
 import com.ddudu.common.exception.StatsErrorCode;
+import com.ddudu.common.util.AmPmType;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -67,10 +71,14 @@ public class MonthlyStats {
     return stats.size();
   }
 
-  public int calculateAchievementRate() {
-    long achieved = stats.stream()
+  public int countAchievements() {
+    return (int) stats.stream()
         .filter(BaseStats::isCompleted)
         .count();
+  }
+
+  public int calculateAchievementRate() {
+    int achieved = countAchievements();
 
     return Math.round((float) achieved / stats.size() * 100);
   }
@@ -107,6 +115,47 @@ public class MonthlyStats {
         .count();
 
     return Math.round((float) reattained / stats.size() * 100);
+  }
+
+  public MonthlyStats merge(MonthlyStats monthlyStats) {
+    List<BaseStats> mergedStats = Stream.concat(stats.stream(), monthlyStats.stats.stream())
+        .toList();
+
+    return MonthlyStats.builder()
+        .userId(userId)
+        .yearMonth(yearMonth)
+        .stats(mergedStats)
+        .build();
+  }
+
+  public AmPmType getMostActiveTime() {
+    if (stats.isEmpty()) {
+      return AmPmType.NONE;
+    }
+
+    long mostActive = stats.stream()
+        .map(BaseStats::getTimePart)
+        .reduce(0L, Long::sum);
+
+    if (mostActive == 0L) {
+      return AmPmType.BOTH;
+    }
+
+    return mostActive < 0L ? AmPmType.AM : AmPmType.PM;
+  }
+
+  public Map<DayOfWeek, Integer> collectDayOfWeek() {
+    Map<DayOfWeek, Integer> collected = new EnumMap<>(DayOfWeek.class);
+
+    for (DayOfWeek day : DayOfWeek.values()) {
+      collected.putIfAbsent(day, 0);
+    }
+
+    stats.stream()
+        .filter(BaseStats::isCompleted)
+        .forEach(stat -> collected.merge(stat.getDayOfWeek(), 1, Integer::sum));
+
+    return collected;
   }
 
   private void validateStatsUnderSameGoal() {
