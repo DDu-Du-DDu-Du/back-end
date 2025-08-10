@@ -1,4 +1,4 @@
-package com.ddudu.domain.planning.repeatddudu.util;
+package com.ddudu.common.util;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
