@@ -1,5 +1,6 @@
 package com.ddudu.api.stats.doc;
 
+import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
@@ -248,5 +249,83 @@ public interface StatsControllerDoc {
       example = "2024-08"
   )
   ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(Long loginId, YearMonth yearMonth);
+
+  @Operation(summary = "월별 뚜두 달성 중심 상세 통계")
+  @ApiResponses(
+      {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "BAD_REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "9006",
+                          description = "toMonth가 fromMonth보다 이전일 경우",
+                          value = StatsErrorExamples.INVALID_TO_MONTH
+                      ),
+                      @ExampleObject(
+                          name = "9007",
+                          description = "상세통계 조회 대상 목표 아이디가 null일 경우",
+                          value = StatsErrorExamples.NULL_GOAL_ID
+                      ),
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "9002",
+                      description = "로그인 사용자 아이디가 유효하지 않는 경우",
+                      value = StatsErrorExamples.STATS_LOGIN_USER_NOT_FOUND
+                  )
+              )
+          )
+      }
+  )
+  @Parameters(
+      {
+          @Parameter(
+              name = "goalId",
+              description = "상세통계 조회 대상 목표",
+              in = ParameterIn.PATH,
+              example = "3"
+          ),
+          @Parameter(
+              name = "fromMonth",
+              description = "상세통계 조회 대상 기간 시작월 (기본값: 이번달)",
+              in = ParameterIn.QUERY,
+              example = "2024-08"
+          ),
+          @Parameter(
+              name = "toMonth",
+              description = "상세통계 조회 대상 기간 마지막월 (기본값: 이번달)",
+              in = ParameterIn.QUERY,
+              example = "2024-08"
+          )
+      }
+  )
+  ResponseEntity<AchievedStatsDetailResponse> collectAchievedDetail(
+      Long loginId,
+      Long goalId,
+      YearMonth fromMonth,
+      YearMonth toMonth
+  );
 
 }

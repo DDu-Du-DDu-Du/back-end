@@ -37,4 +37,18 @@ public final class StatsErrorExamples {
       }
       """;
 
+  public static final String INVALID_TO_MONTH = """
+      {
+        "code": 9006,
+        "message": "끝나는 월은 시작 월보다 빠를 수 없습니다."
+      }
+      """;
+
+  public static final String NULL_GOAL_ID = """
+      {
+        "code": 9007,
+        "message": "상세통계 대상 목표 아이디는 필수값입니다."
+      }
+      """;
+
 }
