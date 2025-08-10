@@ -18,7 +18,7 @@ public final class BaseStatsFixture extends BaseFixture {
 
   public static BaseStats createAmOnlyStat(Long goalId, LocalDate scheduledOn) {
     LocalTime beginAt = getRandomAm();
-    LocalTime endAt = getFutureTimeFrom(beginAt);
+    LocalTime endAt = getPastTimeFrom(beginAt);
 
     return createWithGoalStatusScheduledAndTimes(
         goalId,

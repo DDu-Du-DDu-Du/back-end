@@ -94,31 +94,31 @@ class BaseStatsTest {
 
     @Test
     void 전부_AM이면_음수값을_반환한다() {
-      // given (09:00~11:00)
+      // given
       BaseStats am = BaseStatsFixture.createAmOnlyStat(goalId, today);
 
       // when
       long actual = am.getTimePart();
 
       // then
-      assertThat(actual).isLessThan(0L); // AM 우세
+      assertThat(actual).isLessThan(0L);
     }
 
     @Test
     void 전부_PM이면_양수값을_반환한다() {
-      // given (13:00~15:00)
+      // given
       BaseStats pm = BaseStatsFixture.createPmOnlyStat(goalId, today);
 
       // when
       long actual = pm.getTimePart();
 
       // then
-      assertThat(actual).isGreaterThan(0L); // PM 우세
+      assertThat(actual).isGreaterThan(0L);
     }
 
     @Test
     void 정오를_가로지르면_0을_반환한다() {
-      // given (11:00~13:00 → AM=PM 동률)
+      // given
       BaseStats balanced = BaseStatsFixture.createAcrossNoonBalancedStat(goalId, today);
 
       // when
