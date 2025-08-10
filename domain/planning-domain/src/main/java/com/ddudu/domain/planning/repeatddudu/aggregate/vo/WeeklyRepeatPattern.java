@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.common.exception.RepeatDduduErrorCode;
-import com.ddudu.domain.planning.repeatddudu.util.DayOfWeekUtil;
+import com.ddudu.common.util.DayOfWeekUtil;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;

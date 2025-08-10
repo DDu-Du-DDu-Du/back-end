@@ -2,6 +2,7 @@ package com.ddudu.fixture;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
@@ -93,6 +94,55 @@ public class BaseFixture {
     return faker.date()
         .between(past, future)
         .toLocalDateTime();
+  }
+
+  public static LocalTime getRandomTime() {
+    long randomNanoTime = faker.time()
+        .between(LocalTime.MIN, LocalTime.MAX);
+
+    return LocalTime.ofNanoOfDay(randomNanoTime);
+  }
+
+  public static LocalTime getFutureTime() {
+    long futureNano = faker.time()
+        .between(LocalTime.now(), LocalTime.MAX);
+
+    return LocalTime.ofNanoOfDay(futureNano);
+  }
+
+  public static LocalTime getPastTime() {
+    long pastNano = faker.time()
+        .between(LocalTime.MIN, LocalTime.now());
+
+    return LocalTime.ofNanoOfDay(pastNano);
+  }
+
+  public static LocalTime getRandomAm() {
+    long amNano = faker.time()
+        .between(LocalTime.MIN, LocalTime.NOON);
+
+    return LocalTime.ofNanoOfDay(amNano);
+  }
+
+  public static LocalTime getRandomPm() {
+    long pmNano = faker.time()
+        .between(LocalTime.NOON, LocalTime.MAX);
+
+    return LocalTime.ofNanoOfDay(pmNano);
+  }
+
+  public static LocalTime getFutureTimeFrom(LocalTime from) {
+    long futureNano = faker.time()
+        .between(from, LocalTime.MAX);
+
+    return LocalTime.ofNanoOfDay(futureNano);
+  }
+
+  public static LocalTime getPastTimeFrom(LocalTime from) {
+    long pastNano = faker.time()
+        .between(LocalTime.MIN, from);
+
+    return LocalTime.ofNanoOfDay(pastNano);
   }
 
 }

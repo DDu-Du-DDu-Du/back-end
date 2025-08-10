@@ -11,7 +11,7 @@ import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.repeatddudu.util.DayOfWeekUtil;
+import com.ddudu.common.util.DayOfWeekUtil;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;

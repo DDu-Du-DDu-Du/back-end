@@ -16,6 +16,69 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BaseStatsFixture extends BaseFixture {
 
+  public static BaseStats createAmOnlyStat(Long goalId, LocalDate scheduledOn) {
+    LocalTime beginAt = getRandomAm();
+    LocalTime endAt = getPastTimeFrom(beginAt);
+
+    return createWithGoalStatusScheduledAndTimes(
+        goalId,
+        DduduStatus.COMPLETE,
+        false,
+        scheduledOn,
+        beginAt,
+        endAt
+    );
+  }
+
+  public static BaseStats createPmOnlyStat(Long goalId, LocalDate scheduledOn) {
+    LocalTime beginAt = getRandomPm();
+    LocalTime endAt = getFutureTimeFrom(beginAt);
+
+    return createWithGoalStatusScheduledAndTimes(
+        goalId,
+        DduduStatus.COMPLETE,
+        false,
+        scheduledOn,
+        beginAt,
+        endAt
+    );
+  }
+
+  public static BaseStats createAcrossNoonBalancedStat(Long goalId, LocalDate scheduledOn) {
+    return createWithGoalStatusScheduledAndTimes(
+        goalId,
+        DduduStatus.COMPLETE,
+        false,
+        scheduledOn,
+        LocalTime.of(11, 0),
+        LocalTime.of(13, 0)
+    );
+  }
+
+  public static BaseStats createNoonZeroStat(Long goalId, LocalDate scheduledOn) {
+    return createWithGoalStatusScheduledAndTimes(
+        goalId,
+        DduduStatus.COMPLETE,
+        false,
+        scheduledOn,
+        LocalTime.NOON,
+        LocalTime.NOON
+    );
+  }
+
+  public static BaseStats createWithGoalStatusScheduledAndTimes(
+      Long goalId,
+      DduduStatus status,
+      boolean isPostponed,
+      LocalDate scheduledOn,
+      LocalTime beginAt,
+      LocalTime endAt
+  ) {
+    Long dduduId = getRandomId();
+
+    return createBaseStats(dduduId, goalId, status, isPostponed, scheduledOn, beginAt, endAt);
+  }
+
   public static List<BaseStats> createPostponedCompleteStats(Long goalId, int size) {
     List<BaseStats> stats = new ArrayList<>();
 
@@ -179,8 +242,10 @@ public final class BaseStatsFixture extends BaseFixture {
       LocalDate scheduledOn
   ) {
     Long dduduId = getRandomId();
+    LocalTime beginAt = getPastTime();
+    LocalTime endAt = getFutureTime();
 
-    return createBaseStats(dduduId, goalId, status, isPostponed, scheduledOn);
+    return createBaseStats(dduduId, goalId, status, isPostponed, scheduledOn, beginAt, endAt);
   }
 
   private static BaseStats createBaseStats(
@@ -188,7 +253,9 @@ public final class BaseStatsFixture extends BaseFixture {
       Long goalId,
       DduduStatus status,
       boolean isPostponed,
-      LocalDate scheduledOn
+      LocalDate scheduledOn,
+      LocalTime beginAt,
+      LocalTime endAt
   ) {
     return BaseStats.builder()
         .dduduId(dduduId)
@@ -197,6 +264,8 @@ public final class BaseStatsFixture extends BaseFixture {
         .status(status)
         .scheduledOn(scheduledOn)
         .isPostponed(isPostponed)
+        .beginAt(beginAt)
+        .endAt(endAt)
         .build();
   }
 
