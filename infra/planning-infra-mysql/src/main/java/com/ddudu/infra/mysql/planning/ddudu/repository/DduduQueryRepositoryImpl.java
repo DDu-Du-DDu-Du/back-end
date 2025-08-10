@@ -2,11 +2,13 @@ package com.ddudu.infra.mysql.planning.ddudu.repository;
 
 import static com.ddudu.infra.mysql.planning.ddudu.entity.QDduduEntity.dduduEntity;
 import static com.ddudu.infra.mysql.planning.goal.entity.QGoalEntity.goalEntity;
+import static com.ddudu.infra.mysql.planning.repeatddudu.entity.QRepeatDduduEntity.repeatDduduEntity;
 
 import com.ddudu.aggregate.BaseStats;
 import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.scroll.OrderType;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
@@ -24,6 +26,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -47,7 +50,9 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   @Override
   public List<DduduEntity> findDdudusByDate(
-      LocalDateTime startDate, LocalDateTime endDate, Long userId
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      Long userId
   ) {
     return jpaQueryFactory
         .selectFrom(dduduEntity)
@@ -63,14 +68,21 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   @Override
   public List<DduduCompletionResponse> findDdudusCompletion(
-      LocalDate startDate, LocalDate endDate, Long userId, List<PrivacyType> privacyTypes
+      LocalDate startDate,
+      LocalDate endDate,
+      Long userId,
+      List<PrivacyType> privacyTypes
   ) {
     DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
-        LocalDate.class, "{0}", dduduEntity.scheduledOn);
+        LocalDate.class,
+        "{0}",
+        dduduEntity.scheduledOn
+    );
 
     NumberTemplate<Long> totalTodosTemplate = Expressions.numberTemplate(
         Long.class,
-        "COUNT({0})", dduduEntity.id
+        "COUNT({0})",
+        dduduEntity.id
     );
 
     NumberTemplate<Long> uncompletedTodosTemplate = Expressions.numberTemplate(
@@ -209,6 +221,36 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .fetch();
   }
 
+  @Override
+  public List<RepeatDduduStatsDto> countByRepeatDduduId(
+      Long userId,
+      Long goalId,
+      LocalDate from,
+      LocalDate to
+  ) {
+    NumberExpression<Integer> totalCount = dduduEntity.count()
+        .intValue();
+    NumberTemplate<Integer> completedCount = Expressions.numberTemplate(
+        Integer.class,
+        "SUM(CASE WHEN {0} = {1} THEN 1 ELSE 0 END)",
+        dduduEntity.status,
+        DduduStatus.COMPLETE
+    );
+    BooleanExpression condition = dduduEntity.goalId.eq(goalId)
+        .and(dduduEntity.userId.eq(userId))
+        .and(dduduEntity.scheduledOn.between(from, to));
+
+    return jpaQueryFactory
+        .select(projectRepeatDduduStats(completedCount, totalCount))
+        .from(dduduEntity)
+        .join(repeatDduduEntity)
+        .on(repeatDduduEntity.id.eq(dduduEntity.repeatDduduId))
+        .where(condition)
+        .groupBy(dduduEntity.repeatDduduId)
+        .orderBy(completedCount.desc(), totalCount.desc())
+        .fetch();
+  }
+
   private Predicate getOpenness(boolean isMine, boolean isFollower) {
     EnumPath<PrivacyType> privacyType = goalEntity.privacyType;
 
@@ -291,7 +333,22 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         goalEntity.name,
         status,
         dduduEntity.isPostponed,
-        dduduEntity.scheduledOn
+        dduduEntity.scheduledOn,
+        dduduEntity.beginAt,
+        dduduEntity.endAt
+    );
+  }
+
+  private ConstructorExpression<RepeatDduduStatsDto> projectRepeatDduduStats(
+      NumberExpression<Integer> completedCount,
+      NumberExpression<Integer> totalCount
+  ) {
+    return Projections.constructor(
+        RepeatDduduStatsDto.class,
+        dduduEntity.repeatDduduId,
+        repeatDduduEntity.name,
+        completedCount,
+        totalCount
     );
   }
 

@@ -2,6 +2,7 @@ package com.ddudu.infra.mysql.planning.ddudu.repository;
 
 import com.ddudu.aggregate.BaseStats;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.infra.mysql.planning.ddudu.dto.DduduCursorDto;
@@ -40,5 +41,12 @@ public interface DduduQueryRepository {
   void deleteAllByRepeatDduduId(Long repeatDduduId);
 
   List<BaseStats> findStatsBaseOfUser(Long userId, Long goalId, LocalDate from, LocalDate to);
+
+  List<RepeatDduduStatsDto> countByRepeatDduduId(
+      Long userId,
+      Long goalId,
+      LocalDate from,
+      LocalDate to
+  );
 
 }

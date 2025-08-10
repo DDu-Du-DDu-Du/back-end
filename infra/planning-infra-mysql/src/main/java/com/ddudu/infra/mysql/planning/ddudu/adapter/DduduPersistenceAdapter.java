@@ -5,6 +5,7 @@ import com.ddudu.aggregate.MonthlyStats;
 import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.DduduSearchPort;
@@ -133,28 +134,6 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
     dduduRepository.deleteAllByRepeatDduduId(repeatDdudu.getId());
   }
 
-  private ScrollResponse<SimpleDduduSearchDto> getScrollResponse(
-      List<DduduCursorDto> ddudusWithCursor,
-      int size
-  ) {
-    List<SimpleDduduSearchDto> simpleDdudus = ddudusWithCursor.stream()
-        .limit(size)
-        .map(DduduCursorDto::ddudu)
-        .toList();
-    String nextCursor = getNextCursor(ddudusWithCursor, size);
-
-    return ScrollResponse.from(simpleDdudus, nextCursor);
-  }
-
-  private String getNextCursor(List<DduduCursorDto> ddudusWithCursor, int size) {
-    if (ddudusWithCursor.size() > size) {
-      return ddudusWithCursor.get(size - 1)
-          .cursor();
-    }
-
-    return null;
-  }
-
   @Override
   public List<DduduCompletionResponse> calculateDdudusCompletion(
       LocalDate startDate,
@@ -162,8 +141,7 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
       Long userId,
       List<PrivacyType> privacyTypes
   ) {
-    return dduduRepository.findDdudusCompletion(
-        startDate, endDate, userId, privacyTypes);
+    return dduduRepository.findDdudusCompletion(startDate, endDate, userId, privacyTypes);
   }
 
   @Override
@@ -189,6 +167,38 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
                     .build()
             )
         );
+  }
+
+  @Override
+  public List<RepeatDduduStatsDto> countRepeatDdudu(
+      Long userId,
+      Long goalId,
+      LocalDate from,
+      LocalDate to
+  ) {
+    return dduduRepository.countByRepeatDduduId(userId, goalId, from, to);
+  }
+
+  private ScrollResponse<SimpleDduduSearchDto> getScrollResponse(
+      List<DduduCursorDto> ddudusWithCursor,
+      int size
+  ) {
+    List<SimpleDduduSearchDto> simpleDdudus = ddudusWithCursor.stream()
+        .limit(size)
+        .map(DduduCursorDto::ddudu)
+        .toList();
+    String nextCursor = getNextCursor(ddudusWithCursor, size);
+
+    return ScrollResponse.from(simpleDdudus, nextCursor);
+  }
+
+  private String getNextCursor(List<DduduCursorDto> ddudusWithCursor, int size) {
+    if (ddudusWithCursor.size() > size) {
+      return ddudusWithCursor.get(size - 1)
+          .cursor();
+    }
+
+    return null;
   }
 
 }
