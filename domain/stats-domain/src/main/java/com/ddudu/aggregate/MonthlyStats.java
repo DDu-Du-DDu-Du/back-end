@@ -105,6 +105,22 @@ public class MonthlyStats {
         .count();
   }
 
+  public int calculatePostponementRate() {
+    int postponed = calculatePostponementCount();
+
+    return Math.round((float) postponed / stats.size() * 100);
+  }
+
+  public int calculateReattainmentCount() {
+    List<BaseStats> postponed = stats.stream()
+        .filter(BaseStats::isPostponed)
+        .toList();
+
+    return (int) postponed.stream()
+        .filter(BaseStats::isCompleted)
+        .count();
+  }
+
   public int calculateReattainmentRate() {
     List<BaseStats> postponed = stats.stream()
         .filter(BaseStats::isPostponed)
