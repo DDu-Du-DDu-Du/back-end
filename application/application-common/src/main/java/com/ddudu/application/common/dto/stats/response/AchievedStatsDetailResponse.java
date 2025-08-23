@@ -13,7 +13,7 @@ public record AchievedStatsDetailResponse(
     AchievedDetailOverviewDto overview,
     DayOfWeekStatsDto dayOfWeekStats,
     List<RepeatDduduStatsDto> repeatDduduStats,
-    GenericCalendarStats<DduduCompletionResponse> completions
+    GenericCalendarStats<DduduCompletionResponse> calendarStats
 ) {
 
 }

@@ -8,7 +8,7 @@ import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
-import com.ddudu.application.common.port.stats.in.CollectMonthlyAchievedDetailUseCase;
+import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsDetailUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsReportUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsSummaryUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
@@ -32,7 +32,7 @@ public class StatsController implements StatsControllerDoc {
   private final CollectMonthlyStatsReportUseCase collectMonthlyStatsReportUseCase;
   private final CalculateCompletionUseCase calculateCompletionUseCase;
   private final CollectMonthlyStatsSummaryUseCase collectMonthlyStatsSummaryUseCase;
-  private final CollectMonthlyAchievedDetailUseCase collectMonthlyAchievedDetailUseCase;
+  private final CollectMonthlyStatsDetailUseCase collectMonthlyStatsDetailUseCase;
 
   /**
    * 월별 뚜두 완료율 조회 API (달성 뚜두 수 / 생성 뚜두 수)
