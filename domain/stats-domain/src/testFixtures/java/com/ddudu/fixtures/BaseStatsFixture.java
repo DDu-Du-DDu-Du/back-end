@@ -89,6 +89,16 @@ public final class BaseStatsFixture extends BaseFixture {
     return stats;
   }
 
+  public static List<BaseStats> createPostponedUncompletedStats(Long goalId, int size) {
+    List<BaseStats> stats = new ArrayList<>();
+
+    for (int i = 0; i < size; i++) {
+      stats.add(createRandomWithGoalAndPostponedAndStatus(goalId, true, DduduStatus.UNCOMPLETED));
+    }
+
+    return stats;
+  }
+
   public static List<BaseStats> createConsecutiveCompletedStats(
       Long goalId,
       LocalDate from,

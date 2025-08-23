@@ -12,7 +12,8 @@ public interface DduduStatsPort {
       LocalDate endDate,
       Long userId,
       Long goalId,
-      List<PrivacyType> privacyTypes
+      List<PrivacyType> privacyTypes,
+      boolean isAchieved
   );
 
 }

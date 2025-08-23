@@ -23,7 +23,6 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
@@ -72,64 +71,33 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
       LocalDate endDate,
       Long userId,
       Long goalId,
-      List<PrivacyType> privacyTypes
+      List<PrivacyType> privacyTypes,
+      boolean isAchieved
   ) {
-    DateTemplate<LocalDate> dateTemplate = Expressions.dateTemplate(
-        LocalDate.class,
-        "{0}",
-        dduduEntity.scheduledOn
-    );
-
-    NumberTemplate<Long> totalTodosTemplate = Expressions.numberTemplate(
-        Long.class,
-        "COUNT({0})",
-        dduduEntity.id
-    );
-
-    NumberTemplate<Long> uncompletedTodosTemplate = Expressions.numberTemplate(
-        Long.class,
-        "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
-        dduduEntity.status,
-        DduduStatus.UNCOMPLETED,
-        dduduEntity.id
-    );
-
     BooleanBuilder condition = new BooleanBuilder(dduduEntity.userId.eq(userId));
 
     if (Objects.nonNull(goalId)) {
       condition.and(dduduEntity.goalId.eq(goalId));
     }
 
+    if (!isAchieved) {
+      condition.and(dduduEntity.isPostponed.isTrue());
+    }
+
     condition.and(privacyTypesIn(privacyTypes))
-        .and(dduduEntity.scheduledOn.goe(startDate))
-        .and(dduduEntity.scheduledOn.lt(endDate));
+        .and(dduduEntity.scheduledOn.between(startDate, endDate));
 
     return jpaQueryFactory
-        .select(
-            dateTemplate
-                .as("date"),
-            totalTodosTemplate
-                .as("totalTodos"),
-            uncompletedTodosTemplate
-                .as("uncompletedTodos")
-        )
+        .select(projectCompletion())
         .from(dduduEntity)
         .join(goalEntity)
         .on(dduduEntity.goalId.eq(goalEntity.id))
         .where(condition)
-        .groupBy(dateTemplate)
-        .fetch()
-        .stream()
-        .map(result -> DduduCompletionResponse.builder()
-            .date(Objects.requireNonNull(result.get(0, LocalDate.class)))
-            .totalCount(Objects.requireNonNull(result.get(1, Long.class))
-                .intValue())
-            .uncompletedCount(Objects.requireNonNull(result.get(2, Long.class))
-                .intValue())
-            .build())
-        .toList();
+        .groupBy(dduduEntity.scheduledOn)
+        .fetch();
   }
 
+  @Override
   public List<DduduCursorDto> findScrollDdudus(
       Long userId,
       ScrollRequest request,
@@ -322,6 +290,28 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
 
   private BooleanExpression scheduledOnEq(LocalDate date) {
     return dduduEntity.scheduledOn.eq(date);
+  }
+
+  private ConstructorExpression<DduduCompletionResponse> projectCompletion() {
+    NumberTemplate<Integer> totalTodosTemplate = Expressions.numberTemplate(
+        Integer.class,
+        "COUNT({0})",
+        dduduEntity.id
+    );
+    NumberTemplate<Integer> uncompletedTodosTemplate = Expressions.numberTemplate(
+        Integer.class,
+        "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
+        dduduEntity.status,
+        DduduStatus.UNCOMPLETED,
+        dduduEntity.id
+    );
+
+    return Projections.constructor(
+        DduduCompletionResponse.class,
+        dduduEntity.scheduledOn,
+        totalTodosTemplate,
+        uncompletedTodosTemplate
+    );
   }
 
   private ConstructorExpression<BaseStats> projectionStatsBase() {

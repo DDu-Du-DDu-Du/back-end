@@ -7,8 +7,9 @@ import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailRespon
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
+import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
 import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
-import com.ddudu.application.common.port.stats.in.CollectMonthlyAchievedDetailUseCase;
+import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsDetailUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsReportUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsSummaryUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
@@ -32,7 +33,7 @@ public class StatsController implements StatsControllerDoc {
   private final CollectMonthlyStatsReportUseCase collectMonthlyStatsReportUseCase;
   private final CalculateCompletionUseCase calculateCompletionUseCase;
   private final CollectMonthlyStatsSummaryUseCase collectMonthlyStatsSummaryUseCase;
-  private final CollectMonthlyAchievedDetailUseCase collectMonthlyAchievedDetailUseCase;
+  private final CollectMonthlyStatsDetailUseCase collectMonthlyStatsDetailUseCase;
 
   /**
    * 월별 뚜두 완료율 조회 API (달성 뚜두 수 / 생성 뚜두 수)
@@ -127,10 +128,35 @@ public class StatsController implements StatsControllerDoc {
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth fromMonth,
+      @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth toMonth
   ) {
-    AchievedStatsDetailResponse response = collectMonthlyAchievedDetailUseCase.collectAchievedDetail(
+    AchievedStatsDetailResponse response = collectMonthlyStatsDetailUseCase.collectAchievedDetail(
+        loginId,
+        goalId,
+        fromMonth,
+        toMonth
+    );
+
+    return ResponseEntity.ok(response);
+  }
+
+  @Override
+  @GetMapping("/detail/{goalId}/postponed")
+  public ResponseEntity<PostponedStatsDetailResponse> collectPostponedDetail(
+      @Login
+      Long loginId,
+      @PathVariable("goalId")
+      Long goalId,
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM")
+      YearMonth fromMonth,
+      @RequestParam(required = false)
+      @DateTimeFormat(pattern = "yyyy-MM")
+      YearMonth toMonth
+  ) {
+    PostponedStatsDetailResponse response = collectMonthlyStatsDetailUseCase.collectPostponedDetail(
         loginId,
         goalId,
         fromMonth,

@@ -1,7 +1,5 @@
 package com.ddudu.application.stats.service;
 
-import static java.util.Objects.isNull;
-
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
 import com.ddudu.application.common.port.stats.out.DduduStatsPort;
@@ -27,13 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CalculateCompletionService implements CalculateCompletionUseCase {
 
+  private static final boolean IS_ACHIEVED = true;
+
   private final UserLoaderPort userLoaderPort;
   private final DduduStatsPort dduduStatsPort;
 
   @Override
   public List<DduduCompletionResponse> calculateWeekly(Long loginId, Long userId, LocalDate date) {
     LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
-    LocalDate afterOneWeek = firstDayOfWeek.plusDays(7);
+    LocalDate afterOneWeek = firstDayOfWeek.plusDays(6);
 
     return calculate(loginId, userId, firstDayOfWeek, afterOneWeek);
   }
@@ -44,11 +44,11 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
       Long userId,
       YearMonth yearMonth
   ) {
-    LocalDate firstDayOfMonth = isNull(yearMonth) ? YearMonth.now()
-        .atDay(1) : yearMonth.atDay(1);
-    LocalDate afterOneMonth = firstDayOfMonth.plusMonths(1);
+    YearMonth month = Objects.requireNonNullElse(yearMonth, YearMonth.now());
+    LocalDate firstDayOfMonth = month.atDay(1);
+    LocalDate endDate = month.atEndOfMonth();
 
-    return calculate(loginId, userId, firstDayOfMonth, afterOneMonth);
+    return calculate(loginId, userId, firstDayOfMonth, endDate);
   }
 
   private List<DduduCompletionResponse> calculate(
@@ -87,14 +87,15 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
             endDate,
             user.getId(),
             null,
-            accessiblePrivacyTypes
+            accessiblePrivacyTypes,
+            IS_ACHIEVED
         )
         .stream()
         .collect(Collectors.toMap(DduduCompletionResponse::date, response -> response));
 
     List<DduduCompletionResponse> completionList = new ArrayList<>();
 
-    for (LocalDate currentDate = startDate; currentDate.isBefore(endDate);
+    for (LocalDate currentDate = startDate; !currentDate.isAfter(endDate);
         currentDate = currentDate.plusDays(1)) {
       DduduCompletionResponse response = completionByDate.getOrDefault(
           currentDate,

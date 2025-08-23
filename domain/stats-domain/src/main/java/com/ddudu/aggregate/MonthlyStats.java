@@ -105,16 +105,27 @@ public class MonthlyStats {
         .count();
   }
 
-  public int calculateReattainmentRate() {
+  public int calculatePostponementRate() {
+    int postponed = calculatePostponementCount();
+
+    return Math.round((float) postponed / stats.size() * 100);
+  }
+
+  public int calculateReattainmentCount() {
     List<BaseStats> postponed = stats.stream()
         .filter(BaseStats::isPostponed)
         .toList();
 
-    long reattained = postponed.stream()
+    return (int) postponed.stream()
         .filter(BaseStats::isCompleted)
         .count();
+  }
 
-    return Math.round((float) reattained / stats.size() * 100);
+  public int calculateReattainmentRate() {
+    int postponed = calculatePostponementCount();
+    int reattained = calculateReattainmentCount();
+
+    return Math.round((float) reattained / postponed * 100);
   }
 
   public MonthlyStats merge(MonthlyStats monthlyStats) {
@@ -144,7 +155,7 @@ public class MonthlyStats {
     return mostActive < 0L ? AmPmType.AM : AmPmType.PM;
   }
 
-  public Map<DayOfWeek, Integer> collectDayOfWeek() {
+  public Map<DayOfWeek, Integer> collectDayOfWeek(boolean isAchieved) {
     Map<DayOfWeek, Integer> collected = new EnumMap<>(DayOfWeek.class);
 
     for (DayOfWeek day : DayOfWeek.values()) {
@@ -152,7 +163,7 @@ public class MonthlyStats {
     }
 
     stats.stream()
-        .filter(BaseStats::isCompleted)
+        .filter(isAchieved ? BaseStats::isCompleted : BaseStats::isPostponed)
         .forEach(stat -> collected.merge(stat.getDayOfWeek(), 1, Integer::sum));
 
     return collected;

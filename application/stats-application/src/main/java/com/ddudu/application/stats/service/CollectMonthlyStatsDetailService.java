@@ -4,11 +4,13 @@ import com.ddudu.aggregate.MonthlyStats;
 import com.ddudu.application.common.dto.stats.AchievedDetailOverviewDto;
 import com.ddudu.application.common.dto.stats.DayOfWeekStatsDto;
 import com.ddudu.application.common.dto.stats.GenericCalendarStats;
+import com.ddudu.application.common.dto.stats.PostponedDetailOverviewDto;
 import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
-import com.ddudu.application.common.port.stats.in.CollectMonthlyAchievedDetailUseCase;
+import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsDetailUseCase;
 import com.ddudu.application.common.port.stats.out.DduduStatsPort;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
@@ -30,7 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 @UseCase
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchievedDetailUseCase {
+public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDetailUseCase {
+
+  private static final boolean IS_ACHIEVED = true;
+  private static final boolean IS_POSTPONED = false;
 
   private final UserLoaderPort userLoaderPort;
   private final GoalLoaderPort goalLoaderPort;
@@ -59,8 +64,8 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
     LocalDate to = toMonth.atEndOfMonth();
     Goal goal = validateAndGetGoal(goalId);
     MonthlyStats reduced = collectStatsAtOnce(user.getId(), goal, fromMonth, to);
-    AchievedDetailOverviewDto overview = createOverview(reduced);
-    DayOfWeekStatsDto dayOfWeekStats = createDayOfWeekStats(reduced);
+    AchievedDetailOverviewDto overview = createAchievedOverview(reduced);
+    DayOfWeekStatsDto dayOfWeekStats = createDayOfWeekStats(reduced, IS_ACHIEVED);
     List<RepeatDduduStatsDto> repeatDduduCounts = monthlyStatsPort.countRepeatDdudu(
         user.getId(),
         goal.getId(),
@@ -73,7 +78,8 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
         from,
         to,
         user,
-        goal
+        goal,
+        IS_ACHIEVED
     );
 
     return AchievedStatsDetailResponse.builder()
@@ -81,7 +87,49 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
         .dayOfWeekStats(dayOfWeekStats)
         .repeatDduduStats(repeatDduduCounts)
         .goalId(goal.getId())
-        .completions(completions)
+        .calendarStats(completions)
+        .build();
+  }
+
+  @Override
+  public PostponedStatsDetailResponse collectPostponedDetail(
+      Long loginId,
+      Long goalId,
+      YearMonth fromMonth,
+      YearMonth toMonth
+  ) {
+    User user = userLoaderPort.getUserOrElseThrow(
+        loginId,
+        StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
+    );
+    fromMonth = Objects.requireNonNullElse(fromMonth, YearMonth.now());
+    toMonth = Objects.requireNonNullElse(toMonth, YearMonth.now());
+
+    if (toMonth.isBefore(fromMonth)) {
+      throw new IllegalArgumentException(StatsErrorCode.INVALID_TO_MONTH.getCodeName());
+    }
+
+    LocalDate from = fromMonth.atDay(1);
+    LocalDate to = toMonth.atEndOfMonth();
+    Goal goal = validateAndGetGoal(goalId);
+    MonthlyStats reduced = collectStatsAtOnce(user.getId(), goal, fromMonth, to);
+    PostponedDetailOverviewDto overview = createPostponedOverview(reduced);
+    DayOfWeekStatsDto dayOfWeekStats = createDayOfWeekStats(reduced, IS_POSTPONED);
+    GenericCalendarStats<DduduCompletionResponse> calendarStats = getCalendarCompletions(
+        fromMonth,
+        toMonth,
+        from,
+        to,
+        user,
+        goal,
+        IS_POSTPONED
+    );
+
+    return PostponedStatsDetailResponse.builder()
+        .overview(overview)
+        .goalId(goal.getId())
+        .calendarStats(calendarStats)
+        .dayOfWeekStats(dayOfWeekStats)
         .build();
   }
 
@@ -108,7 +156,7 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
         .reduce(MonthlyStats.empty(userId, fromMonth), MonthlyStats::merge);
   }
 
-  private AchievedDetailOverviewDto createOverview(MonthlyStats monthlyStats) {
+  private AchievedDetailOverviewDto createAchievedOverview(MonthlyStats monthlyStats) {
     return AchievedDetailOverviewDto.builder()
         .achievementRate(monthlyStats.calculateAchievementRate())
         .achievementCount(monthlyStats.countAchievements())
@@ -117,8 +165,18 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
         .build();
   }
 
-  private DayOfWeekStatsDto createDayOfWeekStats(MonthlyStats monthlyStats) {
-    Map<DayOfWeek, Integer> dayOfWeekStats = monthlyStats.collectDayOfWeek();
+  private PostponedDetailOverviewDto createPostponedOverview(MonthlyStats monthlyStats) {
+    return PostponedDetailOverviewDto.builder()
+        .postponedCount(monthlyStats.calculatePostponementCount())
+        .postponementRate(monthlyStats.calculatePostponementRate())
+        .reattainedCount(monthlyStats.calculateReattainmentCount())
+        .totalCount(monthlyStats.size())
+        .reattainmentRate(monthlyStats.calculateReattainmentRate())
+        .build();
+  }
+
+  private DayOfWeekStatsDto createDayOfWeekStats(MonthlyStats monthlyStats, boolean isAchieved) {
+    Map<DayOfWeek, Integer> dayOfWeekStats = monthlyStats.collectDayOfWeek(isAchieved);
     List<DayOfWeek> mostActiveDays = getMostActiveDays(dayOfWeekStats);
 
     return DayOfWeekStatsDto.builder()
@@ -146,7 +204,8 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
       LocalDate from,
       LocalDate to,
       User user,
-      Goal goal
+      Goal goal,
+      boolean isAchieved
   ) {
     if (toMonth.isAfter(fromMonth)) {
       return GenericCalendarStats.from(false, Collections.emptyList());
@@ -157,7 +216,8 @@ public class CollectMonthlyAchievedDetailService implements CollectMonthlyAchiev
         to,
         user.getId(),
         goal.getId(),
-        Collections.singletonList(PrivacyType.PUBLIC)
+        Collections.singletonList(PrivacyType.PUBLIC),
+        isAchieved
     );
 
     return GenericCalendarStats.from(true, completions);
