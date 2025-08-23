@@ -122,15 +122,10 @@ public class MonthlyStats {
   }
 
   public int calculateReattainmentRate() {
-    List<BaseStats> postponed = stats.stream()
-        .filter(BaseStats::isPostponed)
-        .toList();
+    int postponed = calculatePostponementCount();
+    int reattained = calculateReattainmentCount();
 
-    long reattained = postponed.stream()
-        .filter(BaseStats::isCompleted)
-        .count();
-
-    return Math.round((float) reattained / stats.size() * 100);
+    return Math.round((float) reattained / postponed * 100);
   }
 
   public MonthlyStats merge(MonthlyStats monthlyStats) {
