@@ -288,7 +288,7 @@ class MonthlyStatsTest {
       uncompletedSize = totalSize - completedSize;
 
       stats.addAll(BaseStatsFixture.createPostponedCompleteStats(goalId, completedSize));
-      stats.addAll(BaseStatsFixture.createUncompletedStats(goalId, uncompletedSize));
+      stats.addAll(BaseStatsFixture.createPostponedUncompletedStats(goalId, uncompletedSize));
 
       monthlyStats = MonthlyStatsFixture.createMonthlyStats(userId, YearMonth.now(), stats);
     }
@@ -469,6 +469,7 @@ class MonthlyStatsTest {
       LocalDate monday = LocalDate.of(2025, 8, 4);
       LocalDate tuesday = LocalDate.of(2025, 8, 5);
       LocalDate wednesday = LocalDate.of(2025, 8, 6);
+      boolean isAchieved = true;
 
       List<BaseStats> list = new ArrayList<>();
       list.add(BaseStatsFixture.createAmOnlyStat(goalId, monday));   // COMPLETE
@@ -487,7 +488,7 @@ class MonthlyStatsTest {
       MonthlyStats ms = MonthlyStatsFixture.createMonthlyStats(userId, YearMonth.of(2025, 8), list);
 
       // when
-      Map<DayOfWeek, Integer> actual = ms.collectDayOfWeek();
+      Map<DayOfWeek, Integer> actual = ms.collectDayOfWeek(isAchieved);
 
       // then
       assertThat(actual).hasSize(DayOfWeek.values().length);
@@ -506,9 +507,10 @@ class MonthlyStatsTest {
     void 대상_스탯이_비었으면_모든_요일이_0으로_채워진_맵을_반환한다() {
       // given
       MonthlyStats empty = MonthlyStatsFixture.createEmptyStats(userId, YearMonth.now());
+      boolean isAchieved = true;
 
       // when
-      Map<DayOfWeek, Integer> actual = empty.collectDayOfWeek();
+      Map<DayOfWeek, Integer> actual = empty.collectDayOfWeek(isAchieved);
 
       // then
       assertThat(actual).hasSize(DayOfWeek.values().length);
