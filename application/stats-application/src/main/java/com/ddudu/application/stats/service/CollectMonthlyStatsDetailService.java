@@ -4,9 +4,11 @@ import com.ddudu.aggregate.MonthlyStats;
 import com.ddudu.application.common.dto.stats.AchievedDetailOverviewDto;
 import com.ddudu.application.common.dto.stats.DayOfWeekStatsDto;
 import com.ddudu.application.common.dto.stats.GenericCalendarStats;
+import com.ddudu.application.common.dto.stats.PostponedDetailOverviewDto;
 import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsDetailUseCase;
 import com.ddudu.application.common.port.stats.out.DduduStatsPort;
@@ -89,6 +91,48 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
         .build();
   }
 
+  @Override
+  public PostponedStatsDetailResponse collectPostponedDetail(
+      Long loginId,
+      Long goalId,
+      YearMonth fromMonth,
+      YearMonth toMonth
+  ) {
+    User user = userLoaderPort.getUserOrElseThrow(
+        loginId,
+        StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
+    );
+    fromMonth = Objects.requireNonNullElse(fromMonth, YearMonth.now());
+    toMonth = Objects.requireNonNullElse(toMonth, YearMonth.now());
+
+    if (toMonth.isBefore(fromMonth)) {
+      throw new IllegalArgumentException(StatsErrorCode.INVALID_TO_MONTH.getCodeName());
+    }
+
+    LocalDate from = fromMonth.atDay(1);
+    LocalDate to = toMonth.atEndOfMonth();
+    Goal goal = validateAndGetGoal(goalId);
+    MonthlyStats reduced = collectStatsAtOnce(user.getId(), goal, fromMonth, to);
+    PostponedDetailOverviewDto overview = createPostponedOverview(reduced);
+    DayOfWeekStatsDto dayOfWeekStats = createDayOfWeekStats(reduced, IS_POSTPONED);
+    GenericCalendarStats<DduduCompletionResponse> calendarStats = getCalendarCompletions(
+        fromMonth,
+        toMonth,
+        from,
+        to,
+        user,
+        goal,
+        IS_POSTPONED
+    );
+
+    return PostponedStatsDetailResponse.builder()
+        .overview(overview)
+        .goalId(goal.getId())
+        .calendarStats(calendarStats)
+        .dayOfWeekStats(dayOfWeekStats)
+        .build();
+  }
+
   private Goal validateAndGetGoal(Long goalId) {
     if (Objects.isNull(goalId)) {
       throw new IllegalArgumentException(StatsErrorCode.NULL_GOAL_ID.getCodeName());
@@ -121,8 +165,16 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
         .build();
   }
 
-  private DayOfWeekStatsDto createDayOfWeekStats(MonthlyStats monthlyStats) {
-    Map<DayOfWeek, Integer> dayOfWeekStats = monthlyStats.collectDayOfWeek();
+  private PostponedDetailOverviewDto createPostponedOverview(MonthlyStats monthlyStats) {
+    return PostponedDetailOverviewDto.builder()
+        .postponedCount(monthlyStats.calculatePostponementCount())
+        .postponementRate(monthlyStats.calculatePostponementRate())
+        .reattainedCount(monthlyStats.calculateReattainmentCount())
+        .totalCount(monthlyStats.size())
+        .reattainmentRate(monthlyStats.calculateReattainmentRate())
+        .build();
+  }
+
   private DayOfWeekStatsDto createDayOfWeekStats(MonthlyStats monthlyStats, boolean isAchieved) {
     Map<DayOfWeek, Integer> dayOfWeekStats = monthlyStats.collectDayOfWeek(isAchieved);
     List<DayOfWeek> mostActiveDays = getMostActiveDays(dayOfWeekStats);
