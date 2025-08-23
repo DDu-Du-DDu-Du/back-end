@@ -155,7 +155,7 @@ public class MonthlyStats {
     return mostActive < 0L ? AmPmType.AM : AmPmType.PM;
   }
 
-  public Map<DayOfWeek, Integer> collectDayOfWeek() {
+  public Map<DayOfWeek, Integer> collectDayOfWeek(boolean isAchieved) {
     Map<DayOfWeek, Integer> collected = new EnumMap<>(DayOfWeek.class);
 
     for (DayOfWeek day : DayOfWeek.values()) {
@@ -163,7 +163,7 @@ public class MonthlyStats {
     }
 
     stats.stream()
-        .filter(BaseStats::isCompleted)
+        .filter(isAchieved ? BaseStats::isCompleted : BaseStats::isPostponed)
         .forEach(stat -> collected.merge(stat.getDayOfWeek(), 1, Integer::sum));
 
     return collected;
