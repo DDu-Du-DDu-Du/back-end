@@ -87,7 +87,8 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
             endDate,
             user.getId(),
             null,
-            accessiblePrivacyTypes
+            accessiblePrivacyTypes,
+            IS_ACHIEVED
         )
         .stream()
         .collect(Collectors.toMap(DduduCompletionResponse::date, response -> response));

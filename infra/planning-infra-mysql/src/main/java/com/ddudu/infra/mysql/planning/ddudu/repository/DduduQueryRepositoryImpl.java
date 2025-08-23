@@ -71,12 +71,17 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
       LocalDate endDate,
       Long userId,
       Long goalId,
-      List<PrivacyType> privacyTypes
+      List<PrivacyType> privacyTypes,
+      boolean isAchieved
   ) {
     BooleanBuilder condition = new BooleanBuilder(dduduEntity.userId.eq(userId));
 
     if (Objects.nonNull(goalId)) {
       condition.and(dduduEntity.goalId.eq(goalId));
+    }
+
+    if (!isAchieved) {
+      condition.and(dduduEntity.isPostponed.isTrue());
     }
 
     condition.and(privacyTypesIn(privacyTypes))
@@ -293,7 +298,6 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         "COUNT({0})",
         dduduEntity.id
     );
-
     NumberTemplate<Integer> uncompletedTodosTemplate = Expressions.numberTemplate(
         Integer.class,
         "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",

@@ -20,7 +20,8 @@ public interface DduduQueryRepository {
       LocalDate endDate,
       Long userId,
       Long goalId,
-      List<PrivacyType> privacyTypes
+      List<PrivacyType> privacyTypes,
+      boolean isAchieved
   );
 
   void deleteAllByGoalId(Long goalId);
