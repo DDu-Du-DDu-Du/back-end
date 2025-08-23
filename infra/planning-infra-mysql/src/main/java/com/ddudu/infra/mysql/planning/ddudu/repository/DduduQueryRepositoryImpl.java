@@ -80,8 +80,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     }
 
     condition.and(privacyTypesIn(privacyTypes))
-        .and(dduduEntity.scheduledOn.goe(startDate))
-        .and(dduduEntity.scheduledOn.loe(endDate));
+        .and(dduduEntity.scheduledOn.between(startDate, endDate));
 
     return jpaQueryFactory
         .select(projectCompletion())
