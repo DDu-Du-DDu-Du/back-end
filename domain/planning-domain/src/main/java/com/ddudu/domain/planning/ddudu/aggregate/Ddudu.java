@@ -31,6 +31,7 @@ public class Ddudu {
   private final LocalDate scheduledOn;
   private final LocalTime beginAt;
   private final LocalTime endAt;
+  private final LocalTime remindAt;
 
   @Builder
   private Ddudu(
@@ -44,7 +45,8 @@ public class Ddudu {
       String statusValue,
       LocalDate scheduledOn,
       LocalTime beginAt,
-      LocalTime endAt
+      LocalTime endAt,
+      LocalTime remindAt
   ) {
     validate(goalId, userId, name, beginAt, endAt);
 
@@ -58,6 +60,7 @@ public class Ddudu {
     this.scheduledOn = Objects.requireNonNullElse(scheduledOn, LocalDate.now());
     this.beginAt = beginAt;
     this.endAt = endAt;
+    this.remindAt = remindAt;
   }
 
   public void validateDduduCreator(Long userId) {
