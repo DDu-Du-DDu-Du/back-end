@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -87,9 +88,9 @@ public class DduduEntity extends BaseEntity {
 
   @Column(
       name = "remind_at",
-      columnDefinition = "TIME"
+      columnDefinition = "TIMESTAMP"
   )
-  private LocalTime remindAt;
+  private LocalDateTime remindAt;
 
   public static DduduEntity from(Ddudu ddudu) {
     return DduduEntity.builder()

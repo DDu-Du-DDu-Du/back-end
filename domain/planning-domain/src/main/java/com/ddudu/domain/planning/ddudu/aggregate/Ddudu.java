@@ -7,6 +7,7 @@ import static java.util.Objects.nonNull;
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 import lombok.Builder;
@@ -31,7 +32,7 @@ public class Ddudu {
   private final LocalDate scheduledOn;
   private final LocalTime beginAt;
   private final LocalTime endAt;
-  private final LocalTime remindAt;
+  private final LocalDateTime remindAt;
 
   @Builder
   private Ddudu(
@@ -46,7 +47,7 @@ public class Ddudu {
       LocalDate scheduledOn,
       LocalTime beginAt,
       LocalTime endAt,
-      LocalTime remindAt
+      LocalDateTime remindAt
   ) {
     validate(goalId, userId, name, beginAt, endAt);
 
@@ -149,7 +150,8 @@ public class Ddudu {
         .scheduledOn(this.scheduledOn)
         .isPostponed(this.isPostponed)
         .beginAt(this.beginAt)
-        .endAt(this.endAt);
+        .endAt(this.endAt)
+        .remindAt(this.remindAt);
   }
 
   private void validate(Long goalId, Long userId, String name, LocalTime beginAt, LocalTime endAt) {

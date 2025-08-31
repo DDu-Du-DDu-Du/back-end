@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS notifications;
 
 -- 뚜두에 미리알림 정보 추가
 ALTER TABLE ddudus
-    ADD remind_at TIME NULL;
+    ADD remind_at TIMESTAMP NULL;
 
 -- DAILY BRIEFING LOG
 CREATE TABLE IF NOT EXISTS daily_briefing_logs (
