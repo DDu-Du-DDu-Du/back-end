@@ -38,6 +38,8 @@ public class SetReminderService implements SetReminderUseCase {
 
     dduduUpdatePort.update(dduduWithReminder);
 
+    // TODO: notification event 구현 후 notification event에 존재 여부에 따라 Upsert 추가
+
     if (ddudu.isScheduledToday()) {
       // TODO: TaskScheduler 구현 후 Scheduler에 추가하기
     }
