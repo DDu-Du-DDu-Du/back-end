@@ -97,7 +97,7 @@ class RetrieveDduduServiceTest {
 
     // then
     AssertionsForClassTypes.assertThatThrownBy(callable)
-        .isInstanceOf(SecurityException.class)
+        .isInstanceOf(UnsupportedOperationException.class)
         .hasMessageContaining(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 

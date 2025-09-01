@@ -110,7 +110,7 @@ class ChangeNameServiceTest {
 
     // then
     Assertions.assertThatThrownBy(changeName)
-        .isInstanceOf(SecurityException.class)
+        .isInstanceOf(UnsupportedOperationException.class)
         .hasMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
