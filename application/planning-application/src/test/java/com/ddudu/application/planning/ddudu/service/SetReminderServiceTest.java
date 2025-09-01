@@ -62,7 +62,8 @@ class SetReminderServiceTest {
         beginAt,
         null
     );
-    ddudu = saveDduduPort.save(temp.moveDate(LocalDate.now().plusDays(1)));
+    ddudu = saveDduduPort.save(temp.moveDate(LocalDate.now()
+        .plusDays(1)));
   }
 
   @Test
@@ -135,7 +136,7 @@ class SetReminderServiceTest {
     );
 
     // then
-    Assertions.assertThatExceptionOfType(UnsupportedOperationException.class)
+    Assertions.assertThatExceptionOfType(SecurityException.class)
         .isThrownBy(setReminder)
         .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
   }
