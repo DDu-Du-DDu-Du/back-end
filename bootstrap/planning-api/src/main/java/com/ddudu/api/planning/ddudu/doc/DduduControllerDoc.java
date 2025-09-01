@@ -134,10 +134,26 @@ public interface DduduControllerDoc {
               )
           ),
           @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2007",
+                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404",
               description = "NOT_FOUND",
               content = @Content(
                   examples = {
+                      @ExampleObject(
+                          name = "2004",
+                          description = "존재하지 않는 뚜두인 경우",
+                          value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                      ),
                       @ExampleObject(
                           name = "2008",
                           description = "로그인 사용자 아이디가 유효하지 않는 경우",
@@ -604,8 +620,8 @@ public interface DduduControllerDoc {
               content = @Content(
                   examples = {
                       @ExampleObject(
-                        name = "2008",
-                        value = DduduErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                          name = "2008",
+                          value = DduduErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2004",

@@ -143,11 +143,12 @@ public class DduduController implements DduduControllerDoc {
   /**
    * 뚜두 상세 조회 API
    */
+  @Override
   @GetMapping("/{id}")
   public ResponseEntity<DduduDetailResponse> getById(
       @Login
       Long loginId,
-      @PathVariable
+      @PathVariable("id")
       Long id
   ) {
     DduduDetailResponse response = retrieveDduduUseCase.findById(loginId, id);
