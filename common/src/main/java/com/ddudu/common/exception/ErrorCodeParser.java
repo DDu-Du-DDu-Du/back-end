@@ -1,11 +1,16 @@
 package com.ddudu.common.exception;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ErrorCodeParser {
 
   public ErrorCode parse(String message) {
+    if (StringUtils.isBlank(message)) {
+      return DefaultErrorCode.defaultMessage();
+    }
+
     String[] codeName = message.split(" ");
     String code = codeName[0];
     String name = codeName[1];
