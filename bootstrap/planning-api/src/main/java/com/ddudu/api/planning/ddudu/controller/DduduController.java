@@ -18,6 +18,7 @@ import com.ddudu.application.common.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.common.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.common.port.ddudu.in.CancelReminderUseCase;
 import com.ddudu.application.common.port.ddudu.in.ChangeNameUseCase;
 import com.ddudu.application.common.port.ddudu.in.CreateDduduUseCase;
 import com.ddudu.application.common.port.ddudu.in.DduduSearchUseCase;
@@ -67,6 +68,7 @@ public class DduduController implements DduduControllerDoc {
   private final ChangeNameUseCase changeNameUseCase;
   private final DeleteDduduUseCase deleteDduduUseCase;
   private final SetReminderUseCase setReminderUseCase;
+  private final CancelReminderUseCase cancelReminderUseCase;
 
   /**
    * 뚜두 생성 API
@@ -167,6 +169,20 @@ public class DduduController implements DduduControllerDoc {
       SetReminderRequest request
   ) {
     setReminderUseCase.setReminder(loginId, id, request);
+
+    return ResponseEntity.noContent()
+        .build();
+  }
+
+  @Override
+  @DeleteMapping("/{id}/reminder")
+  public ResponseEntity<Void> cancelReminder(
+      @Login
+      Long loginId,
+      @PathVariable("id")
+      Long id
+  ) {
+    cancelReminderUseCase.cancel(loginId, id);
 
     return ResponseEntity.noContent()
         .build();
