@@ -14,6 +14,7 @@ import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.MissingResourceException;
@@ -55,9 +56,13 @@ class SetReminderServiceTest {
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    LocalTime beginAt = LocalTime.now()
-        .plusHours(1);
-    ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoalAndTime(goal, beginAt, null));
+    LocalTime beginAt = LocalTime.MAX;
+    Ddudu temp = DduduFixture.createRandomDduduWithGoalAndTime(
+        goal,
+        beginAt,
+        null
+    );
+    ddudu = saveDduduPort.save(temp.moveDate(LocalDate.now().plusDays(1)));
   }
 
   @Test
