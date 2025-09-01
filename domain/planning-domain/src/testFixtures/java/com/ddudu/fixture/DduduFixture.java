@@ -171,7 +171,11 @@ public class DduduFixture extends BaseFixture {
         .build();
   }
 
-  public static Ddudu createRandomDduduWithSchedule(Long userId, Long goalId, LocalDate scheduledOn) {
+  public static Ddudu createRandomDduduWithSchedule(
+      Long userId,
+      Long goalId,
+      LocalDate scheduledOn
+  ) {
     return getDduduBuilder()
         .goalId(goalId)
         .userId(userId)
