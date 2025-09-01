@@ -12,6 +12,7 @@ import com.ddudu.application.common.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.common.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.common.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.common.dto.ddudu.request.RepeatAnotherDayRequest;
+import com.ddudu.application.common.dto.ddudu.request.SetReminderRequest;
 import com.ddudu.application.common.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.common.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
@@ -27,6 +28,7 @@ import com.ddudu.application.common.port.ddudu.in.MoveDateUseCase;
 import com.ddudu.application.common.port.ddudu.in.PeriodSetupUseCase;
 import com.ddudu.application.common.port.ddudu.in.RepeatUseCase;
 import com.ddudu.application.common.port.ddudu.in.RetrieveDduduUseCase;
+import com.ddudu.application.common.port.ddudu.in.SetReminderUseCase;
 import com.ddudu.application.common.port.ddudu.in.SwitchStatusUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
 import jakarta.validation.Valid;
@@ -64,6 +66,7 @@ public class DduduController implements DduduControllerDoc {
   private final SwitchStatusUseCase switchStatusUseCase;
   private final ChangeNameUseCase changeNameUseCase;
   private final DeleteDduduUseCase deleteDduduUseCase;
+  private final SetReminderUseCase setReminderUseCase;
 
   /**
    * 뚜두 생성 API
@@ -150,6 +153,23 @@ public class DduduController implements DduduControllerDoc {
     DduduDetailResponse response = retrieveDduduUseCase.findById(loginId, id);
 
     return ResponseEntity.ok(response);
+  }
+
+  @Override
+  @PatchMapping("/{id}/reminder")
+  public ResponseEntity<Void> setReminder(
+      @Login
+      Long loginId,
+      @PathVariable("id")
+      Long id,
+      @RequestBody
+      @Valid
+      SetReminderRequest request
+  ) {
+    setReminderUseCase.setReminder(loginId, id, request);
+
+    return ResponseEntity.noContent()
+        .build();
   }
 
   /**

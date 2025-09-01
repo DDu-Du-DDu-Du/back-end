@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -132,7 +133,7 @@ public class GlobalExceptionHandler {
   private List<ErrorResponse> convertToErrorResponses(MethodArgumentNotValidException e) {
     return e.getFieldErrors()
         .stream()
-        .map(fieldError -> ErrorResponse.from(INVALID_INPUT_CODE, fieldError.getDefaultMessage()))
+        .map(this::parseFromFieldError)
         .toList();
   }
 
@@ -151,6 +152,12 @@ public class GlobalExceptionHandler {
         .collect(Collectors.joining(", "));
 
     return enumTypeName + "는 [" + validValues + "] 중 하나여야 합니다.";
+  }
+
+  private ErrorResponse parseFromFieldError(FieldError fieldError) {
+    ErrorCode errorCode = errorCodeParser.parse(fieldError.getDefaultMessage());
+
+    return ErrorResponse.from(errorCode);
   }
 
 }

@@ -107,4 +107,40 @@ public final class DduduErrorExamples {
       }
       """;
 
+  public static final String GOAL_ALREADY_DONE = """
+      {
+        "code": 2016,
+        "message": "목표가 이미 완료되었습니다."
+      }
+      """;
+
+  public static final String BEGIN_AT_REQUIRED_FOR_REMINDER = """
+      {
+        "code": 2017,
+        "message": "시작 시간 없이 미리알림을 설정할 수 없습니다."
+      }
+      """;
+
+  public static final String REMINDER_NOT_AFTER_NOW = """
+      {
+        "code": 2018,
+        "message": "미리알림 시간은 현재 시간보다 이후여야 합니다."
+      }
+      """;
+
+  public static final String ZERO_REMINDER = """
+      {
+        "code": 2019,
+        "message": "미리알림 입력값이 없습니다."
+      }
+      """;
+
+  public static final String NEGATIVE_REMINDER_INPUT_EXISTS = """
+      {
+        "code": 2020,
+        "message": "미리알림을 입력값 중 음수가 포함되어 있습니다."
+      }
+      """;
+
+
 }

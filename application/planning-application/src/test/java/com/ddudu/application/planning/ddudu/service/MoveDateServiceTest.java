@@ -81,7 +81,8 @@ class MoveDateServiceTest {
     LocalDate yesterday = LocalDate.now()
         .minusDays(1);
     Ddudu pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithSchedule(
-        goal,
+        user.getId(),
+        goal.getId(),
         yesterday
     ));
     MoveDateRequest request = new MoveDateRequest(LocalDate.now());
@@ -101,7 +102,8 @@ class MoveDateServiceTest {
     LocalDate twoDaysAgo = LocalDate.now()
         .minusDays(2);
     Ddudu pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithSchedule(
-        goal,
+        user.getId(),
+        goal.getId(),
         twoDaysAgo
     ));
     LocalDate yesterday = LocalDate.now()

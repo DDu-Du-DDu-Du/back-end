@@ -98,7 +98,7 @@ class SwitchStatusServiceTest {
     );
 
     // then
-    AssertionsForClassTypes.assertThatExceptionOfType(SecurityException.class)
+    AssertionsForClassTypes.assertThatExceptionOfType(UnsupportedOperationException.class)
         .isThrownBy(updateStatus)
         .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
   }

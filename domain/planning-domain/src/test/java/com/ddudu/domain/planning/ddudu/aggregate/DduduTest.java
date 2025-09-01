@@ -7,7 +7,9 @@ import com.ddudu.domain.planning.ddudu.aggregate.Ddudu.DduduBuilder;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.fixture.DduduFixture;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -181,6 +183,119 @@ class DduduTest {
     }
 
     @Nested
+    class 미리알림_설정_테스트 {
+
+      Ddudu futureDdudu;
+      LocalTime beginAt;
+      int days;
+      int hours;
+      int minutes;
+
+      @BeforeEach
+      void setUp() {
+        LocalDate futureDate = DduduFixture.getFutureDate(10);
+        beginAt = DduduFixture.getFutureTime();
+        Ddudu beforeTimeSet = DduduFixture.createRandomDduduWithSchedule(
+            userId,
+            goalId,
+            futureDate
+        );
+        futureDdudu = beforeTimeSet.setUpPeriod(beginAt, null);
+        int dayDifference = (int) ChronoUnit.DAYS.between(LocalDate.now(), futureDate);
+        int hourDifference = (int) ChronoUnit.HOURS.between(LocalTime.now(), beginAt);
+        days = DduduFixture.getRandomInt(0, Math.max(dayDifference - 1, 0));
+        hours = DduduFixture.getRandomInt(0, Math.max(hourDifference - 1, 0));
+        minutes = DduduFixture.getRandomInt(1, 59);
+      }
+
+      @Test
+      void 시작_시간이_있는_뚜두에_미리알림을_설정한다() {
+        // given
+
+        // when
+        Ddudu updated = futureDdudu.setReminder(days, hours, minutes);
+
+        // then
+        LocalDateTime actual = updated.getRemindAt();
+        LocalDateTime expected = futureDdudu.getScheduledOn()
+            .atTime(beginAt)
+            .minusDays(days)
+            .minusHours(hours)
+            .minusMinutes(minutes);
+
+        assertThat(actual).isEqualTo(expected);
+      }
+
+      @Test
+      void 미리알림_입력값이_음수면_미리알림_설정을_실패한다() {
+        // given
+        int negativeDays = DduduFixture.getRandomNegative();
+        int negativeHours = DduduFixture.getRandomNegative();
+        int negativeMins = DduduFixture.getRandomNegative();
+
+        // when
+        ThrowingCallable setReminder = () -> futureDdudu.setReminder(
+            negativeDays,
+            negativeHours,
+            negativeMins
+        );
+
+        // then
+        Assertions.assertThatIllegalArgumentException()
+            .isThrownBy(setReminder)
+            .withMessage(DduduErrorCode.NEGATIVE_REMINDER_INPUT_EXISTS.getCodeName());
+      }
+
+      @Test
+      void 시작_시간이_없으면_미리알림_설정을_실패한다() {
+        // given
+        Ddudu noTime = DduduFixture.createRandomDduduWithSchedule(userId, goalId, LocalDate.now());
+
+        // when
+        ThrowingCallable setReminder = () -> noTime.setReminder(0, 1, 0);
+
+        // then
+        Assertions.assertThatIllegalArgumentException()
+            .isThrownBy(setReminder)
+            .withMessage(DduduErrorCode.BEGIN_AT_REQUIRED_FOR_REMINDER.getCodeName());
+      }
+
+      @Test
+      void 미리알림_간격이_0이면_설정을_실패한다() {
+        // given
+
+        // when
+        ThrowingCallable setReminder = () -> futureDdudu.setReminder(0, 0, 0);
+
+        // then
+        Assertions.assertThatIllegalArgumentException()
+            .isThrownBy(setReminder)
+            .withMessage(DduduErrorCode.ZERO_REMINDER.getCodeName());
+      }
+
+      @Test
+      void 미리알림_시간이_현재보다_이전이면_설정을_실패한다() {
+        // given
+        // keep begin time close to now to ensure reminder before now
+        Ddudu todayDdudu = DduduFixture.createRandomDduduWithSchedule(
+            userId,
+            goalId,
+            LocalDate.now()
+        );
+        Ddudu urgent = todayDdudu.setUpPeriod(LocalTime.now(), null);
+
+        // when
+        ThrowingCallable setReminder = () -> urgent.setReminder(0, 0, 15);
+
+        // then
+        Assertions.assertThatIllegalArgumentException()
+            .isThrownBy(setReminder)
+            .withMessage(DduduErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName());
+      }
+
+    }
+
+    @Nested
     class 권한_테스트 {
 
       @Test
@@ -204,7 +319,7 @@ class DduduTest {
         ThrowingCallable check = () -> ddudu.validateDduduCreator(wrongUserId);
 
         // then
-        Assertions.assertThatExceptionOfType(SecurityException.class)
+        Assertions.assertThatExceptionOfType(UnsupportedOperationException.class)
             .isThrownBy(check)
             .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
       }

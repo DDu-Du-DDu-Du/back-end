@@ -149,8 +149,7 @@ class RepeatDduduDomainServiceTest {
       );
 
       // when
-      List<Ddudu> ddudus = repeatDduduDomainService.createRepeatedDdudus(
-          userId, dailyRepeatDdudu);
+      List<Ddudu> ddudus = repeatDduduDomainService.createRepeatedDdudus(userId, dailyRepeatDdudu);
 
       // then
       Assertions.assertThat(ddudus)
@@ -174,8 +173,7 @@ class RepeatDduduDomainServiceTest {
       );
 
       // when
-      List<Ddudu> ddudus = repeatDduduDomainService.createRepeatedDdudus(
-          userId, weeklyRepeatDdudu);
+      List<Ddudu> ddudus = repeatDduduDomainService.createRepeatedDdudus(userId, weeklyRepeatDdudu);
 
       // then
       ddudus.stream()
