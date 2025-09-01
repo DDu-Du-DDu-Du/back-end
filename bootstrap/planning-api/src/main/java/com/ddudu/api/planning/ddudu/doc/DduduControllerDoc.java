@@ -9,6 +9,7 @@ import com.ddudu.application.common.dto.ddudu.request.DduduSearchRequest;
 import com.ddudu.application.common.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.common.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.common.dto.ddudu.request.RepeatAnotherDayRequest;
+import com.ddudu.application.common.dto.ddudu.request.SetReminderRequest;
 import com.ddudu.application.common.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.common.dto.ddudu.response.TimetableResponse;
@@ -559,7 +560,9 @@ public interface DduduControllerDoc {
       }
   )
   ResponseEntity<RepeatAnotherDayResponse> repeatOnAnotherDay(
-      Long loginId, Long id, RepeatAnotherDayRequest request
+      Long loginId,
+      Long id,
+      RepeatAnotherDayRequest request
   );
 
   @Operation(summary = "뚜두 검색")
@@ -587,5 +590,58 @@ public interface DduduControllerDoc {
       @ParameterObject
       DduduSearchRequest request
   );
+
+  @Operation(summary = "미리알림 설정")
+  @ApiResponses(
+      {
+          @ApiResponse(
+              responseCode = "204",
+              description = "NO CONTENT"
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "BAD REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                        name = "2008",
+                        value = DduduErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "2004",
+                          value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "2017",
+                          value = DduduErrorExamples.BEGIN_AT_REQUIRED_FOR_REMINDER
+                      ),
+                      @ExampleObject(
+                          name = "2018",
+                          value = DduduErrorExamples.REMINDER_NOT_AFTER_NOW
+                      ),
+                      @ExampleObject(
+                          name = "2019",
+                          value = DduduErrorExamples.ZERO_REMINDER
+                      ),
+                      @ExampleObject(
+                          name = "2020",
+                          value = DduduErrorExamples.NEGATIVE_REMINDER_INPUT_EXISTS
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          )
+      }
+  )
+  ResponseEntity<Void> setReminder(Long loginId, Long dduduId, SetReminderRequest request);
 
 }
