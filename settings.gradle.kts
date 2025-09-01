@@ -10,17 +10,20 @@ include(
     "bootstrap:user-api",
     "bootstrap:stats-api",
     "bootstrap:planning-api",
+    "bootstrap:notification-api",
 
     // application
     "application:application-common",
     "application:user-application",
     "application:stats-application",
     "application:planning-application",
+    "application:notification-application",
 
     // domain
     "domain:user-domain",
     "domain:stats-domain",
     "domain:planning-domain",
+    "domain:notification-domain",
 
     // infra
     "infra:infra-mysql-common",
@@ -28,6 +31,7 @@ include(
     "infra:stats-infra-mysql",
     "infra:planning-infra-mysql",
     "infra:user-infra-external-api",
+    "infra:notification-infra-mysql",
 
     // common
     "common",

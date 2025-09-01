@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -85,6 +86,12 @@ public class DduduEntity extends BaseEntity {
   )
   private boolean isPostponed;
 
+  @Column(
+      name = "remind_at",
+      columnDefinition = "TIMESTAMP"
+  )
+  private LocalDateTime remindAt;
+
   public static DduduEntity from(Ddudu ddudu) {
     return DduduEntity.builder()
         .id(ddudu.getId())
@@ -97,6 +104,7 @@ public class DduduEntity extends BaseEntity {
         .scheduledOn(ddudu.getScheduledOn())
         .beginAt(ddudu.getBeginAt())
         .endAt(ddudu.getEndAt())
+        .remindAt(ddudu.getRemindAt())
         .build();
   }
 
@@ -112,6 +120,7 @@ public class DduduEntity extends BaseEntity {
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt)
+        .remindAt(remindAt)
         .build();
   }
 
@@ -122,6 +131,7 @@ public class DduduEntity extends BaseEntity {
     this.scheduledOn = ddudu.getScheduledOn();
     this.beginAt = ddudu.getBeginAt();
     this.endAt = ddudu.getEndAt();
+    this.remindAt = ddudu.getRemindAt();
   }
 
 }
