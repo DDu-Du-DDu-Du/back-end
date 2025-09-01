@@ -5,9 +5,12 @@ import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import lombok.Builder;
 
 @Schema(description = "뚜두 상세 응답")
+@Builder
 public record DduduDetailResponse(
     @Schema(
         description = "뚜두 ID",
@@ -59,21 +62,22 @@ public record DduduDetailResponse(
         shape = JsonFormat.Shape.STRING,
         pattern = "HH:mm"
     )
-    LocalTime endAt
-
+    LocalTime endAt,
+    LocalDateTime remindAt
 ) {
 
   public static DduduDetailResponse from(Ddudu ddudu) {
-    return new DduduDetailResponse(
-        ddudu.getId(),
-        ddudu.getName(),
-        ddudu.getStatus(),
-        ddudu.getGoalId(),
-        ddudu.getRepeatDduduId(),
-        ddudu.getScheduledOn(),
-        ddudu.getBeginAt(),
-        ddudu.getEndAt()
-    );
+    return DduduDetailResponse.builder()
+        .id(ddudu.getId())
+        .beginAt(ddudu.getBeginAt())
+        .endAt(ddudu.getEndAt())
+        .goalId(ddudu.getGoalId())
+        .name(ddudu.getName())
+        .remindAt(ddudu.getRemindAt())
+        .repeatDduduId(ddudu.getRepeatDduduId())
+        .scheduledOn(ddudu.getScheduledOn())
+        .status(ddudu.getStatus())
+        .build();
   }
 
 }
