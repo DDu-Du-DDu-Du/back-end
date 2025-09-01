@@ -66,7 +66,8 @@ class RetrieveDduduServiceTest {
         .hasFieldOrPropertyWithValue("repeatDduduId", ddudu.getRepeatDduduId())
         .hasFieldOrPropertyWithValue("scheduledOn", ddudu.getScheduledOn())
         .hasFieldOrPropertyWithValue("beginAt", ddudu.getBeginAt())
-        .hasFieldOrPropertyWithValue("endAt", ddudu.getEndAt());
+        .hasFieldOrPropertyWithValue("endAt", ddudu.getEndAt())
+        .hasFieldOrPropertyWithValue("remindAt", ddudu.getRemindAt());
 
   }
 
