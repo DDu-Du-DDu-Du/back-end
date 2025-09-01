@@ -6,6 +6,7 @@ import static java.util.Objects.nonNull;
 
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -66,7 +67,7 @@ public class Ddudu {
 
   public void validateDduduCreator(Long userId) {
     if (!isCreatedByUser(userId)) {
-      throw new SecurityException(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+      throw new UnsupportedOperationException(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
     }
   }
 
@@ -139,6 +140,18 @@ public class Ddudu {
     return beginAt.getHour();
   }
 
+  public Ddudu setReminder(int days, int hours, int minutes) {
+    LocalDateTime reminder = validateReminder(days, hours, minutes);
+
+    return getFullBuilder()
+        .remindAt(reminder)
+        .build();
+  }
+
+  public boolean isScheduledToday() {
+    return scheduledOn.isEqual(LocalDate.now());
+  }
+
   private DduduBuilder getFullBuilder() {
     return Ddudu.builder()
         .id(this.id)
@@ -182,6 +195,38 @@ public class Ddudu {
 
   private boolean isCreatedByUser(Long userId) {
     return Objects.equals(this.userId, userId);
+  }
+
+  private LocalDateTime validateReminder(int days, int hours, int minutes) {
+    checkArgument(
+        days >= 0 && hours >= 0 && minutes >= 0,
+        DduduErrorCode.NEGATIVE_REMINDER_INPUT_EXISTS.getCodeName()
+    );
+    checkArgument(
+        hasStartTime(),
+        DduduErrorCode.BEGIN_AT_REQUIRED_FOR_REMINDER.getCodeName()
+    );
+
+    Duration offset = Duration.ofDays(days)
+        .plusHours(hours)
+        .plusMinutes(minutes);
+
+    checkArgument(
+        !offset.isZero(),
+        DduduErrorCode.ZERO_REMINDER.getCodeName()
+    );
+
+    LocalDateTime reminder = scheduledOn.atTime(beginAt)
+        .minusDays(days)
+        .minusHours(hours)
+        .minusMinutes(minutes);
+
+    checkArgument(
+        reminder.isAfter(LocalDateTime.now()),
+        DduduErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName()
+    );
+
+    return reminder;
   }
 
 }

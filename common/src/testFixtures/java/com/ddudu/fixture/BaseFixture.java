@@ -1,6 +1,7 @@
 package com.ddudu.fixture;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Locale;
@@ -57,6 +58,34 @@ public class BaseFixture {
     return faker.color()
         .hex()
         .substring(1);
+  }
+
+  public static LocalDate getFutureDate(int futureDaysScope) {
+    LocalDateTime tomorrow = LocalDateTime.now()
+        .plusDays(1);
+    LocalDateTime until = LocalDateTime.now()
+        .plusDays(futureDaysScope);
+    Timestamp from = Timestamp.valueOf(tomorrow);
+    Timestamp to = Timestamp.valueOf(until);
+
+    return faker.date()
+        .between(from, to)
+        .toLocalDateTime()
+        .toLocalDate();
+  }
+
+  public static LocalDate getPastDate(int pastDaysScope) {
+    LocalDateTime yesterday = LocalDateTime.now()
+        .minusDays(1);
+    LocalDateTime until = LocalDateTime.now()
+        .minusDays(pastDaysScope);
+    Timestamp from = Timestamp.valueOf(until);
+    Timestamp to = Timestamp.valueOf(yesterday);
+
+    return faker.date()
+        .between(from, to)
+        .toLocalDateTime()
+        .toLocalDate();
   }
 
   public static LocalDateTime getRandomDateTime() {
