@@ -152,6 +152,12 @@ public class Ddudu {
     return scheduledOn.isEqual(LocalDate.now());
   }
 
+  public Ddudu cancelReminder() {
+    return getFullBuilder()
+        .remindAt(null)
+        .build();
+  }
+
   private DduduBuilder getFullBuilder() {
     return Ddudu.builder()
         .id(this.id)

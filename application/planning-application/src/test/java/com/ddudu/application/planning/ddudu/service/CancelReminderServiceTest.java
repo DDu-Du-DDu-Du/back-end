@@ -2,7 +2,6 @@ package com.ddudu.application.planning.ddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.ddudu.request.SetReminderRequest;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
@@ -15,7 +14,6 @@ import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.MissingResourceException;
 import org.assertj.core.api.Assertions;
@@ -31,10 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class SetReminderServiceTest {
+class CancelReminderServiceTest {
 
   @Autowired
-  SetReminderService setReminderService;
+  CancelReminderService cancelReminderService;
 
   @Autowired
   SignUpPort signUpPort;
@@ -57,86 +55,68 @@ class SetReminderServiceTest {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     LocalTime beginAt = LocalTime.MAX;
-    Ddudu temp = DduduFixture.createRandomDduduWithGoalAndTime(
+    ddudu = DduduFixture.createRandomDduduWithGoalAndTime(
         goal,
         beginAt,
         null
     );
-    ddudu = saveDduduPort.save(temp.moveDate(LocalDate.now().plusDays(1)));
+    ddudu = ddudu.moveDate(LocalDate.now()
+        .plusDays(1));
+    ddudu = saveDduduPort.save(ddudu.setReminder(0, 0, 10));
   }
 
   @Test
-  void 미리알림을_설정한다() {
+  void 미리알림_취소를_성공한다() {
     // given
-    SetReminderRequest request = new SetReminderRequest(0, 0, 30);
 
     // when
-    setReminderService.setReminder(user.getId(), ddudu.getId(), request);
+    cancelReminderService.cancel(user.getId(), ddudu.getId());
 
     // then
     Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
-    LocalDateTime expected = ddudu.getScheduledOn()
-        .atTime(ddudu.getBeginAt())
-        .minusHours(request.hours())
-        .minusMinutes(request.minutes());
 
-    assertThat(actual.getRemindAt()).isEqualTo(expected);
+    assertThat(actual.getRemindAt()).isNull();
   }
 
   @Test
-  void 존재하지_않는_사용자는_미리알림_설정에_실패한다() {
+  void 존재하지_않는_사용자는_미리알림_취소에_실패한다() {
     // given
-    long invalidId = DduduFixture.getRandomId();
-    SetReminderRequest request = new SetReminderRequest(0, 1, 0);
+    long invalidId = UserFixture.getRandomId();
 
     // when
-    ThrowingCallable setReminder = () -> setReminderService.setReminder(
-        invalidId,
-        ddudu.getId(),
-        request
-    );
+    ThrowingCallable cancel = () -> cancelReminderService.cancel(invalidId, ddudu.getId());
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
-        .isThrownBy(setReminder)
+        .isThrownBy(cancel)
         .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
   }
 
   @Test
-  void 존재하지_않는_뚜두는_미리알림_설정에_실패한다() {
+  void 존재하지_않는_뚜두는_미리알림_취소에_실패한다() {
     // given
     long invalidId = DduduFixture.getRandomId();
-    SetReminderRequest request = new SetReminderRequest(0, 1, 0);
 
     // when
-    ThrowingCallable setReminder = () -> setReminderService.setReminder(
-        user.getId(),
-        invalidId,
-        request
-    );
+    ThrowingCallable cancel = () -> cancelReminderService.cancel(user.getId(), invalidId);
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
-        .isThrownBy(setReminder)
+        .isThrownBy(cancel)
         .withMessage(DduduErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
   @Test
-  void 다른_사용자는_미리알림_설정에_실패한다() {
+  void 다른_사용자는_미리알림_취소에_실패한다() {
     // given
     User another = signUpPort.save(UserFixture.createRandomUserWithId());
-    SetReminderRequest request = new SetReminderRequest(0, 1, 0);
 
     // when
-    ThrowingCallable setReminder = () -> setReminderService.setReminder(
-        another.getId(),
-        ddudu.getId(),
-        request
-    );
+    ThrowingCallable cancel = () -> cancelReminderService.cancel(another.getId(), ddudu.getId());
 
     // then
     Assertions.assertThatExceptionOfType(UnsupportedOperationException.class)
-        .isThrownBy(setReminder)
+        .isThrownBy(cancel)
         .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 

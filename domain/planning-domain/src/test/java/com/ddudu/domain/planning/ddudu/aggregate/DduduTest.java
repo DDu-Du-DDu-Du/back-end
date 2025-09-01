@@ -293,6 +293,22 @@ class DduduTest {
             .withMessage(DduduErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName());
       }
 
+      @Test
+      void 미리알림_취소를_성공한다() {
+        // given
+        LocalDate futureDate = LocalDate.now().plusDays(2);
+        LocalTime beginAt = LocalTime.of(23, 30);
+        Ddudu scheduled = DduduFixture.createRandomDduduWithSchedule(userId, goalId, futureDate)
+            .setUpPeriod(beginAt, null);
+        Ddudu withReminder = scheduled.setReminder(0, 0, 15);
+
+        // when
+        Ddudu canceled = withReminder.cancelReminder();
+
+        // then
+        assertThat(canceled.getRemindAt()).isNull();
+      }
+
     }
 
     @Nested
