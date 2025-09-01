@@ -432,6 +432,17 @@ public interface DduduControllerDoc {
                       value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
                   )
               )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2004",
+                      description = "존재하지 않는 뚜두인 경우",
+                      value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                  )
+              )
           )
       }
   )
@@ -655,9 +666,63 @@ public interface DduduControllerDoc {
                       value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
                   )
               )
+          ),
+          @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2007",
+                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
+                  )
+              )
           )
       }
   )
   ResponseEntity<Void> setReminder(Long loginId, Long dduduId, SetReminderRequest request);
+
+  @Operation(summary = "미리알림 취소")
+  @ApiResponses(
+      {
+          @ApiResponse(
+              responseCode = "204",
+              description = "NO CONTENT"
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2007",
+                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2004",
+                      description = "존재하지 않는 뚜두인 경우",
+                      value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                  )
+              )
+          )
+      }
+  )
+  ResponseEntity<Void> cancelReminder(Long loginId, Long id);
 
 }
