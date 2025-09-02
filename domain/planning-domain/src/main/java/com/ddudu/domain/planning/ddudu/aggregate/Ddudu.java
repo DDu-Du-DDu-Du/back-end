@@ -67,7 +67,7 @@ public class Ddudu {
 
   public void validateDduduCreator(Long userId) {
     if (!isCreatedByUser(userId)) {
-      throw new UnsupportedOperationException(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+      throw new SecurityException(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
     }
   }
 

@@ -97,6 +97,21 @@ public class GlobalExceptionHandler {
         .body(response);
   }
 
+  @ExceptionHandler(SecurityException.class)
+  public ResponseEntity<ErrorResponse> handleForbidden(SecurityException e) {
+    log.warn(e.getMessage(), e);
+
+    ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
+    ErrorResponse response = ErrorResponse.from(errorCode);
+
+    if (errorCode instanceof DefaultErrorCode) {
+      return handleUnexpected(response);
+    }
+
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .body(response);
+  }
+
   @ExceptionHandler(MissingResourceException.class)
   public ResponseEntity<ErrorResponse> handleNotFound(MissingResourceException e) {
     log.warn(e.getMessage(), e);

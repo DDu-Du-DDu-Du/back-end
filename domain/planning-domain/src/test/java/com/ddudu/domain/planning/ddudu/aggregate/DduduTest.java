@@ -296,7 +296,8 @@ class DduduTest {
       @Test
       void 미리알림_취소를_성공한다() {
         // given
-        LocalDate futureDate = LocalDate.now().plusDays(2);
+        LocalDate futureDate = LocalDate.now()
+            .plusDays(2);
         LocalTime beginAt = LocalTime.of(23, 30);
         Ddudu scheduled = DduduFixture.createRandomDduduWithSchedule(userId, goalId, futureDate)
             .setUpPeriod(beginAt, null);
@@ -335,7 +336,7 @@ class DduduTest {
         ThrowingCallable check = () -> ddudu.validateDduduCreator(wrongUserId);
 
         // then
-        Assertions.assertThatExceptionOfType(UnsupportedOperationException.class)
+        Assertions.assertThatExceptionOfType(SecurityException.class)
             .isThrownBy(check)
             .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
       }

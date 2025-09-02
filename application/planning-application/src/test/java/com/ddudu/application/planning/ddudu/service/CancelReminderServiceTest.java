@@ -115,7 +115,7 @@ class CancelReminderServiceTest {
     ThrowingCallable cancel = () -> cancelReminderService.cancel(another.getId(), ddudu.getId());
 
     // then
-    Assertions.assertThatExceptionOfType(UnsupportedOperationException.class)
+    Assertions.assertThatExceptionOfType(SecurityException.class)
         .isThrownBy(cancel)
         .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
   }

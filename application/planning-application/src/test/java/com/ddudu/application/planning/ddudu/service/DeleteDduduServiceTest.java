@@ -81,7 +81,7 @@ class DeleteDduduServiceTest {
     ThrowingCallable delete = () -> deleteDduduService.delete(anotherUser.getId(), ddudu.getId());
 
     // then
-    Assertions.assertThatExceptionOfType(UnsupportedOperationException.class)
+    Assertions.assertThatExceptionOfType(SecurityException.class)
         .isThrownBy(delete)
         .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
   }
