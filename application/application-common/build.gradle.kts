@@ -8,4 +8,5 @@ dependencies {
     implementation(project(":domain:user-domain"))
     implementation(project(":domain:planning-domain"))
     implementation(project(":domain:stats-domain"))
+    implementation(project(":domain:notification-domain"))
 }
