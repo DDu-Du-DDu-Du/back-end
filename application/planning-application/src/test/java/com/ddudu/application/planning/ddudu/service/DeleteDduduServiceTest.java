@@ -1,19 +1,25 @@
 package com.ddudu.application.planning.ddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
+import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
+import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.NotificationEventFixture;
 import com.ddudu.fixture.UserFixture;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +50,12 @@ class DeleteDduduServiceTest {
   @Autowired
   SaveDduduPort saveDduduPort;
 
+  @Autowired
+  NotificationEventLoaderPort notificationEventLoaderPort;
+
+  @Autowired
+  NotificationEventCommandPort notificationEventCommandPort;
+
   User user;
   Ddudu ddudu;
 
@@ -68,8 +80,11 @@ class DeleteDduduServiceTest {
     // given
     Long invalidId = DduduFixture.getRandomId();
 
-    // when / then
-    assertDoesNotThrow(() -> deleteDduduService.delete(user.getId(), invalidId));
+    // when
+    ThrowingCallable delete = () -> deleteDduduService.delete(user.getId(), invalidId);
+
+    // then
+    assertThatNoException().isThrownBy(delete);
   }
 
   @Test
@@ -86,5 +101,26 @@ class DeleteDduduServiceTest {
         .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
+  @Test
+  void 뚜두_삭제_시_연관된_알림도_삭제된다() {
+    // given: register a notification event for this ddudu context
+    NotificationEvent event = NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+        user.getId(),
+        ddudu.getId()
+    );
+
+    notificationEventCommandPort.save(event);
+
+    // when
+    deleteDduduService.delete(user.getId(), ddudu.getId());
+
+    // then
+    Optional<NotificationEvent> actual = notificationEventLoaderPort.getOptionalEventByContext(
+        NotificationEventTypeCode.DDUDU,
+        ddudu.getId()
+    );
+
+    assertThat(actual).isEmpty();
+  }
 
 }
