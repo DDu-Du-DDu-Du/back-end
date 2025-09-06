@@ -29,7 +29,7 @@ class NotificationEventTest {
   void setUp() {
     userId = NotificationEventFixture.getRandomId();
     contextId = NotificationEventFixture.getRandomId();
-    int index = random.nextInt(NotificationEventTypeCode.values().length) + 1;
+    int index = random.nextInt(NotificationEventTypeCode.values().length);
     typeCode = NotificationEventTypeCode.values()[index];
   }
 
@@ -127,7 +127,7 @@ class NotificationEventTest {
     @Test
     void 발송되지_않은_이벤트는_false를_반환한다() {
       // given
-      NotificationEvent notFired = NotificationEventFixture.createFiredEventWithUserAndContext(
+      NotificationEvent notFired = NotificationEventFixture.createValidEventWithUserAndContext(
           userId,
           typeCode,
           contextId,
