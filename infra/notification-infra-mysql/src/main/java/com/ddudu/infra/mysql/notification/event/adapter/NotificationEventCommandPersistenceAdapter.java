@@ -1,7 +1,7 @@
 package com.ddudu.infra.mysql.notification.event.adapter;
 
-import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
+import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
