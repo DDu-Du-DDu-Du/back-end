@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":domain:user-domain"))
     implementation(project(":domain:planning-domain"))
+    implementation(project(":domain:notification-domain"))
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework:spring-tx")
@@ -17,10 +18,12 @@ dependencies {
     testImplementation(testFixtures(project(":common")))
     testImplementation(testFixtures(project(":domain:user-domain")))
     testImplementation(testFixtures(project(":domain:planning-domain")))
+    testImplementation(testFixtures(project(":domain:notification-domain")))
 
     // For integration test, instead of mocking
     testImplementation(project(":infra:user-infra-mysql"))
     testImplementation(project(":infra:planning-infra-mysql"))
+    testImplementation(project(":infra:notification-infra-mysql"))
 }
 
 val copyTestSecret by tasks.registering(Copy::class) {

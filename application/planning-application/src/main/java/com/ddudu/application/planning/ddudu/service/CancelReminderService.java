@@ -3,11 +3,16 @@ package com.ddudu.application.planning.ddudu.service;
 import com.ddudu.application.common.port.ddudu.in.CancelReminderUseCase;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.DduduUpdatePort;
+import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
+import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
+import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.user.user.aggregate.User;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +24,8 @@ public class CancelReminderService implements CancelReminderUseCase {
   private final UserLoaderPort userLoaderPort;
   private final DduduLoaderPort dduduLoaderPort;
   private final DduduUpdatePort dduduUpdatePort;
+  private final NotificationEventCommandPort notificationEventCommandPort;
+  private final NotificationEventLoaderPort notificationEventLoaderPort;
 
   @Override
   public void cancel(Long loginId, Long id) {
@@ -36,7 +43,30 @@ public class CancelReminderService implements CancelReminderUseCase {
     Ddudu dduduWithoutReminder = ddudu.cancelReminder();
     Ddudu updated = dduduUpdatePort.update(dduduWithoutReminder);
 
-    // TODO: notification event 구현 이후 알림 이벤트 삭제 + TaskScheduler에서 삭제
+    removeNotificationEvent(updated);
+
+    if (ddudu.isScheduledToday()) {
+      // TODO: TaskScheduler에서 삭제
+    }
+  }
+
+  private void removeNotificationEvent(Ddudu ddudu) {
+    Optional<NotificationEvent> optionalEvent = notificationEventLoaderPort.getOptionalEventByContext(
+        NotificationEventTypeCode.DDUDU,
+        ddudu.getId()
+    );
+
+    if (optionalEvent.isEmpty()) {
+      return;
+    }
+
+    NotificationEvent notificationEvent = optionalEvent.get();
+
+    if (notificationEvent.isAlreadyFired()) {
+      return;
+    }
+
+    notificationEventCommandPort.delete(notificationEvent);
   }
 
 }

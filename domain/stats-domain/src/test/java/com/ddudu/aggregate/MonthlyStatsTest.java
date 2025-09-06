@@ -89,7 +89,7 @@ class MonthlyStatsTest {
       MonthlyStats empty = MonthlyStats.empty(userId, YearMonth.now());
 
       // when
-      ThrowingCallable getGoalId = () -> empty.getGoalId();
+      ThrowingCallable getGoalId = empty::getGoalId;
 
       // then
       assertThatRuntimeException().isThrownBy(getGoalId)
@@ -114,7 +114,7 @@ class MonthlyStatsTest {
       MonthlyStats empty = MonthlyStats.empty(userId, YearMonth.now());
 
       // when
-      ThrowingCallable getGoalName = () -> empty.getGoalName();
+      ThrowingCallable getGoalName = empty::getGoalName;
 
       // then
       assertThatRuntimeException().isThrownBy(getGoalName)

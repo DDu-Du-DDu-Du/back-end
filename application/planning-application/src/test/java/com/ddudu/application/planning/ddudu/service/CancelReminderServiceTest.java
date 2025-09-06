@@ -6,12 +6,17 @@ import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
+import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
+import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.NotificationEventFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -46,6 +51,12 @@ class CancelReminderServiceTest {
   @Autowired
   DduduLoaderPort dduduLoaderPort;
 
+  @Autowired
+  NotificationEventLoaderPort notificationEventLoaderPort;
+
+  @Autowired
+  NotificationEventCommandPort notificationEventCommandPort;
+
   User user;
   Goal goal;
   Ddudu ddudu;
@@ -68,14 +79,25 @@ class CancelReminderServiceTest {
   @Test
   void 미리알림_취소를_성공한다() {
     // given
+    NotificationEvent event = NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+        user.getId(),
+        ddudu.getId()
+    );
+
+    notificationEventCommandPort.save(event);
 
     // when
     cancelReminderService.cancel(user.getId(), ddudu.getId());
 
     // then
     Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
+    boolean actualEventExists = notificationEventLoaderPort.existsByContext(
+        NotificationEventTypeCode.DDUDU,
+        ddudu.getId()
+    );
 
     assertThat(actual.getRemindAt()).isNull();
+    assertThat(actualEventExists).isFalse();
   }
 
   @Test
