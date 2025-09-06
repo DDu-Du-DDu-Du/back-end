@@ -1,9 +1,12 @@
 package com.ddudu.infra.mysql.notification.event.entity;
 
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
+import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.infra.mysql.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,9 +34,11 @@ public class NotificationEventEntity extends BaseEntity {
   @Column(
       name = "type_code",
       nullable = false,
-      length = 20
+      length = 20,
+      columnDefinition = "VARCHAR"
   )
-  private String typeCode;
+  @Enumerated(EnumType.STRING)
+  private NotificationEventTypeCode typeCode;
 
   @Column(name = "sender_id")
   private Long senderId;
@@ -51,6 +56,12 @@ public class NotificationEventEntity extends BaseEntity {
   private Long contextId;
 
   @Column(
+      name = "will_fire_at",
+      nullable = false
+  )
+  private LocalDateTime willFireAt;
+
+  @Column(
       name = "fired_at",
       columnDefinition = "TIMESTAMP"
   )
@@ -63,6 +74,7 @@ public class NotificationEventEntity extends BaseEntity {
         .senderId(domain.getSenderId())
         .receiverId(domain.getReceiverId())
         .contextId(domain.getContextId())
+        .willFireAt(domain.getWillFireAt())
         .firedAt(domain.getFiredAt())
         .build();
   }
@@ -75,7 +87,17 @@ public class NotificationEventEntity extends BaseEntity {
         .receiverId(receiverId)
         .contextId(contextId)
         .firedAt(firedAt)
+        .willFireAt(willFireAt)
         .build();
+  }
+
+  public void update(NotificationEvent domain) {
+    this.typeCode = domain.getTypeCode();
+    this.contextId = domain.getContextId();
+    this.senderId = domain.getSenderId();
+    this.receiverId = domain.getReceiverId();
+    this.firedAt = domain.getFiredAt();
+    this.willFireAt = domain.getWillFireAt();
   }
 
 }
