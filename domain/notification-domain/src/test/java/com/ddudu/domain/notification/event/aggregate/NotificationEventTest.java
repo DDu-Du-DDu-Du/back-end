@@ -140,6 +140,7 @@ class NotificationEventTest {
       // then
       assertThat(actual).isFalse();
     }
+
   }
 
 }
