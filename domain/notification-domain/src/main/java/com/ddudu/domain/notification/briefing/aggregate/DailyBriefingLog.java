@@ -1,20 +1,37 @@
 package com.ddudu.domain.notification.briefing.aggregate;
 
-import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import static com.google.common.base.Preconditions.checkArgument;
 
+import com.ddudu.common.exception.DailyBriefingLogErrorCode;
+import java.time.LocalDate;
+import java.util.Objects;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
-@Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DailyBriefingLog {
 
-  private Long id;
-  private Long userId;
-  private LocalDate briefingDate;
+  @EqualsAndHashCode.Include
+  private final Long id;
+  private final Long userId;
+  private final LocalDate briefingDate;
+
+  @Builder
+  private DailyBriefingLog(Long id, Long userId, LocalDate briefingDate) {
+    validate(userId);
+
+    this.id = id;
+    this.userId = userId;
+    this.briefingDate = Objects.requireNonNullElse(briefingDate, LocalDate.now());
+  }
+
+  private void validate(Long userId) {
+    checkArgument(
+        Objects.nonNull(userId),
+        DailyBriefingLogErrorCode.NULL_USER_ID.getCodeName()
+    );
+  }
 
 }

@@ -79,6 +79,11 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   }
 
   @Override
+  public int countTodayDdudu(Long userId) {
+    return dduduRepository.countTodayByUserId(userId);
+  }
+
+  @Override
   public Ddudu update(Ddudu ddudu) {
     DduduEntity dduduEntity = dduduRepository.findById(ddudu.getId())
         .orElseThrow(EntityNotFoundException::new);

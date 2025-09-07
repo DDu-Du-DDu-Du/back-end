@@ -7,6 +7,11 @@ TRUNCATE auth_providers;
 TRUNCATE goals;
 TRUNCATE ddudus;
 TRUNCATE repeat_ddudus;
+TRUNCATE notification_events;
+TRUNCATE daily_briefing_logs;
+TRUNCATE period_goals;
+TRUNCATE notification_inboxes;
+TRUNCATE notification_device_tokens;
 
 SET foreign_key_checks = 1;
 

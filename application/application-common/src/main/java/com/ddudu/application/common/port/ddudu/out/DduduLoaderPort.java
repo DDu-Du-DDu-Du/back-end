@@ -17,4 +17,6 @@ public interface DduduLoaderPort {
 
   List<Ddudu> getDailyDdudus(LocalDate date, Long userId, List<PrivacyType> accessiblePrivacyTypes);
 
+  int countTodayDdudu(Long userId);
+
 }

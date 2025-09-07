@@ -10,7 +10,8 @@ public record MonthlyStatsReportResponse(
 ) {
 
   public static MonthlyStatsReportResponse from(
-      MonthlyStatsReportDto lastMonth, MonthlyStatsReportDto thisMonth
+      MonthlyStatsReportDto lastMonth,
+      MonthlyStatsReportDto thisMonth
   ) {
     return MonthlyStatsReportResponse.builder()
         .lastMonth(lastMonth)

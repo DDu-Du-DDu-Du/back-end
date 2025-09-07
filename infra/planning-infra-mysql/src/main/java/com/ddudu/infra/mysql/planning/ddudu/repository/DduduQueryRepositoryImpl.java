@@ -28,6 +28,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.core.types.dsl.StringExpression;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
@@ -223,6 +224,14 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .groupBy(dduduEntity.repeatDduduId)
         .orderBy(completedCount.desc(), totalCount.desc())
         .fetch();
+  }
+
+  @Override
+  public int countTodayByUserId(Long userId) {
+    return jpaQueryFactory.select(Wildcard.countAsInt)
+        .from(dduduEntity)
+        .where(dduduEntity.userId.eq(userId), dduduEntity.scheduledOn.eq(LocalDate.now()))
+        .fetchOne();
   }
 
   private Predicate getOpenness(boolean isMine, boolean isFollower) {
