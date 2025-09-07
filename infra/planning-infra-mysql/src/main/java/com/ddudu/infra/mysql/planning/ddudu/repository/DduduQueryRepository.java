@@ -51,4 +51,6 @@ public interface DduduQueryRepository {
       LocalDate to
   );
 
+  int countTodayByUserId(Long userId);
+
 }
