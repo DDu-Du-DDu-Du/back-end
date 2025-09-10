@@ -24,7 +24,7 @@ public class NotificationEvent {
   private final LocalDateTime firedAt;
 
   @Builder
-  public NotificationEvent(
+  private NotificationEvent(
       Long id,
       NotificationEventTypeCode typeCode,
       Long senderId,
@@ -33,7 +33,7 @@ public class NotificationEvent {
       LocalDateTime willFireAt,
       LocalDateTime firedAt
   ) {
-    validate(typeCode, receiverId, contextId);
+    validate(typeCode, receiverId, contextId, willFireAt);
 
     this.id = id;
     this.typeCode = typeCode;
@@ -48,7 +48,24 @@ public class NotificationEvent {
     return Objects.nonNull(firedAt);
   }
 
-  private void validate(NotificationEventTypeCode typeCode, Long receiverId, Long contextId) {
+  public NotificationEvent updateFireTime(LocalDateTime willFireAt) {
+    checkArgument(
+        !isAlreadyFired(),
+        NotificationEventErrorCode.CANNOT_MODIFY_FIRED_EVENT.getCodeName()
+    );
+    validateWillFireAt(willFireAt);
+
+    return getFullBuilder()
+        .willFireAt(willFireAt)
+        .build();
+  }
+
+  private void validate(
+      NotificationEventTypeCode typeCode,
+      Long receiverId,
+      Long contextId,
+      LocalDateTime willFireAt
+  ) {
     checkArgument(
         Objects.nonNull(typeCode),
         NotificationEventErrorCode.NULL_TYPE_CODE.getCodeName()
@@ -61,6 +78,28 @@ public class NotificationEvent {
         Objects.nonNull(contextId),
         NotificationEventErrorCode.NULL_CONTEXT_ID.getCodeName()
     );
+
+    if (Objects.nonNull(willFireAt)) {
+      validateWillFireAt(willFireAt);
+    }
+  }
+
+  private void validateWillFireAt(LocalDateTime willFireAt) {
+    checkArgument(
+        !willFireAt.isBefore(LocalDateTime.now()),
+        NotificationEventErrorCode.CANNOT_FIRE_AT_PAST.getCodeName()
+    );
+  }
+
+  private NotificationEventBuilder getFullBuilder() {
+    return NotificationEvent.builder()
+        .id(this.id)
+        .contextId(this.contextId)
+        .willFireAt(this.willFireAt)
+        .receiverId(this.receiverId)
+        .senderId(this.senderId)
+        .firedAt(this.firedAt)
+        .typeCode(this.typeCode);
   }
 
 }

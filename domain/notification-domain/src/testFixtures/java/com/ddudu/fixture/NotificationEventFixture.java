@@ -10,18 +10,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NotificationEventFixture extends BaseFixture {
 
-  private static NotificationEvent createFiredDduduEventNowWithUserAndContext(
+  public static NotificationEvent createFiredDduduEventNowWithUserAndContext(
       Long receiverId,
       Long dduduId
   ) {
-    return createFiredDduduEventWithUserAndContext(receiverId, dduduId, LocalDateTime.now());
+    LocalDateTime nearNow = LocalDateTime.now()
+        .plusSeconds(10);
+
+    return createFiredDduduEventWithUserAndContext(receiverId, dduduId, nearNow);
   }
 
   public static NotificationEvent createValidDduduEventNowWithUserAndContext(
       Long receiverId,
       Long dduduId
   ) {
-    return createValidDduduEventWithUserAndContext(receiverId, dduduId, LocalDateTime.now());
+    LocalDateTime nearNow = LocalDateTime.now()
+        .plusSeconds(10);
+
+    return createValidDduduEventWithUserAndContext(receiverId, dduduId, nearNow);
   }
 
   public static NotificationEvent createFiredDduduEventWithUserAndContext(
@@ -50,6 +56,17 @@ public class NotificationEventFixture extends BaseFixture {
     );
   }
 
+  public static NotificationEvent createFiredEventNowWithUserAndContext(
+      Long receiverId,
+      NotificationEventTypeCode typeCode,
+      Long contextId
+  ) {
+    LocalDateTime nearNow = LocalDateTime.now()
+        .plusSeconds(10);
+
+    return createFiredEventWithUserAndContext(receiverId, typeCode, contextId, nearNow);
+  }
+
   public static NotificationEvent createFiredEventWithUserAndContext(
       Long receiverId,
       NotificationEventTypeCode typeCode,
@@ -65,6 +82,17 @@ public class NotificationEventFixture extends BaseFixture {
         willFireAt,
         firedAt
     );
+  }
+
+  public static NotificationEvent createValidEventNowWithUserAndContext(
+      Long receiverId,
+      NotificationEventTypeCode typeCode,
+      Long contextId
+  ) {
+    LocalDateTime nearNow = LocalDateTime.now()
+        .plusSeconds(10);
+
+    return createValidEventWithUserAndContext(receiverId, typeCode, contextId, nearNow);
   }
 
   public static NotificationEvent createValidEventWithUserAndContext(
