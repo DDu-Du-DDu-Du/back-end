@@ -130,11 +130,10 @@ class NotificationEventTest {
     @Test
     void 오늘_발송_예정인_이벤트면_true를_반환한다() {
       // given
-      NotificationEvent event = NotificationEventFixture.createValidEventWithUserAndContext(
+      NotificationEvent event = NotificationEventFixture.createValidEventNowWithUserAndContext(
           userId,
           typeCode,
-          contextId,
-          LocalDateTime.now()
+          contextId
       );
 
       // when
@@ -187,11 +186,10 @@ class NotificationEventTest {
     @Test
     void 발송되지_않은_이벤트는_false를_반환한다() {
       // given
-      NotificationEvent notFired = NotificationEventFixture.createValidEventWithUserAndContext(
+      NotificationEvent notFired = NotificationEventFixture.createValidEventNowWithUserAndContext(
           userId,
           typeCode,
-          contextId,
-          LocalDateTime.now()
+          contextId
       );
 
       // when
