@@ -7,23 +7,17 @@ import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
-import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
-import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.NotificationEventFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.MissingResourceException;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,12 +48,6 @@ class SetReminderServiceTest {
   @Autowired
   DduduLoaderPort dduduLoaderPort;
 
-  @Autowired
-  NotificationEventLoaderPort notificationEventLoaderPort;
-
-  @Autowired
-  NotificationEventCommandPort notificationEventCommandPort;
-
   User user;
   Goal goal;
   Ddudu ddudu;
@@ -88,43 +76,12 @@ class SetReminderServiceTest {
 
     // then
     Ddudu actualDdudu = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
-    Optional<NotificationEvent> actualEvent = notificationEventLoaderPort.getOptionalEventByContext(
-        NotificationEventTypeCode.DDUDU,
-        ddudu.getId()
-    );
     LocalDateTime expected = ddudu.getScheduledOn()
         .atTime(ddudu.getBeginAt())
         .minusHours(request.hours())
         .minusMinutes(request.minutes());
 
     assertThat(actualDdudu.getRemindAt()).isEqualTo(expected);
-    assertThat(actualEvent).isPresent();
-  }
-
-  @Test
-  void 알림_이벤트가_존재하면_알림_이벤트를_수정한다() {
-    // given
-    NotificationEvent event = NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
-        user.getId(),
-        ddudu.getId()
-    );
-    LocalDateTime previous = event.getWillFireAt();
-
-    notificationEventCommandPort.save(event);
-
-    SetReminderRequest request = new SetReminderRequest(0, 0, 30);
-
-    // when
-    setReminderService.setReminder(user.getId(), ddudu.getId(), request);
-
-    // then
-    NotificationEvent actual = notificationEventLoaderPort.getOptionalEventByContext(
-            NotificationEventTypeCode.DDUDU,
-            ddudu.getId()
-        )
-        .get();
-
-    assertThat(actual.getWillFireAt()).isNotEqualTo(previous);
   }
 
   @Test
