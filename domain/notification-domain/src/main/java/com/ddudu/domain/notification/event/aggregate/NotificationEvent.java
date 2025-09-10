@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Builder;
@@ -42,6 +43,13 @@ public class NotificationEvent {
     this.contextId = contextId;
     this.willFireAt = Objects.requireNonNullElse(willFireAt, LocalDateTime.now());
     this.firedAt = firedAt;
+  }
+
+  public boolean isPlannedToday() {
+    LocalDate today = LocalDate.now();
+
+    return willFireAt.toLocalDate()
+        .isEqual(today);
   }
 
   public boolean isAlreadyFired() {
