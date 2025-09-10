@@ -7,6 +7,7 @@ import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.infra.mysql.notification.event.entity.NotificationEventEntity;
 import com.ddudu.infra.mysql.notification.event.repository.NotificationEventRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -19,21 +20,18 @@ public class NotificationEventCommandPersistenceAdapter implements NotificationE
 
   @Override
   public NotificationEvent save(NotificationEvent event) {
-    Optional<NotificationEventEntity> optionalEvent = notificationEventRepository.findByTypeCodeAndContextId(
-        event.getTypeCode(),
-        event.getContextId()
-    );
+    return notificationEventRepository.save(NotificationEventEntity.from(event))
+        .toDomain();
+  }
 
-    if (optionalEvent.isEmpty()) {
-      return notificationEventRepository.save(NotificationEventEntity.from(event))
-          .toDomain();
-    }
+  @Override
+  public NotificationEvent update(NotificationEvent event) {
+    NotificationEventEntity notificationEventEntity = notificationEventRepository.findById(event.getId())
+        .orElseThrow(EntityNotFoundException::new);
 
-    NotificationEventEntity eventEntity = optionalEvent.get();
+    notificationEventEntity.update(event);
 
-    eventEntity.update(event);
-
-    return eventEntity.toDomain();
+    return notificationEventEntity.toDomain();
   }
 
   @Override
@@ -42,21 +40,25 @@ public class NotificationEventCommandPersistenceAdapter implements NotificationE
   }
 
   @Override
-  public void deleteAllByContext(NotificationEventTypeCode typeCode, Long contextId) {
-    notificationEventRepository.deleteAllByTypeCodeAndContextId(typeCode, contextId);
-  }
-
-  @Override
-  public boolean existsByContext(NotificationEventTypeCode typeCode, Long contextId) {
-    return notificationEventRepository.existsByTypeCodeAndContextId(typeCode, contextId);
+  public boolean existsByContext(Long userId, NotificationEventTypeCode typeCode, Long contextId) {
+    return notificationEventRepository.existsByReceiverIdAndTypeCodeAndContextId(
+        userId,
+        typeCode,
+        contextId
+    );
   }
 
   @Override
   public Optional<NotificationEvent> getOptionalEventByContext(
+      Long userId,
       NotificationEventTypeCode typeCode,
       Long contextId
   ) {
-    return notificationEventRepository.findByTypeCodeAndContextId(typeCode, contextId)
+    return notificationEventRepository.findByReceiverIdAndTypeCodeAndContextId(
+            userId,
+            typeCode,
+            contextId
+        )
         .map(NotificationEventEntity::toDomain);
   }
 

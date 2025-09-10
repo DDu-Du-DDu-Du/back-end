@@ -7,13 +7,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationEventRepository extends JpaRepository<NotificationEventEntity, Long> {
 
-  boolean existsByTypeCodeAndContextId(NotificationEventTypeCode typeCode, Long contextId);
-
-  Optional<NotificationEventEntity> findByTypeCodeAndContextId(
+  boolean existsByReceiverIdAndTypeCodeAndContextId(
+      Long receiverId,
       NotificationEventTypeCode typeCode,
       Long contextId
   );
 
-  void deleteAllByTypeCodeAndContextId(NotificationEventTypeCode typeCode, Long contextId);
+  Optional<NotificationEventEntity> findByReceiverIdAndTypeCodeAndContextId(
+      Long userId,
+      NotificationEventTypeCode typeCode,
+      Long contextId
+  );
 
 }

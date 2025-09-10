@@ -6,9 +6,10 @@ import java.util.Optional;
 
 public interface NotificationEventLoaderPort {
 
-  boolean existsByContext(NotificationEventTypeCode typeCode, Long contextId);
+  boolean existsByContext(Long userId, NotificationEventTypeCode typeCode, Long contextId);
 
   Optional<NotificationEvent> getOptionalEventByContext(
+      Long userId,
       NotificationEventTypeCode typeCode,
       Long contextId
   );
