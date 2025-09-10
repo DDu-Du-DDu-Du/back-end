@@ -148,10 +148,6 @@ public class Ddudu {
         .build();
   }
 
-  public boolean isScheduledToday() {
-    return scheduledOn.isEqual(LocalDate.now());
-  }
-
   public Ddudu cancelReminder() {
     return getFullBuilder()
         .remindAt(null)

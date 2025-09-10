@@ -10,7 +10,6 @@ import com.ddudu.application.common.port.notification.out.NotificationEventComma
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
-import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
@@ -91,13 +90,8 @@ class CancelReminderServiceTest {
 
     // then
     Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
-    boolean actualEventExists = notificationEventLoaderPort.existsByContext(
-        NotificationEventTypeCode.DDUDU,
-        ddudu.getId()
-    );
 
     assertThat(actual.getRemindAt()).isNull();
-    assertThat(actualEventExists).isFalse();
   }
 
   @Test

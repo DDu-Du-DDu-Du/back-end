@@ -1,0 +1,24 @@
+package com.ddudu.application.common.dto.interim;
+
+import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
+import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import java.time.LocalDateTime;
+import lombok.Builder;
+
+@Builder
+public record InterimCancelReminderEvent(
+    Long userId,
+    NotificationEventTypeCode typeCode,
+    Long contextId,
+    LocalDateTime willFireAt
+) implements InterimNotificationEvent {
+
+  public static InterimCancelReminderEvent from(Long userId, Ddudu ddudu) {
+    return InterimCancelReminderEvent.builder()
+        .userId(userId)
+        .typeCode(NotificationEventTypeCode.DDUDU)
+        .contextId(ddudu.getId())
+        .build();
+  }
+
+}

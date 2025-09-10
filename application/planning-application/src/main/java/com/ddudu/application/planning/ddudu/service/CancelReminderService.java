@@ -1,33 +1,33 @@
 package com.ddudu.application.planning.ddudu.service;
 
+import com.ddudu.application.common.dto.interim.InterimCancelReminderEvent;
+import com.ddudu.application.common.dto.notification.event.NotificationEventRemoveEvent;
 import com.ddudu.application.common.port.ddudu.in.CancelReminderUseCase;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.DduduUpdatePort;
-import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
-import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
-import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.user.user.aggregate.User;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional
 public class CancelReminderService implements CancelReminderUseCase {
 
   private final UserLoaderPort userLoaderPort;
   private final DduduLoaderPort dduduLoaderPort;
   private final DduduUpdatePort dduduUpdatePort;
-  private final NotificationEventCommandPort notificationEventCommandPort;
-  private final NotificationEventLoaderPort notificationEventLoaderPort;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
+  @Transactional
   public void cancel(Long loginId, Long id) {
     User user = userLoaderPort.getUserOrElseThrow(
         loginId,
@@ -43,30 +43,20 @@ public class CancelReminderService implements CancelReminderUseCase {
     Ddudu dduduWithoutReminder = ddudu.cancelReminder();
     Ddudu updated = dduduUpdatePort.update(dduduWithoutReminder);
 
-    removeNotificationEvent(updated);
-
-    if (ddudu.isScheduledToday()) {
-      // TODO: TaskScheduler에서 삭제
-    }
-  }
-
-  private void removeNotificationEvent(Ddudu ddudu) {
-    Optional<NotificationEvent> optionalEvent = notificationEventLoaderPort.getOptionalEventByContext(
-        NotificationEventTypeCode.DDUDU,
-        ddudu.getId()
+    InterimCancelReminderEvent interimEvent = InterimCancelReminderEvent.from(
+        user.getId(),
+        updated
     );
 
-    if (optionalEvent.isEmpty()) {
-      return;
-    }
+    applicationEventPublisher.publishEvent(interimEvent);
+  }
 
-    NotificationEvent notificationEvent = optionalEvent.get();
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  void publishNotificationEventAfterCommit(InterimCancelReminderEvent event) {
+    NotificationEventRemoveEvent removeEvent = NotificationEventRemoveEvent.from(event);
 
-    if (notificationEvent.isAlreadyFired()) {
-      return;
-    }
-
-    notificationEventCommandPort.delete(notificationEvent);
+    applicationEventPublisher.publishEvent(removeEvent);
   }
 
 }

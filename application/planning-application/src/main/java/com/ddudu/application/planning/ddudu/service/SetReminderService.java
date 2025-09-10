@@ -1,33 +1,34 @@
 package com.ddudu.application.planning.ddudu.service;
 
 import com.ddudu.application.common.dto.ddudu.request.SetReminderRequest;
+import com.ddudu.application.common.dto.interim.InterimSetReminderEvent;
+import com.ddudu.application.common.dto.notification.event.NotificationEventSaveEvent;
 import com.ddudu.application.common.port.ddudu.in.SetReminderUseCase;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.DduduUpdatePort;
-import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
-import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
-import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.user.user.aggregate.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional
 public class SetReminderService implements SetReminderUseCase {
 
   private final UserLoaderPort userLoaderPort;
   private final DduduLoaderPort dduduLoaderPort;
   private final DduduUpdatePort dduduUpdatePort;
-  private final NotificationEventLoaderPort notificationEventLoaderPort;
-  private final NotificationEventCommandPort notificationEventCommandPort;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
+  @Transactional
   public void setReminder(Long loginId, Long id, SetReminderRequest request) {
     User user = userLoaderPort.getUserOrElseThrow(
         loginId,
@@ -41,34 +42,21 @@ public class SetReminderService implements SetReminderUseCase {
     ddudu.validateDduduCreator(user.getId());
 
     Ddudu dduduWithReminder = ddudu.setReminder(request.days(), request.hours(), request.minutes());
-
-    dduduUpdatePort.update(dduduWithReminder);
-    upsertNotification(user.getId(), ddudu);
-  }
-
-  private void upsertNotification(Long userId, Ddudu ddudu) {
-    boolean notificationRegistered = notificationEventLoaderPort.existsByContext(
-        NotificationEventTypeCode.DDUDU,
-        ddudu.getId()
+    Ddudu updated = dduduUpdatePort.update(dduduWithReminder);
+    InterimSetReminderEvent interimEvent = InterimSetReminderEvent.from(
+        user.getId(),
+        updated
     );
 
-    if (notificationRegistered) {
-      // TODO: TaskScheduler 구현 후 Scheduler에서 삭제
-    }
+    applicationEventPublisher.publishEvent(interimEvent);
+  }
 
-    NotificationEvent notificationEvent = NotificationEvent.builder()
-        .contextId(ddudu.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU)
-        .receiverId(userId)
-        .senderId(userId)
-        .willFireAt(ddudu.getRemindAt())
-        .build();
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  void publishNotificationEventAfterCommit(InterimSetReminderEvent event) {
+    NotificationEventSaveEvent saveEvent = NotificationEventSaveEvent.from(event);
 
-    notificationEventCommandPort.save(notificationEvent);
-
-    if (ddudu.isScheduledToday()) {
-      // TODO: TaskScheduler 구현 후 Scheduler에 추가하기
-    }
+    applicationEventPublisher.publishEvent(saveEvent);
   }
 
 }
