@@ -34,7 +34,7 @@ public class NotificationEvent {
       LocalDateTime willFireAt,
       LocalDateTime firedAt
   ) {
-    validate(typeCode, receiverId, contextId, willFireAt);
+    validate(typeCode, receiverId, contextId);
 
     this.id = id;
     this.typeCode = typeCode;
@@ -68,12 +68,7 @@ public class NotificationEvent {
         .build();
   }
 
-  private void validate(
-      NotificationEventTypeCode typeCode,
-      Long receiverId,
-      Long contextId,
-      LocalDateTime willFireAt
-  ) {
+  private void validate(NotificationEventTypeCode typeCode, Long receiverId, Long contextId) {
     checkArgument(
         Objects.nonNull(typeCode),
         NotificationEventErrorCode.NULL_TYPE_CODE.getCodeName()
@@ -86,10 +81,6 @@ public class NotificationEvent {
         Objects.nonNull(contextId),
         NotificationEventErrorCode.NULL_CONTEXT_ID.getCodeName()
     );
-
-    if (Objects.nonNull(willFireAt)) {
-      validateWillFireAt(willFireAt);
-    }
   }
 
   private void validateWillFireAt(LocalDateTime willFireAt) {
