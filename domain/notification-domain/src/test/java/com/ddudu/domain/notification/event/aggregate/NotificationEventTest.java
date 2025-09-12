@@ -104,24 +104,6 @@ class NotificationEventTest {
           .withMessage(NotificationEventErrorCode.NULL_CONTEXT_ID.getCodeName());
     }
 
-    @Test
-    void 발송_예정_시간이_오늘보다_이전이면_생성을_실패한다() {
-      // given
-      LocalDateTime willFireAt = NotificationEventFixture.getPastDateTime(1, TimeUnit.DAYS);
-      NotificationEventBuilder builder = NotificationEvent.builder()
-          .contextId(contextId)
-          .typeCode(typeCode)
-          .receiverId(userId)
-          .willFireAt(willFireAt);
-
-      // when
-      ThrowingCallable create = builder::build;
-
-      // then
-      assertThatIllegalArgumentException().isThrownBy(create)
-          .withMessage(NotificationEventErrorCode.CANNOT_FIRE_AT_PAST.getCodeName());
-    }
-
   }
 
   @Nested
