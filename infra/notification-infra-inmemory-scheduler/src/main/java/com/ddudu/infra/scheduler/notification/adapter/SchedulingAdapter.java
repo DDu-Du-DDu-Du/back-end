@@ -22,11 +22,14 @@ public class SchedulingAdapter implements NotificationSchedulingPort {
 
   @Override
   public void scheduleNotificationEvent(Long eventId, LocalDateTime willFireAt) {
+    scheduleRepository.find(eventId)
+        .ifPresent(schedule -> schedule.cancel(false));
+
     Instant instant = willFireAt.atZone(ZoneId.systemDefault())
         .toInstant();
 
     ScheduledFuture<?> schedule = taskScheduler.schedule(
-        () -> applicationEventPublisher.publishEvent(new NotificationSendEvent(eventId)),
+        () -> publishNotificationSendEvent(eventId),
         instant
     );
 
@@ -38,6 +41,11 @@ public class SchedulingAdapter implements NotificationSchedulingPort {
     ScheduledFuture<?> schedule = scheduleRepository.delete(eventId);
 
     schedule.cancel(false);
+  }
+
+  private void publishNotificationSendEvent(Long eventId) {
+    applicationEventPublisher.publishEvent(new NotificationSendEvent(eventId));
+    scheduleRepository.delete(eventId);
   }
 
 }
