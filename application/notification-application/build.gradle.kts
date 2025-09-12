@@ -23,6 +23,7 @@ dependencies {
     testImplementation(project(":infra:user-infra-mysql"))
     testImplementation(project(":infra:planning-infra-mysql"))
     testImplementation(project(":infra:notification-infra-mysql"))
+    testImplementation(project(":infra:notification-infra-inmemory-scheduler"))
 }
 
 val copyTestSecret by tasks.registering(Copy::class) {

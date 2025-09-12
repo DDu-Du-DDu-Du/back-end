@@ -33,6 +33,7 @@ include(
     "infra:planning-infra-mysql",
     "infra:user-infra-external-api",
     "infra:notification-infra-mysql",
+    "infra:notification-infra-inmemory-scheduler",
 
     // common
     "common",
