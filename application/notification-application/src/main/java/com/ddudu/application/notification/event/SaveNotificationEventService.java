@@ -4,6 +4,7 @@ import com.ddudu.application.common.dto.notification.event.NotificationEventSave
 import com.ddudu.application.common.port.notification.in.SaveNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
+import com.ddudu.application.common.port.notification.out.NotificationSchedulingPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import java.util.Optional;
@@ -17,13 +18,17 @@ public class SaveNotificationEventService implements SaveNotificationEventUseCas
 
   private final NotificationEventCommandPort notificationEventCommandPort;
   private final NotificationEventLoaderPort notificationEventLoaderPort;
+  private final NotificationSchedulingPort notificationSchedulingPort;
 
   @Override
   public void save(NotificationEventSaveEvent event) {
     NotificationEvent notificationEvent = upsertEvent(event);
 
     if (notificationEvent.isPlannedToday()) {
-      // TODO: Task Scheduler 구현 후 예약 구현
+      notificationSchedulingPort.scheduleNotificationEvent(
+          notificationEvent.getId(),
+          notificationEvent.getWillFireAt()
+      );
     }
   }
 
