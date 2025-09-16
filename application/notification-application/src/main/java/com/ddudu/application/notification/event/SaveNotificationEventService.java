@@ -24,10 +24,6 @@ public class SaveNotificationEventService implements SaveNotificationEventUseCas
   public void save(NotificationEventSaveEvent event) {
     NotificationEvent notificationEvent = upsertEvent(event);
 
-    if (event.willFireAt().isEqual(notificationEvent.getWillFireAt())) {
-      return;
-    }
-
     if (notificationEvent.isPlannedToday()) {
       notificationSchedulingPort.scheduleNotificationEvent(
           notificationEvent.getId(),

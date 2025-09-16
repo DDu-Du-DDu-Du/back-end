@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -65,6 +66,37 @@ public class NotificationEvent {
 
     return getFullBuilder()
         .willFireAt(willFireAt)
+        .build();
+  }
+
+  public String getDduduBody(Duration remindDifference) {
+    long dayDifference = remindDifference.toDays();
+    long hourDifference = remindDifference.minusDays(dayDifference)
+        .toHours();
+    long minuteDifference = remindDifference.minusDays(dayDifference)
+        .minusHours(hourDifference)
+        .toMinutes();
+
+    String reminderBody = "";
+
+    if (dayDifference != 0) {
+      reminderBody += dayDifference + "일 ";
+    }
+
+    if (hourDifference != 0) {
+      reminderBody += hourDifference + "시간 ";
+    }
+
+    if (minuteDifference != 0) {
+      reminderBody += minuteDifference + "분 ";
+    }
+
+    return typeCode.formatBody(reminderBody);
+  }
+
+  public NotificationEvent markFired() {
+    return getFullBuilder()
+        .firedAt(LocalDateTime.now())
         .build();
   }
 

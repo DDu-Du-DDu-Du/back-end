@@ -8,6 +8,7 @@ import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventType
 import com.ddudu.infra.mysql.notification.event.entity.NotificationEventEntity;
 import com.ddudu.infra.mysql.notification.event.repository.NotificationEventRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.MissingResourceException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -60,6 +61,17 @@ public class NotificationEventCommandPersistenceAdapter implements NotificationE
             contextId
         )
         .map(NotificationEventEntity::toDomain);
+  }
+
+  @Override
+  public NotificationEvent getEventOrElseThrow(Long eventId, String message) {
+    return notificationEventRepository.findById(eventId)
+        .orElseThrow(() -> new MissingResourceException(
+            message,
+            NotificationEvent.class.getName(),
+            eventId.toString()
+        ))
+        .toDomain();
   }
 
 }

@@ -1,15 +1,18 @@
 package com.ddudu.domain.planning.ddudu.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu.DduduBuilder;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.fixture.DduduFixture;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -533,6 +536,95 @@ class DduduTest {
         Assertions.assertThatIllegalArgumentException()
             .isThrownBy(changeName)
             .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+      }
+
+    }
+
+    @Nested
+    class 미리알림_시간차_테스트 {
+
+      LocalDateTime scheduledAt;
+      LocalDateTime remindAt;
+
+      @BeforeEach
+      void setUp() {
+        scheduledAt = DduduFixture.getFutureDateTime(10, TimeUnit.DAYS);
+        remindAt = scheduledAt.minusDays(DduduFixture.getRandomInt(1, 8));
+        ddudu = DduduFixture.createDduduWithReminder(
+            userId,
+            goalId,
+            scheduledAt.toLocalDate(),
+            scheduledAt.toLocalTime(),
+            remindAt
+        );
+      }
+
+      @Test
+      void 미리알림_시간차_계산을_성공한다() {
+        // given
+        Duration expected = Duration.between(remindAt, scheduledAt);
+
+        // when
+        Duration actual = ddudu.getRemindDifference();
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+      }
+
+      @Test
+      void 뚜두_시작시간이_없으면_미리알림_시간차_계산을_실패한다() {
+        // given
+        Ddudu dduduWithoutTime = DduduFixture.createRandomDduduWithSchedule(
+            userId,
+            goalId,
+            scheduledAt.toLocalDate()
+        );
+
+        // when
+        ThrowingCallable getDifference = dduduWithoutTime::getRemindDifference;
+
+        // then
+        assertThatIllegalStateException().isThrownBy(getDifference)
+            .withMessage(DduduErrorCode.UNABLE_TO_GET_REMINDER.getCodeName());
+      }
+
+      @Test
+      void 뚜두_미리알림_시간이_없으면_미리알림_시간차_계산을_실패한다() {
+        // given
+        Ddudu dduduWithoutReminder = DduduFixture.createRandomDduduWithSchedule(
+                userId,
+                goalId,
+                scheduledAt.toLocalDate()
+            )
+            .setUpPeriod(scheduledAt.toLocalTime(), null);
+
+        // when
+        ThrowingCallable getDifference = dduduWithoutReminder::getRemindDifference;
+
+        // then
+        assertThatIllegalStateException().isThrownBy(getDifference)
+            .withMessage(DduduErrorCode.UNABLE_TO_GET_REMINDER.getCodeName());
+      }
+
+      @Test
+      void 뚜두_미리알림_시간이_시작시간보다_늦으면_시간차_계산을_실패한다() {
+        // given
+        int futureReminderDays = DduduFixture.getRandomInt(1, 10);
+        LocalDateTime futureReminder = scheduledAt.plusDays(futureReminderDays);
+        ddudu = DduduFixture.createDduduWithReminder(
+            userId,
+            goalId,
+            scheduledAt.toLocalDate(),
+            scheduledAt.toLocalTime(),
+            futureReminder
+        );
+
+        // when
+        ThrowingCallable getDifference = ddudu::getRemindDifference;
+
+        // then
+        assertThatIllegalStateException().isThrownBy(getDifference)
+            .withMessage(DduduErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName());
       }
 
     }

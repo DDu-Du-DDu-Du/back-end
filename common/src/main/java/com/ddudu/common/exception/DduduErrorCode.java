@@ -26,7 +26,8 @@ public enum DduduErrorCode implements ErrorCode {
   BEGIN_AT_REQUIRED_FOR_REMINDER(2017, "시작 시간 없이 미리알림을 설정할 수 없습니다."),
   REMINDER_NOT_AFTER_NOW(2018, "미리알림 시간은 현재 시간보다 이후여야 합니다."),
   ZERO_REMINDER(2019, "미리알림 입력값이 없습니다."),
-  NEGATIVE_REMINDER_INPUT_EXISTS(2020, "미리알림을 입력값 중 음수가 포함되어 있습니다.");
+  NEGATIVE_REMINDER_INPUT_EXISTS(2020, "미리알림을 입력값 중 음수가 포함되어 있습니다."),
+  UNABLE_TO_GET_REMINDER(2021, "미리알림 시간을 알 수 없는 상태입니다.");
 
   private final int code;
   private final String message;

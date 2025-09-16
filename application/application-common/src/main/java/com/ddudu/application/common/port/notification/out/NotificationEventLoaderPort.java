@@ -14,4 +14,6 @@ public interface NotificationEventLoaderPort {
       Long contextId
   );
 
+  NotificationEvent getEventOrElseThrow(Long eventId, String message);
+
 }

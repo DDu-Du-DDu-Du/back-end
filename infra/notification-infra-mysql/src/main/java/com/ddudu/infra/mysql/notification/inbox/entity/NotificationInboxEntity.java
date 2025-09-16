@@ -1,9 +1,12 @@
 package com.ddudu.infra.mysql.notification.inbox.entity;
 
-import com.ddudu.domain.notification.inbox.aggregate.NotificationInbox;
+import com.ddudu.domain.notification.event.aggregate.NotificationInbox;
+import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.infra.mysql.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,9 +49,11 @@ public class NotificationInboxEntity extends BaseEntity {
   @Column(
       name = "type_code",
       nullable = false,
+      columnDefinition = "VARCHAR",
       length = 20
   )
-  private String typeCode;
+  @Enumerated(EnumType.STRING)
+  private NotificationEventTypeCode typeCode;
 
   @Column(
       name = "title",
@@ -68,6 +73,12 @@ public class NotificationInboxEntity extends BaseEntity {
   )
   private LocalDateTime readAt;
 
+  @Column(
+      name = "context_id",
+      nullable = false
+  )
+  private Long contextId;
+
   public static NotificationInboxEntity from(NotificationInbox domain) {
     return NotificationInboxEntity.builder()
         .id(domain.getId())
@@ -78,6 +89,7 @@ public class NotificationInboxEntity extends BaseEntity {
         .title(domain.getTitle())
         .body(domain.getBody())
         .readAt(domain.getReadAt())
+        .contextId(domain.getContextId())
         .build();
   }
 
@@ -91,6 +103,7 @@ public class NotificationInboxEntity extends BaseEntity {
         .title(title)
         .body(body)
         .readAt(readAt)
+        .contextId(contextId)
         .build();
   }
 

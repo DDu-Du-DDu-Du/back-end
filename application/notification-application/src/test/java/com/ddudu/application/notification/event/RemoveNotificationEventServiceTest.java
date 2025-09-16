@@ -77,12 +77,12 @@ class RemoveNotificationEventServiceTest {
 
     NotificationEventRemoveEvent removeEvent = NotificationEventRemoveEvent.builder()
         .userId(user.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU)
+        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
         .contextId(ddudu.getId())
         .build();
     boolean expected = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU,
+        NotificationEventTypeCode.DDUDU_REMINDER,
         ddudu.getId()
     );
 
@@ -92,7 +92,7 @@ class RemoveNotificationEventServiceTest {
     // then
     boolean actual = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU,
+        NotificationEventTypeCode.DDUDU_REMINDER,
         ddudu.getId()
     );
 
@@ -105,12 +105,12 @@ class RemoveNotificationEventServiceTest {
     long invalidId = NotificationEventFixture.getRandomId();
     NotificationEventRemoveEvent removeEvent = NotificationEventRemoveEvent.builder()
         .userId(user.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU)
+        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
         .contextId(invalidId)
         .build();
     boolean expected = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU,
+        NotificationEventTypeCode.DDUDU_REMINDER,
         invalidId
     );
 
@@ -120,7 +120,7 @@ class RemoveNotificationEventServiceTest {
     // then
     boolean actual = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU,
+        NotificationEventTypeCode.DDUDU_REMINDER,
         invalidId
     );
 
@@ -138,12 +138,12 @@ class RemoveNotificationEventServiceTest {
     );
     NotificationEventRemoveEvent removeEvent = NotificationEventRemoveEvent.builder()
         .userId(user.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU)
+        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
         .contextId(ddudu.getId())
         .build();
     boolean expected = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU,
+        NotificationEventTypeCode.DDUDU_REMINDER,
         ddudu.getId()
     );
 
@@ -153,7 +153,7 @@ class RemoveNotificationEventServiceTest {
     // then
     boolean actual = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU,
+        NotificationEventTypeCode.DDUDU_REMINDER,
         ddudu.getId()
     );
 
