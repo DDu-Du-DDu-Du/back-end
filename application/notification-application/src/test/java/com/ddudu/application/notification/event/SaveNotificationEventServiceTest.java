@@ -71,7 +71,7 @@ class SaveNotificationEventServiceTest {
     NotificationEventSaveEvent saveEvent = NotificationEventSaveEvent.builder()
         .userId(user.getId())
         .contextId(ddudu.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU)
+        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
         .willFireAt(willFireAt)
         .build();
 
@@ -81,7 +81,7 @@ class SaveNotificationEventServiceTest {
     // then
     Optional<NotificationEvent> actual = notificationEventLoaderPort.getOptionalEventByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU,
+        NotificationEventTypeCode.DDUDU_REMINDER,
         ddudu.getId()
     );
 
@@ -103,7 +103,7 @@ class SaveNotificationEventServiceTest {
     NotificationEventSaveEvent saveEvent = NotificationEventSaveEvent.builder()
         .userId(user.getId())
         .contextId(ddudu.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU)
+        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
         .willFireAt(willFireAt)
         .build();
 
@@ -113,7 +113,7 @@ class SaveNotificationEventServiceTest {
     // then
     NotificationEvent actual = notificationEventLoaderPort.getOptionalEventByContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU,
+            NotificationEventTypeCode.DDUDU_REMINDER,
             ddudu.getId()
         )
         .orElseThrow();
