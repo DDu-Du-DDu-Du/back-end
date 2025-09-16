@@ -7,6 +7,7 @@ import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent.NotificationEventBuilder;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.fixture.NotificationEventFixture;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -240,6 +241,121 @@ class NotificationEventTest {
       // then
       assertThatIllegalArgumentException().isThrownBy(update)
           .withMessage(NotificationEventErrorCode.CANNOT_FIRE_AT_PAST.getCodeName());
+    }
+
+  }
+
+  @Nested
+  class 뚜두_미리알림_내용_테스트 {
+
+    NotificationEvent notificationEvent;
+
+    @BeforeEach
+    void setUp() {
+      notificationEvent = NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+          userId,
+          contextId
+      );
+    }
+
+    @Test
+    void 뚜두_미리알림_n일_전_알림_내용을_생성한다() {
+      // given
+      int n = NotificationEventFixture.getRandomInt(1, 100);
+      LocalDateTime remindAt = notificationEvent.getWillFireAt()
+          .minusDays(n);
+      Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
+
+      // when
+      String actual = notificationEvent.getDduduBody(difference);
+
+      // then
+      assertThat(actual).contains(n + "일");
+    }
+
+    @Test
+    void 뚜두_미리알림_n시간_전_알림_내용을_생성한다() {
+      // given
+      int n = NotificationEventFixture.getRandomInt(1, 23);
+      LocalDateTime remindAt = notificationEvent.getWillFireAt()
+          .minusHours(n);
+      Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
+
+      // when
+      String actual = notificationEvent.getDduduBody(difference);
+
+      // then
+      assertThat(actual).contains(n + "시간");
+    }
+
+    @Test
+    void 뚜두_미리알림_n일_m시간_전_알림_내용을_생성한다() {
+      // given
+      int n = NotificationEventFixture.getRandomInt(1, 100);
+      int m = NotificationEventFixture.getRandomInt(1, 23);
+      LocalDateTime remindAt = notificationEvent.getWillFireAt()
+          .minusDays(n)
+          .minusHours(m);
+      Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
+
+      // when
+      String actual = notificationEvent.getDduduBody(difference);
+
+      // then
+      assertThat(actual).contains(n + "일 " + m + "시간");
+    }
+
+    @Test
+    void 뚜두_미리알림_n일_m분_전_알림_내용을_생성한다() {
+      // given
+      int n = NotificationEventFixture.getRandomInt(1, 100);
+      int m = NotificationEventFixture.getRandomInt(1, 59);
+      LocalDateTime remindAt = notificationEvent.getWillFireAt()
+          .minusDays(n)
+          .minusMinutes(m);
+      Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
+
+      // when
+      String actual = notificationEvent.getDduduBody(difference);
+
+      // then
+      assertThat(actual).contains(n + "일 " + m + "분");
+    }
+
+    @Test
+    void 뚜두_미리알림_n시간_m분_전_알림_내용을_생성한다() {
+      // given
+      int n = NotificationEventFixture.getRandomInt(1, 23);
+      int m = NotificationEventFixture.getRandomInt(1, 59);
+      LocalDateTime remindAt = notificationEvent.getWillFireAt()
+          .minusHours(n)
+          .minusMinutes(m);
+      Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
+
+      // when
+      String actual = notificationEvent.getDduduBody(difference);
+
+      // then
+      assertThat(actual).contains(n + "시간 " + m + "분");
+    }
+
+    @Test
+    void 뚜두_미리알림_n일_m시간_l분_전_알림_내용을_생성한다() {
+      // given
+      int n = NotificationEventFixture.getRandomInt(1, 100);
+      int m = NotificationEventFixture.getRandomInt(1, 23);
+      int l = NotificationEventFixture.getRandomInt(1, 59);
+      LocalDateTime remindAt = notificationEvent.getWillFireAt()
+          .minusDays(n)
+          .minusHours(m)
+          .minusMinutes(l);
+      Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
+
+      // when
+      String actual = notificationEvent.getDduduBody(difference);
+
+      // then
+      assertThat(actual).contains(n + "일 " + m + "시간 " + l + "분");
     }
 
   }
