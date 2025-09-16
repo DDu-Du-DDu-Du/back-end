@@ -1,6 +1,7 @@
 package com.ddudu.domain.planning.ddudu.aggregate;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -72,17 +73,9 @@ public class Ddudu {
   }
 
   public Ddudu setUpPeriod(LocalTime beginAt, LocalTime endAt) {
-    DduduBuilder builder = getFullBuilder();
-
-    if (Objects.nonNull(beginAt)) {
-      builder.beginAt(beginAt);
-    }
-
-    if (Objects.nonNull(endAt)) {
-      builder.endAt(endAt);
-    }
-
-    return builder.build();
+    return getFullBuilder().beginAt(beginAt)
+        .endAt(endAt)
+        .build();
   }
 
   public Ddudu moveDate(LocalDate newDate) {
