@@ -8,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class NotificationEventFixture extends BaseFixture {
+public final class NotificationEventFixture extends BaseFixture {
 
   public static NotificationEvent createFiredDduduEventNowWithUserAndContext(
       Long receiverId,
@@ -37,7 +37,7 @@ public class NotificationEventFixture extends BaseFixture {
   ) {
     return createFiredEventWithUserAndContext(
         receiverId,
-        NotificationEventTypeCode.DDUDU,
+        NotificationEventTypeCode.DDUDU_REMINDER,
         dduduId,
         willFireAt
     );
@@ -50,7 +50,7 @@ public class NotificationEventFixture extends BaseFixture {
   ) {
     return createValidEventWithUserAndContext(
         receiverId,
-        NotificationEventTypeCode.DDUDU,
+        NotificationEventTypeCode.DDUDU_REMINDER,
         dduduId,
         willFireAt
     );
