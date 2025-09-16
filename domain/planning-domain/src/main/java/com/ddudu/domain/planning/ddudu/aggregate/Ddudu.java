@@ -154,6 +154,22 @@ public class Ddudu {
         .build();
   }
 
+  public Duration getRemindDifference() {
+    checkState(
+        Objects.nonNull(beginAt) && Objects.nonNull(remindAt),
+        DduduErrorCode.UNABLE_TO_GET_REMINDER.getCodeName()
+    );
+    
+    LocalDateTime scheduledAt = scheduledOn.atTime(beginAt);
+    
+    checkState(
+        scheduledAt.isAfter(remindAt),
+        DduduErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName()
+    );
+    
+    return Duration.between(remindAt, scheduledAt);
+  }
+
   private DduduBuilder getFullBuilder() {
     return Ddudu.builder()
         .id(this.id)

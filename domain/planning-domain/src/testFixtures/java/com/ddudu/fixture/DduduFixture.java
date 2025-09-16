@@ -6,6 +6,7 @@ import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -180,6 +181,22 @@ public class DduduFixture extends BaseFixture {
         .goalId(goalId)
         .userId(userId)
         .scheduledOn(scheduledOn)
+        .build();
+  }
+
+  public static Ddudu createDduduWithReminder(
+      Long userId,
+      Long goalId,
+      LocalDate scheduleOn,
+      LocalTime beginAt,
+      LocalDateTime remindAt
+  ) {
+    return getDduduBuilder()
+        .userId(userId)
+        .goalId(goalId)
+        .scheduledOn(scheduleOn)
+        .beginAt(beginAt)
+        .remindAt(remindAt)
         .build();
   }
 
