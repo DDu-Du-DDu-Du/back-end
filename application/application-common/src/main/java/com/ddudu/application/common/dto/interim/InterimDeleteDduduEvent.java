@@ -16,7 +16,7 @@ public record InterimDeleteDduduEvent(
   public static InterimDeleteDduduEvent from(Long userId, Ddudu ddudu) {
     return InterimDeleteDduduEvent.builder()
         .userId(userId)
-        .typeCode(NotificationEventTypeCode.DDUDU)
+        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
         .contextId(ddudu.getId())
         .build();
   }
