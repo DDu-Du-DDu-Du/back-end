@@ -29,6 +29,7 @@ public class ErrorCodeParser {
           code.charAt(1) != '9' ? StatsErrorCode.valueOf(name) : new DefaultErrorCode(message);
       case 10 -> NotificationEventErrorCode.valueOf(name);
       case 11 -> DailyBriefingLogErrorCode.valueOf(name);
+      case 12 -> NotificationDeviceTokenErrorCode.valueOf(name);
       default -> new DefaultErrorCode(message);
     };
   }
