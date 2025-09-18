@@ -24,7 +24,7 @@ public class NotificationDeviceToken {
 
   @Builder
   private NotificationDeviceToken(Long id, Long userId, DeviceChannel channel, String token) {
-    validate(userId, token);
+    validate(userId, channel, token);
 
     this.id = id;
     this.userId = userId;
@@ -32,10 +32,14 @@ public class NotificationDeviceToken {
     this.token = token;
   }
 
-  private void validate(Long userId, String token) {
+  private void validate(Long userId, DeviceChannel channel, String token) {
     checkArgument(
         Objects.nonNull(userId),
         NotificationDeviceTokenErrorCode.NULL_USER_ID.getCodeName()
+    );
+    checkArgument(
+        Objects.nonNull(channel),
+        NotificationDeviceTokenErrorCode.INVALID_CHANNEL.getCodeName()
     );
     validateToken(token);
   }
