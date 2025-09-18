@@ -1,9 +1,12 @@
 package com.ddudu.infra.mysql.notification.device.entity;
 
 import com.ddudu.domain.notification.device.aggregate.NotificationDeviceToken;
+import com.ddudu.domain.notification.device.aggregate.enums.DeviceChannel;
 import com.ddudu.infra.mysql.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,9 +39,11 @@ public class NotificationDeviceTokenEntity extends BaseEntity {
   @Column(
       name = "channel",
       nullable = false,
-      length = 16
+      length = 16,
+      columnDefinition = "VARCHAR"
   )
-  private String channel;
+  @Enumerated(EnumType.STRING)
+  private DeviceChannel channel;
 
   @Column(
       name = "token",
