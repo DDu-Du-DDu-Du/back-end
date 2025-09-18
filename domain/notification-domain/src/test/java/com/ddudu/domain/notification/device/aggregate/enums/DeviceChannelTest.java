@@ -2,7 +2,6 @@ package com.ddudu.domain.notification.device.aggregate.enums;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.ddudu.common.exception.NotificationDeviceTokenErrorCode;
 import com.ddudu.fixture.NotificationDeviceTokenFixture;
