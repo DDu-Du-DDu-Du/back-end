@@ -1,4 +1,4 @@
-﻿package com.ddudu.application.notification.device;
+package com.ddudu.application.notification.device;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
