@@ -3,14 +3,18 @@ package com.ddudu.application.notification.event;
 import com.ddudu.application.common.dto.notification.event.NotificationSendEvent;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
+import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenLoaderPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.application.common.port.notification.out.NotificationInboxCommandPort;
+import com.ddudu.application.common.port.notification.out.NotificationSendPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.NotificationEventErrorCode;
+import com.ddudu.domain.notification.device.aggregate.NotificationDeviceToken;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.NotificationInbox;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
@@ -26,6 +30,8 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
   private final DduduLoaderPort dduduLoaderPort;
   private final NotificationInboxCommandPort notificationInboxCommandPort;
   private final NotificationEventCommandPort notificationEventCommandPort;
+  private final NotificationDeviceTokenLoaderPort notificationDeviceTokenLoaderPort;
+  private final NotificationSendPort notificationSendPort;
 
   @Override
   public void send(NotificationSendEvent event) {
@@ -40,17 +46,27 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
         NotificationEventErrorCode.NOTIFICATION_EVENT_NOT_EXISTING.getCodeName()
     );
     NotificationInbox notificationInbox = createNotificationInbox(notificationEvent);
-    NotificationInbox saved = notificationInboxCommandPort.save(notificationInbox);
+    NotificationInbox savedInbox = notificationInboxCommandPort.save(notificationInbox);
 
-    log.debug("Notification event has been turned into inbox with ID {}", saved.getId());
+    log.debug("Notification event has been turned into inbox with ID {}", savedInbox.getId());
 
-    // TODO: Find for device tokens with user id
+    List<String> deviceTokens = notificationDeviceTokenLoaderPort.getAllTokensOfUser(savedInbox.getUserId())
+        .stream()
+        .map(NotificationDeviceToken::getToken)
+        .toList();
 
-    // TODO: FCM 발송 구현
+    if (deviceTokens.isEmpty()) {
+      log.debug("No Device Tokens under {}", savedInbox.getUserId());
 
-    NotificationEvent fired = notificationEvent.markFired();
+      // TODO: 디바이스 토큰 없을 시 핸들링 고려 필요
+      throw new NotImplementedException("Handling for No Device Token is not yet implemented");
+    }
 
-    notificationEventCommandPort.update(fired);
+    notificationSendPort.sendToDevices(deviceTokens, savedInbox.getTitle(), savedInbox.getBody());
+
+    NotificationEvent firedEvent = notificationEvent.markFired();
+
+    notificationEventCommandPort.update(firedEvent);
   }
 
   private NotificationInbox createNotificationInbox(NotificationEvent notificationEvent) {
