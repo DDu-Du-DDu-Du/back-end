@@ -8,20 +8,24 @@ import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
+import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
+import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.NotificationDeviceTokenFixture;
 import com.ddudu.fixture.NotificationEventFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDateTime;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.NotImplementedException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +56,9 @@ class SendNotificationEventServiceTest {
   @Autowired
   NotificationEventLoaderPort notificationEventLoaderPort;
 
+  @Autowired
+  NotificationDeviceTokenCommandPort notificationDeviceTokenCommandPort;
+
   User user;
   Goal goal;
   Ddudu ddudu;
@@ -77,6 +84,8 @@ class SendNotificationEventServiceTest {
         ddudu.getId()
     );
     notificationEvent = notificationEventCommandPort.save(notificationEvent);
+
+    notificationDeviceTokenCommandPort.save(NotificationDeviceTokenFixture.createWithUser(user.getId()));
   }
 
   @Test
@@ -129,6 +138,59 @@ class SendNotificationEventServiceTest {
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
         .withMessage(NotificationEventErrorCode.ORIGINAL_DDUDU_NOT_EXISTING.getCodeName());
+  }
+
+  @Test
+  void 디바이스_토큰이_없으면_알림_발송에_실패한다() {
+    // given
+    // TODO: device token 삭제 구현 후 단순화
+    User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
+    Goal anotherGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(anotherUser.getId()));
+    LocalDateTime scheduledAt = LocalDateTime.now()
+        .plusSeconds(2);
+    LocalDateTime remindAt = LocalDateTime.now()
+        .plusSeconds(1);
+    Ddudu anotherDdudu = saveDduduPort.save(DduduFixture.createDduduWithReminder(
+        anotherUser.getId(),
+        anotherGoal.getId(),
+        scheduledAt.toLocalDate(),
+        scheduledAt.toLocalTime(),
+        remindAt
+    ));
+    NotificationEvent eventWithoutToken = notificationEventCommandPort.save(
+        NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+            anotherUser.getId(),
+            anotherDdudu.getId()
+        )
+    );
+
+    // when
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(
+        new NotificationSendEvent(eventWithoutToken.getId())
+    );
+
+    // then
+    assertThatExceptionOfType(NotImplementedException.class).isThrownBy(send);
+  }
+
+  @Test
+  void 지원되지_않는_타입이면_알림_발송에_실패한다() {
+    // given
+    NotificationEvent unsupported = notificationEventCommandPort.save(
+        NotificationEventFixture.createValidEventNowWithUserAndContext(
+            user.getId(),
+            NotificationEventTypeCode.TEMPLATE_COMMENT,
+            ddudu.getId()
+        )
+    );
+
+    // when
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(
+        new NotificationSendEvent(unsupported.getId())
+    );
+
+    // then
+    assertThatExceptionOfType(NotImplementedException.class).isThrownBy(send);
   }
 
 }

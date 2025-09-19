@@ -34,6 +34,15 @@ public final class NotificationDeviceTokenFixture extends BaseFixture {
     return builder().build();
   }
 
+  public static NotificationDeviceToken createWithUser(Long userId) {
+    return NotificationDeviceToken.builder()
+        .id(null)
+        .userId(userId)
+        .channel(getRandomChannel())
+        .token(getRandomToken())
+        .build();
+  }
+
   public static Long getRandomUserId() {
     return getRandomId();
   }

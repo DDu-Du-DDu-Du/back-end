@@ -200,6 +200,18 @@ public class DduduFixture extends BaseFixture {
         .build();
   }
 
+  public static Ddudu createDduduWithReminderFor(Long userId, Long goalId, LocalDateTime remindAt) {
+    LocalDateTime scheduledAt = remindAt.plusSeconds(1);
+
+    return createDduduWithReminder(
+        userId,
+        goalId,
+        scheduledAt.toLocalDate(),
+        scheduledAt.toLocalTime(),
+        remindAt
+    );
+  }
+
   public static Ddudu createRandomDduduWithGoalAndTime(
       Goal goal,
       LocalTime beginAt,

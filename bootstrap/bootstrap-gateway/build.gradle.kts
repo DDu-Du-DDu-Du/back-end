@@ -26,6 +26,7 @@ dependencies {
     implementation(project(":infra:user-infra-external-api"))
     implementation(project(":infra:notification-infra-mysql"))
     implementation(project(":infra:notification-infra-inmemory-scheduler"))
+    implementation(project(":infra:notification-infra-fcm"))
     implementation(project(":bootstrap:bootstrap-common"))
     implementation(project(":bootstrap:user-api"))
     implementation(project(":bootstrap:planning-api"))
@@ -45,20 +46,17 @@ flyway {
 
 val copyMainSecret by tasks.registering(Copy::class) {
     from("${rootProject.projectDir}/secrets/main")
-    include("application*.yaml")
+    include(listOf("application*.yaml", "*.json"))
     into(layout.buildDirectory.dir("resources/main"))
-}
-
-tasks.named("processResources") {
-    dependsOn(copyMainSecret)
 }
 
 val copyTestSecret by tasks.registering(Copy::class) {
     from("${rootProject.projectDir}/secrets/test")
-    include("application*.yaml")
+    include(listOf("application*.yaml", "*.json"))
     into(layout.buildDirectory.dir("resources/test"))
 }
 
 tasks.named("processResources") {
+    dependsOn(copyMainSecret)
     dependsOn(copyTestSecret)
 }
