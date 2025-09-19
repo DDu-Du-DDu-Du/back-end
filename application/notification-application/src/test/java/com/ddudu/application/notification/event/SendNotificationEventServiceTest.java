@@ -2,9 +2,6 @@ package com.ddudu.application.notification.event;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 
 import com.ddudu.application.common.dto.notification.event.NotificationSendEvent;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
@@ -14,7 +11,6 @@ import com.ddudu.application.common.port.notification.in.SendNotificationEventUs
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
-import com.ddudu.application.common.port.notification.out.NotificationSendPort;
 import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
@@ -35,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -64,9 +59,6 @@ class SendNotificationEventServiceTest {
   @Autowired
   NotificationDeviceTokenCommandPort notificationDeviceTokenCommandPort;
 
-  @MockBean
-  NotificationSendPort notificationSendPort;
-
   User user;
   Goal goal;
   Ddudu ddudu;
@@ -94,8 +86,6 @@ class SendNotificationEventServiceTest {
     notificationEvent = notificationEventCommandPort.save(notificationEvent);
 
     notificationDeviceTokenCommandPort.save(NotificationDeviceTokenFixture.createWithUser(user.getId()));
-    doNothing().when(notificationSendPort)
-        .sendToDevices(anyList(), anyString(), anyString());
   }
 
   @Test

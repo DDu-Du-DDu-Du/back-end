@@ -7,11 +7,12 @@ import com.ddudu.application.common.dto.notification.request.SaveDeviceTokenRequ
 import com.ddudu.application.common.dto.notification.response.SaveDeviceTokenResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.notification.in.SaveDeviceTokenUseCase;
+import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenLoaderPort;
 import com.ddudu.common.exception.NotificationDeviceTokenErrorCode;
+import com.ddudu.domain.notification.device.aggregate.NotificationDeviceToken;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.NotificationDeviceTokenFixture;
 import com.ddudu.fixture.UserFixture;
-import com.ddudu.infra.mysql.notification.device.repository.NotificationDeviceTokenRepository;
 import java.util.MissingResourceException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,7 @@ class SaveDeviceTokenServiceTest {
   SignUpPort signUpPort;
 
   @Autowired
-  NotificationDeviceTokenRepository notificationDeviceTokenRepository;
+  NotificationDeviceTokenLoaderPort notificationDeviceTokenLoaderPort;
 
   User user;
   String channel;
@@ -54,11 +55,15 @@ class SaveDeviceTokenServiceTest {
     SaveDeviceTokenRequest request = new SaveDeviceTokenRequest(channel, token);
 
     // when
-    SaveDeviceTokenResponse response = saveDeviceTokenUseCase.save(user.getId(), request);
+    SaveDeviceTokenResponse actual = saveDeviceTokenUseCase.save(user.getId(), request);
 
     // then
-    assertThat(response.id()).isNotNull();
-    // TODO: add actual data after implementing loader port
+    NotificationDeviceToken expected = notificationDeviceTokenLoaderPort.getAllTokensOfUser(user.getId())
+        .stream()
+        .findFirst()
+        .orElseThrow();
+
+    assertThat(actual.id()).isEqualTo(expected.getId());
   }
 
   @Test
