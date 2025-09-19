@@ -52,7 +52,7 @@ val copyMainSecret by tasks.registering(Copy::class) {
 
 val copyTestSecret by tasks.registering(Copy::class) {
     from("${rootProject.projectDir}/secrets/test")
-    include("application*.yaml")
+    include(listOf("application*.yaml", "*.json"))
     into(layout.buildDirectory.dir("resources/test"))
 }
 
