@@ -80,7 +80,7 @@ class RemoveNotificationEventServiceTest {
         .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
         .contextId(ddudu.getId())
         .build();
-    boolean expected = notificationEventLoaderPort.existsByContext(
+    boolean expected = !notificationEventLoaderPort.existsByContext(
         user.getId(),
         NotificationEventTypeCode.DDUDU_REMINDER,
         ddudu.getId()
@@ -96,7 +96,7 @@ class RemoveNotificationEventServiceTest {
         ddudu.getId()
     );
 
-    assertThat(actual).isNotEqualTo(expected);
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test

@@ -25,7 +25,7 @@ dependencies {
     implementation(project(":infra:user-infra-mysql"))
     implementation(project(":infra:user-infra-external-api"))
     implementation(project(":infra:notification-infra-mysql"))
-    implementation(project(":infra:notification-infra-inmemory-scheduler"))
+    implementation(project(":infra:notification-infra-inmemory"))
     implementation(project(":infra:notification-infra-fcm"))
     implementation(project(":bootstrap:bootstrap-common"))
     implementation(project(":bootstrap:user-api"))

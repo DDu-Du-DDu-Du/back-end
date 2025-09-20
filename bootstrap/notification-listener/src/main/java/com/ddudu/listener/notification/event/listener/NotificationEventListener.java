@@ -2,7 +2,6 @@ package com.ddudu.listener.notification.event.listener;
 
 import com.ddudu.application.common.dto.notification.event.NotificationEventRemoveEvent;
 import com.ddudu.application.common.dto.notification.event.NotificationEventSaveEvent;
-import com.ddudu.application.common.dto.notification.event.NotificationSendEvent;
 import com.ddudu.application.common.port.notification.in.RemoveNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.in.SaveNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
@@ -26,11 +25,6 @@ public class NotificationEventListener {
   @EventListener
   public void removeNotificationEvent(NotificationEventRemoveEvent notificationEventRemoveEvent) {
     removeNotificationEventUseCase.remove(notificationEventRemoveEvent);
-  }
-
-  @EventListener
-  public void sendNotificationEvent(NotificationSendEvent notificationSendEvent) {
-    sendNotificationEventUseCase.send(notificationSendEvent);
   }
 
 }
