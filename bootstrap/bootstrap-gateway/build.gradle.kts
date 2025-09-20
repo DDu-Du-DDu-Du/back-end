@@ -32,7 +32,7 @@ dependencies {
     implementation(project(":bootstrap:planning-api"))
     implementation(project(":bootstrap:stats-api"))
     implementation(project(":bootstrap:notification-api"))
-    implementation(project(":bootstrap:notification-inmemory-listener"))
+    implementation(project(":bootstrap:notification-listener"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 }

@@ -11,7 +11,7 @@ include(
     "bootstrap:stats-api",
     "bootstrap:planning-api",
     "bootstrap:notification-api",
-    "bootstrap:notification-inmemory-listener",
+    "bootstrap:notification-listener",
 
     // application
     "application:application-common",
