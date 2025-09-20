@@ -1,12 +1,14 @@
-package com.ddudu.infra.scheduler.notification.repository;
+package com.ddudu.infra.inmemory.notification.repository;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Slf4j
 public class InMemoryScheduleRepository implements ScheduleRepository {
 
   private final Map<Long, ScheduledFuture<?>> repository = new ConcurrentHashMap<>();
@@ -20,6 +22,7 @@ public class InMemoryScheduleRepository implements ScheduleRepository {
 
   @Override
   public ScheduledFuture<?> delete(Long eventId) {
+    log.debug("checking thread");
     return repository.remove(eventId);
   }
 

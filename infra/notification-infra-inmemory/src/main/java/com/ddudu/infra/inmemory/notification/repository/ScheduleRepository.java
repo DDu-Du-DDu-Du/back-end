@@ -1,4 +1,4 @@
-package com.ddudu.infra.scheduler.notification.repository;
+package com.ddudu.infra.inmemory.notification.repository;
 
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
