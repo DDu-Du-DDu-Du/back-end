@@ -3,6 +3,7 @@ package com.ddudu.application.notification.event;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.notification.event.NotificationEventSaveEvent;
+import com.ddudu.application.common.dto.notification.event.NotificationScheduleEvent;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
@@ -27,11 +28,14 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @DisplayNameGeneration(ReplaceUnderscores.class)
 @Transactional
+@RecordApplicationEvents
 class SaveNotificationEventServiceTest {
 
   @Autowired
@@ -63,6 +67,7 @@ class SaveNotificationEventServiceTest {
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
     willFireAt = NotificationEventFixture.getFutureDateTime(10, TimeUnit.DAYS);
+    // events are cleared per-test by the framework when using @RecordApplicationEvents
   }
 
   @Test
@@ -120,6 +125,134 @@ class SaveNotificationEventServiceTest {
 
     assertThat(actual.getId()).isEqualTo(savedNotificationEvent.getId());
     assertThat(actual.getWillFireAt()).isEqualTo(willFireAt);
+  }
+
+  @Test
+  void 오늘_발송_예정이면_스케줄_이벤트를_발행한다(ApplicationEvents events) {
+    // given
+    NotificationEventSaveEvent saveEvent = buildSaveEventPlannedToday(
+        user.getId(),
+        NotificationEventTypeCode.DDUDU_REMINDER,
+        ddudu.getId()
+    );
+
+    // when
+    saveNotificationEventUseCase.save(saveEvent);
+
+    // then
+    NotificationEvent persisted = notificationEventLoaderPort.getOptionalEventByContext(
+            user.getId(),
+            NotificationEventTypeCode.DDUDU_REMINDER,
+            ddudu.getId())
+        .orElseThrow();
+
+    assertThat(events.stream(NotificationScheduleEvent.class)).hasSize(1);
+    NotificationScheduleEvent published = events.stream(NotificationScheduleEvent.class)
+        .findFirst().orElseThrow();
+    assertThat(published.eventId()).isEqualTo(persisted.getId());
+    assertThat(published.willFireAt()).isEqualTo(saveEvent.willFireAt());
+  }
+
+  @Test
+  void 오늘이_아니면_스케줄_이벤트를_발행하지_않는다(ApplicationEvents events) {
+    // given
+    NotificationEventSaveEvent saveEvent = buildSaveEventPlannedAnotherDay(
+        user.getId(),
+        NotificationEventTypeCode.DDUDU_REMINDER,
+        ddudu.getId()
+    );
+
+    // when
+    saveNotificationEventUseCase.save(saveEvent);
+
+    // then
+    assertThat(events.stream(NotificationScheduleEvent.class)).isEmpty();
+  }
+
+  @Test
+  void 기존_이벤트를_오늘로_수정하면_스케줄_이벤트를_발행한다(ApplicationEvents events) {
+    // given: first save for another day
+    NotificationEventSaveEvent first = buildSaveEventPlannedAnotherDay(
+        user.getId(),
+        NotificationEventTypeCode.DDUDU_REMINDER,
+        ddudu.getId()
+    );
+    saveNotificationEventUseCase.save(first);
+    assertThat(events.stream(NotificationScheduleEvent.class)).isEmpty();
+
+    NotificationEvent beforeUpdate = notificationEventLoaderPort.getOptionalEventByContext(
+            user.getId(),
+            NotificationEventTypeCode.DDUDU_REMINDER,
+            ddudu.getId())
+        .orElseThrow();
+
+    // when: update to today
+    NotificationEventSaveEvent second = buildSaveEventPlannedToday(
+        user.getId(),
+        NotificationEventTypeCode.DDUDU_REMINDER,
+        ddudu.getId()
+    );
+    saveNotificationEventUseCase.save(second);
+
+    // then
+    NotificationEvent afterUpdate = notificationEventLoaderPort.getOptionalEventByContext(
+            user.getId(),
+            NotificationEventTypeCode.DDUDU_REMINDER,
+            ddudu.getId())
+        .orElseThrow();
+    assertThat(afterUpdate.getId()).isEqualTo(beforeUpdate.getId());
+    assertThat(events.stream(NotificationScheduleEvent.class)).hasSize(1);
+  }
+
+  @Test
+  void 기존_이벤트를_다른_날짜로_수정하면_스케줄_이벤트를_추가_발행하지_않는다(ApplicationEvents events) {
+    // given: first save for today
+    NotificationEventSaveEvent first = buildSaveEventPlannedToday(
+        user.getId(),
+        NotificationEventTypeCode.DDUDU_REMINDER,
+        ddudu.getId()
+    );
+    saveNotificationEventUseCase.save(first);
+    long before = events.stream(NotificationScheduleEvent.class).count();
+    assertThat(before).isEqualTo(1);
+
+    // when: update to not today
+    NotificationEventSaveEvent second = buildSaveEventPlannedAnotherDay(
+        user.getId(),
+        NotificationEventTypeCode.DDUDU_REMINDER,
+        ddudu.getId()
+    );
+    saveNotificationEventUseCase.save(second);
+
+    // then
+    long after = events.stream(NotificationScheduleEvent.class).count();
+    assertThat(after).isEqualTo(before);
+  }
+
+  private NotificationEventSaveEvent buildSaveEventPlannedToday(
+      Long userId,
+      NotificationEventTypeCode typeCode,
+      Long contextId
+  ) {
+    return NotificationEventSaveEvent.builder()
+        .userId(userId)
+        .typeCode(typeCode)
+        .contextId(contextId)
+        .willFireAt(LocalDateTime.now().plusSeconds(5))
+        .build();
+  }
+
+  private NotificationEventSaveEvent buildSaveEventPlannedAnotherDay(
+      Long userId,
+      NotificationEventTypeCode typeCode,
+      Long contextId
+  ) {
+    return NotificationEventSaveEvent.builder()
+        .userId(userId)
+        .typeCode(typeCode)
+        .contextId(contextId)
+        .willFireAt(java.time.LocalDate.now().plusDays(1).atStartOfDay())
+        .build();
   }
 
 }

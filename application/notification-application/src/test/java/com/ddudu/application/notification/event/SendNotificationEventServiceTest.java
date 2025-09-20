@@ -3,7 +3,6 @@ package com.ddudu.application.notification.event;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.ddudu.application.common.dto.notification.event.NotificationSendEvent;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
@@ -91,15 +90,14 @@ class SendNotificationEventServiceTest {
   @Test
   void 알림_발송을_성공한다() {
     // given
-    NotificationSendEvent sendEvent = new NotificationSendEvent(notificationEvent.getId());
     LocalDateTime expected = notificationEvent.getFiredAt();
 
     // when
-    sendNotificationEventUseCase.send(sendEvent);
+    sendNotificationEventUseCase.send(notificationEvent.getId());
 
     // then
     NotificationEvent actual = notificationEventLoaderPort.getEventOrElseThrow(
-        sendEvent.eventId(),
+        notificationEvent.getId(),
         "not found"
     );
 
@@ -110,10 +108,9 @@ class SendNotificationEventServiceTest {
   void 미리_등록된_알림_이벤트가_없는_경우_알림_발송을_실패한다() {
     // given
     long invalidId = NotificationEventFixture.getRandomId();
-    NotificationSendEvent invalidEvent = new NotificationSendEvent(invalidId);
 
     // when
-    ThrowingCallable send = () -> sendNotificationEventUseCase.send(invalidEvent);
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(invalidId);
 
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
@@ -130,10 +127,9 @@ class SendNotificationEventServiceTest {
             invalidId
         )
     );
-    NotificationSendEvent invalidEvent = new NotificationSendEvent(eventWithInvalidDdudu.getId());
 
     // when
-    ThrowingCallable send = () -> sendNotificationEventUseCase.send(invalidEvent);
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(eventWithInvalidDdudu.getId());
 
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
@@ -165,9 +161,7 @@ class SendNotificationEventServiceTest {
     );
 
     // when
-    ThrowingCallable send = () -> sendNotificationEventUseCase.send(
-        new NotificationSendEvent(eventWithoutToken.getId())
-    );
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(eventWithoutToken.getId());
 
     // then
     assertThatExceptionOfType(NotImplementedException.class).isThrownBy(send);
@@ -185,9 +179,7 @@ class SendNotificationEventServiceTest {
     );
 
     // when
-    ThrowingCallable send = () -> sendNotificationEventUseCase.send(
-        new NotificationSendEvent(unsupported.getId())
-    );
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(unsupported.getId());
 
     // then
     assertThatExceptionOfType(NotImplementedException.class).isThrownBy(send);

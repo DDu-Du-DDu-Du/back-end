@@ -11,7 +11,8 @@ include(
     "bootstrap:stats-api",
     "bootstrap:planning-api",
     "bootstrap:notification-api",
-    "bootstrap:notification-inmemory-listener",
+    "bootstrap:notification-listener",
+    "bootstrap:notification-scheduler",
 
     // application
     "application:application-common",
@@ -33,8 +34,8 @@ include(
     "infra:planning-infra-mysql",
     "infra:user-infra-external-api",
     "infra:notification-infra-mysql",
-    "infra:notification-infra-inmemory-scheduler",
     "infra:notification-infra-fcm",
+    "infra:notification-infra-inmemory",
 
     // common
     "common",
