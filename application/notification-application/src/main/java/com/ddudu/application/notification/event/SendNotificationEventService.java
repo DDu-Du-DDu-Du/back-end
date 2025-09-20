@@ -1,6 +1,5 @@
 package com.ddudu.application.notification.event;
 
-import com.ddudu.application.common.dto.notification.event.NotificationSendEvent;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenLoaderPort;
@@ -34,7 +33,7 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
   private final NotificationSendPort notificationSendPort;
 
   @Override
-  public void send(NotificationSendEvent event) {
+  public void send(Long eventId) {
     log.debug(
         "Starting notification fire service in {}",
         Thread.currentThread()
@@ -42,7 +41,7 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
     );
 
     NotificationEvent notificationEvent = notificationEventLoaderPort.getEventOrElseThrow(
-        event.eventId(),
+        eventId,
         NotificationEventErrorCode.NOTIFICATION_EVENT_NOT_EXISTING.getCodeName()
     );
     NotificationInbox notificationInbox = createNotificationInbox(notificationEvent);

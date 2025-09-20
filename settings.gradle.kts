@@ -12,6 +12,7 @@ include(
     "bootstrap:planning-api",
     "bootstrap:notification-api",
     "bootstrap:notification-listener",
+    "bootstrap:notification-scheduler",
 
     // application
     "application:application-common",

@@ -1,4 +1,4 @@
-package com.ddudu.infra.scheduler.notification.config;
+package com.ddudu.scheduler.notification.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ public class SchedulingConfig {
   private static final String SCHEDULER_THREAD_NAME_PREFIX = "noti-schedule-";
 
   @Bean
-  TaskScheduler taskScheduler() {
+  TaskScheduler dynamicScheduler() {
     ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
     taskScheduler.setRemoveOnCancelPolicy(true);
