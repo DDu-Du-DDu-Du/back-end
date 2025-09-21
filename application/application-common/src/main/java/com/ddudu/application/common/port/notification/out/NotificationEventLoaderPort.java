@@ -20,6 +20,6 @@ public interface NotificationEventLoaderPort {
 
   NotificationEvent getEventOrElseThrow(Long eventId, String message);
 
-  Map<Long, List<ReminderScheduleTargetDto>> getAllToFireOn(LocalDate date);
+  Map<Long, List<ReminderScheduleTargetDto>> getAllRemindersToFireOn(LocalDate date);
 
 }

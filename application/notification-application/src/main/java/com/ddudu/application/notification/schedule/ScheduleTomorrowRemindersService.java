@@ -29,7 +29,7 @@ public class ScheduleTomorrowRemindersService implements ScheduleTomorrowReminde
 
     log.info("Scheduling reminders for {}", tomorrow);
 
-    notificationEventLoaderPort.getAllToFireOn(tomorrow)
+    notificationEventLoaderPort.getAllRemindersToFireOn(tomorrow)
         .entrySet()
         .stream()
         .filter(reminderSet -> filterReminderForValidUser(reminderSet.getKey()))

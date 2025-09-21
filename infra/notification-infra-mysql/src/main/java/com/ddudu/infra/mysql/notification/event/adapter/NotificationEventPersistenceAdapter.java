@@ -1,5 +1,6 @@
 package com.ddudu.infra.mysql.notification.event.adapter;
 
+import com.ddudu.application.common.dto.notification.ReminderScheduleTargetDto;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.common.annotation.DrivenAdapter;
@@ -8,13 +9,16 @@ import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventType
 import com.ddudu.infra.mysql.notification.event.entity.NotificationEventEntity;
 import com.ddudu.infra.mysql.notification.event.repository.NotificationEventRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
 @RequiredArgsConstructor
-public class NotificationEventCommandPersistenceAdapter implements NotificationEventLoaderPort,
+public class NotificationEventPersistenceAdapter implements NotificationEventLoaderPort,
     NotificationEventCommandPort {
 
   private final NotificationEventRepository notificationEventRepository;
@@ -72,6 +76,11 @@ public class NotificationEventCommandPersistenceAdapter implements NotificationE
             eventId.toString()
         ))
         .toDomain();
+  }
+
+  @Override
+  public Map<Long, List<ReminderScheduleTargetDto>> getAllRemindersToFireOn(LocalDate date) {
+    return notificationEventRepository.findAllDduduRemindersScheduledOn(date);
   }
 
 }

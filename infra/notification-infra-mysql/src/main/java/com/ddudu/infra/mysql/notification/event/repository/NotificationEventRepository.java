@@ -5,7 +5,8 @@ import com.ddudu.infra.mysql.notification.event.entity.NotificationEventEntity;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NotificationEventRepository extends JpaRepository<NotificationEventEntity, Long> {
+public interface NotificationEventRepository extends JpaRepository<NotificationEventEntity, Long>,
+    NotificationEventQueryRepository {
 
   boolean existsByReceiverIdAndTypeCodeAndContextId(
       Long receiverId,
