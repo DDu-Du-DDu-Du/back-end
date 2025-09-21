@@ -131,7 +131,11 @@ public class RepeatDduduFixture extends BaseFixture {
     return getRandomRepeatDaysOfMonth(from, to, numberOfDaysToRepeat);
   }
 
-  public static List<Integer> getRandomRepeatDaysOfMonth(int from, int to, int numberOfDaysToRepeat) {
+  public static List<Integer> getRandomRepeatDaysOfMonth(
+      int from,
+      int to,
+      int numberOfDaysToRepeat
+  ) {
     List<Integer> days = IntStream.rangeClosed(from, to)
         .boxed()
         .collect(Collectors.toList());
