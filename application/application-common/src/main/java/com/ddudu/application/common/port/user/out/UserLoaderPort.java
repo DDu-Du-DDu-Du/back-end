@@ -12,4 +12,6 @@ public interface UserLoaderPort {
 
   Optional<User> loadFullUser(Long userId);
 
+  boolean isExistingUser(Long id);
+
 }
