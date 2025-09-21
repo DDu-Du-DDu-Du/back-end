@@ -69,6 +69,11 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
         .map(FullUser::toDomain);
   }
 
+  @Override
+  public boolean isExistingUser(Long id) {
+    return userRepository.existsById(id);
+  }
+
   private AuthProvider saveAuthProvider(AuthProvider authProvider, Long userId) {
     AuthProviderEntity entity = AuthProviderEntity.from(authProvider, userId);
 
