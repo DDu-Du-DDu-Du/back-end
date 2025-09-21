@@ -1,7 +1,7 @@
 package com.ddudu.scheduler.notification.listener;
 
 import com.ddudu.application.common.dto.notification.event.NotificationScheduleEvent;
-import com.ddudu.scheduler.notification.scheduler.NotificationDynamicScheduler;
+import com.ddudu.scheduler.notification.scheduler.NotificationScheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SchedulingListener {
 
-  private final NotificationDynamicScheduler notificationDynamicScheduler;
+  private final NotificationScheduler notificationScheduler;
 
   @EventListener
   public void listenScheduleEvent(NotificationScheduleEvent event) {
-    notificationDynamicScheduler.registerSchedule(event.eventId(), event.willFireAt());
+    notificationScheduler.registerSchedule(event.eventId(), event.willFireAt());
   }
 
 }
