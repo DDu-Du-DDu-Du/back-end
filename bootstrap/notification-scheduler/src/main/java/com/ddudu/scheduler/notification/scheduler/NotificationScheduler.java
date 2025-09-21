@@ -35,7 +35,7 @@ public class NotificationScheduler {
 
   @Scheduled(cron = "0 55 23 * * *")
   public void registerAllReminderNextDay() {
-    scheduleTomorrowRemindersUseCase.retrieveAllRegisterTargets();
+    scheduleTomorrowRemindersUseCase.registerAllTomorrowReminders();
   }
 
 }
