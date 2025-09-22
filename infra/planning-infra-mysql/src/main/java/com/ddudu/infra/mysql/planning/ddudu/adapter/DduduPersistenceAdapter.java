@@ -2,9 +2,8 @@ package com.ddudu.infra.mysql.planning.ddudu.adapter;
 
 import com.ddudu.aggregate.BaseStats;
 import com.ddudu.aggregate.MonthlyStats;
-import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
+import com.ddudu.application.common.dto.ddudu.DduduCursorDto;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
-import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
@@ -20,7 +19,6 @@ import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.infra.mysql.planning.ddudu.dto.DduduCursorDto;
 import com.ddudu.infra.mysql.planning.ddudu.entity.DduduEntity;
 import com.ddudu.infra.mysql.planning.ddudu.repository.DduduRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -112,21 +110,19 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
   }
 
   @Override
-  public ScrollResponse<SimpleDduduSearchDto> search(
+  public List<DduduCursorDto> search(
       Long userId,
       ScrollRequest request,
       String query,
       Boolean isMine
   ) {
-    List<DduduCursorDto> ddudusWithCursor = dduduRepository.findScrollDdudus(
+    return dduduRepository.findScrollDdudus(
         userId,
         request,
         query,
         isMine,
         false
     );
-
-    return getScrollResponse(ddudusWithCursor, request.getSize());
   }
 
   @Override
@@ -191,28 +187,6 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
       LocalDate to
   ) {
     return dduduRepository.countByRepeatDduduId(userId, goalId, from, to);
-  }
-
-  private ScrollResponse<SimpleDduduSearchDto> getScrollResponse(
-      List<DduduCursorDto> ddudusWithCursor,
-      int size
-  ) {
-    List<SimpleDduduSearchDto> simpleDdudus = ddudusWithCursor.stream()
-        .limit(size)
-        .map(DduduCursorDto::ddudu)
-        .toList();
-    String nextCursor = getNextCursor(ddudusWithCursor, size);
-
-    return ScrollResponse.from(simpleDdudus, nextCursor);
-  }
-
-  private String getNextCursor(List<DduduCursorDto> ddudusWithCursor, int size) {
-    if (ddudusWithCursor.size() > size) {
-      return ddudusWithCursor.get(size - 1)
-          .cursor();
-    }
-
-    return null;
   }
 
 }
