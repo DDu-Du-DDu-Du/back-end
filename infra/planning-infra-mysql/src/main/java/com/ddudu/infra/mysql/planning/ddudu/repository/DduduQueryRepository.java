@@ -1,11 +1,11 @@
 package com.ddudu.infra.mysql.planning.ddudu.repository;
 
 import com.ddudu.aggregate.BaseStats;
+import com.ddudu.application.common.dto.ddudu.DduduCursorDto;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.application.common.dto.ddudu.DduduCursorDto;
 import com.ddudu.infra.mysql.planning.ddudu.entity.DduduEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

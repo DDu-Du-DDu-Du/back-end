@@ -93,6 +93,17 @@ public class NotificationInboxEntity extends BaseEntity {
         .build();
   }
 
+  public void update(NotificationInbox notificationInbox) {
+    this.userId = notificationInbox.getUserId();
+    this.senderId = notificationInbox.getSenderId();
+    this.eventId = notificationInbox.getEventId();
+    this.typeCode = notificationInbox.getTypeCode();
+    this.title = notificationInbox.getTitle();
+    this.body = notificationInbox.getBody();
+    this.readAt = notificationInbox.getReadAt();
+    this.contextId = notificationInbox.getContextId();
+  }
+
   public NotificationInbox toDomain() {
     return NotificationInbox.builder()
         .id(id)

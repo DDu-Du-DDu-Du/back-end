@@ -8,7 +8,9 @@ import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.notification.event.aggregate.NotificationInbox;
 import com.ddudu.infra.mysql.notification.inbox.entity.NotificationInboxEntity;
 import com.ddudu.infra.mysql.notification.inbox.repository.NotificationInboxRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
@@ -25,8 +27,29 @@ public class NotificationInboxAdapter implements NotificationInboxCommandPort,
   }
 
   @Override
+  public NotificationInbox update(NotificationInbox notificationInbox) {
+    NotificationInboxEntity notificationInboxEntity = notificationInboxRepository.findById(
+            notificationInbox.getId())
+        .orElseThrow(EntityNotFoundException::new);
+
+    notificationInboxEntity.update(notificationInbox);
+
+    return notificationInboxEntity.toDomain();
+  }
+
+  @Override
   public List<NotificationInboxCursorDto> search(Long userId, ScrollRequest request) {
     return notificationInboxRepository.findInboxScroll(userId, request);
+  }
+
+  @Override
+  public NotificationInbox getInboxOrElseThrow(Long id, String message) {
+    return notificationInboxRepository.findById(id)
+        .orElseThrow(() -> new MissingResourceException(
+            message,
+            NotificationInbox.class.getName(), id.toString()
+        ))
+        .toDomain();
   }
 
 }

@@ -51,6 +51,18 @@ public class NotificationInbox {
     this.readAt = readAt;
   }
 
+  public void validateOwner(Long userId) {
+    if (!Objects.equals(this.userId, userId)) {
+      throw new SecurityException(NotificationInboxErrorCode.NOT_AUTHORIZED_TO_INBOX.getCodeName());
+    }
+  }
+
+  public NotificationInbox markRead() {
+    return getFullBuilder()
+        .readAt(LocalDateTime.now())
+        .build();
+  }
+
   private void validate(
       Long userId,
       Long eventId,
@@ -95,6 +107,19 @@ public class NotificationInbox {
         title.length() <= MAX_TITLE_LENGTH,
         NotificationInboxErrorCode.EXCESSIVE_TITLE_LENGTH.getCodeName()
     );
+  }
+
+  private NotificationInboxBuilder getFullBuilder() {
+    return NotificationInbox.builder()
+        .id(id)
+        .body(body)
+        .senderId(senderId)
+        .title(title)
+        .readAt(readAt)
+        .contextId(contextId)
+        .eventId(eventId)
+        .typeCode(typeCode)
+        .userId(userId);
   }
 
 }
