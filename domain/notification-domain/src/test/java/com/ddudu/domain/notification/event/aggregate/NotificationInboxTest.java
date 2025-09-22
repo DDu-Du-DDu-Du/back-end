@@ -1,7 +1,9 @@
 package com.ddudu.domain.notification.event.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import com.ddudu.common.exception.NotificationInboxErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationInbox.NotificationInboxBuilder;
@@ -202,6 +204,77 @@ class NotificationInboxTest {
       // then
       assertThatIllegalArgumentException().isThrownBy(create)
           .withMessage(NotificationInboxErrorCode.EXCESSIVE_BODY_LENGTH.getCodeName());
+    }
+
+  }
+
+  @Nested
+  class 권한_테스트 {
+
+    @Test
+    void 접근자가_동일_사용자면_검증에_성공한다() {
+      // given
+      NotificationInbox inbox = NotificationInboxFixture.createNotReadInboxOfUserBySenderWithContextAndContent(
+          eventId,
+          userId,
+          senderId,
+          typeCode,
+          contextId,
+          title,
+          body
+      );
+
+      // when
+      ThrowingCallable validate = () -> inbox.validateOwner(userId);
+
+      // then
+      assertThatNoException().isThrownBy(validate);
+    }
+
+    @Test
+    void 접근_권한이_없는_사용자면_검증에_실패한다() {
+      // given
+      long otherUserId = NotificationInboxFixture.getRandomId();
+      NotificationInbox inbox = NotificationInboxFixture.createNotReadInboxOfUserBySenderWithContextAndContent(
+          eventId,
+          userId,
+          senderId,
+          typeCode,
+          contextId,
+          title,
+          body
+      );
+
+      // when
+      ThrowingCallable validate = () -> inbox.validateOwner(otherUserId);
+
+      // then
+      assertThatExceptionOfType(SecurityException.class).isThrownBy(validate)
+          .withMessage(NotificationInboxErrorCode.NOT_AUTHORIZED_TO_INBOX.getCodeName());
+    }
+  }
+
+  @Nested
+  class 읽음_처리_테스트 {
+
+    @Test
+    void 읽음_처리를_성공한다() {
+      // given
+      NotificationInbox inbox = NotificationInboxFixture.createNotReadInboxOfUserBySenderWithContextAndContent(
+          eventId,
+          userId,
+          senderId,
+          typeCode,
+          contextId,
+          title,
+          body
+      );
+
+      // when
+      NotificationInbox actual = inbox.markRead();
+
+      // then
+      assertThat(actual.getReadAt()).isNotNull();
     }
 
   }
