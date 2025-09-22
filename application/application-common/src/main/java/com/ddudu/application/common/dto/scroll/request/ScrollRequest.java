@@ -9,6 +9,7 @@ import lombok.Getter;
 public final class ScrollRequest {
 
   private static final int DEFAULT_SIZE = 10;
+  private static final String DEFAULT_CURSOR = "0";
 
   @Parameter(
       name = "order",
@@ -37,7 +38,7 @@ public final class ScrollRequest {
       Integer size
   ) {
     this.order = OrderType.from(order);
-    this.cursor = cursor;
+    this.cursor = Objects.requireNonNullElse(cursor, DEFAULT_CURSOR);
     this.size = Objects.isNull(size) ? DEFAULT_SIZE : size;
   }
 
