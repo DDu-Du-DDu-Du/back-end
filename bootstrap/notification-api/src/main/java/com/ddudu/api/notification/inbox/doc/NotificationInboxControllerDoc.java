@@ -2,10 +2,13 @@ package com.ddudu.api.notification.inbox.doc;
 
 import com.ddudu.application.common.dto.notification.request.NotificationInboxSearchRequest;
 import com.ddudu.application.common.dto.notification.response.NotificationInboxSearchResponse;
+import com.ddudu.application.common.dto.notification.response.ReadNotificationInboxResponse;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.NotificationInboxErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -57,6 +60,17 @@ public interface NotificationInboxControllerDoc {
       Long loginId,
       @ParameterObject
       NotificationInboxSearchRequest request
+  );
+
+  ResponseEntity<ReadNotificationInboxResponse> read(
+      Long loginId,
+      @Parameter(
+          name = "notificationInboxId",
+          required = true,
+          in = ParameterIn.PATH,
+          description = "조회 대상 알림 인박스 아이디"
+      )
+      Long notificationInboxId
   );
 
 }
