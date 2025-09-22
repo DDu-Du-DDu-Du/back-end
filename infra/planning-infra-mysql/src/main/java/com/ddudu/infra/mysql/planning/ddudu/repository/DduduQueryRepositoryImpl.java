@@ -5,6 +5,7 @@ import static com.ddudu.infra.mysql.planning.goal.entity.QGoalEntity.goalEntity;
 import static com.ddudu.infra.mysql.planning.repeatddudu.entity.QRepeatDduduEntity.repeatDduduEntity;
 
 import com.ddudu.aggregate.BaseStats;
+import com.ddudu.application.common.dto.ddudu.DduduCursorDto;
 import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.scroll.OrderType;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
@@ -12,7 +13,6 @@ import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.application.common.dto.ddudu.DduduCursorDto;
 import com.ddudu.infra.mysql.planning.ddudu.entity.DduduEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ConstructorExpression;
