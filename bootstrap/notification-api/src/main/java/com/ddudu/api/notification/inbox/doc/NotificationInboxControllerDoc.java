@@ -62,15 +62,62 @@ public interface NotificationInboxControllerDoc {
       NotificationInboxSearchRequest request
   );
 
+  @Operation(summary = "알림 인박스 읽음 처리")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "11009",
+                      value = NotificationInboxErrorExamples.NOT_AUTHORIZED_TO_INBOX
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "11007",
+                          value = NotificationInboxErrorExamples.LOGIN_USER_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "11008",
+                          value = NotificationInboxErrorExamples.INBOX_NOT_EXISTING
+                      )
+                  }
+              )
+          )
+      }
+  )
   ResponseEntity<ReadNotificationInboxResponse> read(
       Long loginId,
       @Parameter(
-          name = "notificationInboxId",
+          name = "id",
           required = true,
-          in = ParameterIn.PATH,
-          description = "조회 대상 알림 인박스 아이디"
+          description = "조회할 알림 인박스의 ID",
+          in = ParameterIn.PATH
       )
       Long notificationInboxId
   );
 
 }
+

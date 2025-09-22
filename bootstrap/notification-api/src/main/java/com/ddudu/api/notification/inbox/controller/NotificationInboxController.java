@@ -42,6 +42,7 @@ public class NotificationInboxController implements NotificationInboxControllerD
   @Override
   @PatchMapping("/{id}/read")
   public ResponseEntity<ReadNotificationInboxResponse> read(
+      @Login
       Long loginId,
       @PathVariable("id")
       Long notificationInboxId
