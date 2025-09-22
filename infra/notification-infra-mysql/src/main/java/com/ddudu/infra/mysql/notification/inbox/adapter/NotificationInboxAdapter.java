@@ -8,6 +8,7 @@ import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.notification.event.aggregate.NotificationInbox;
 import com.ddudu.infra.mysql.notification.inbox.entity.NotificationInboxEntity;
 import com.ddudu.infra.mysql.notification.inbox.repository.NotificationInboxRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,17 @@ public class NotificationInboxAdapter implements NotificationInboxCommandPort,
   public NotificationInbox save(NotificationInbox notificationInbox) {
     return notificationInboxRepository.save(NotificationInboxEntity.from(notificationInbox))
         .toDomain();
+  }
+
+  @Override
+  public NotificationInbox update(NotificationInbox notificationInbox) {
+    NotificationInboxEntity notificationInboxEntity = notificationInboxRepository.findById(
+            notificationInbox.getId())
+        .orElseThrow(EntityNotFoundException::new);
+
+    notificationInboxEntity.update(notificationInbox);
+
+    return notificationInboxEntity.toDomain();
   }
 
   @Override

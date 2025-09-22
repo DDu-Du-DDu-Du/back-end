@@ -6,4 +6,6 @@ public interface NotificationInboxCommandPort {
 
   NotificationInbox save(NotificationInbox notificationInbox);
 
+  NotificationInbox update(NotificationInbox notificationInbox);
+
 }
