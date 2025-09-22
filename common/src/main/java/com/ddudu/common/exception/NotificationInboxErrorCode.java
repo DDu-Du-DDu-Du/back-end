@@ -12,7 +12,8 @@ public enum NotificationInboxErrorCode implements ErrorCode {
   NULL_EVENT_ID(11004, "일림 인박스의 알림 이벤트는 필수값입니다."),
   NULL_TITLE(11005, "알림의 타이틀은 필수값입니다."),
   EXCESSIVE_TITLE_LENGTH(11006, "알림 제목은 최대 50자입니다."),
-  EXCESSIVE_BODY_LENGTH(11006, "알림 내용은 최대 200자입니다.");
+  EXCESSIVE_BODY_LENGTH(11006, "알림 내용은 최대 200자입니다."),
+  LOGIN_USER_NOT_EXISTING(11007, "로그인 사용자가 존재하지 않습니다.");
 
   private final int code;
   private final String message;
