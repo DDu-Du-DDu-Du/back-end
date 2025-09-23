@@ -33,7 +33,11 @@ public interface AuthControllerDoc {
       in = ParameterIn.PATH,
       schema = @Schema(allowableValues = {"KAKAO"})
   )
-  ResponseEntity<TokenResponse> login(String socialToken, String providerType);
+  ResponseEntity<TokenResponse> login(
+      @Parameter(hidden = true)
+      String socialToken,
+      String providerType
+  );
 
   @Operation(
       summary = "토큰 갱신",

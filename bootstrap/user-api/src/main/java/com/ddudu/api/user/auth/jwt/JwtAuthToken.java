@@ -18,7 +18,8 @@ public class JwtAuthToken extends JwtAuthenticationToken {
     this.userId = userId;
   }
 
-  public long getUserId() {
+  @Override
+  public Long getPrincipal() {
     checkArgument(Objects.nonNull(userId), AuthErrorCode.BAD_TOKEN_CONTENT.getCodeName());
 
     return userId;
