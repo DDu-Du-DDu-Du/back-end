@@ -30,7 +30,8 @@ public class WebSecurityConfig {
   public SecurityFilterChain restFilterChain(
       HttpSecurity http,
       JwtConverter jwtConverter,
-      SocialAuthenticationFilter socialAuthenticationFilter
+      IgnoreBearerAuthenticationFilter ignoreBearerAuthenticationFilter,
+      AuthenticationEntryPoint bearerTokenAuthenticationEntryPointWrapper
   )
       throws Exception {
     return http
@@ -49,12 +50,11 @@ public class WebSecurityConfig {
             .authorities(Collections.singletonList(AuthorityProxy.GUEST)))
         .oauth2ResourceServer(oauth2 -> oauth2
             .jwt(jwt -> jwt
-                .jwtAuthenticationConverter(jwtConverter)))
-        .addFilterBefore(socialAuthenticationFilter, BearerTokenAuthenticationFilter.class)
                 .jwtAuthenticationConverter(jwtConverter)
             )
             .authenticationEntryPoint(bearerTokenAuthenticationEntryPointWrapper)
         )
+        .addFilterBefore(ignoreBearerAuthenticationFilter, BearerTokenAuthenticationFilter.class)
         .build();
   }
 
