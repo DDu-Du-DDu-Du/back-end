@@ -6,7 +6,6 @@ import com.ddudu.application.common.dto.auth.request.TokenRefreshRequest;
 import com.ddudu.application.common.dto.auth.response.TokenResponse;
 import com.ddudu.application.common.port.auth.in.SocialLoginUseCase;
 import com.ddudu.application.common.port.auth.in.TokenRefreshUseCase;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,6 @@ public class AuthController implements AuthControllerDoc {
   @PostMapping("/login/{providerType}")
   public ResponseEntity<TokenResponse> login(
       @RequestHeader(HttpHeaders.AUTHORIZATION)
-      @Parameter(hidden = true)
       String socialToken,
       @PathVariable
       String providerType
