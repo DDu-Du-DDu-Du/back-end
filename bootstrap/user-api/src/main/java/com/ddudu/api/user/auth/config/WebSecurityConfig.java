@@ -1,6 +1,6 @@
 package com.ddudu.api.user.auth.config;
 
-import com.ddudu.api.user.auth.filter.SocialAuthenticationFilter;
+import com.ddudu.api.user.auth.filter.IgnoreBearerAuthenticationFilter;
 import com.ddudu.api.user.auth.jwt.AuthorityProxy;
 import com.ddudu.api.user.auth.jwt.converter.JwtConverter;
 import java.util.Arrays;
@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -50,6 +51,10 @@ public class WebSecurityConfig {
             .jwt(jwt -> jwt
                 .jwtAuthenticationConverter(jwtConverter)))
         .addFilterBefore(socialAuthenticationFilter, BearerTokenAuthenticationFilter.class)
+                .jwtAuthenticationConverter(jwtConverter)
+            )
+            .authenticationEntryPoint(bearerTokenAuthenticationEntryPointWrapper)
+        )
         .build();
   }
 

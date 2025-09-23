@@ -13,10 +13,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
-public class SocialAuthenticationFilter extends OncePerRequestFilter {
+public class IgnoreBearerAuthenticationFilter extends OncePerRequestFilter {
 
   private static final String BEARER = "Bearer";
   private static final String IGNORE = "Ignore";
+  private static final String LOGIN_PATH = "/auth/login";
+  private static final String REFRESH_PATH = "/auth/token";
 
   @Override
   protected void doFilterInternal(
@@ -24,18 +26,21 @@ public class SocialAuthenticationFilter extends OncePerRequestFilter {
       HttpServletResponse response,
       FilterChain filterChain
   ) throws ServletException, IOException {
-    String requestURI = request.getRequestURI();
+    String requestUri = request.getRequestURI();
     String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-    if (requestURI.contains("login") && token != null && token.startsWith(BEARER)) {
+    if (isIgnorable(requestUri) && token != null && token.startsWith(BEARER)) {
       MutableRequest mutableRequest = new MutableRequest(request);
 
       mutableRequest.setHeader(HttpHeaders.AUTHORIZATION, token.replace(BEARER, IGNORE));
-
       filterChain.doFilter(mutableRequest, response);
     } else {
       filterChain.doFilter(request, response);
     }
+  }
+
+  private boolean isIgnorable(String requestUri) {
+    return requestUri.contains(LOGIN_PATH) || requestUri.contains(REFRESH_PATH);
   }
 
   private class MutableRequest extends HttpServletRequestWrapper {
