@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation(project(":common"))
     implementation(project(":infra:infra-mysql-common"))
+    implementation(project(":infra:user-infra-mysql"))
     implementation(project(":application:application-common"))
     implementation(project(":application:notification-application"))
     implementation(project(":domain:notification-domain"))
