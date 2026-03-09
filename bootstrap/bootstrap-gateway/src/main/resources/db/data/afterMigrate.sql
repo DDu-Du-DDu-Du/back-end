@@ -12,6 +12,7 @@ TRUNCATE daily_briefing_logs;
 TRUNCATE period_goals;
 TRUNCATE notification_inboxes;
 TRUNCATE notification_device_tokens;
+TRUNCATE announcements;
 
 SET foreign_key_checks = 1;
 
@@ -559,3 +560,45 @@ INSERT INTO notification_events(id, type_code, sender_id, receiver_id, context_i
 INSERT INTO notification_inboxes(id, user_id, sender_id, event_id, type_code, title, body, read_at, context_id) VALUES (49, 2, 2, 49, 'DDUDU_REMINDER', '헬스장 가기', '뚜두 시작 45분 전에 알려드려요.', NULL, 54);
 INSERT INTO notification_events(id, type_code, sender_id, receiver_id, context_id, will_fire_at) VALUES (50, 'DDUDU_REMINDER', 2, 2, 55, '2024-07-25T09:00:00');
 INSERT INTO notification_inboxes(id, user_id, sender_id, event_id, type_code, title, body, read_at, context_id) VALUES (50, 2, 2, 50, 'DDUDU_REMINDER', '요가 클래스', '뚜두 시작 1시간 전에 알려드려요.', NULL, 55);
+
+-- ANNOUNCEMENTS
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (1, 2, '공지사항 1', '서비스 점검 안내입니다.', '2024-08-01T09:00:00', '2024-08-01T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (2, 2, '공지사항 2', '신규 기능이 배포되었습니다.', '2024-08-02T09:00:00', '2024-08-02T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (3, 2, '공지사항 3', '알림 설정이 개선되었습니다.', '2024-08-03T09:00:00', '2024-08-03T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (4, 2, '공지사항 4', '앱 안정화 업데이트가 적용되었습니다.', '2024-08-04T09:00:00', '2024-08-04T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (5, 2, '공지사항 5', '데이터 동기화 성능이 향상되었습니다.', '2024-08-05T09:00:00', '2024-08-05T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (6, 2, '공지사항 6', '일부 UI 문구가 수정되었습니다.', '2024-08-06T09:00:00', '2024-08-06T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (7, 2, '공지사항 7', '로그인 세션 관리 정책이 변경되었습니다.', '2024-08-07T09:00:00', '2024-08-07T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (8, 2, '공지사항 8', '푸시 알림 전송 지연 문제가 해결되었습니다.', '2024-08-08T09:00:00', '2024-08-08T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (9, 2, '공지사항 9', '통계 화면 로딩 속도가 개선되었습니다.', '2024-08-09T09:00:00', '2024-08-09T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (10, 2, '공지사항 10', '다음 주 정기 점검 일정이 공지되었습니다.', '2024-08-10T09:00:00', '2024-08-10T09:00:00');
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (11, 2, '공지사항 11', '공지사항 목록 개선 사항이 적용되었습니다.', NOW() - INTERVAL 9 DAY, NOW() - INTERVAL 9 DAY);
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (12, 2, '공지사항 12', '알림함 정렬 로직이 안정화되었습니다.', NOW() - INTERVAL 8 DAY, NOW() - INTERVAL 8 DAY);
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (13, 2, '공지사항 13', '앱 시작 속도 최적화가 반영되었습니다.', NOW() - INTERVAL 7 DAY, NOW() - INTERVAL 7 DAY);
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (14, 2, '공지사항 14', '일부 화면의 접근성 문구를 정비했습니다.', NOW() - INTERVAL 6 DAY, NOW() - INTERVAL 6 DAY);
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (15, 2, '공지사항 15', '일시적인 푸시 중복 발송 문제가 해결되었습니다.', NOW() - INTERVAL 5 DAY, NOW() - INTERVAL 5 DAY);
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (16, 2, '공지사항 16', '검색 성능 개선을 위한 인덱스가 조정되었습니다.', NOW() - INTERVAL 4 DAY, NOW() - INTERVAL 4 DAY);
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (17, 2, '공지사항 17', '일부 알림 메시지 표현이 더 명확하게 변경되었습니다.', NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 3 DAY);
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (18, 2, '공지사항 18', '앱 내부 오류 처리 메시지를 통합했습니다.', NOW() - INTERVAL 2 DAY, NOW() - INTERVAL 2 DAY);
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (19, 2, '공지사항 19', '운영 안정화를 위한 배포가 완료되었습니다.', NOW() - INTERVAL 1 DAY, NOW() - INTERVAL 1 DAY);
+INSERT INTO announcements(id, user_id, title, contents, created_at, updated_at)
+VALUES (20, 2, '공지사항 20', '최신 공지 노출 정책이 적용되었습니다.', NOW(), NOW());
