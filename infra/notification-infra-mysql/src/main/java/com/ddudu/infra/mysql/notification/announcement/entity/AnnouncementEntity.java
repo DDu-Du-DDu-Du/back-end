@@ -66,4 +66,9 @@ public class AnnouncementEntity extends BaseEntity {
         .build();
   }
 
+  public void update(Announcement domain) {
+    this.title = domain.getTitle();
+    this.contents = domain.getContents();
+  }
+
 }

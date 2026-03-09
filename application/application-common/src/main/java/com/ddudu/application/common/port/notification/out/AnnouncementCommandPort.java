@@ -6,4 +6,6 @@ public interface AnnouncementCommandPort {
 
   Announcement save(Announcement announcement);
 
+  Announcement update(Announcement announcement);
+
 }

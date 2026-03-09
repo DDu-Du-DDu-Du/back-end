@@ -81,6 +81,10 @@ public class User {
     return this.options.isDduduNotification();
   }
 
+  public boolean isAdmin() {
+    return Objects.equals(this.authority, Authority.ADMIN);
+  }
+
   public User applyProfileUpdate(String nickname, String introduction) {
     return User.builder()
         .id(this.id)

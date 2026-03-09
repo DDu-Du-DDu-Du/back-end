@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import com.ddudu.common.exception.AnnouncementErrorCode;
 import com.ddudu.fixture.AnnouncementFixture;
+import java.time.LocalDateTime;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -129,6 +130,147 @@ class AnnouncementTest {
 
       // then
       assertThat(announcement.getCreatedAt()).isNull();
+    }
+
+  }
+
+  @Nested
+  class UpdateTest {
+
+    @Test
+    void update_성공시_id_user_id_created_at은_유지되고_title_contents가_변경된다() {
+      // given
+      Announcement announcement = AnnouncementFixture.createValidAnnouncement();
+      String newTitle = AnnouncementFixture.getRandomAnnouncementTitle();
+      String newContents = AnnouncementFixture.getRandomAnnouncementContents();
+
+      // when
+      Announcement updated = announcement.update(newTitle, newContents);
+
+      // then
+      assertThat(updated.getId()).isEqualTo(announcement.getId());
+      assertThat(updated.getUserId()).isEqualTo(announcement.getUserId());
+      assertThat(updated.getCreatedAt()).isEqualTo(announcement.getCreatedAt());
+      assertThat(updated.getTitle()).isEqualTo(newTitle);
+      assertThat(updated.getContents()).isEqualTo(newContents);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    void update_실패_title이_null_or_blank면_예외(String invalidTitle) {
+      // given
+      Announcement announcement = AnnouncementFixture.createValidAnnouncement();
+
+      // when
+      ThrowingCallable update = () -> announcement.update(
+          invalidTitle,
+          AnnouncementFixture.getRandomAnnouncementContents()
+      );
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(update)
+          .withMessage(AnnouncementErrorCode.NULL_TITLE.getCodeName());
+    }
+
+    @Test
+    void update_실패_title이_50자를_초과하면_예외() {
+      // given
+      Announcement announcement = AnnouncementFixture.createValidAnnouncement();
+      String longTitle = AnnouncementFixture.getRandomFixedSentence(51);
+
+      // when
+      ThrowingCallable update = () -> announcement.update(
+          longTitle,
+          AnnouncementFixture.getRandomAnnouncementContents()
+      );
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(update)
+          .withMessage(AnnouncementErrorCode.EXCESSIVE_TITLE_LENGTH.getCodeName());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    void update_실패_contents가_null_or_blank면_예외(String invalidContents) {
+      // given
+      Announcement announcement = AnnouncementFixture.createValidAnnouncement();
+
+      // when
+      ThrowingCallable update = () -> announcement.update(
+          AnnouncementFixture.getRandomAnnouncementTitle(),
+          invalidContents
+      );
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(update)
+          .withMessage(AnnouncementErrorCode.NULL_CONTENTS.getCodeName());
+    }
+
+    @Test
+    void update_실패_contents가_2000자를_초과하면_예외() {
+      // given
+      Announcement announcement = AnnouncementFixture.createValidAnnouncement();
+      String longContents = AnnouncementFixture.getRandomFixedSentence(2001);
+
+      // when
+      ThrowingCallable update = () -> announcement.update(
+          AnnouncementFixture.getRandomAnnouncementTitle(),
+          longContents
+      );
+
+      // then
+      assertThatIllegalArgumentException().isThrownBy(update)
+          .withMessage(AnnouncementErrorCode.EXCESSIVE_CONTENTS_LENGTH.getCodeName());
+    }
+
+  }
+
+  @Nested
+  class AuthorTest {
+
+    @Test
+    void 같은_user_id면_작성자다() {
+      // given
+      Announcement announcement = AnnouncementFixture.createValidAnnouncement();
+
+      // when
+      boolean actual = announcement.isAuthor(announcement.getUserId());
+
+      // then
+      assertThat(actual).isTrue();
+    }
+
+    @Test
+    void 다른_user_id면_작성자가_아니다() {
+      // given
+      Announcement announcement = AnnouncementFixture.createValidAnnouncement();
+      Long anotherUserId = announcement.getUserId() + 1L;
+
+      // when
+      boolean actual = announcement.isAuthor(anotherUserId);
+
+      // then
+      assertThat(actual).isFalse();
+    }
+
+    @Test
+    void user_id가_null이면_작성자가_아니다() {
+      // given
+      Announcement announcement = AnnouncementFixture.createAnnouncement(
+          1L,
+          AnnouncementFixture.getRandomAnnouncementTitle(),
+          AnnouncementFixture.getRandomAnnouncementContents(),
+          10L,
+          LocalDateTime.now()
+      );
+
+      // when
+      boolean actual = announcement.isAuthor(null);
+
+      // then
+      assertThat(actual).isFalse();
     }
 
   }
