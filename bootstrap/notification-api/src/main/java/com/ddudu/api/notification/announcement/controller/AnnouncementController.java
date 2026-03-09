@@ -28,6 +28,7 @@ public class AnnouncementController implements AnnouncementControllerDoc {
 
   private final CreateAnnouncementUseCase createAnnouncementUseCase;
   private final AnnouncementSearchUseCase announcementSearchUseCase;
+  private final RetrieveAnnouncementUseCase retrieveAnnouncementUseCase;
 
   @Override
   @GetMapping
@@ -38,7 +39,6 @@ public class AnnouncementController implements AnnouncementControllerDoc {
 
     return ResponseEntity.ok(response);
   }
-  private final RetrieveAnnouncementUseCase retrieveAnnouncementUseCase;
 
   @Override
   @GetMapping("/{id}")
