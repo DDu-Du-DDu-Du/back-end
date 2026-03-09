@@ -61,6 +61,16 @@ public interface AnnouncementControllerDoc {
               )
           ),
           @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "13007",
+                      value = AnnouncementErrorExamples.INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
               responseCode = "404",
               description = "NOT_FOUND",
               content = @Content(

@@ -41,4 +41,11 @@ public final class AnnouncementErrorExamples {
       }
       """;
 
+  public static final String INVALID_AUTHORITY = """
+      {
+        "code": 13007,
+        "message": "해당 기능에 대한 사용자 권한이 없습니다."
+      }
+      """;
+
 }

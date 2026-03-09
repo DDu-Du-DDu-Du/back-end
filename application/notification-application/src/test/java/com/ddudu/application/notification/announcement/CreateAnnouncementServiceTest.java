@@ -37,13 +37,13 @@ class CreateAnnouncementServiceTest {
   @Autowired
   AnnouncementLoaderPort announcementLoaderPort;
 
-  User user;
+  User adminUser;
   String title;
   String contents;
 
   @BeforeEach
   void setUp() {
-    user = signUpPort.save(UserFixture.createRandomUserWithId());
+    adminUser = signUpPort.save(UserFixture.createRandomAdminUserWithId());
     title = AnnouncementFixture.getRandomAnnouncementTitle();
     contents = AnnouncementFixture.getRandomAnnouncementContents();
   }
@@ -54,15 +54,29 @@ class CreateAnnouncementServiceTest {
     CreateAnnouncementRequest request = new CreateAnnouncementRequest(title, contents);
 
     // when
-    IdResponse response = createAnnouncementUseCase.create(user.getId(), request);
+    IdResponse response = createAnnouncementUseCase.create(adminUser.getId(), request);
 
     // then
     Announcement saved = announcementLoaderPort.getAnnouncementOrElseThrow(response.id(), "not found");
 
     assertThat(saved.getId()).isEqualTo(response.id());
-    assertThat(saved.getUserId()).isEqualTo(user.getId());
+    assertThat(saved.getUserId()).isEqualTo(adminUser.getId());
     assertThat(saved.getTitle()).isEqualTo(title);
     assertThat(saved.getContents()).isEqualTo(contents);
+  }
+
+  @Test
+  void 관리자가_아니면_공지사항_생성에_실패한다() {
+    // given
+    User normalUser = signUpPort.save(UserFixture.createRandomUserWithId());
+    CreateAnnouncementRequest request = new CreateAnnouncementRequest(title, contents);
+
+    // when
+    ThrowingCallable create = () -> createAnnouncementUseCase.create(normalUser.getId(), request);
+
+    // then
+    assertThatExceptionOfType(SecurityException.class).isThrownBy(create)
+        .withMessage(AnnouncementErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
   @Test
