@@ -57,7 +57,10 @@ class CreateAnnouncementServiceTest {
     IdResponse response = createAnnouncementUseCase.create(adminUser.getId(), request);
 
     // then
-    Announcement saved = announcementLoaderPort.getAnnouncementOrElseThrow(response.id(), "not found");
+    Announcement saved = announcementLoaderPort.getAnnouncementOrElseThrow(
+        response.id(),
+        "not found"
+    );
 
     assertThat(saved.getId()).isEqualTo(response.id());
     assertThat(saved.getUserId()).isEqualTo(adminUser.getId());

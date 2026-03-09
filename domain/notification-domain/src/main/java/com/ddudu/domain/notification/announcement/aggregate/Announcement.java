@@ -56,7 +56,10 @@ public class Announcement {
   }
 
   private void validateContents(String contents) {
-    checkArgument(StringUtils.isNotBlank(contents), AnnouncementErrorCode.NULL_CONTENTS.getCodeName());
+    checkArgument(
+        StringUtils.isNotBlank(contents),
+        AnnouncementErrorCode.NULL_CONTENTS.getCodeName()
+    );
     checkArgument(
         contents.length() <= MAX_CONTENTS_LENGTH,
         AnnouncementErrorCode.EXCESSIVE_CONTENTS_LENGTH.getCodeName()
