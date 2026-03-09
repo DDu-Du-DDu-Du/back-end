@@ -20,12 +20,12 @@ SET foreign_key_checks = 1;
 INSERT INTO users(id, nickname, username, introduction, profile_image_url, authority, status,
                   follows_after_approval, template_notification, ddudu_notification, created_at,
                   updated_at)
-VALUES (1, '결단력있는 딩고', 'determineddingoda25c93c', null, null, 'NORMAL', 'ACTIVE', 0, 1, 1,
+VALUES (1, '결단력있는 딩고', 'determineddingoda25c93c', null, null, 'ADMIN', 'ACTIVE', 0, 1, 1,
         '2024-05-17T16:13:48', '2024-05-17T16:13:48');
 INSERT INTO users(id, nickname, username, introduction, profile_image_url, authority, status,
                   follows_after_approval, template_notification, ddudu_notification, created_at,
                   updated_at)
-VALUES (2, '짜증난 강아지', 'irritatedpuppy30b6f3ed', null, null, 'NORMAL', 'ACTIVE', 0, 1, 1,
+VALUES (2, '짜증난 강아지', 'irritatedpuppy30b6f3ed', null, null, 'ADMIN', 'ACTIVE', 0, 1, 1,
         '2024-08-18T21:13:02', '2024-08-18T21:13:02');
 # 뚜두 구글 계정
 
