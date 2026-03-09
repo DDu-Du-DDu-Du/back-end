@@ -1,8 +1,11 @@
 package com.ddudu.api.notification.announcement.doc;
 
 import com.ddudu.application.common.dto.IdResponse;
+import com.ddudu.application.common.dto.notification.SimpleAnnouncementDto;
+import com.ddudu.application.common.dto.notification.request.AnnouncementSearchRequest;
 import com.ddudu.application.common.dto.notification.request.CreateAnnouncementRequest;
 import com.ddudu.application.common.dto.notification.response.AnnouncementDetailResponse;
+import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.bootstrap.common.doc.examples.AnnouncementErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,15 +16,34 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 
 @Tag(
     name = "Announcement",
-    description = "Announcement API"
+    description = "공지사항 API"
 )
 public interface AnnouncementControllerDoc {
 
-  @Operation(summary = "Retrieve announcement detail")
+  @Operation(
+      summary = "공지사항 목록 조회",
+      description = "공지사항 목록을 커서 기반으로 스크롤 조회합니다."
+  )
+  @ApiResponses(
+      {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          )
+      }
+  )
+  ResponseEntity<ScrollResponse<SimpleAnnouncementDto>> getList(
+      @ParameterObject
+      AnnouncementSearchRequest request
+  );
+
+  @Operation(summary = "공지사항 상세조회")
   @ApiResponses(
       {
           @ApiResponse(
@@ -51,7 +73,7 @@ public interface AnnouncementControllerDoc {
       Long id
   );
 
-  @Operation(summary = "Create announcement")
+  @Operation(summary = "공지사항 등록")
   @ApiResponses(
       {
           @ApiResponse(
