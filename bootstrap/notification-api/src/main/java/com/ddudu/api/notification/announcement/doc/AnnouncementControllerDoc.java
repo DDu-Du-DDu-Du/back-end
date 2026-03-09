@@ -4,10 +4,13 @@ import com.ddudu.application.common.dto.IdResponse;
 import com.ddudu.application.common.dto.notification.SimpleAnnouncementDto;
 import com.ddudu.application.common.dto.notification.request.AnnouncementSearchRequest;
 import com.ddudu.application.common.dto.notification.request.CreateAnnouncementRequest;
+import com.ddudu.application.common.dto.notification.response.AnnouncementDetailResponse;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.bootstrap.common.doc.examples.AnnouncementErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,6 +41,36 @@ public interface AnnouncementControllerDoc {
   ResponseEntity<ScrollResponse<SimpleAnnouncementDto>> getList(
       @ParameterObject
       AnnouncementSearchRequest request
+  );
+
+  @Operation(summary = "공지사항 상세조회")
+  @ApiResponses(
+      {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "13008",
+                      value = AnnouncementErrorExamples.ANNOUNCEMENT_NOT_EXISTING
+                  )
+              )
+          )
+      }
+  )
+  ResponseEntity<AnnouncementDetailResponse> getById(
+      @Parameter(
+          name = "id",
+          required = true,
+          description = "Announcement id",
+          in = ParameterIn.PATH
+      )
+      Long id
   );
 
   @Operation(summary = "공지사항 등록")
