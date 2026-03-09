@@ -21,6 +21,28 @@ public class UserFixture extends BaseFixture {
     return createRandomUser(getRandomId(), null, null, null, null, null, null);
   }
 
+  public static User createRandomAdminUserWithId() {
+    return createRandomUserWithAuthority(getRandomId(), Authority.ADMIN);
+  }
+
+  public static User createRandomUserWithAuthority(long id, Authority authority) {
+    User user = createRandomUser(id, null, null, null, null, null, null);
+    return User.builder()
+        .id(user.getId())
+        .nickname(user.getNickname())
+        .username(user.getUsername())
+        .introduction(user.getIntroduction())
+        .authority(authority)
+        .authProviders(user.getAuthProviders())
+        .status(user.getStatus())
+        .options(Options.builder()
+            .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
+            .templateNotification(user.isNotifyingTemplate())
+            .dduduNotification(user.isNotifyingDdudu())
+            .build())
+        .build();
+  }
+
   public static User createRandomSocialUser(AuthProvider authProvider) {
     return createRandomUser(getRandomId(), null, authProvider, null, null, null, null);
   }
