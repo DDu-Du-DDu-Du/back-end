@@ -6,7 +6,6 @@ import com.ddudu.application.common.port.notification.in.CreateAnnouncementUseCa
 import com.ddudu.application.common.port.notification.out.AnnouncementCommandPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.common.dto.Authority;
 import com.ddudu.common.exception.AnnouncementErrorCode;
 import com.ddudu.domain.notification.announcement.aggregate.Announcement;
 import com.ddudu.domain.user.user.aggregate.User;
@@ -27,7 +26,7 @@ public class CreateAnnouncementService implements CreateAnnouncementUseCase {
         loginId,
         AnnouncementErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
     );
-    if (!Authority.ADMIN.equals(user.getAuthority())) {
+    if (!user.isAdmin()) {
       throw new SecurityException(AnnouncementErrorCode.INVALID_AUTHORITY.getCodeName());
     }
 

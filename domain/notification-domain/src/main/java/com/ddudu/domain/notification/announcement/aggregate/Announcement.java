@@ -66,4 +66,18 @@ public class Announcement {
     );
   }
 
+  public Announcement update(String title, String contents) {
+    return Announcement.builder()
+        .id(this.id)
+        .title(title)
+        .contents(contents)
+        .userId(this.userId)
+        .createdAt(this.createdAt)
+        .build();
+  }
+
+  public boolean isAuthor(Long userId) {
+    return Objects.equals(this.userId, userId);
+  }
+
 }

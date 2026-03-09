@@ -1,5 +1,8 @@
 package com.ddudu.domain.user.user.aggregate;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.ddudu.common.dto.Authority;
 import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.User.UserBuilder;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAdjective;
@@ -159,6 +162,35 @@ class UserTest {
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(build)
           .withMessage(UserErrorCode.EXCESSIVE_PROFILE_IMAGE_URL_LENGTH.getCodeName());
+    }
+
+  }
+
+  @Nested
+  class AdminTest {
+
+    @Test
+    void authority가_ADMIN이면_true() {
+      // given
+      User user = UserFixture.createRandomUserWithAuthority(1L, Authority.ADMIN);
+
+      // when
+      boolean actual = user.isAdmin();
+
+      // then
+      assertThat(actual).isTrue();
+    }
+
+    @Test
+    void authority가_ADMIN이_아니면_false() {
+      // given
+      User user = UserFixture.createRandomUserWithAuthority(1L, Authority.NORMAL);
+
+      // when
+      boolean actual = user.isAdmin();
+
+      // then
+      assertThat(actual).isFalse();
     }
 
   }

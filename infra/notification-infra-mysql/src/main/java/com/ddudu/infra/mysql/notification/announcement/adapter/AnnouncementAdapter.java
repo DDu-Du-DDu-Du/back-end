@@ -8,6 +8,7 @@ import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.notification.announcement.aggregate.Announcement;
 import com.ddudu.infra.mysql.notification.announcement.entity.AnnouncementEntity;
 import com.ddudu.infra.mysql.notification.announcement.repository.AnnouncementRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,16 @@ public class AnnouncementAdapter implements AnnouncementCommandPort, Announcemen
   public Announcement save(Announcement announcement) {
     return announcementRepository.save(AnnouncementEntity.from(announcement))
         .toDomain();
+  }
+
+  @Override
+  public Announcement update(Announcement announcement) {
+    AnnouncementEntity announcementEntity = announcementRepository.findById(announcement.getId())
+        .orElseThrow(EntityNotFoundException::new);
+
+    announcementEntity.update(announcement);
+
+    return announcementEntity.toDomain();
   }
 
   @Override
