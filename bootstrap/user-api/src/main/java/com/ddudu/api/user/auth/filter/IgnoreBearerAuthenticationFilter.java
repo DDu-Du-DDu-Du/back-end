@@ -9,6 +9,9 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,8 +20,8 @@ public class IgnoreBearerAuthenticationFilter extends OncePerRequestFilter {
 
   private static final String BEARER = "Bearer";
   private static final String IGNORE = "Ignore";
-  private static final String LOGIN_PATH = "/auth/login";
-  private static final String REFRESH_PATH = "/auth/token";
+  private static final RequestMatcher REFRESH_REQUEST_MATCHER =
+      new AntPathRequestMatcher("/api/auth/token", HttpMethod.POST.name());
 
   @Override
   protected void doFilterInternal(
@@ -26,10 +29,9 @@ public class IgnoreBearerAuthenticationFilter extends OncePerRequestFilter {
       HttpServletResponse response,
       FilterChain filterChain
   ) throws ServletException, IOException {
-    String requestUri = request.getRequestURI();
     String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-    if (isIgnorable(requestUri) && token != null && token.startsWith(BEARER)) {
+    if (isIgnorable(request) && token != null && token.startsWith(BEARER)) {
       MutableRequest mutableRequest = new MutableRequest(request);
 
       mutableRequest.setHeader(HttpHeaders.AUTHORIZATION, token.replace(BEARER, IGNORE));
@@ -39,8 +41,8 @@ public class IgnoreBearerAuthenticationFilter extends OncePerRequestFilter {
     }
   }
 
-  private boolean isIgnorable(String requestUri) {
-    return requestUri.contains(LOGIN_PATH) || requestUri.contains(REFRESH_PATH);
+  private boolean isIgnorable(HttpServletRequest request) {
+    return REFRESH_REQUEST_MATCHER.matches(request);
   }
 
   private class MutableRequest extends HttpServletRequestWrapper {
