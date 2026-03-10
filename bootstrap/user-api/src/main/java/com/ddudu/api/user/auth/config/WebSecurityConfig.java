@@ -6,6 +6,8 @@ import com.ddudu.api.user.auth.jwt.converter.JwtConverter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,15 +18,24 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
   private static final String ALL_RESOURCES = "/api/**";
+  private static final String ANNOUNCEMENTS_PATH = "/api/announcements";
+  private static final String ANNOUNCEMENT_DETAIL_PATH = "/api/announcements/*";
+  private static final String LOGIN_PATH = "/api/auth/login/**";
 
   @Bean
   public SecurityFilterChain restFilterChain(
@@ -35,9 +46,9 @@ public class WebSecurityConfig {
   )
       throws Exception {
     return http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .cors(Customizer.withDefaults())
         .securityMatchers(matcher -> matcher
-            .requestMatchers(ALL_RESOURCES))
+            .requestMatchers(protectedApiRequestMatcher()))
         .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .requestCache(RequestCacheConfigurer::disable)
@@ -58,6 +69,21 @@ public class WebSecurityConfig {
         .build();
   }
 
+  private RequestMatcher protectedApiRequestMatcher() {
+    return new AndRequestMatcher(
+        new AntPathRequestMatcher(ALL_RESOURCES),
+        new NegatedRequestMatcher(excludedApiRequestMatcher())
+    );
+  }
+
+  private RequestMatcher excludedApiRequestMatcher() {
+    return new OrRequestMatcher(
+        new AntPathRequestMatcher(ANNOUNCEMENTS_PATH, HttpMethod.GET.name()),
+        new AntPathRequestMatcher(ANNOUNCEMENT_DETAIL_PATH, HttpMethod.GET.name()),
+        new AntPathRequestMatcher(LOGIN_PATH, HttpMethod.POST.name())
+    );
+  }
+
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
@@ -74,6 +100,11 @@ public class WebSecurityConfig {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
+  }
+
+  @Bean
+  public CorsFilter corsFilter(CorsConfigurationSource corsConfigurationSource) {
+    return new CorsFilter(corsConfigurationSource);
   }
 
 }
