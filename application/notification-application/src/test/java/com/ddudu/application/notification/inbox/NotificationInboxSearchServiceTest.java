@@ -121,6 +121,7 @@ class NotificationInboxSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(size);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
 
     NotificationInboxSearchResponse firstInbox = response.contents()
         .get(0);
@@ -152,6 +153,7 @@ class NotificationInboxSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(defaultSize);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
   }
 
   @Test
@@ -184,6 +186,7 @@ class NotificationInboxSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(expectedSize);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
   }
 
   @Test
@@ -205,6 +208,26 @@ class NotificationInboxSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(size);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
+  }
+
+  @Test
+  void 마지막_페이지면_nextCursor는_null이고_hasNext는_false다() {
+    // given
+    int totalSize = size + 1;
+    NotificationInboxSearchRequest request = new NotificationInboxSearchRequest("0", totalSize + 10);
+
+    // when
+    ScrollResponse<NotificationInboxSearchResponse> response = notificationInboxSearchService.search(
+        user.getId(),
+        request
+    );
+
+    // then
+    assertThat(response.isEmpty()).isFalse();
+    assertThat(response.contents()).hasSize(totalSize);
+    assertThat(response.nextCursor()).isNull();
+    assertThat(response.hasNext()).isFalse();
   }
 
   @Test

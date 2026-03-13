@@ -82,6 +82,7 @@ class DduduSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(size);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
   }
 
   @Test
@@ -104,6 +105,7 @@ class DduduSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(defaultSize);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
   }
 
   @Test
@@ -127,6 +129,7 @@ class DduduSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(expectedSize);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
   }
 
   @Test
@@ -145,6 +148,7 @@ class DduduSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(1);
     assertThat(response.nextCursor()).isNull();
+    assertThat(response.hasNext()).isFalse();
   }
 
   @Test

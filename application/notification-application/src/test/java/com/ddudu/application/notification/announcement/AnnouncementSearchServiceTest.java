@@ -82,6 +82,7 @@ class AnnouncementSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(size);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
     assertThat(response.contents().get(0).id()).isEqualTo(latestId);
     assertThat(response.contents().get(0).author()).isEqualTo(expectedAuthor);
     assertThat(response.contents()).isSortedAccordingTo((a, b) -> Long.compare(b.id(), a.id()));
@@ -104,6 +105,7 @@ class AnnouncementSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(defaultSize);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
   }
 
   @Test
@@ -141,6 +143,7 @@ class AnnouncementSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(expectedSize);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
     assertThat(response.contents())
         .allMatch(announcement -> announcement.id() < firstPageLastId);
   }
@@ -161,10 +164,11 @@ class AnnouncementSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(size);
     assertThat(response.nextCursor()).isEqualTo(String.valueOf(expectedNextCursor));
+    assertThat(response.hasNext()).isTrue();
   }
 
   @Test
-  void 마지막_페이지면_nextCursor는_null이다() {
+  void 마지막_페이지면_nextCursor는_null이고_hasNext는_false다() {
     // given
     int totalSize = savedAnnouncements.size();
     AnnouncementSearchRequest request = new AnnouncementSearchRequest(null, "0", totalSize + 10);
@@ -176,6 +180,7 @@ class AnnouncementSearchServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents()).hasSize(totalSize);
     assertThat(response.nextCursor()).isNull();
+    assertThat(response.hasNext()).isFalse();
   }
 
 }
