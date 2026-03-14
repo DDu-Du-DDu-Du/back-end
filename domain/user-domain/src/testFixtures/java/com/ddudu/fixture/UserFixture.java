@@ -43,6 +43,29 @@ public class UserFixture extends BaseFixture {
         .build();
   }
 
+  public static User createRandomUserWithNullOptions(long id) {
+    String lowTime = UUID.randomUUID()
+        .toString()
+        .substring(0, 8);
+    RandomUserAdjective adjective = RandomUserAdjective.getRandom();
+    RandomUserAnimal animal = RandomUserAnimal.getRandom();
+    String username = adjective.getUsername() + animal.getUsername() + lowTime;
+    String nickname = adjective.getNickname() + " " + animal.getNickname();
+
+    return User.builder()
+        .id(id)
+        .nickname(nickname)
+        .username(username)
+        .authority(Authority.NORMAL)
+        .authProviders(Collections.singletonList(createRandomAuthProvider()))
+        .status(UserStatus.ACTIVE)
+        .options(null)
+        .allowingFollowsAfterApproval(null)
+        .templateNotification(null)
+        .dduduNotification(null)
+        .build();
+  }
+
   public static User createRandomSocialUser(AuthProvider authProvider) {
     return createRandomUser(getRandomId(), null, authProvider, null, null, null, null);
   }
