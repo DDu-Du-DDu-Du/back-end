@@ -3,6 +3,11 @@
 - Charset is UTF-8
 - Line Separator is currently CRLF, but the new files you create should be LF as I am planning to migrate into LINUX/macOS.
 
+## GitHub Issue/PR/Comment
+
+- Always write in Korean
+- For PR, follow the template `./.gihub/pull_request.template.md`
+
 ## Test Generation
 
 1. Test Scope: `domain/*-domain` modules and `application/*-application` modules only.

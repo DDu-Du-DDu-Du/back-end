@@ -7,6 +7,7 @@ on:
       - 'feat/**'
       - 'refactor/**'
       - 'fix/**'
+      - 'codex/**'
 
 permissions:
   contents: read
@@ -32,12 +33,12 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'corretto'
+          distribution: "corretto"
 
       - name: Gradle 캐싱
         uses: gradle/actions/setup-gradle@v4.4.0
         with:
-          cache-read-only: '${{ github.event.repository != null && github.base_ref != github.event.repository.default_branch }}'
+          cache-read-only: "${{ github.event.repository != null && github.base_ref != github.event.repository.default_branch }}"
 
       - name: 빌드 권한 부여
         run: chmod +x gradlew
@@ -63,12 +64,12 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
-          checkstyle_config: './config/checkstyle/checkstyle.xml'
-          properties_file: './config/checkstyle/checkstyle.properties'
+          checkstyle_config: "./config/checkstyle/checkstyle.xml"
+          properties_file: "./config/checkstyle/checkstyle.properties"
           level: warning
 
       - name: 테스트 리포트 작성
         uses: mikepenz/action-junit-report@v5
         if: success() || failure() # always run even if the previous step fails
         with:
-          report_paths: '**/build/test-results/test/TEST-*.xml'
+          report_paths: "**/build/test-results/test/TEST-*.xml"
