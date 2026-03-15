@@ -100,4 +100,18 @@ public final class GoalErrorExamples {
       }
       """;
 
+  public static final String GOAL_NULL_PRIORITY = """
+      {
+        "code": 3015,
+        "message": "우선순위는 필수값입니다."
+      }
+      """;
+
+  public static final String GOAL_INVALID_PRIORITY = """
+      {
+        "code": 3016,
+        "message": "우선순위는 1 이상의 정수여야 합니다."
+      }
+      """;
+
 }

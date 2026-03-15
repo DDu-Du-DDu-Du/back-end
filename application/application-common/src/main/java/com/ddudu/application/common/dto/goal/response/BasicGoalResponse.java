@@ -9,7 +9,8 @@ public record BasicGoalResponse(
     Long id,
     String name,
     GoalStatus status,
-    String color
+    String color,
+    int priority
 ) {
 
   public static BasicGoalResponse from(Goal goal) {
@@ -18,6 +19,7 @@ public record BasicGoalResponse(
         .name(goal.getName())
         .status(goal.getStatus())
         .color(goal.getColor())
+        .priority(goal.getPriority())
         .build();
   }
 

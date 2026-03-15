@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class UserFixture extends BaseFixture {
 
   public static User createRandomUserWithId() {
-    return createRandomUser(getRandomId(), null, null, null, null, null, null);
+    return createRandomUser(getRandomId(), null, null, createRandomOptions(), null, null, null);
   }
 
   public static User createRandomAdminUserWithId() {
@@ -32,7 +32,7 @@ public class UserFixture extends BaseFixture {
   }
 
   public static User createRandomUserWithAuthority(long id, Authority authority) {
-    User user = createRandomUser(id, null, null, null, null, null, null);
+    User user = createRandomUser(id, null, null, createRandomOptions(), null, null, null);
     return User.builder()
         .id(user.getId())
         .nickname(user.getNickname())
@@ -41,11 +41,7 @@ public class UserFixture extends BaseFixture {
         .authority(authority)
         .authProviders(user.getAuthProviders())
         .status(user.getStatus())
-        .options(Options.builder()
-            .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
-            .templateNotification(user.isNotifyingTemplate())
-            .dduduNotification(user.isNotifyingDdudu())
-            .build())
+        .options(createOptionsWithUserNotification(user))
         .build();
   }
 
@@ -73,7 +69,39 @@ public class UserFixture extends BaseFixture {
   }
 
   public static User createRandomSocialUser(AuthProvider authProvider) {
-    return createRandomUser(getRandomId(), null, authProvider, null, null, null, null);
+    return createRandomUser(
+        getRandomId(),
+        null,
+        authProvider,
+        createRandomOptions(),
+        null,
+        null,
+        null
+    );
+  }
+
+  public static Options createRandomOptions() {
+    return Options.builder()
+        .allowingFollowsAfterApproval(faker.bool().bool())
+        .templateNotification(faker.bool().bool())
+        .dduduNotification(faker.bool().bool())
+        .display(DisplayOptions.builder()
+            .weekStartDay(getRandomWeekStartDay())
+            .darkMode(faker.bool().bool())
+            .build())
+        .menuActivation(MenuActivationOptions.builder()
+            .calendar(createRandomMenuActivationItem())
+            .dashboard(createRandomMenuActivationItem())
+            .stats(createRandomMenuActivationItem())
+            .build())
+        .appConnection(AppConnectionOptions.builder()
+            .realtimeSync(RealtimeSyncOptions.builder()
+                .notion(faker.bool().bool())
+                .googleCalendar(faker.bool().bool())
+                .microsoftTodo(faker.bool().bool())
+                .build())
+            .build())
+        .build();
   }
 
   public static User createRandomUserWithWeekStartDay(long id, String weekStartDay) {
@@ -134,7 +162,7 @@ public class UserFixture extends BaseFixture {
         .authProviders(Collections.singletonList(
             Objects.nonNull(authProvider) ? authProvider : createRandomAuthProvider()))
         .status(UserStatus.ACTIVE)
-        .options(options)
+        .options(Objects.nonNull(options) ? options : createRandomOptions())
         .allowingFollowsAfterApproval(
             Objects.nonNull(allowingFollowsAfterApproval) ? allowingFollowsAfterApproval
                 : faker.bool()
@@ -145,6 +173,52 @@ public class UserFixture extends BaseFixture {
         .dduduNotification(Objects.nonNull(dduduNotification) ? dduduNotification : faker.bool()
             .bool())
         .build();
+  }
+
+  private static Options createOptionsWithUserNotification(User user) {
+    return Options.builder()
+        .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
+        .templateNotification(user.isNotifyingTemplate())
+        .dduduNotification(user.isNotifyingDdudu())
+        .display(DisplayOptions.builder()
+            .weekStartDay(user.getWeekStartDay())
+            .darkMode(user.isDarkMode())
+            .build())
+        .menuActivation(MenuActivationOptions.builder()
+            .calendar(MenuActivationItem.builder()
+                .active(user.isActiveCalendar())
+                .priority(user.getPriorityCalendar())
+                .build())
+            .dashboard(MenuActivationItem.builder()
+                .active(user.isActiveDashboard())
+                .priority(user.getPriorityDashboard())
+                .build())
+            .stats(MenuActivationItem.builder()
+                .active(user.isActiveStats())
+                .priority(user.getPriorityStats())
+                .build())
+            .build())
+        .appConnection(AppConnectionOptions.builder()
+            .realtimeSync(RealtimeSyncOptions.builder()
+                .notion(user.isRealtimeSyncNotion())
+                .googleCalendar(user.isRealtimeSyncGoogleCalendar())
+                .microsoftTodo(user.isRealtimeSyncMicrosoftTodo())
+                .build())
+            .build())
+        .build();
+  }
+
+  private static MenuActivationItem createRandomMenuActivationItem() {
+    return MenuActivationItem.builder()
+        .active(faker.bool().bool())
+        .priority(getRandomInt(1, 10))
+        .build();
+  }
+
+  private static WeekStartDay getRandomWeekStartDay() {
+    WeekStartDay[] weekStartDays = WeekStartDay.values();
+    int index = getRandomInt(0, weekStartDays.length - 1);
+    return weekStartDays[index];
   }
 
   public static AuthProvider createRandomAuthProvider() {

@@ -29,6 +29,7 @@ public final class Goal {
   private final Long userId;
   private final GoalStatus status;
   private final PrivacyType privacyType;
+  private final int priority;
 
   @Getter(AccessLevel.NONE)
   private final Color color;
@@ -40,7 +41,8 @@ public final class Goal {
       Long userId,
       GoalStatus status,
       String color,
-      PrivacyType privacyType
+      PrivacyType privacyType,
+      Integer priority
   ) {
     validate(name, userId);
 
@@ -50,13 +52,14 @@ public final class Goal {
     this.status = isNull(status) ? DEFAULT_STATUS : status;
     this.color = new Color(color);
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
+    this.priority = isNull(priority) ? 1 : priority;
   }
 
   public String getColor() {
     return color.getCode();
   }
 
-  public Goal applyGoalUpdates(String name, String color, PrivacyType privacyType) {
+  public Goal applyGoalUpdates(String name, String color, PrivacyType privacyType, int priority) {
     validateName(name);
 
     return Goal.builder()
@@ -66,6 +69,7 @@ public final class Goal {
         .status(status)
         .color(color)
         .privacyType(privacyType)
+        .priority(priority)
         .build();
   }
 
@@ -77,6 +81,7 @@ public final class Goal {
         .status(status)
         .color(color.getCode())
         .privacyType(privacyType)
+        .priority(priority)
         .build();
   }
 

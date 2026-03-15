@@ -1,9 +1,10 @@
 ---
-name: 🛠 리팩터링
+name: "\U0001F6E0 리팩터링"
 about: Refactor without any change of behavior
-title: "Refactor/<title>"
-labels: 🛠refactor
-assignees: ""
+title: 'Refactor: <title>'
+labels: "\U0001F6E0refactor"
+assignees: ''
+
 ---
 
 ## AS-IS

@@ -1,9 +1,10 @@
 ---
-name: ✨ API 추가 개발
+name: "✨ API 추가 개발"
 about: Feature API
-title: "Feat/<title>"
-labels: ✨feature
-assignees: ""
+title: 'Feat: <title>'
+labels: "✨feature"
+assignees: ''
+
 ---
 
 ## Description
@@ -13,8 +14,8 @@ assignees: ""
 ### 요청
 
 ```
-// METHOD /url
-// HeaderField: {header value}
+METHOD /url
+HeaderField: {header value}
 {
     name: {context}
 }

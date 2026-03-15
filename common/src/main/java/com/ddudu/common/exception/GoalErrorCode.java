@@ -19,7 +19,9 @@ public enum GoalErrorCode implements ErrorCode {
   NULL_USER(3011, "사용자는 필수값입니다."),
   INVALID_GOAL_STATUS(3012, "존재하지 않은 목표 상태입니다."),
   TWO_OWNERS(3013, "목표는 두 명 이상의 소유자를 가질 수 없습니다."),
-  NOT_POSITIVE_USER_ID(3014, "사용자 아이디는 양수입니다.");
+  NOT_POSITIVE_USER_ID(3014, "사용자 아이디는 양수입니다."),
+  NULL_PRIORITY(3015, "우선순위는 필수값입니다."),
+  INVALID_PRIORITY(3016, "우선순위는 1 이상의 정수여야 합니다.");
 
   private final int code;
   private final String message;

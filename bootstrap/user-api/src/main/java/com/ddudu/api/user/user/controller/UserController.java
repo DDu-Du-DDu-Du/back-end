@@ -6,6 +6,7 @@ import com.ddudu.application.common.dto.user.response.MeResponse;
 import com.ddudu.application.common.dto.user.response.UserSettingsResponse;
 import com.ddudu.application.common.port.user.in.GetMyInfoUseCase;
 import com.ddudu.application.common.port.user.in.UpdateUserSettingsUseCase;
+import com.ddudu.application.common.port.user.in.GetUserSettingsUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,17 @@ public class UserController implements UserControllerDoc {
 
   private final GetMyInfoUseCase getMyInfoUseCase;
   private final UpdateUserSettingsUseCase updateUserSettingsUseCase;
+  private final GetUserSettingsUseCase getUserSettingsUseCase;
+
+  @GetMapping("/settings")
+  public ResponseEntity<UserSettingsResponse> getUserSettings(
+      @Login
+      Long loginId
+  ) {
+    UserSettingsResponse response = getUserSettingsUseCase.getUserSettings(loginId);
+
+    return ResponseEntity.ok(response);
+  }
 
   @GetMapping("/me")
   public ResponseEntity<MeResponse> validateToken(

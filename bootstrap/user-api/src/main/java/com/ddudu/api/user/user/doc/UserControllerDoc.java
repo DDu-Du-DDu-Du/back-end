@@ -48,6 +48,58 @@ public interface UserControllerDoc {
   )
   ResponseEntity<MeResponse> validateToken(Long loginId);
 
+  @Operation(summary = "내 세팅 조회")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "BAD REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "1012",
+                          value = UserErrorExamples.USER_INVALID_WEEK_START_DAY
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "1011",
+                          description = "토큰의 사용자가 존재하지 않는 경우",
+                          value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
+                      )
+                  }
+              )
+           ),
+           @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "5002",
+                          value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                      )
+                  }
+              )
+          )
+      }
+  )
+  ResponseEntity<UserSettingsResponse> updateSettings(
+      Long loginId,
+      UpdateUserSettingsRequest request
+  );
+            
   @Operation(summary = "내 세팅 옵션 변경")
   @ApiResponses(
       value = {
@@ -75,16 +127,26 @@ public interface UserControllerDoc {
                   examples = {
                       @ExampleObject(
                           name = "1011",
+                          description = "토큰의 사용자가 존재하지 않는 경우",
                           value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
+                      )
+                  }
+              )
+           ),
+           @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "5002",
+                          value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
                       )
                   }
               )
           )
       }
   )
-  ResponseEntity<UserSettingsResponse> updateSettings(
-      Long loginId,
-      UpdateUserSettingsRequest request
-  );
+  ResponseEntity<UserSettingsResponse> getUserSettings(Long loginId);
 
 }
