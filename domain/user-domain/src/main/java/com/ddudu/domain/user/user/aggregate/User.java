@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import com.ddudu.common.dto.Authority;
 import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.enums.UserStatus;
+import com.ddudu.domain.user.user.aggregate.enums.WeekStartDay;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
 import com.ddudu.domain.user.user.aggregate.vo.Options;
 import java.util.Collections;
@@ -58,15 +59,14 @@ public class User {
     this.id = id;
     this.username = username;
     this.nickname = nickname;
-    this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
+    this.authority = Objects.isNull(authority) ? Authority.NORMAL : authority;
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
-    this.status = Objects.requireNonNullElse(status, UserStatus.ACTIVE);
+    this.status = Objects.isNull(status) ? UserStatus.ACTIVE : status;
     this.profileImageUrl = profileImageUrl;
-    this.options = Objects.requireNonNullElse(
-        options,
-        buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification)
-    );
-    this.authProviders = Objects.requireNonNullElse(authProviders, Collections.emptyList());
+    this.options = Objects.isNull(options)
+        ? buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification)
+        : options;
+    this.authProviders = Objects.isNull(authProviders) ? Collections.emptyList() : authProviders;
   }
 
   public boolean isAllowingFollowsAfterApproval() {
@@ -79,6 +79,50 @@ public class User {
 
   public boolean isNotifyingDdudu() {
     return this.options.isDduduNotification();
+  }
+
+  public WeekStartDay getWeekStartDay() {
+    return this.options.getDisplay().getWeekStartDay();
+  }
+
+  public boolean isDarkMode() {
+    return this.options.getDisplay().isDarkMode();
+  }
+
+  public boolean isActiveCalendar() {
+    return this.options.getMenuActivation().getCalendar().isActive();
+  }
+
+  public int getPriorityCalendar() {
+    return this.options.getMenuActivation().getCalendar().getPriority();
+  }
+
+  public boolean isActiveDashboard() {
+    return this.options.getMenuActivation().getDashboard().isActive();
+  }
+
+  public int getPriorityDashboard() {
+    return this.options.getMenuActivation().getDashboard().getPriority();
+  }
+
+  public boolean isActiveStats() {
+    return this.options.getMenuActivation().getStats().isActive();
+  }
+
+  public int getPriorityStats() {
+    return this.options.getMenuActivation().getStats().getPriority();
+  }
+
+  public boolean isRealtimeSyncNotion() {
+    return this.options.getAppConnection().getRealtimeSync().isNotion();
+  }
+
+  public boolean isRealtimeSyncGoogleCalendar() {
+    return this.options.getAppConnection().getRealtimeSync().isGoogleCalendar();
+  }
+
+  public boolean isRealtimeSyncMicrosoftTodo() {
+    return this.options.getAppConnection().getRealtimeSync().isMicrosoftTodo();
   }
 
   public boolean isAdmin() {
