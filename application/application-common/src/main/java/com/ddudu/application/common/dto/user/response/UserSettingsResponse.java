@@ -1,5 +1,6 @@
 package com.ddudu.application.common.dto.user.response;
 
+import com.ddudu.domain.user.user.aggregate.User;
 import lombok.Builder;
 
 @Builder
@@ -9,31 +10,28 @@ public record UserSettingsResponse(
     AppConnection appConnection
 ) {
 
-  public static UserSettingsResponse of(
-      String weekStartDay,
-      boolean isDarkMode,
-      boolean isActiveCalendar,
-      int priorityCalendar,
-      boolean isActiveDashboard,
-      int priorityDashboard,
-      boolean isActiveStats,
-      int priorityStats,
-      boolean realtimeSyncNotion,
-      boolean realtimeSyncGoogleCalendar,
-      boolean realtimeSyncMicrosoftTodo
-  ) {
+  public static UserSettingsResponse from(User user) {
     return UserSettingsResponse.builder()
-        .display(new Display(weekStartDay, isDarkMode))
+        .display(new Display(user.getWeekStartDay().name(), user.isDarkMode()))
         .menuActivation(new MenuActivation(
-            new MenuActivation.MenuActivationItem(isActiveCalendar, priorityCalendar),
-            new MenuActivation.MenuActivationItem(isActiveDashboard, priorityDashboard),
-            new MenuActivation.MenuActivationItem(isActiveStats, priorityStats)
+            new MenuActivation.MenuActivationItem(
+                user.isActiveCalendar(),
+                user.getPriorityCalendar()
+            ),
+            new MenuActivation.MenuActivationItem(
+                user.isActiveDashboard(),
+                user.getPriorityDashboard()
+            ),
+            new MenuActivation.MenuActivationItem(
+                user.isActiveStats(),
+                user.getPriorityStats()
+            )
         ))
         .appConnection(new AppConnection(
             new AppConnection.RealtimeSync(
-                realtimeSyncNotion,
-                realtimeSyncGoogleCalendar,
-                realtimeSyncMicrosoftTodo
+                user.isRealtimeSyncNotion(),
+                user.isRealtimeSyncGoogleCalendar(),
+                user.isRealtimeSyncMicrosoftTodo()
             )
         ))
         .build();

@@ -40,19 +40,7 @@ public class UpdateUserSettingsService implements UpdateUserSettingsUseCase {
     );
     User saved = userCommandPort.update(updated);
 
-    return UserSettingsResponse.of(
-        saved.getWeekStartDay().name(),
-        saved.isDarkMode(),
-        saved.isActiveCalendar(),
-        saved.getPriorityCalendar(),
-        saved.isActiveDashboard(),
-        saved.getPriorityDashboard(),
-        saved.isActiveStats(),
-        saved.getPriorityStats(),
-        saved.isRealtimeSyncNotion(),
-        saved.isRealtimeSyncGoogleCalendar(),
-        saved.isRealtimeSyncMicrosoftTodo()
-    );
+    return UserSettingsResponse.from(saved);
   }
 
 }
