@@ -104,6 +104,38 @@ public class UserFixture extends BaseFixture {
         .build();
   }
 
+  public static User createRandomUserWithWeekStartDay(long id, String weekStartDay) {
+    Options options = Options.builder()
+        .display(DisplayOptions.builder()
+            .weekStartDay(WeekStartDay.get(weekStartDay))
+            .darkMode(faker.bool().bool())
+            .build())
+        .menuActivation(MenuActivationOptions.builder()
+            .calendar(MenuActivationItem.builder()
+                .active(faker.bool().bool())
+                .priority(faker.number().numberBetween(1, 10))
+                .build())
+            .dashboard(MenuActivationItem.builder()
+                .active(faker.bool().bool())
+                .priority(faker.number().numberBetween(1, 10))
+                .build())
+            .stats(MenuActivationItem.builder()
+                .active(faker.bool().bool())
+                .priority(faker.number().numberBetween(1, 10))
+                .build())
+            .build())
+        .appConnection(AppConnectionOptions.builder()
+            .realtimeSync(RealtimeSyncOptions.builder()
+                .notion(faker.bool().bool())
+                .googleCalendar(faker.bool().bool())
+                .microsoftTodo(faker.bool().bool())
+                .build())
+            .build())
+        .build();
+
+    return createRandomUser(id, null, null, options, null, null, null);
+  }
+
   public static User createRandomUser(
       long id,
       String introduction,
