@@ -21,37 +21,19 @@ public class GetUserSettingsService implements GetUserSettingsUseCase {
         UserErrorCode.NO_TARGET_FOR_MY_INFO.getCodeName()
     );
 
-    return toResponse(user);
-  }
-
-  private UserSettingsResponse toResponse(User user) {
-    return UserSettingsResponse.builder()
-        .display(UserSettingsResponse.Display.builder()
-            .weekStartDay(user.getWeekStartDay())
-            .isDarkMode(user.isDarkMode())
-            .build())
-        .menuActivation(UserSettingsResponse.MenuActivation.builder()
-            .calendar(UserSettingsResponse.MenuActivationItem.builder()
-                .isActive(user.isActiveCalendar())
-                .priority(user.getPriorityCalendar())
-                .build())
-            .dashboard(UserSettingsResponse.MenuActivationItem.builder()
-                .isActive(user.isActiveDashboard())
-                .priority(user.getPriorityDashboard())
-                .build())
-            .stats(UserSettingsResponse.MenuActivationItem.builder()
-                .isActive(user.isActiveStats())
-                .priority(user.getPriorityStats())
-                .build())
-            .build())
-        .appConnection(UserSettingsResponse.AppConnection.builder()
-            .realtimeSync(UserSettingsResponse.RealtimeSync.builder()
-                .notion(user.isRealtimeSyncNotion())
-                .googleCalendar(user.isRealtimeSyncGoogleCalendar())
-                .microsoftTodo(user.isRealtimeSyncMicrosoftTodo())
-                .build())
-            .build())
-        .build();
+    return UserSettingsResponse.from(
+        user.getWeekStartDay(),
+        user.isDarkMode(),
+        user.isActiveCalendar(),
+        user.getPriorityCalendar(),
+        user.isActiveDashboard(),
+        user.getPriorityDashboard(),
+        user.isActiveStats(),
+        user.getPriorityStats(),
+        user.isRealtimeSyncNotion(),
+        user.isRealtimeSyncGoogleCalendar(),
+        user.isRealtimeSyncMicrosoftTodo()
+    );
   }
 
 }
