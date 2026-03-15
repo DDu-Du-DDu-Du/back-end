@@ -4,7 +4,14 @@ import com.ddudu.common.dto.Authority;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.User.UserBuilder;
 import com.ddudu.domain.user.user.aggregate.enums.UserStatus;
+import com.ddudu.domain.user.user.aggregate.enums.WeekStartDay;
+import com.ddudu.domain.user.user.aggregate.vo.AppConnectionOptions;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
+import com.ddudu.domain.user.user.aggregate.vo.DisplayOptions;
+import com.ddudu.domain.user.user.aggregate.vo.MenuActivationItem;
+import com.ddudu.domain.user.user.aggregate.vo.MenuActivationOptions;
+import com.ddudu.domain.user.user.aggregate.vo.Options;
+import com.ddudu.domain.user.user.aggregate.vo.RealtimeSyncOptions;
 import com.ddudu.infra.mysql.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -94,6 +101,75 @@ public class UserEntity extends BaseEntity {
   )
   private boolean dduduNotification;
 
+  @Column(
+      name = "week_start_day",
+      columnDefinition = "VARCHAR",
+      length = 3,
+      nullable = false
+  )
+  @Enumerated(EnumType.STRING)
+  private WeekStartDay weekStartDay;
+
+  @Column(
+      name = "dark_mode",
+      nullable = false
+  )
+  private boolean darkMode;
+
+  @Column(
+      name = "active_calendar",
+      nullable = false
+  )
+  private boolean activeCalendar;
+
+  @Column(
+      name = "priority_calendar",
+      nullable = false
+  )
+  private int priorityCalendar;
+
+  @Column(
+      name = "active_dashboard",
+      nullable = false
+  )
+  private boolean activeDashboard;
+
+  @Column(
+      name = "priority_dashboard",
+      nullable = false
+  )
+  private int priorityDashboard;
+
+  @Column(
+      name = "active_stats",
+      nullable = false
+  )
+  private boolean activeStats;
+
+  @Column(
+      name = "priority_stats",
+      nullable = false
+  )
+  private int priorityStats;
+
+  @Column(
+      name = "realtime_sync_notion",
+      nullable = false
+  )
+  private boolean realtimeSyncNotion;
+
+  @Column(
+      name = "realtime_sync_google_calendar",
+      nullable = false
+  )
+  private boolean realtimeSyncGoogleCalendar;
+
+  @Column(
+      name = "realtime_sync_microsoft_todo",
+      nullable = false
+  )
+  private boolean realtimeSyncMicrosoftTodo;
+
   public static UserEntity from(User user) {
     return UserEntity.builder()
         .id(user.getId())
@@ -106,6 +182,17 @@ public class UserEntity extends BaseEntity {
         .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
         .templateNotification(user.isNotifyingTemplate())
         .dduduNotification(user.isNotifyingDdudu())
+        .weekStartDay(user.getWeekStartDay())
+        .darkMode(user.isDarkMode())
+        .activeCalendar(user.isActiveCalendar())
+        .priorityCalendar(user.getPriorityCalendar())
+        .activeDashboard(user.isActiveDashboard())
+        .priorityDashboard(user.getPriorityDashboard())
+        .activeStats(user.isActiveStats())
+        .priorityStats(user.getPriorityStats())
+        .realtimeSyncNotion(user.isRealtimeSyncNotion())
+        .realtimeSyncGoogleCalendar(user.isRealtimeSyncGoogleCalendar())
+        .realtimeSyncMicrosoftTodo(user.isRealtimeSyncMicrosoftTodo())
         .build();
   }
 
@@ -128,9 +215,52 @@ public class UserEntity extends BaseEntity {
         .authority(authority)
         .status(status)
         .profileImageUrl(profileImageUrl)
+        .options(buildOptions());
+  }
+
+  private Options buildOptions() {
+    return Options.builder()
         .allowingFollowsAfterApproval(allowingFollowsAfterApproval)
         .templateNotification(templateNotification)
-        .dduduNotification(dduduNotification);
+        .dduduNotification(dduduNotification)
+        .display(buildDisplayOptions())
+        .menuActivation(buildMenuActivationOptions())
+        .appConnection(buildAppConnectionOptions())
+        .build();
+  }
+
+  private DisplayOptions buildDisplayOptions() {
+    return DisplayOptions.builder()
+        .weekStartDay(weekStartDay)
+        .darkMode(darkMode)
+        .build();
+  }
+
+  private MenuActivationOptions buildMenuActivationOptions() {
+    return MenuActivationOptions.builder()
+        .calendar(MenuActivationItem.builder()
+            .active(activeCalendar)
+            .priority(priorityCalendar)
+            .build())
+        .dashboard(MenuActivationItem.builder()
+            .active(activeDashboard)
+            .priority(priorityDashboard)
+            .build())
+        .stats(MenuActivationItem.builder()
+            .active(activeStats)
+            .priority(priorityStats)
+            .build())
+        .build();
+  }
+
+  private AppConnectionOptions buildAppConnectionOptions() {
+    return AppConnectionOptions.builder()
+        .realtimeSync(RealtimeSyncOptions.builder()
+            .notion(realtimeSyncNotion)
+            .googleCalendar(realtimeSyncGoogleCalendar)
+            .microsoftTodo(realtimeSyncMicrosoftTodo)
+            .build())
+        .build();
   }
 
 }
