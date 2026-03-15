@@ -1,6 +1,7 @@
 package com.ddudu.api.user.user.doc;
 
 import com.ddudu.application.common.dto.user.response.MeResponse;
+import com.ddudu.application.common.dto.user.response.UserSettingsResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.UserErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,5 +46,34 @@ public interface UserControllerDoc {
       }
   )
   ResponseEntity<MeResponse> validateToken(Long loginId);
+
+  @Operation(summary = "내 세팅 조회")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "5002",
+                          value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                      ),
+                      @ExampleObject(
+                          name = "1011",
+                          description = "토큰의 사용자가 존재하지 않는 경우",
+                          value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
+                      )
+                  }
+              )
+          )
+      }
+  )
+  ResponseEntity<UserSettingsResponse> getUserSettings(Long loginId);
 
 }
