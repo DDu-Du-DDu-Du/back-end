@@ -195,4 +195,33 @@ class UserTest {
 
   }
 
+  @Nested
+  class 기본_옵션_생성_테스트 {
+
+    @Test
+    void options가_null이면_신규_기본_옵션까지_함께_생성된다() {
+      // given
+      User user = UserFixture.createRandomUserWithNullOptions(1L);
+
+      // when
+
+      // then
+      assertThat(user.isAllowingFollowsAfterApproval()).isFalse();
+      assertThat(user.isNotifyingTemplate()).isTrue();
+      assertThat(user.isNotifyingDdudu()).isTrue();
+      assertThat(user.getWeekStartDay().name()).isEqualTo("SUN");
+      assertThat(user.isDarkMode()).isFalse();
+      assertThat(user.isActiveCalendar()).isTrue();
+      assertThat(user.getPriorityCalendar()).isEqualTo(1);
+      assertThat(user.isActiveDashboard()).isTrue();
+      assertThat(user.getPriorityDashboard()).isEqualTo(2);
+      assertThat(user.isActiveStats()).isTrue();
+      assertThat(user.getPriorityStats()).isEqualTo(3);
+      assertThat(user.isRealtimeSyncNotion()).isFalse();
+      assertThat(user.isRealtimeSyncGoogleCalendar()).isFalse();
+      assertThat(user.isRealtimeSyncMicrosoftTodo()).isFalse();
+    }
+
+  }
+
 }

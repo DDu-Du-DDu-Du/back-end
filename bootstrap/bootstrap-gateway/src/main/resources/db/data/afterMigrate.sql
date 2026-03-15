@@ -18,15 +18,19 @@ SET foreign_key_checks = 1;
 
 -- USERS
 INSERT INTO users(id, nickname, username, introduction, profile_image_url, authority, status,
-                  follows_after_approval, template_notification, ddudu_notification, created_at,
-                  updated_at)
+                  follows_after_approval, template_notification, ddudu_notification, week_start_day,
+                  dark_mode, active_calendar, priority_calendar, active_dashboard,
+                  priority_dashboard, active_stats, priority_stats, realtime_sync_notion,
+                  realtime_sync_google_calendar, realtime_sync_microsoft_todo, created_at, updated_at)
 VALUES (1, '결단력있는 딩고', 'determineddingoda25c93c', null, null, 'ADMIN', 'ACTIVE', 0, 1, 1,
-        '2024-05-17T16:13:48', '2024-05-17T16:13:48');
+        'SUN', 0, 1, 1, 1, 2, 1, 3, 0, 0, 0, '2024-05-17T16:13:48', '2024-05-17T16:13:48');
 INSERT INTO users(id, nickname, username, introduction, profile_image_url, authority, status,
-                  follows_after_approval, template_notification, ddudu_notification, created_at,
-                  updated_at)
+                  follows_after_approval, template_notification, ddudu_notification, week_start_day,
+                  dark_mode, active_calendar, priority_calendar, active_dashboard,
+                  priority_dashboard, active_stats, priority_stats, realtime_sync_notion,
+                  realtime_sync_google_calendar, realtime_sync_microsoft_todo, created_at, updated_at)
 VALUES (2, '짜증난 강아지', 'irritatedpuppy30b6f3ed', null, null, 'ADMIN', 'ACTIVE', 0, 1, 1,
-        '2024-08-18T21:13:02', '2024-08-18T21:13:02');
+        'SUN', 0, 1, 1, 1, 2, 1, 3, 0, 0, 0, '2024-08-18T21:13:02', '2024-08-18T21:13:02');
 # 뚜두 구글 계정
 
 -- REFRESH TOKEN
