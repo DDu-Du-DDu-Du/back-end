@@ -52,12 +52,12 @@ public class UpdateDduduService implements UpdateDduduUseCase {
     Ddudu updatedDdudu = dduduDomainService.update(ddudu, request.toCommand());
     Ddudu saved = dduduUpdatePort.update(updatedDdudu);
 
-    if (ddudu.getRemindAt() != null) {
+    if (ddudu.hasReminder()) {
       InterimCancelReminderEvent cancelEvent = InterimCancelReminderEvent.from(user.getId(), ddudu);
       applicationEventPublisher.publishEvent(cancelEvent);
     }
 
-    if (saved.getRemindAt() != null) {
+    if (saved.hasReminder()) {
       InterimSetReminderEvent setEvent = InterimSetReminderEvent.from(user.getId(), saved);
       applicationEventPublisher.publishEvent(setEvent);
     }

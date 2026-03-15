@@ -105,8 +105,7 @@ class DduduDomainServiceTest {
             command.name(),
             command.scheduledOn(),
             command.beginAt(),
-            command.endAt()
-        );
+            command.endAt());
   }
 
 }

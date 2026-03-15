@@ -46,7 +46,7 @@ public class CreateDduduService implements CreateDduduUseCase {
     Ddudu ddudu = dduduDomainService.create(user.getId(), request.toCommand());
     Ddudu saved = saveDduduPort.save(ddudu);
 
-    if (saved.getRemindAt() != null) {
+    if (saved.hasReminder()) {
       InterimSetReminderEvent event = InterimSetReminderEvent.from(user.getId(), saved);
       applicationEventPublisher.publishEvent(event);
     }

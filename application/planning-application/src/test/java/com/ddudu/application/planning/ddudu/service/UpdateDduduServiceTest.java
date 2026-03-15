@@ -71,7 +71,11 @@ class UpdateDduduServiceTest {
     // given
 
     // when
-    BasicDduduResponse actual = updateDduduService.update(user.getId(), ddudu.getId(), request);
+    BasicDduduResponse actual = updateDduduService.update(
+        user.getId(),
+        ddudu.getId(),
+        request
+    );
 
     // then
     assertThat(actual.id()).isEqualTo(ddudu.getId());
@@ -84,7 +88,11 @@ class UpdateDduduServiceTest {
     Long invalidUserId = UserFixture.getRandomId();
 
     // when
-    ThrowingCallable update = () -> updateDduduService.update(invalidUserId, ddudu.getId(), request);
+    ThrowingCallable update = () -> updateDduduService.update(
+        invalidUserId,
+        ddudu.getId(),
+        request
+    );
 
     // then
     Assertions.assertThatThrownBy(update)
@@ -98,7 +106,11 @@ class UpdateDduduServiceTest {
     Long invalidDduduId = DduduFixture.getRandomId();
 
     // when
-    ThrowingCallable update = () -> updateDduduService.update(user.getId(), invalidDduduId, request);
+    ThrowingCallable update = () -> updateDduduService.update(
+        user.getId(),
+        invalidDduduId,
+        request
+    );
 
     // then
     Assertions.assertThatThrownBy(update)
@@ -112,7 +124,11 @@ class UpdateDduduServiceTest {
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
     // when
-    ThrowingCallable update = () -> updateDduduService.update(anotherUser.getId(), ddudu.getId(), request);
+    ThrowingCallable update = () -> updateDduduService.update(
+        anotherUser.getId(),
+        ddudu.getId(),
+        request
+    );
 
     // then
     Assertions.assertThatThrownBy(update)

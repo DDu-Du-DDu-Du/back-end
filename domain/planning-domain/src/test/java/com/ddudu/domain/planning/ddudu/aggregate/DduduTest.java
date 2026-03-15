@@ -297,6 +297,39 @@ class DduduTest {
       }
 
       @Test
+      void 미리알림이_있으면_hasReminder가_true를_반환한다() {
+        // given
+        LocalDate futureDate = LocalDate.now().plusDays(2);
+        LocalTime beginAt = LocalTime.of(23, 30);
+        Ddudu withReminder = DduduFixture.createRandomDduduWithSchedule(userId, goalId, futureDate)
+            .setUpPeriod(beginAt, null)
+            .setReminder(0, 0, 15);
+
+        // when
+        boolean actual = withReminder.hasReminder();
+
+        // then
+        assertThat(actual).isTrue();
+      }
+
+      @Test
+      void 미리알림이_없으면_hasReminder가_false를_반환한다() {
+        // given
+        Ddudu withoutReminder = DduduFixture.createRandomDduduWithReference(
+            goalId,
+            userId,
+            false,
+            null
+        );
+
+        // when
+        boolean actual = withoutReminder.hasReminder();
+
+        // then
+        assertThat(actual).isFalse();
+      }
+
+      @Test
       void 미리알림_취소를_성공한다() {
         // given
         LocalDate futureDate = LocalDate.now()
@@ -650,7 +683,13 @@ class DduduTest {
       LocalDate scheduledOn = LocalDate.now().plusDays(2);
       LocalTime beginAt = LocalTime.of(10, 0);
       LocalDateTime remindAt = scheduledOn.atTime(beginAt).minusMinutes(30);
-      Ddudu ddudu = DduduFixture.createDduduWithReminder(userId, goalId, scheduledOn, beginAt, remindAt);
+      Ddudu ddudu = DduduFixture.createDduduWithReminder(
+          userId,
+          goalId,
+          scheduledOn,
+          beginAt,
+          remindAt
+      );
 
       // when
       Ddudu updated = ddudu.update(
@@ -674,7 +713,13 @@ class DduduTest {
       LocalDate scheduledOn = LocalDate.now().plusDays(2);
       LocalTime beginAt = LocalTime.of(10, 0);
       LocalDateTime oldReminder = scheduledOn.atTime(beginAt).minusMinutes(30);
-      Ddudu ddudu = DduduFixture.createDduduWithReminder(userId, goalId, scheduledOn, beginAt, oldReminder);
+      Ddudu ddudu = DduduFixture.createDduduWithReminder(
+          userId,
+          goalId,
+          scheduledOn,
+          beginAt,
+          oldReminder
+      );
 
       // when
       Ddudu updated = ddudu.update(

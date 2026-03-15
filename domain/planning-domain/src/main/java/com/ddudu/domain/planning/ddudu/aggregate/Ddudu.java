@@ -165,6 +165,10 @@ public class Ddudu {
     return beginAt.getHour();
   }
 
+  public boolean hasReminder() {
+    return nonNull(remindAt);
+  }
+
   public Ddudu setReminder(int days, int hours, int minutes) {
     LocalDateTime reminder = validateReminder(days, hours, minutes);
 
@@ -261,7 +265,11 @@ public class Ddudu {
     );
   }
 
-  private boolean isReminderInputEmpty(Integer remindDays, Integer remindHours, Integer remindMinutes) {
+  private boolean isReminderInputEmpty(
+      Integer remindDays,
+      Integer remindHours,
+      Integer remindMinutes
+  ) {
     return isNull(remindDays) && isNull(remindHours) && isNull(remindMinutes);
   }
 
