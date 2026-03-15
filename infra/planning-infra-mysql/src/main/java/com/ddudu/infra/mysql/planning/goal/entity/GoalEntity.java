@@ -70,6 +70,12 @@ public class GoalEntity extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private PrivacyType privacyType;
 
+  @Column(
+      name = "priority",
+      nullable = false
+  )
+  private int priority;
+
   public static GoalEntity from(Goal goal) {
     return GoalEntity.builder()
         .id(goal.getId())
@@ -78,6 +84,7 @@ public class GoalEntity extends BaseEntity {
         .status(goal.getStatus())
         .color(goal.getColor())
         .privacyType(goal.getPrivacyType())
+        .priority(goal.getPriority())
         .build();
   }
 
@@ -89,6 +96,7 @@ public class GoalEntity extends BaseEntity {
         .status(status)
         .color(color)
         .privacyType(privacyType)
+        .priority(priority)
         .build();
   }
 
@@ -98,6 +106,7 @@ public class GoalEntity extends BaseEntity {
     this.status = goal.getStatus();
     this.color = goal.getColor();
     this.privacyType = goal.getPrivacyType();
+    this.priority = goal.getPriority();
 
     return this;
   }

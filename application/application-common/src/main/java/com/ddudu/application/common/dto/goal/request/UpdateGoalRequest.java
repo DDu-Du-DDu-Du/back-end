@@ -2,6 +2,7 @@ package com.ddudu.application.common.dto.goal.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public record UpdateGoalRequest(
@@ -18,7 +19,10 @@ public record UpdateGoalRequest(
     )
     String color,
     @NotNull(message = "3007 NULL_PRIVACY_TYPE")
-    String privacyType
+    String privacyType,
+    @NotNull(message = "3015 NULL_PRIORITY")
+    @Positive(message = "3016 INVALID_PRIORITY")
+    Integer priority
 ) {
 
 }

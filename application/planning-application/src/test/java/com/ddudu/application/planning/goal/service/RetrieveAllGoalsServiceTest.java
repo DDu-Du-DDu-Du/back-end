@@ -60,13 +60,14 @@ class RetrieveAllGoalsServiceTest {
 
     for (int i = 0; i < goals.size(); i++) {
       assertThat(actual.get(i))
-          .extracting("id", "name", "status", "color")
+          .extracting("id", "name", "status", "color", "priority")
           .containsExactly(
               goals.get(i)
                   .getId(), goals.get(i)
                   .getName(), goals.get(i)
                   .getStatus(), goals.get(i)
-                  .getColor()
+                  .getColor(), goals.get(i)
+                  .getPriority()
           );
     }
   }
@@ -92,7 +93,7 @@ class RetrieveAllGoalsServiceTest {
 
   private List<Goal> createAndSaveGoals(User user) {
     return IntStream.range(0, 3)
-        .mapToObj(i -> GoalFixture.createRandomGoalWithUser(user.getId()))
+        .mapToObj(i -> GoalFixture.createRandomGoalWithUserAndPriority(user.getId(), i + 1))
         .map(saveGoalPort::save)
         .sorted(Comparator.comparingLong(Goal::getId)
             .reversed())

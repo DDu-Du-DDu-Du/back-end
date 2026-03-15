@@ -33,6 +33,7 @@ class GoalDomainServiceTest {
     String name;
     String privacyType;
     String color;
+    int priority;
     CreateGoalCommand request;
 
     @BeforeEach
@@ -42,7 +43,8 @@ class GoalDomainServiceTest {
       privacyType = GoalFixture.getRandomPrivacyType()
           .name();
       color = BaseFixture.getRandomColor();
-      request = new CreateGoalCommand(name, color, privacyType);
+      priority = 1;
+      request = new CreateGoalCommand(name, color, privacyType, priority);
     }
 
     @Test
@@ -51,8 +53,8 @@ class GoalDomainServiceTest {
       Goal actual = goalDomainService.create(userId, request);
 
       // then
-      assertThat(actual).extracting("userId", "name", "privacyType", "color")
-          .containsExactly(userId, name, PrivacyType.from(privacyType), color);
+      assertThat(actual).extracting("userId", "name", "privacyType", "color", "priority")
+          .containsExactly(userId, name, PrivacyType.from(privacyType), color, priority);
     }
 
   }
@@ -79,6 +81,7 @@ class GoalDomainServiceTest {
         assertEquals(userId, goal.getUserId());
         assertEquals("목표 " + (i + 1), goal.getName());
         assertEquals(PrivacyType.PUBLIC, goal.getPrivacyType());
+        assertEquals(i + 1, goal.getPriority());
       }
     }
 

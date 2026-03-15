@@ -21,6 +21,7 @@ public class GoalDomainService {
         .name(command.name())
         .privacyType(PrivacyType.from(command.privacyType()))
         .color(command.color())
+        .priority(command.priority())
         .build();
   }
 
@@ -28,17 +29,18 @@ public class GoalDomainService {
     List<Goal> goals = new ArrayList<>();
 
     for (int idx = 1; idx <= DEFAULT_GOAL_COUNT; ++idx) {
-      goals.add(createDefaultGoalWithName(userId, DEFAULT_GOAL_NAME + " " + idx));
+      goals.add(createDefaultGoalWithName(userId, DEFAULT_GOAL_NAME + " " + idx, idx));
     }
 
     return goals;
   }
 
-  private Goal createDefaultGoalWithName(Long userId, String name) {
+  private Goal createDefaultGoalWithName(Long userId, String name, int priority) {
     return Goal.builder()
         .userId(userId)
         .name(name)
         .privacyType(PrivacyType.PUBLIC)
+        .priority(priority)
         .build();
   }
 

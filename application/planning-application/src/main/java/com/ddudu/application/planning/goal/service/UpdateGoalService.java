@@ -29,7 +29,8 @@ public class UpdateGoalService implements UpdateGoalUseCase {
     Goal updated = goal.applyGoalUpdates(
         request.name(),
         request.color(),
-        PrivacyType.from(request.privacyType())
+        PrivacyType.from(request.privacyType()),
+        request.priority()
     );
 
     return GoalIdResponse.from(updateGoalPort.update(updated));

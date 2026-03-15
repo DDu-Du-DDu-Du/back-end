@@ -5,12 +5,14 @@ import com.ddudu.application.common.dto.goal.request.CreateRepeatDduduRequestWit
 import com.ddudu.application.common.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.common.dto.repeatddudu.request.CreateRepeatDduduRequest;
 import com.ddudu.application.common.port.goal.in.CreateGoalUseCase;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.application.planning.repeatddudu.service.CreateRepeatDduduService;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.goal.dto.CreateGoalCommand;
 import com.ddudu.domain.planning.goal.service.GoalDomainService;
 import com.ddudu.domain.user.user.aggregate.User;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CreateGoalService implements CreateGoalUseCase {
 
   private final UserLoaderPort userLoaderPort;
+  private final GoalLoaderPort goalLoaderPort;
   private final GoalDomainService goalDomainService;
   private final CreateRepeatDduduService createRepeatDduduService;
   private final SaveGoalPort saveGoalPort;
@@ -35,7 +38,15 @@ public class CreateGoalService implements CreateGoalUseCase {
     );
 
     // 2. 목표 생성 후 저장
-    Goal goal = saveGoalPort.save(goalDomainService.create(user.getId(), request.toCommand()));
+    int nextPriority = goalLoaderPort.findMaxPriorityByUserId(user.getId()) + 1;
+    CreateGoalCommand command = CreateGoalCommand.builder()
+        .name(request.name())
+        .color(request.color())
+        .privacyType(request.privacyType())
+        .priority(nextPriority)
+        .build();
+
+    Goal goal = saveGoalPort.save(goalDomainService.create(user.getId(), command));
 
     // 3. 반복 뚜두 생성 후 저장
     // TODO: 반복 뚜두 생성 부분을 비동기로 변경

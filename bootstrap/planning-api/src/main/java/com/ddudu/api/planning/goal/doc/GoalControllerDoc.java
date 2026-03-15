@@ -114,8 +114,12 @@ public interface GoalControllerDoc {
                           value = GoalErrorExamples.GOAL_NULL_PRIVACY_TYPE
                       ),
                       @ExampleObject(
-                          name = "3007",
-                          value = GoalErrorExamples.GOAL_NULL_PRIVACY_TYPE
+                          name = "3015",
+                          value = GoalErrorExamples.GOAL_NULL_PRIORITY
+                      ),
+                      @ExampleObject(
+                          name = "3016",
+                          value = GoalErrorExamples.GOAL_INVALID_PRIORITY
                       ),
                       @ExampleObject(
                           name = "3010",

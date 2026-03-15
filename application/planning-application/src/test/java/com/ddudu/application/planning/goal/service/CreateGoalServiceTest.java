@@ -82,8 +82,21 @@ class CreateGoalServiceTest {
     // then
     Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
 
-    assertThat(actual.get()).extracting("name", "color", "privacyType")
-        .containsExactly(name, color, privacyType);
+    assertThat(actual.get()).extracting("name", "color", "privacyType", "priority")
+        .containsExactly(name, color, privacyType, 1);
+  }
+
+  @Test
+  void 목표_생성_시_사용자별_마지막_priority보다_1_큰_값이_부여된다() {
+    // given
+    createGoalService.create(userId, request);
+
+    // when
+    GoalIdResponse response = createGoalService.create(userId, request);
+
+    // then
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(response.id());
+    assertThat(actual.get().getPriority()).isEqualTo(2);
   }
 
   @Test

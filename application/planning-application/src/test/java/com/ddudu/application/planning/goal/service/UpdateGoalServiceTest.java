@@ -46,6 +46,7 @@ class UpdateGoalServiceTest {
   String newName;
   String newColor;
   PrivacyType newPrivacyType;
+  Integer newPriority;
 
   @BeforeEach
   void setUp() {
@@ -55,7 +56,8 @@ class UpdateGoalServiceTest {
     newName = GoalFixture.getRandomSentenceWithMax(50);
     newColor = GoalFixture.getRandomColor();
     newPrivacyType = GoalFixture.getRandomPrivacyType();
-    request = new UpdateGoalRequest(newName, newColor, newPrivacyType.name());
+    newPriority = 3;
+    request = new UpdateGoalRequest(newName, newColor, newPrivacyType.name(), newPriority);
   }
 
   @Test
@@ -66,8 +68,8 @@ class UpdateGoalServiceTest {
     // then
     Goal actual = goalLoaderPort.getOptionalGoal(goal.getId())
         .get();
-    assertThat(actual).extracting("name", "color", "privacyType")
-        .containsExactly(newName, newColor, newPrivacyType);
+    assertThat(actual).extracting("name", "color", "privacyType", "priority")
+        .containsExactly(newName, newColor, newPrivacyType, newPriority);
   }
 
   @Test
