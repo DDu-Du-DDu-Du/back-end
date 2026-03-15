@@ -1,5 +1,6 @@
 package com.ddudu.application.common.dto.user.response;
 
+import com.ddudu.domain.user.user.aggregate.enums.WeekStartDay;
 import lombok.Builder;
 
 @Builder
@@ -9,8 +10,8 @@ public record UserSettingsResponse(
     AppConnection appConnection
 ) {
 
-  public static UserSettingsResponse of(
-      String weekStartDay,
+  public static UserSettingsResponse from(
+      WeekStartDay weekStartDay,
       boolean isDarkMode,
       boolean isActiveCalendar,
       int priorityCalendar,
@@ -23,55 +24,72 @@ public record UserSettingsResponse(
       boolean realtimeSyncMicrosoftTodo
   ) {
     return UserSettingsResponse.builder()
-        .display(new Display(weekStartDay, isDarkMode))
-        .menuActivation(new MenuActivation(
-            new MenuActivation.MenuActivationItem(isActiveCalendar, priorityCalendar),
-            new MenuActivation.MenuActivationItem(isActiveDashboard, priorityDashboard),
-            new MenuActivation.MenuActivationItem(isActiveStats, priorityStats)
-        ))
-        .appConnection(new AppConnection(
-            new AppConnection.RealtimeSync(
-                realtimeSyncNotion,
-                realtimeSyncGoogleCalendar,
-                realtimeSyncMicrosoftTodo
-            )
-        ))
+        .display(Display.builder()
+            .weekStartDay(weekStartDay)
+            .isDarkMode(isDarkMode)
+            .build())
+        .menuActivation(MenuActivation.builder()
+            .calendar(MenuActivationItem.builder()
+                .isActive(isActiveCalendar)
+                .priority(priorityCalendar)
+                .build())
+            .dashboard(MenuActivationItem.builder()
+                .isActive(isActiveDashboard)
+                .priority(priorityDashboard)
+                .build())
+            .stats(MenuActivationItem.builder()
+                .isActive(isActiveStats)
+                .priority(priorityStats)
+                .build())
+            .build())
+        .appConnection(AppConnection.builder()
+            .realtimeSync(RealtimeSync.builder()
+                .notion(realtimeSyncNotion)
+                .googleCalendar(realtimeSyncGoogleCalendar)
+                .microsoftTodo(realtimeSyncMicrosoftTodo)
+                .build())
+            .build())
         .build();
   }
 
+  @Builder
   public record Display(
-      String weekStartDay,
+      WeekStartDay weekStartDay,
       boolean isDarkMode
   ) {
 
   }
 
+  @Builder
   public record MenuActivation(
       MenuActivationItem calendar,
       MenuActivationItem dashboard,
       MenuActivationItem stats
   ) {
 
-    public record MenuActivationItem(
-        boolean isActive,
-        int priority
-    ) {
+  }
 
-    }
+  @Builder
+  public record MenuActivationItem(
+      boolean isActive,
+      int priority
+  ) {
 
   }
 
+  @Builder
   public record AppConnection(
       RealtimeSync realtimeSync
   ) {
 
-    public record RealtimeSync(
-        boolean notion,
-        boolean googleCalendar,
-        boolean microsoftTodo
-    ) {
+  }
 
-    }
+  @Builder
+  public record RealtimeSync(
+      boolean notion,
+      boolean googleCalendar,
+      boolean microsoftTodo
+  ) {
 
   }
 

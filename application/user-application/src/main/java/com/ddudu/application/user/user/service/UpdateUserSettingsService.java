@@ -40,8 +40,8 @@ public class UpdateUserSettingsService implements UpdateUserSettingsUseCase {
     );
     User saved = userCommandPort.update(updated);
 
-    return UserSettingsResponse.of(
-        saved.getWeekStartDay().name(),
+    return UserSettingsResponse.from(
+        saved.getWeekStartDay(),
         saved.isDarkMode(),
         saved.isActiveCalendar(),
         saved.getPriorityCalendar(),

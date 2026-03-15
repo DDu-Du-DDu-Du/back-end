@@ -7,6 +7,7 @@ import com.ddudu.application.common.dto.user.response.UserSettingsResponse;
 import com.ddudu.application.common.port.user.out.UserCommandPort;
 import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.domain.user.user.aggregate.enums.WeekStartDay;
 import com.ddudu.fixture.UserFixture;
 import java.util.MissingResourceException;
 import org.assertj.core.api.Assertions;
@@ -51,7 +52,7 @@ class UpdateUserSettingsServiceTest {
     UserSettingsResponse actual = updateUserSettingsService.update(user.getId(), request);
 
     // then
-    assertThat(actual.display().weekStartDay()).isEqualTo("MON");
+    assertThat(actual.display().weekStartDay()).isEqualTo(WeekStartDay.MON);
     assertThat(actual.display().isDarkMode()).isTrue();
     assertThat(actual.menuActivation().calendar().isActive()).isFalse();
     assertThat(actual.menuActivation().calendar().priority()).isEqualTo(11);
