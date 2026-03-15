@@ -49,9 +49,9 @@ class GoalTest {
 
       // then
       assertThat(goal)
-          .extracting("name", "userId", "status", "color", "privacyType")
+          .extracting("name", "userId", "status", "color", "privacyType", "priority")
           .containsExactly(
-              name, userId, GoalStatus.IN_PROGRESS, "191919", PrivacyType.PRIVATE);
+              name, userId, GoalStatus.IN_PROGRESS, "191919", PrivacyType.PRIVATE, 1);
     }
 
     @Test
@@ -66,8 +66,8 @@ class GoalTest {
 
       // then
       assertThat(goal)
-          .extracting("name", "userId", "status", "color", "privacyType")
-          .containsExactly(name, userId, GoalStatus.IN_PROGRESS, color, privacyType);
+          .extracting("name", "userId", "status", "color", "privacyType", "priority")
+          .containsExactly(name, userId, GoalStatus.IN_PROGRESS, color, privacyType, 1);
     }
 
     @ParameterizedTest
@@ -159,14 +159,15 @@ class GoalTest {
       String changedName = GoalFixture.getRandomSentenceWithMax(50);
       String changedColor = GoalFixture.getRandomColor();
       PrivacyType changedPrivacyType = GoalFixture.getRandomPrivacyType();
+      int changedPriority = 2;
 
       // when
       Goal updated = goal.applyGoalUpdates(
-          changedName, changedColor, changedPrivacyType);
+          changedName, changedColor, changedPrivacyType, changedPriority);
 
       // then
-      assertThat(updated).extracting("name", "color", "privacyType")
-          .containsExactly(changedName, changedColor, changedPrivacyType);
+      assertThat(updated).extracting("name", "color", "privacyType", "priority")
+          .containsExactly(changedName, changedColor, changedPrivacyType, changedPriority);
     }
 
   }

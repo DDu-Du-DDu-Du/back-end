@@ -17,4 +17,6 @@ public interface GoalLoaderPort {
 
   List<Goal> findAccessibleGoals(Long userId, boolean isFollower);
 
+  int findMaxPriorityByUserId(Long userId);
+
 }

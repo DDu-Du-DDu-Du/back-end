@@ -94,6 +94,11 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
+  public int findMaxPriorityByUserId(Long userId) {
+    return goalRepository.findMaxPriorityByUserId(userId);
+  }
+
+  @Override
   public Goal update(Goal goal) {
     GoalEntity goalEntity = goalRepository.findById(goal.getId())
         .orElseThrow(EntityNotFoundException::new);

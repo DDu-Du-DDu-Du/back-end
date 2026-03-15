@@ -6,7 +6,8 @@ import lombok.Builder;
 public record CreateGoalCommand(
     String name,
     String color,
-    String privacyType
+    String privacyType,
+    Integer priority
 ) {
 
 }

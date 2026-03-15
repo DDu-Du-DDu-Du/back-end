@@ -36,6 +36,13 @@ public class GoalFixture extends BaseFixture {
         .build();
   }
 
+  public static Goal createRandomGoalWithUserAndPriority(Long userId, int priority) {
+    return getGoalBuilder()
+        .userId(userId)
+        .priority(priority)
+        .build();
+  }
+
   public static List<Goal> createRandomGoalsWithUser(Long userId, int size) {
     List<Goal> goals = new ArrayList<>();
 

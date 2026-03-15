@@ -43,4 +43,15 @@ public class GoalQueryRepositoryImpl implements GoalQueryRepository {
         .fetch();
   }
 
+  @Override
+  public int findMaxPriorityByUserId(Long userId) {
+    Integer maxPriority = jpaQueryFactory
+        .select(goalEntity.priority.max())
+        .from(goalEntity)
+        .where(goalEntity.userId.eq(userId))
+        .fetchOne();
+
+    return maxPriority == null ? 0 : maxPriority;
+  }
+
 }

@@ -27,6 +27,7 @@ public record CreateGoalRequest(
         .name(name)
         .color(color)
         .privacyType(privacyType)
+        .priority(null)
         .build();
   }
 

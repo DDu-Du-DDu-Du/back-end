@@ -10,4 +10,6 @@ public interface GoalQueryRepository {
 
   List<GoalEntity> findAllByUserAndPrivacyTypes(Long userId, List<PrivacyType> privacyTypes);
 
+  int findMaxPriorityByUserId(Long userId);
+
 }

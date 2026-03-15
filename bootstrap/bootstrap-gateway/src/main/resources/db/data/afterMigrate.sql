@@ -47,17 +47,17 @@ VALUES (2, 2, 'KAKAO', '3473310045', '2024-08-18T12:13:02', '2024-08-18T12:13:02
 # 뚜두 구글 계정
 
 -- GOALS
-INSERT INTO goals(id, user_id, name, color, privacy, status, created_at, updated_at)
-VALUES (1, 1, '프로젝트', '191919', 'PUBLIC', 'IN_PROGRESS', '2024-05-17T07:13:48',
+INSERT INTO goals(id, user_id, name, color, privacy, status, priority, created_at, updated_at)
+VALUES (1, 1, '프로젝트', '191919', 'PUBLIC', 'IN_PROGRESS', 1, '2024-05-17T07:13:48',
         '2024-05-17T07:13:48');
-INSERT INTO goals(id, user_id, name, color, privacy, status, created_at, updated_at)
-VALUES (2, 1, 'Study', '999999', 'PRIVATE', 'IN_PROGRESS', '2024-05-18T07:13:48',
+INSERT INTO goals(id, user_id, name, color, privacy, status, priority, created_at, updated_at)
+VALUES (2, 1, 'Study', '999999', 'PRIVATE', 'IN_PROGRESS', 2, '2024-05-18T07:13:48',
         '2024-05-17T07:13:48');
-INSERT INTO goals(id, user_id, name, color, privacy, status, created_at, updated_at)
-VALUES (3, 2, '프로젝트', '191919', 'PUBLIC', 'IN_PROGRESS', '2024-08-18T21:13:02',
+INSERT INTO goals(id, user_id, name, color, privacy, status, priority, created_at, updated_at)
+VALUES (3, 2, '프로젝트', '191919', 'PUBLIC', 'IN_PROGRESS', 1, '2024-08-18T21:13:02',
         '2024-08-18T21:13:02');
-INSERT INTO goals(id, user_id, name, color, privacy, status, created_at, updated_at)
-VALUES (4, 2, '프로젝트2', '191919', 'PUBLIC', 'IN_PROGRESS', '2024-08-18T21:13:02',
+INSERT INTO goals(id, user_id, name, color, privacy, status, priority, created_at, updated_at)
+VALUES (4, 2, '프로젝트2', '191919', 'PUBLIC', 'IN_PROGRESS', 2, '2024-08-18T21:13:02',
         '2024-08-18T21:13:02');
 
 -- DDUDUS

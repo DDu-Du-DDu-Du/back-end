@@ -39,6 +39,11 @@ public record GoalWithRepeatDduduResponse(
         example = "PUBLIC"
     )
     PrivacyType privacyType,
+    @Schema(
+        description = "목표 우선순위",
+        example = "1"
+    )
+    int priority,
     @ArraySchema(schema = @Schema(implementation = RepeatDduduDto.class))
     List<RepeatDduduDto> repeatDdudus
 ) {
@@ -50,6 +55,7 @@ public record GoalWithRepeatDduduResponse(
         .status(goal.getStatus())
         .color(goal.getColor())
         .privacyType(goal.getPrivacyType())
+        .priority(goal.getPriority())
         .repeatDdudus(
             repeatDdudus.stream()
                 .map(RepeatDduduDto::from)

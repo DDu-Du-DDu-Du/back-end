@@ -64,13 +64,14 @@ class RetrieveGoalServiceTest {
     GoalWithRepeatDduduResponse actual = retrieveGoalService.getById(userId, goal.getId());
 
     // then
-    assertThat(actual).extracting("id", "name", "status", "color", "privacyType")
+    assertThat(actual).extracting("id", "name", "status", "color", "privacyType", "priority")
         .containsExactly(
             goal.getId(),
             goal.getName(),
             goal.getStatus(),
             goal.getColor(),
-            goal.getPrivacyType()
+            goal.getPrivacyType(),
+            goal.getPriority()
         );
   }
 
