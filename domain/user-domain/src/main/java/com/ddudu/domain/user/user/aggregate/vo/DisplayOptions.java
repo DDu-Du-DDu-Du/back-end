@@ -13,7 +13,7 @@ public class DisplayOptions {
 
   @Builder
   private DisplayOptions(WeekStartDay weekStartDay, Boolean darkMode) {
-    this.weekStartDay = Objects.isNull(weekStartDay) ? WeekStartDay.SUN : weekStartDay;
+    this.weekStartDay = Objects.requireNonNullElse(weekStartDay, WeekStartDay.SUN);
     this.darkMode = Objects.nonNull(darkMode) && darkMode;
   }
 

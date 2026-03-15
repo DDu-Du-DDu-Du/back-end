@@ -27,34 +27,28 @@ public class Options {
         Objects.nonNull(allowingFollowsAfterApproval) && allowingFollowsAfterApproval;
     this.templateNotification = Objects.isNull(templateNotification) || templateNotification;
     this.dduduNotification = Objects.isNull(dduduNotification) || dduduNotification;
-    this.display = createDisplay(display);
-    this.menuActivation = createMenuActivation(menuActivation);
-    this.appConnection = createAppConnection(appConnection);
+    this.display = Objects.requireNonNullElseGet(display, this::createDisplay);
+    this.menuActivation = Objects.requireNonNullElseGet(
+        menuActivation,
+        this::createMenuActivation
+    );
+    this.appConnection = Objects.requireNonNullElseGet(
+        appConnection,
+        this::createAppConnection
+    );
   }
 
-  private DisplayOptions createDisplay(DisplayOptions display) {
-    if (Objects.nonNull(display)) {
-      return display;
-    }
-
+  private DisplayOptions createDisplay() {
     return DisplayOptions.builder()
         .build();
   }
 
-  private MenuActivationOptions createMenuActivation(MenuActivationOptions menuActivation) {
-    if (Objects.nonNull(menuActivation)) {
-      return menuActivation;
-    }
-
+  private MenuActivationOptions createMenuActivation() {
     return MenuActivationOptions.builder()
         .build();
   }
 
-  private AppConnectionOptions createAppConnection(AppConnectionOptions appConnection) {
-    if (Objects.nonNull(appConnection)) {
-      return appConnection;
-    }
-
+  private AppConnectionOptions createAppConnection() {
     return AppConnectionOptions.builder()
         .build();
   }

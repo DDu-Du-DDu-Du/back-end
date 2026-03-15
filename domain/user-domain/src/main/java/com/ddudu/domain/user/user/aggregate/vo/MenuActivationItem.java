@@ -13,7 +13,7 @@ public class MenuActivationItem {
   @Builder
   private MenuActivationItem(Boolean active, Integer priority) {
     this.active = Objects.isNull(active) || active;
-    this.priority = Objects.isNull(priority) ? 1 : priority;
+    this.priority = Objects.requireNonNullElse(priority, 1);
   }
 
 }

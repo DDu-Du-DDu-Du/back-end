@@ -17,18 +17,30 @@ public class MenuActivationOptions {
       MenuActivationItem dashboard,
       MenuActivationItem stats
   ) {
-    this.calendar = Objects.isNull(calendar) ? MenuActivationItem.builder()
+    this.calendar = Objects.requireNonNullElseGet(calendar, this::createDefaultCalendar);
+    this.dashboard = Objects.requireNonNullElseGet(dashboard, this::createDefaultDashboard);
+    this.stats = Objects.requireNonNullElseGet(stats, this::createDefaultStats);
+  }
+
+  private MenuActivationItem createDefaultCalendar() {
+    return MenuActivationItem.builder()
         .active(true)
         .priority(1)
-        .build() : calendar;
-    this.dashboard = Objects.isNull(dashboard) ? MenuActivationItem.builder()
+        .build();
+  }
+
+  private MenuActivationItem createDefaultDashboard() {
+    return MenuActivationItem.builder()
         .active(true)
         .priority(2)
-        .build() : dashboard;
-    this.stats = Objects.isNull(stats) ? MenuActivationItem.builder()
+        .build();
+  }
+
+  private MenuActivationItem createDefaultStats() {
+    return MenuActivationItem.builder()
         .active(true)
         .priority(3)
-        .build() : stats;
+        .build();
   }
 
 }

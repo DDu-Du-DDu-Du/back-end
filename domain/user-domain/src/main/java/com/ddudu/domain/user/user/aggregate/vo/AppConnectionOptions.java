@@ -11,8 +11,10 @@ public class AppConnectionOptions {
 
   @Builder
   private AppConnectionOptions(RealtimeSyncOptions realtimeSync) {
-    this.realtimeSync = Objects.isNull(realtimeSync) ? RealtimeSyncOptions.builder().build()
-        : realtimeSync;
+    this.realtimeSync = Objects.requireNonNullElseGet(
+        realtimeSync,
+        () -> RealtimeSyncOptions.builder().build()
+    );
   }
 
 }

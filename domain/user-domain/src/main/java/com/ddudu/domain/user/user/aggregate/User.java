@@ -59,14 +59,15 @@ public class User {
     this.id = id;
     this.username = username;
     this.nickname = nickname;
-    this.authority = Objects.isNull(authority) ? Authority.NORMAL : authority;
+    this.authority = Objects.requireNonNullElse(authority, Authority.NORMAL);
     this.introduction = Objects.nonNull(introduction) ? introduction.strip() : null;
-    this.status = Objects.isNull(status) ? UserStatus.ACTIVE : status;
+    this.status = Objects.requireNonNullElse(status, UserStatus.ACTIVE);
     this.profileImageUrl = profileImageUrl;
-    this.options = Objects.isNull(options)
-        ? buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification)
-        : options;
-    this.authProviders = Objects.isNull(authProviders) ? Collections.emptyList() : authProviders;
+    this.options = Objects.requireNonNullElseGet(
+        options,
+        () -> buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification)
+    );
+    this.authProviders = Objects.requireNonNullElse(authProviders, Collections.emptyList());
   }
 
   public boolean isAllowingFollowsAfterApproval() {
