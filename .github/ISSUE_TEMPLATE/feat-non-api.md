@@ -1,12 +1,18 @@
 ---
-name: ✨ API 무관 추가 개발
+name: "✨ API 무관 추가 개발"
 about: Feature Non-API
-title: "Feat/<title>"
-labels: ✨feature
-assignees: ""
+title: 'Feat: '
+labels: "✨feature"
+assignees: ''
+
 ---
 
 ## Description
+
+### To-Be checklist
+
+- [ ] 
+- [ ] 
 
 ### Test cases
 
