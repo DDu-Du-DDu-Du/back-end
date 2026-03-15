@@ -6,8 +6,14 @@ import com.ddudu.domain.user.user.aggregate.enums.ProviderType;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAdjective;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAnimal;
 import com.ddudu.domain.user.user.aggregate.enums.UserStatus;
+import com.ddudu.domain.user.user.aggregate.enums.WeekStartDay;
+import com.ddudu.domain.user.user.aggregate.vo.AppConnectionOptions;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
+import com.ddudu.domain.user.user.aggregate.vo.DisplayOptions;
+import com.ddudu.domain.user.user.aggregate.vo.MenuActivationItem;
+import com.ddudu.domain.user.user.aggregate.vo.MenuActivationOptions;
 import com.ddudu.domain.user.user.aggregate.vo.Options;
+import com.ddudu.domain.user.user.aggregate.vo.RealtimeSyncOptions;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
@@ -68,6 +74,38 @@ public class UserFixture extends BaseFixture {
 
   public static User createRandomSocialUser(AuthProvider authProvider) {
     return createRandomUser(getRandomId(), null, authProvider, null, null, null, null);
+  }
+
+  public static User createRandomUserWithWeekStartDay(long id, String weekStartDay) {
+    Options options = Options.builder()
+        .display(DisplayOptions.builder()
+            .weekStartDay(WeekStartDay.get(weekStartDay))
+            .darkMode(faker.bool().bool())
+            .build())
+        .menuActivation(MenuActivationOptions.builder()
+            .calendar(MenuActivationItem.builder()
+                .active(faker.bool().bool())
+                .priority(faker.number().numberBetween(1, 10))
+                .build())
+            .dashboard(MenuActivationItem.builder()
+                .active(faker.bool().bool())
+                .priority(faker.number().numberBetween(1, 10))
+                .build())
+            .stats(MenuActivationItem.builder()
+                .active(faker.bool().bool())
+                .priority(faker.number().numberBetween(1, 10))
+                .build())
+            .build())
+        .appConnection(AppConnectionOptions.builder()
+            .realtimeSync(RealtimeSyncOptions.builder()
+                .notion(faker.bool().bool())
+                .googleCalendar(faker.bool().bool())
+                .microsoftTodo(faker.bool().bool())
+                .build())
+            .build())
+        .build();
+
+    return createRandomUser(id, null, null, options, null, null, null);
   }
 
   public static User createRandomUser(

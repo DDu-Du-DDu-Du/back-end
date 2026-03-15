@@ -1,6 +1,7 @@
 package com.ddudu.infra.mysql.user.user.adapter;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.user.out.UserCommandPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.user.user.aggregate.User;
@@ -17,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
 @RequiredArgsConstructor
-public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort {
+public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort, UserCommandPort {
 
   private final UserRepository userRepository;
   private final AuthProviderRepository authProviderRepository;

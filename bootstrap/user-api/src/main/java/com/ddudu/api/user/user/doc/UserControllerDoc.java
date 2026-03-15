@@ -1,6 +1,8 @@
 package com.ddudu.api.user.user.doc;
 
+import com.ddudu.application.common.dto.user.request.UpdateUserSettingsRequest;
 import com.ddudu.application.common.dto.user.response.MeResponse;
+import com.ddudu.application.common.dto.user.response.UserSettingsResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.UserErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,5 +47,41 @@ public interface UserControllerDoc {
       }
   )
   ResponseEntity<MeResponse> validateToken(Long loginId);
+
+  @Operation(summary = "내 세팅 옵션 변경")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "BAD REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "1012",
+                          value = UserErrorExamples.USER_INVALID_WEEK_START_DAY
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "1011",
+                          value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
+                      )
+                  }
+              )
+          )
+      }
+  )
+  ResponseEntity<UserSettingsResponse> updateSettings(Long loginId, UpdateUserSettingsRequest request);
 
 }

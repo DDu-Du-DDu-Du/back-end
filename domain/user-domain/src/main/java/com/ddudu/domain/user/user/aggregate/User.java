@@ -142,6 +142,20 @@ public class User {
         .build();
   }
 
+  public User updateOption(Options option) {
+    return User.builder()
+        .id(this.id)
+        .username(this.username)
+        .nickname(this.nickname)
+        .introduction(this.introduction)
+        .authority(this.authority)
+        .status(this.status)
+        .profileImageUrl(this.profileImageUrl)
+        .authProviders(this.authProviders)
+        .options(option)
+        .build();
+  }
+
   private void validate(
       String nickname,
       String username,
