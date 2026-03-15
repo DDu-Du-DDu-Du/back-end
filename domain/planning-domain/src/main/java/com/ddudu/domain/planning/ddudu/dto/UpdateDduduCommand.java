@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import lombok.Builder;
 
 @Builder
-public record CreateDduduCommand(
+public record UpdateDduduCommand(
     Long goalId,
     String name,
     LocalDate scheduledOn,

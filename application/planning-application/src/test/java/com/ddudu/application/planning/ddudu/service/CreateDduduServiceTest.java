@@ -62,7 +62,7 @@ class CreateDduduServiceTest {
   @Test
   void 할_일_생성에_성공한다() {
     // given
-    CreateDduduRequest request = new CreateDduduRequest(goal.getId(), name, scheduledOn);
+    CreateDduduRequest request = new CreateDduduRequest(goal.getId(), name, scheduledOn, null, null, null, null, null);
 
     // when
     BasicDduduResponse response = createDduduService.create(user.getId(), request);
@@ -84,7 +84,7 @@ class CreateDduduServiceTest {
   @Test
   void 날짜를_설정하지_않은_경우_기본값이_적용된다() {
     // given
-    CreateDduduRequest request = new CreateDduduRequest(goal.getId(), name, null);
+    CreateDduduRequest request = new CreateDduduRequest(goal.getId(), name, null, null, null, null, null, null);
 
     // when
     BasicDduduResponse response = createDduduService.create(user.getId(), request);
@@ -98,7 +98,7 @@ class CreateDduduServiceTest {
   void 사용자_아이디가_유효하지_않으면_예외가_발생한다() {
     // give
     Long invalidUserId = UserFixture.getRandomId();
-    CreateDduduRequest request = new CreateDduduRequest(goal.getId(), name, scheduledOn);
+    CreateDduduRequest request = new CreateDduduRequest(goal.getId(), name, scheduledOn, null, null, null, null, null);
 
     // when
     ThrowingCallable create = () -> createDduduService.create(invalidUserId, request);
@@ -113,7 +113,7 @@ class CreateDduduServiceTest {
   void 목표_아이디가_유효하지_않으면_예외가_발생한다() {
     // given
     Long invalidGoalId = GoalFixture.getRandomId();
-    CreateDduduRequest request = new CreateDduduRequest(invalidGoalId, name, scheduledOn);
+    CreateDduduRequest request = new CreateDduduRequest(invalidGoalId, name, scheduledOn, null, null, null, null, null);
 
     // when
     ThrowingCallable create = () -> createDduduService.create(user.getId(), request);
@@ -136,7 +136,12 @@ class CreateDduduServiceTest {
     CreateDduduRequest request = new CreateDduduRequest(
         goalOfAnotherUser.getId(),
         name,
-        scheduledOn
+        scheduledOn,
+        null,
+        null,
+        null,
+        null,
+        null
     );
 
     // when

@@ -631,6 +631,70 @@ class DduduTest {
 
   }
 
+
+  @Nested
+  class 수정_테스트 {
+
+    Long userId;
+    Long goalId;
+
+    @BeforeEach
+    void setUp() {
+      userId = DduduFixture.getRandomId();
+      goalId = DduduFixture.getRandomId();
+    }
+
+    @Test
+    void 미리알림_입력이_없으면_기존_미리알림을_유지한다() {
+      // given
+      LocalDate scheduledOn = LocalDate.now().plusDays(2);
+      LocalTime beginAt = LocalTime.of(10, 0);
+      LocalDateTime remindAt = scheduledOn.atTime(beginAt).minusMinutes(30);
+      Ddudu ddudu = DduduFixture.createDduduWithReminder(userId, goalId, scheduledOn, beginAt, remindAt);
+
+      // when
+      Ddudu updated = ddudu.update(
+          goalId,
+          DduduFixture.getRandomSentenceWithMax(50),
+          scheduledOn,
+          beginAt,
+          LocalTime.of(11, 0),
+          null,
+          null,
+          null
+      );
+
+      // then
+      assertThat(updated.getRemindAt()).isEqualTo(remindAt);
+    }
+
+    @Test
+    void 미리알림_입력이_있으면_미리알림을_재계산한다() {
+      // given
+      LocalDate scheduledOn = LocalDate.now().plusDays(2);
+      LocalTime beginAt = LocalTime.of(10, 0);
+      LocalDateTime oldReminder = scheduledOn.atTime(beginAt).minusMinutes(30);
+      Ddudu ddudu = DduduFixture.createDduduWithReminder(userId, goalId, scheduledOn, beginAt, oldReminder);
+
+      // when
+      Ddudu updated = ddudu.update(
+          goalId,
+          DduduFixture.getRandomSentenceWithMax(50),
+          scheduledOn,
+          beginAt,
+          LocalTime.of(11, 0),
+          0,
+          null,
+          10
+      );
+
+      // then
+      assertThat(updated.getRemindAt()).isEqualTo(scheduledOn.atTime(beginAt).minusMinutes(10));
+    }
+
+  }
+
+
   @Nested
   class 복제_테스트 {
 

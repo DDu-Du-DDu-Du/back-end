@@ -10,6 +10,7 @@ import com.ddudu.application.common.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.common.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.common.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.common.dto.ddudu.request.SetReminderRequest;
+import com.ddudu.application.common.dto.ddudu.request.UpdateDduduRequest;
 import com.ddudu.application.common.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.common.dto.ddudu.response.TimetableResponse;
@@ -757,5 +758,66 @@ public interface DduduControllerDoc {
       }
   )
   ResponseEntity<Void> cancelReminder(Long loginId, Long id);
+
+  @Operation(summary = "뚜두 수정")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2007",
+                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = DduduErrorExamples.DDUDU_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "2004",
+                          description = "존재하지 않는 뚜두인 경우",
+                          value = DduduErrorExamples.DDUDU_ID_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "2005",
+                          description = "목표 아이디가 유효하지 않는 경우",
+                          value = DduduErrorExamples.DDUDU_GOAL_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "2008",
+                          description = "로그인 사용자 아이디가 유효하지 않는 경우",
+                          value = DduduErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                      )
+                  }
+              )
+          )
+      }
+  )
+  @Parameter(
+      name = "id",
+      description = "수정할 뚜두 식별자",
+      in = ParameterIn.PATH
+  )
+  ResponseEntity<IdResponse> update(Long loginId, Long id, UpdateDduduRequest request);
 
 }
