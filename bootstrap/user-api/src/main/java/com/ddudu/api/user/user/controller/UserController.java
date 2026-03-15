@@ -2,7 +2,9 @@ package com.ddudu.api.user.user.controller;
 
 import com.ddudu.api.user.user.doc.UserControllerDoc;
 import com.ddudu.application.common.dto.user.response.MeResponse;
+import com.ddudu.application.common.dto.user.response.UserSettingsResponse;
 import com.ddudu.application.common.port.user.in.GetMyInfoUseCase;
+import com.ddudu.application.common.port.user.in.GetUserSettingsUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController implements UserControllerDoc {
 
   private final GetMyInfoUseCase getMyInfoUseCase;
+  private final GetUserSettingsUseCase getUserSettingsUseCase;
+
+  @GetMapping("/settings")
+  public ResponseEntity<UserSettingsResponse> getUserSettings(
+      @Login
+      Long loginId
+  ) {
+    UserSettingsResponse response = getUserSettingsUseCase.getUserSettings(loginId);
+
+    return ResponseEntity.ok(response);
+  }
 
   @GetMapping("/me")
   public ResponseEntity<MeResponse> validateToken(
