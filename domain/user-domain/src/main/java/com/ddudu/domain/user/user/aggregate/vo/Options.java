@@ -10,19 +10,53 @@ public class Options {
   private final boolean allowingFollowsAfterApproval;
   private final boolean templateNotification;
   private final boolean dduduNotification;
+  private final DisplayOptions display;
+  private final MenuActivationOptions menuActivation;
+  private final AppConnectionOptions appConnection;
 
   @Builder
   private Options(
       Boolean allowingFollowsAfterApproval,
       Boolean templateNotification,
-      Boolean dduduNotification
+      Boolean dduduNotification,
+      DisplayOptions display,
+      MenuActivationOptions menuActivation,
+      AppConnectionOptions appConnection
   ) {
-    this.allowingFollowsAfterApproval = Objects.requireNonNullElse(
-        allowingFollowsAfterApproval,
-        false
-    );
-    this.templateNotification = Objects.requireNonNullElse(templateNotification, true);
-    this.dduduNotification = Objects.requireNonNullElse(dduduNotification, true);
+    this.allowingFollowsAfterApproval =
+        Objects.nonNull(allowingFollowsAfterApproval) && allowingFollowsAfterApproval;
+    this.templateNotification = Objects.isNull(templateNotification) || templateNotification;
+    this.dduduNotification = Objects.isNull(dduduNotification) || dduduNotification;
+    this.display = createDisplay(display);
+    this.menuActivation = createMenuActivation(menuActivation);
+    this.appConnection = createAppConnection(appConnection);
+  }
+
+  private DisplayOptions createDisplay(DisplayOptions display) {
+    if (Objects.nonNull(display)) {
+      return display;
+    }
+
+    return DisplayOptions.builder()
+        .build();
+  }
+
+  private MenuActivationOptions createMenuActivation(MenuActivationOptions menuActivation) {
+    if (Objects.nonNull(menuActivation)) {
+      return menuActivation;
+    }
+
+    return MenuActivationOptions.builder()
+        .build();
+  }
+
+  private AppConnectionOptions createAppConnection(AppConnectionOptions appConnection) {
+    if (Objects.nonNull(appConnection)) {
+      return appConnection;
+    }
+
+    return AppConnectionOptions.builder()
+        .build();
   }
 
 }
