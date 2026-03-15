@@ -1,6 +1,5 @@
 package com.ddudu.application.common.dto.user.response;
 
-import com.ddudu.domain.user.user.aggregate.User;
 import lombok.Builder;
 
 @Builder
@@ -10,19 +9,31 @@ public record UserSettingsResponse(
     AppConnection appConnection
 ) {
 
-  public static UserSettingsResponse from(User user) {
+  public static UserSettingsResponse of(
+      String weekStartDay,
+      boolean isDarkMode,
+      boolean isActiveCalendar,
+      int priorityCalendar,
+      boolean isActiveDashboard,
+      int priorityDashboard,
+      boolean isActiveStats,
+      int priorityStats,
+      boolean realtimeSyncNotion,
+      boolean realtimeSyncGoogleCalendar,
+      boolean realtimeSyncMicrosoftTodo
+  ) {
     return UserSettingsResponse.builder()
-        .display(new Display(user.getWeekStartDay().name(), user.isDarkMode()))
+        .display(new Display(weekStartDay, isDarkMode))
         .menuActivation(new MenuActivation(
-            new MenuActivation.MenuActivationItem(user.isActiveCalendar(), user.getPriorityCalendar()),
-            new MenuActivation.MenuActivationItem(user.isActiveDashboard(), user.getPriorityDashboard()),
-            new MenuActivation.MenuActivationItem(user.isActiveStats(), user.getPriorityStats())
+            new MenuActivation.MenuActivationItem(isActiveCalendar, priorityCalendar),
+            new MenuActivation.MenuActivationItem(isActiveDashboard, priorityDashboard),
+            new MenuActivation.MenuActivationItem(isActiveStats, priorityStats)
         ))
         .appConnection(new AppConnection(
             new AppConnection.RealtimeSync(
-                user.isRealtimeSyncNotion(),
-                user.isRealtimeSyncGoogleCalendar(),
-                user.isRealtimeSyncMicrosoftTodo()
+                realtimeSyncNotion,
+                realtimeSyncGoogleCalendar,
+                realtimeSyncMicrosoftTodo
             )
         ))
         .build();

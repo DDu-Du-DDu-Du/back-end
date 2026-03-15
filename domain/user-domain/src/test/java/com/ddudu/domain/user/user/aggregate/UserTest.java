@@ -8,8 +8,6 @@ import com.ddudu.domain.user.user.aggregate.User.UserBuilder;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAdjective;
 import com.ddudu.domain.user.user.aggregate.enums.RandomUserAnimal;
 import com.ddudu.domain.user.user.aggregate.enums.WeekStartDay;
-import com.ddudu.domain.user.user.aggregate.vo.DisplayOptions;
-import com.ddudu.domain.user.user.aggregate.vo.Options;
 import com.ddudu.fixture.UserFixture;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
@@ -234,19 +232,30 @@ class UserTest {
     void 유저_세팅_옵션을_변경한다() {
       // given
       User user = UserFixture.createRandomUserWithId();
-      Options updatedOption = Options.builder()
-          .display(DisplayOptions.builder()
-              .weekStartDay(WeekStartDay.MON)
-              .darkMode(true)
-              .build())
-          .build();
 
       // when
-      User actual = user.updateOption(updatedOption);
+      User actual = user.updateOptions(
+          "mon",
+          true,
+          false,
+          7,
+          true,
+          8,
+          false,
+          9,
+          true,
+          false,
+          true
+      );
 
       // then
       assertThat(actual.getWeekStartDay()).isEqualTo(WeekStartDay.MON);
       assertThat(actual.isDarkMode()).isTrue();
+      assertThat(actual.isActiveCalendar()).isFalse();
+      assertThat(actual.getPriorityCalendar()).isEqualTo(7);
+      assertThat(actual.isRealtimeSyncNotion()).isTrue();
+      assertThat(actual.isRealtimeSyncGoogleCalendar()).isFalse();
+      assertThat(actual.isRealtimeSyncMicrosoftTodo()).isTrue();
     }
 
   }

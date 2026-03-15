@@ -6,8 +6,13 @@ import com.ddudu.common.dto.Authority;
 import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.enums.UserStatus;
 import com.ddudu.domain.user.user.aggregate.enums.WeekStartDay;
+import com.ddudu.domain.user.user.aggregate.vo.AppConnectionOptions;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
+import com.ddudu.domain.user.user.aggregate.vo.DisplayOptions;
+import com.ddudu.domain.user.user.aggregate.vo.MenuActivationItem;
+import com.ddudu.domain.user.user.aggregate.vo.MenuActivationOptions;
 import com.ddudu.domain.user.user.aggregate.vo.Options;
+import com.ddudu.domain.user.user.aggregate.vo.RealtimeSyncOptions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -142,7 +147,50 @@ public class User {
         .build();
   }
 
-  public User updateOption(Options option) {
+  public User updateOptions(
+      String weekStartDay,
+      boolean isDarkMode,
+      boolean isActiveCalendar,
+      int priorityCalendar,
+      boolean isActiveDashboard,
+      int priorityDashboard,
+      boolean isActiveStats,
+      int priorityStats,
+      boolean realtimeSyncNotion,
+      boolean realtimeSyncGoogleCalendar,
+      boolean realtimeSyncMicrosoftTodo
+  ) {
+    Options updatedOptions = Options.builder()
+        .allowingFollowsAfterApproval(this.isAllowingFollowsAfterApproval())
+        .templateNotification(this.isNotifyingTemplate())
+        .dduduNotification(this.isNotifyingDdudu())
+        .display(DisplayOptions.builder()
+            .weekStartDay(WeekStartDay.get(weekStartDay))
+            .darkMode(isDarkMode)
+            .build())
+        .menuActivation(MenuActivationOptions.builder()
+            .calendar(MenuActivationItem.builder()
+                .active(isActiveCalendar)
+                .priority(priorityCalendar)
+                .build())
+            .dashboard(MenuActivationItem.builder()
+                .active(isActiveDashboard)
+                .priority(priorityDashboard)
+                .build())
+            .stats(MenuActivationItem.builder()
+                .active(isActiveStats)
+                .priority(priorityStats)
+                .build())
+            .build())
+        .appConnection(AppConnectionOptions.builder()
+            .realtimeSync(RealtimeSyncOptions.builder()
+                .notion(realtimeSyncNotion)
+                .googleCalendar(realtimeSyncGoogleCalendar)
+                .microsoftTodo(realtimeSyncMicrosoftTodo)
+                .build())
+            .build())
+        .build();
+
     return User.builder()
         .id(this.id)
         .username(this.username)
@@ -152,7 +200,7 @@ public class User {
         .status(this.status)
         .profileImageUrl(this.profileImageUrl)
         .authProviders(this.authProviders)
-        .options(option)
+        .options(updatedOptions)
         .build();
   }
 

@@ -8,8 +8,6 @@ import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.domain.user.user.aggregate.vo.Options;
-import com.ddudu.domain.user.user.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +18,6 @@ public class UpdateUserSettingsService implements UpdateUserSettingsUseCase {
 
   private final UserLoaderPort userLoaderPort;
   private final UserCommandPort userCommandPort;
-  private final UserDomainService userDomainService;
 
   @Override
   public UserSettingsResponse update(Long loginId, UpdateUserSettingsRequest request) {
@@ -28,8 +25,7 @@ public class UpdateUserSettingsService implements UpdateUserSettingsUseCase {
         loginId,
         UserErrorCode.NO_TARGET_FOR_MY_INFO.getCodeName()
     );
-    Options options = userDomainService.buildUpdatedOptions(
-        user,
+    User updated = user.updateOptions(
         request.display().weekStartDay(),
         request.display().isDarkMode(),
         request.menuActivation().calendar().isActive(),
@@ -42,9 +38,21 @@ public class UpdateUserSettingsService implements UpdateUserSettingsUseCase {
         request.appConnection().realtimeSync().googleCalendar(),
         request.appConnection().realtimeSync().microsoftTodo()
     );
-    User updated = user.updateOption(options);
+    User saved = userCommandPort.update(updated);
 
-    return UserSettingsResponse.from(userCommandPort.update(updated));
+    return UserSettingsResponse.of(
+        saved.getWeekStartDay().name(),
+        saved.isDarkMode(),
+        saved.isActiveCalendar(),
+        saved.getPriorityCalendar(),
+        saved.isActiveDashboard(),
+        saved.getPriorityDashboard(),
+        saved.isActiveStats(),
+        saved.getPriorityStats(),
+        saved.isRealtimeSyncNotion(),
+        saved.isRealtimeSyncGoogleCalendar(),
+        saved.isRealtimeSyncMicrosoftTodo()
+    );
   }
 
 }
