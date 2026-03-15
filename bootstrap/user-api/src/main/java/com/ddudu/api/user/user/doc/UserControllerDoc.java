@@ -82,6 +82,9 @@ public interface UserControllerDoc {
           )
       }
   )
-  ResponseEntity<UserSettingsResponse> updateSettings(Long loginId, UpdateUserSettingsRequest request);
+  ResponseEntity<UserSettingsResponse> updateSettings(
+      Long loginId,
+      UpdateUserSettingsRequest request
+  );
 
 }

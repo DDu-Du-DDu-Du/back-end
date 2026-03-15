@@ -12,7 +12,10 @@ public enum WeekStartDay {
   MON;
 
   public static WeekStartDay get(String input) {
-    checkArgument(StringUtils.isNotBlank(input), UserErrorCode.INVALID_WEEK_START_DAY.getCodeName());
+    checkArgument(
+        StringUtils.isNotBlank(input),
+        UserErrorCode.INVALID_WEEK_START_DAY.getCodeName()
+    );
 
     String upperCased = input.toUpperCase(Locale.ROOT);
 
