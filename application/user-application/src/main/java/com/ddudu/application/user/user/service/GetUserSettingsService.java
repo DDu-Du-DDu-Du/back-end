@@ -6,7 +6,6 @@ import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.domain.user.user.service.UserDomainService;
 import lombok.RequiredArgsConstructor;
 
 @UseCase
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 public class GetUserSettingsService implements GetUserSettingsUseCase {
 
   private final UserLoaderPort userLoaderPort;
-  private final UserDomainService userDomainService;
 
   @Override
   public UserSettingsResponse getUserSettings(Long loginId) {
@@ -23,7 +21,37 @@ public class GetUserSettingsService implements GetUserSettingsUseCase {
         UserErrorCode.NO_TARGET_FOR_MY_INFO.getCodeName()
     );
 
-    return UserSettingsResponse.from(userDomainService.createUserSettingsInfo(user));
+    return toResponse(user);
+  }
+
+  private UserSettingsResponse toResponse(User user) {
+    return UserSettingsResponse.builder()
+        .display(UserSettingsResponse.Display.builder()
+            .weekStartDay(user.getWeekStartDay())
+            .isDarkMode(user.isDarkMode())
+            .build())
+        .menuActivation(UserSettingsResponse.MenuActivation.builder()
+            .calendar(UserSettingsResponse.MenuActivationItem.builder()
+                .isActive(user.isActiveCalendar())
+                .priority(user.getPriorityCalendar())
+                .build())
+            .dashboard(UserSettingsResponse.MenuActivationItem.builder()
+                .isActive(user.isActiveDashboard())
+                .priority(user.getPriorityDashboard())
+                .build())
+            .stats(UserSettingsResponse.MenuActivationItem.builder()
+                .isActive(user.isActiveStats())
+                .priority(user.getPriorityStats())
+                .build())
+            .build())
+        .appConnection(UserSettingsResponse.AppConnection.builder()
+            .realtimeSync(UserSettingsResponse.RealtimeSync.builder()
+                .notion(user.isRealtimeSyncNotion())
+                .googleCalendar(user.isRealtimeSyncGoogleCalendar())
+                .microsoftTodo(user.isRealtimeSyncMicrosoftTodo())
+                .build())
+            .build())
+        .build();
   }
 
 }
