@@ -6,4 +6,6 @@ public interface UserCommandPort {
 
   User save(User user);
 
+  User update(User user);
+
 }

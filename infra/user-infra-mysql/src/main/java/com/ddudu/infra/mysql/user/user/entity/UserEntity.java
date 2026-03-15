@@ -196,6 +196,29 @@ public class UserEntity extends BaseEntity {
         .build();
   }
 
+  public void update(User user) {
+    this.nickname = user.getNickname();
+    this.username = user.getUsername();
+    this.introduction = user.getIntroduction();
+    this.profileImageUrl = user.getProfileImageUrl();
+    this.authority = user.getAuthority();
+    this.status = user.getStatus();
+    this.allowingFollowsAfterApproval = user.isAllowingFollowsAfterApproval();
+    this.templateNotification = user.isNotifyingTemplate();
+    this.dduduNotification = user.isNotifyingDdudu();
+    this.weekStartDay = user.getWeekStartDay();
+    this.darkMode = user.isDarkMode();
+    this.activeCalendar = user.isActiveCalendar();
+    this.priorityCalendar = user.getPriorityCalendar();
+    this.activeDashboard = user.isActiveDashboard();
+    this.priorityDashboard = user.getPriorityDashboard();
+    this.activeStats = user.isActiveStats();
+    this.priorityStats = user.getPriorityStats();
+    this.realtimeSyncNotion = user.isRealtimeSyncNotion();
+    this.realtimeSyncGoogleCalendar = user.isRealtimeSyncGoogleCalendar();
+    this.realtimeSyncMicrosoftTodo = user.isRealtimeSyncMicrosoftTodo();
+  }
+
   public User toDomain() {
     return buildUser().build();
   }

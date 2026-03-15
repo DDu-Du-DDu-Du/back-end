@@ -4,6 +4,7 @@ import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.user.out.UserCommandPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.DrivenAdapter;
+import com.ddudu.common.exception.UserErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.vo.AuthProvider;
 import com.ddudu.infra.mysql.user.user.dto.FullUser;
@@ -44,6 +45,20 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort, UserC
         .toList();
 
     return savedUser.toDomainWith(savedProviders);
+  }
+
+  @Override
+  public User update(User user) {
+    UserEntity userEntity = userRepository.findById(user.getId())
+        .orElseThrow(() -> new MissingResourceException(
+            UserErrorCode.ID_NOT_EXISTING.getCodeName(),
+            User.class.getName(),
+            user.getId().toString()
+        ));
+
+    userEntity.update(user);
+
+    return userEntity.toDomainWith(user.getAuthProviders());
   }
 
   @Override
