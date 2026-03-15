@@ -13,6 +13,7 @@ import com.ddudu.application.common.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.common.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.common.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.common.dto.ddudu.request.SetReminderRequest;
+import com.ddudu.application.common.dto.ddudu.request.UpdateDduduRequest;
 import com.ddudu.application.common.dto.ddudu.response.BasicDduduResponse;
 import com.ddudu.application.common.dto.ddudu.response.DduduDetailResponse;
 import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
@@ -31,6 +32,7 @@ import com.ddudu.application.common.port.ddudu.in.RepeatUseCase;
 import com.ddudu.application.common.port.ddudu.in.RetrieveDduduUseCase;
 import com.ddudu.application.common.port.ddudu.in.SetReminderUseCase;
 import com.ddudu.application.common.port.ddudu.in.SwitchStatusUseCase;
+import com.ddudu.application.common.port.ddudu.in.UpdateDduduUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -66,6 +68,7 @@ public class DduduController implements DduduControllerDoc {
   private final RepeatUseCase repeatUseCase;
   private final SwitchStatusUseCase switchStatusUseCase;
   private final ChangeNameUseCase changeNameUseCase;
+  private final UpdateDduduUseCase updateDduduUseCase;
   private final DeleteDduduUseCase deleteDduduUseCase;
   private final SetReminderUseCase setReminderUseCase;
   private final CancelReminderUseCase cancelReminderUseCase;
@@ -210,7 +213,7 @@ public class DduduController implements DduduControllerDoc {
   /**
    * 뚜두명 변경 API
    */
-  @PutMapping("/{id}")
+  @PutMapping("/{id}/name")
   public ResponseEntity<IdResponse> changeName(
       @Login
       Long loginId,
@@ -221,6 +224,23 @@ public class DduduController implements DduduControllerDoc {
       ChangeNameRequest request
   ) {
     BasicDduduResponse response = changeNameUseCase.change(loginId, id, request);
+    return ResponseEntity.ok(new IdResponse(response.id()));
+  }
+
+  /**
+   * 뚜두 수정 API
+   */
+  @PutMapping("/{id}")
+  public ResponseEntity<IdResponse> update(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      @Valid
+      UpdateDduduRequest request
+  ) {
+    BasicDduduResponse response = updateDduduUseCase.update(loginId, id, request);
     return ResponseEntity.ok(new IdResponse(response.id()));
   }
 

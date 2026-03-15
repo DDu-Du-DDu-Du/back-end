@@ -2,6 +2,7 @@ package com.ddudu.application.planning.ddudu.service;
 
 import com.ddudu.application.common.dto.ddudu.request.CreateDduduRequest;
 import com.ddudu.application.common.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.common.dto.interim.InterimSetReminderEvent;
 import com.ddudu.application.common.port.ddudu.in.CreateDduduUseCase;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
@@ -13,6 +14,7 @@ import com.ddudu.domain.planning.ddudu.service.DduduDomainService;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
@@ -24,6 +26,7 @@ public class CreateDduduService implements CreateDduduUseCase {
   private final GoalLoaderPort goalLoaderPort;
   private final SaveDduduPort saveDduduPort;
   private final DduduDomainService dduduDomainService;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
   public BasicDduduResponse create(Long loginId, CreateDduduRequest request) {
@@ -41,7 +44,14 @@ public class CreateDduduService implements CreateDduduUseCase {
 
     // 4. 뚜두 생성 후 저장
     Ddudu ddudu = dduduDomainService.create(user.getId(), request.toCommand());
-    return BasicDduduResponse.from(saveDduduPort.save(ddudu));
+    Ddudu saved = saveDduduPort.save(ddudu);
+
+    if (saved.hasReminder()) {
+      InterimSetReminderEvent event = InterimSetReminderEvent.from(user.getId(), saved);
+      applicationEventPublisher.publishEvent(event);
+    }
+
+    return BasicDduduResponse.from(saved);
   }
 
   private void validateGoalNotDone(Goal goal) {

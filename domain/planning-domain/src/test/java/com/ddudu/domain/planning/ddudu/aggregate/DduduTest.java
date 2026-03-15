@@ -297,6 +297,39 @@ class DduduTest {
       }
 
       @Test
+      void 미리알림이_있으면_hasReminder가_true를_반환한다() {
+        // given
+        LocalDate futureDate = LocalDate.now().plusDays(2);
+        LocalTime beginAt = LocalTime.of(23, 30);
+        Ddudu withReminder = DduduFixture.createRandomDduduWithSchedule(userId, goalId, futureDate)
+            .setUpPeriod(beginAt, null)
+            .setReminder(0, 0, 15);
+
+        // when
+        boolean actual = withReminder.hasReminder();
+
+        // then
+        assertThat(actual).isTrue();
+      }
+
+      @Test
+      void 미리알림이_없으면_hasReminder가_false를_반환한다() {
+        // given
+        Ddudu withoutReminder = DduduFixture.createRandomDduduWithReference(
+            goalId,
+            userId,
+            false,
+            null
+        );
+
+        // when
+        boolean actual = withoutReminder.hasReminder();
+
+        // then
+        assertThat(actual).isFalse();
+      }
+
+      @Test
       void 미리알림_취소를_성공한다() {
         // given
         LocalDate futureDate = LocalDate.now()
@@ -630,6 +663,82 @@ class DduduTest {
     }
 
   }
+
+
+  @Nested
+  class 수정_테스트 {
+
+    Long userId;
+    Long goalId;
+
+    @BeforeEach
+    void setUp() {
+      userId = DduduFixture.getRandomId();
+      goalId = DduduFixture.getRandomId();
+    }
+
+    @Test
+    void 미리알림_입력이_없으면_기존_미리알림을_유지한다() {
+      // given
+      LocalDate scheduledOn = LocalDate.now().plusDays(2);
+      LocalTime beginAt = LocalTime.of(10, 0);
+      LocalDateTime remindAt = scheduledOn.atTime(beginAt).minusMinutes(30);
+      Ddudu ddudu = DduduFixture.createDduduWithReminder(
+          userId,
+          goalId,
+          scheduledOn,
+          beginAt,
+          remindAt
+      );
+
+      // when
+      Ddudu updated = ddudu.update(
+          goalId,
+          DduduFixture.getRandomSentenceWithMax(50),
+          scheduledOn,
+          beginAt,
+          LocalTime.of(11, 0),
+          null,
+          null,
+          null
+      );
+
+      // then
+      assertThat(updated.getRemindAt()).isEqualTo(remindAt);
+    }
+
+    @Test
+    void 미리알림_입력이_있으면_미리알림을_재계산한다() {
+      // given
+      LocalDate scheduledOn = LocalDate.now().plusDays(2);
+      LocalTime beginAt = LocalTime.of(10, 0);
+      LocalDateTime oldReminder = scheduledOn.atTime(beginAt).minusMinutes(30);
+      Ddudu ddudu = DduduFixture.createDduduWithReminder(
+          userId,
+          goalId,
+          scheduledOn,
+          beginAt,
+          oldReminder
+      );
+
+      // when
+      Ddudu updated = ddudu.update(
+          goalId,
+          DduduFixture.getRandomSentenceWithMax(50),
+          scheduledOn,
+          beginAt,
+          LocalTime.of(11, 0),
+          0,
+          null,
+          10
+      );
+
+      // then
+      assertThat(updated.getRemindAt()).isEqualTo(scheduledOn.atTime(beginAt).minusMinutes(10));
+    }
+
+  }
+
 
   @Nested
   class 복제_테스트 {

@@ -1,6 +1,6 @@
 package com.ddudu.application.common.dto.ddudu.request;
 
-import com.ddudu.domain.planning.ddudu.dto.CreateDduduCommand;
+import com.ddudu.domain.planning.ddudu.dto.UpdateDduduCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record CreateDduduRequest(
+public record UpdateDduduRequest(
     @NotNull(message = "2001 NULL_GOAL_VALUE")
     @Positive(message = "2014 NEGATIVE_OR_ZERO_GOAL_ID")
     Long goalId,
@@ -31,8 +31,8 @@ public record CreateDduduRequest(
     Integer remindMinutes
 ) {
 
-  public CreateDduduCommand toCommand() {
-    return CreateDduduCommand.builder()
+  public UpdateDduduCommand toCommand() {
+    return UpdateDduduCommand.builder()
         .goalId(goalId)
         .name(name)
         .scheduledOn(scheduledOn)

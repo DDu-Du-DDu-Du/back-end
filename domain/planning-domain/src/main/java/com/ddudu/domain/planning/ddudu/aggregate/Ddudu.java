@@ -49,7 +49,10 @@ public class Ddudu {
       LocalDate scheduledOn,
       LocalTime beginAt,
       LocalTime endAt,
-      LocalDateTime remindAt
+      LocalDateTime remindAt,
+      Integer remindDays,
+      Integer remindHours,
+      Integer remindMinutes
   ) {
     validate(goalId, userId, name, beginAt, endAt);
 
@@ -63,7 +66,7 @@ public class Ddudu {
     this.scheduledOn = Objects.requireNonNullElse(scheduledOn, LocalDate.now());
     this.beginAt = beginAt;
     this.endAt = endAt;
-    this.remindAt = remindAt;
+    this.remindAt = resolveReminder(remindAt, remindDays, remindHours, remindMinutes);
   }
 
   public void validateDduduCreator(Long userId) {
@@ -121,6 +124,35 @@ public class Ddudu {
         .build();
   }
 
+  public Ddudu update(
+      Long goalId,
+      String name,
+      LocalDate scheduledOn,
+      LocalTime beginAt,
+      LocalTime endAt,
+      Integer remindDays,
+      Integer remindHours,
+      Integer remindMinutes
+  ) {
+    DduduBuilder builder = getFullBuilder()
+        .goalId(goalId)
+        .name(name)
+        .scheduledOn(scheduledOn)
+        .beginAt(beginAt)
+        .endAt(endAt);
+
+    if (isReminderInputEmpty(remindDays, remindHours, remindMinutes)) {
+      return builder.build();
+    }
+
+    return builder
+        .remindDays(remindDays)
+        .remindHours(remindHours)
+        .remindMinutes(remindMinutes)
+        .remindAt(null)
+        .build();
+  }
+
   public boolean hasStartTime() {
     return nonNull(beginAt);
   }
@@ -131,6 +163,10 @@ public class Ddudu {
     }
 
     return beginAt.getHour();
+  }
+
+  public boolean hasReminder() {
+    return nonNull(remindAt);
   }
 
   public Ddudu setReminder(int days, int hours, int minutes) {
@@ -152,14 +188,14 @@ public class Ddudu {
         Objects.nonNull(beginAt) && Objects.nonNull(remindAt),
         DduduErrorCode.UNABLE_TO_GET_REMINDER.getCodeName()
     );
-    
+
     LocalDateTime scheduledAt = scheduledOn.atTime(beginAt);
-    
+
     checkState(
         scheduledAt.isAfter(remindAt),
         DduduErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName()
     );
-    
+
     return Duration.between(remindAt, scheduledAt);
   }
 
@@ -206,6 +242,35 @@ public class Ddudu {
 
   private boolean isCreatedByUser(Long userId) {
     return Objects.equals(this.userId, userId);
+  }
+
+  private LocalDateTime resolveReminder(
+      LocalDateTime remindAt,
+      Integer remindDays,
+      Integer remindHours,
+      Integer remindMinutes
+  ) {
+    if (nonNull(remindAt)) {
+      return remindAt;
+    }
+
+    if (isReminderInputEmpty(remindDays, remindHours, remindMinutes)) {
+      return null;
+    }
+
+    return validateReminder(
+        Objects.requireNonNullElse(remindDays, 0),
+        Objects.requireNonNullElse(remindHours, 0),
+        Objects.requireNonNullElse(remindMinutes, 0)
+    );
+  }
+
+  private boolean isReminderInputEmpty(
+      Integer remindDays,
+      Integer remindHours,
+      Integer remindMinutes
+  ) {
+    return isNull(remindDays) && isNull(remindHours) && isNull(remindMinutes);
   }
 
   private LocalDateTime validateReminder(int days, int hours, int minutes) {
