@@ -48,7 +48,7 @@ public interface UserControllerDoc {
   )
   ResponseEntity<MeResponse> validateToken(Long loginId);
 
-  @Operation(summary = "내 세팅 조회")
+  @Operation(summary = "내 세팅 옵션 변경")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -99,8 +99,8 @@ public interface UserControllerDoc {
       Long loginId,
       UpdateUserSettingsRequest request
   );
-            
-  @Operation(summary = "내 세팅 옵션 변경")
+
+  @Operation(summary = "내 세팅 조회")
   @ApiResponses(
       value = {
           @ApiResponse(
