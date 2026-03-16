@@ -67,6 +67,13 @@ public class MonthlyStats {
         .getGoalName();
   }
 
+  public String getGoalColor() {
+    validateStatsUnderSameGoal();
+
+    return stats.get(0)
+        .getGoalColor();
+  }
+
   public int size() {
     return stats.size();
   }

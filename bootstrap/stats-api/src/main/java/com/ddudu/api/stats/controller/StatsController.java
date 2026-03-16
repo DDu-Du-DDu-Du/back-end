@@ -107,11 +107,14 @@ public class StatsController implements StatsControllerDoc {
       @Login
       Long loginId,
       @RequestParam(required = false)
+      Long userId,
+      @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
     MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryUseCase.collectSummary(
         loginId,
+        userId,
         yearMonth
     );
 
