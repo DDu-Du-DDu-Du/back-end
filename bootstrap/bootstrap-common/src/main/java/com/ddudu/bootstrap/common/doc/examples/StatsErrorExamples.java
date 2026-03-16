@@ -51,4 +51,11 @@ public final class StatsErrorExamples {
       }
       """;
 
+  public static final String STATS_GOAL_NOT_FOUND = """
+      {
+        "code": 9008,
+        "message": "상세통계 조회 대상 목표를 찾을 수 없습니다."
+      }
+      """;
+
 }

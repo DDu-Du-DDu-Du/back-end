@@ -9,6 +9,7 @@ import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.planning.goal.aggregate.vo.Color;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public final class Goal {
   private final GoalStatus status;
   private final PrivacyType privacyType;
   private final int priority;
+  private final LocalDateTime createdAt;
 
   @Getter(AccessLevel.NONE)
   private final Color color;
@@ -42,7 +44,8 @@ public final class Goal {
       GoalStatus status,
       String color,
       PrivacyType privacyType,
-      Integer priority
+      Integer priority,
+      LocalDateTime createdAt
   ) {
     validate(name, userId);
 
@@ -53,6 +56,7 @@ public final class Goal {
     this.color = new Color(color);
     this.privacyType = isNull(privacyType) ? DEFAULT_PRIVACY_TYPE : privacyType;
     this.priority = isNull(priority) ? 1 : priority;
+    this.createdAt = createdAt;
   }
 
   public String getColor() {
@@ -70,6 +74,7 @@ public final class Goal {
         .color(color)
         .privacyType(privacyType)
         .priority(priority)
+        .createdAt(createdAt)
         .build();
   }
 
@@ -82,6 +87,7 @@ public final class Goal {
         .color(color.getCode())
         .privacyType(privacyType)
         .priority(priority)
+        .createdAt(createdAt)
         .build();
   }
 

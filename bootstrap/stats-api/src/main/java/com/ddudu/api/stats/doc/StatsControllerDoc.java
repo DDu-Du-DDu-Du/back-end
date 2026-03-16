@@ -2,6 +2,7 @@ package com.ddudu.api.stats.doc;
 
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.GoalDetailStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
@@ -406,5 +407,65 @@ public interface StatsControllerDoc {
       YearMonth fromMonth,
       YearMonth toMonth
   );
+
+  @Operation(summary = "특정 목표 상세 통계 요약")
+  @ApiResponses(
+      {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "9003",
+                          description = "조회 대상 사용자가 없는 경우",
+                          value = StatsErrorExamples.STATS_USER_NOT_FOUND
+                      ),
+                      @ExampleObject(
+                          name = "9008",
+                          description = "조회 대상 목표가 없는 경우",
+                          value = StatsErrorExamples.STATS_GOAL_NOT_FOUND
+                      )
+                  }
+              )
+          )
+      }
+  )
+  @Parameters(
+      {
+          @Parameter(
+              name = "goalId",
+              description = "상세 통계 조회 대상 목표",
+              in = ParameterIn.PATH,
+              example = "3"
+          ),
+          @Parameter(
+              name = "userId",
+              description = "조회 대상 사용자 식별자 (기본값: 로그인 사용자)",
+              in = ParameterIn.QUERY
+          )
+      }
+  )
+  ResponseEntity<GoalDetailStatsSummaryResponse> collectGoalDetailStats(
+      Long loginId,
+      Long goalId,
+      Long userId
+  );
+
 
 }
