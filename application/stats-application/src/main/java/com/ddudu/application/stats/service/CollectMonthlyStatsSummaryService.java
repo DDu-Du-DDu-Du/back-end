@@ -65,20 +65,25 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
     List<GoalMonthlyStatsSummary> summaries = monthlyStatsByGoal.values()
         .stream()
         .map(this::toSummary)
-        .sorted((first, second) -> {
-          int compare = Integer.compare(second.creationCount(), first.creationCount());
-
-          if (compare != 0) {
-            return compare;
-          }
-
-          return Long.compare(first.goalId(), second.goalId());
-        })
+        .sorted(this::compareByCreationCountDescThenGoalIdAsc)
         .toList();
 
     return MonthlyStatsSummaryResponse.builder()
         .summaries(summaries)
         .build();
+  }
+
+  private int compareByCreationCountDescThenGoalIdAsc(
+      GoalMonthlyStatsSummary first,
+      GoalMonthlyStatsSummary second
+  ) {
+    int compare = Integer.compare(second.creationCount(), first.creationCount());
+
+    if (compare != 0) {
+      return compare;
+    }
+
+    return Long.compare(first.goalId(), second.goalId());
   }
 
   private GoalMonthlyStatsSummary toSummary(MonthlyStats monthlyStats) {
