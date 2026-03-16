@@ -456,6 +456,7 @@ class DduduTest {
       @Test
       void 완료_하지_않은_뚜두의_날짜를_기존_날짜_이후로_변경하면_미루기_상태가_된다() {
         // given
+        LocalDate previousScheduledOn = ddudu.getScheduledOn();
         LocalDate newDate = LocalDate.now()
             .plusDays(1);
 
@@ -465,6 +466,7 @@ class DduduTest {
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);
         assertThat(actual.isPostponed()).isTrue();
+        assertThat(actual.getPostponedAt()).isEqualTo(previousScheduledOn.atStartOfDay());
       }
 
       @Test

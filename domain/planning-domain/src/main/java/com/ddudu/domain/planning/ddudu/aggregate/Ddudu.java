@@ -88,6 +88,7 @@ public class Ddudu {
 
   public Ddudu moveDate(LocalDate newDate, boolean postpone) {
     checkArgument(Objects.nonNull(newDate), DduduErrorCode.NULL_DATE_TO_MOVE.getCodeName());
+    LocalDate previousScheduledOn = this.scheduledOn;
 
     DduduBuilder builder = getFullBuilder()
         .scheduledOn(newDate);
@@ -100,7 +101,7 @@ public class Ddudu {
         DduduErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
 
     return builder
-        .postponedAt(LocalDateTime.now())
+        .postponedAt(previousScheduledOn.atStartOfDay())
         .build();
   }
 
