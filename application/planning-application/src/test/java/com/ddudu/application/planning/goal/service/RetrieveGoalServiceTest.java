@@ -98,6 +98,8 @@ class RetrieveGoalServiceTest {
     RepeatDdudu actual = repeatDduduLoaderPort.getOptionalRepeatDdudu(first.id())
         .get();
 
+    assertThat(first.repeatType()).isEqualTo(repeatDdudu.getRepeatType());
+
     assertThat(actual).extracting("name", "repeatType", "startDate", "endDate")
         .containsExactly(
             repeatDdudu.getName(),

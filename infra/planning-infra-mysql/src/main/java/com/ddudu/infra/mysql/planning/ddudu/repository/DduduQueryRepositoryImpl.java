@@ -9,6 +9,7 @@ import com.ddudu.application.common.dto.ddudu.DduduCursorDto;
 import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.scroll.OrderType;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.common.dto.stats.GoalStatusSummaryRaw;
 import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
@@ -95,6 +96,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .on(dduduEntity.goalId.eq(goalEntity.id))
         .where(condition)
         .groupBy(dduduEntity.scheduledOn)
+        .orderBy(dduduEntity.scheduledOn.asc())
         .fetch();
   }
 
@@ -226,6 +228,22 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .fetch();
   }
 
+
+  @Override
+  public List<GoalStatusSummaryRaw> findGoalStatuses(Long userId, Long goalId) {
+    return jpaQueryFactory
+        .select(projectGoalStatusSummary())
+        .from(dduduEntity)
+        .join(goalEntity)
+        .on(dduduEntity.goalId.eq(goalEntity.id))
+        .where(
+            dduduEntity.userId.eq(userId),
+            dduduEntity.goalId.eq(goalId),
+            goalEntity.userId.eq(userId)
+        )
+        .fetch();
+  }
+
   @Override
   public int countTodayByUserId(Long userId) {
     return jpaQueryFactory.select(Wildcard.countAsInt)
@@ -293,6 +311,15 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     }
   }
 
+
+  private ConstructorExpression<GoalStatusSummaryRaw> projectGoalStatusSummary() {
+    return Projections.constructor(
+        GoalStatusSummaryRaw.class,
+        dduduEntity.id,
+        dduduEntity.status
+    );
+  }
+
   private BooleanExpression privacyTypesIn(List<PrivacyType> accessiblePrivacyTypes) {
     return goalEntity.privacyType.in(accessiblePrivacyTypes);
   }
@@ -307,6 +334,13 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         "COUNT({0})",
         dduduEntity.id
     );
+    NumberTemplate<Integer> completedTodosTemplate = Expressions.numberTemplate(
+        Integer.class,
+        "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
+        dduduEntity.status,
+        DduduStatus.COMPLETE,
+        dduduEntity.id
+    );
     NumberTemplate<Integer> uncompletedTodosTemplate = Expressions.numberTemplate(
         Integer.class,
         "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
@@ -319,6 +353,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         DduduCompletionResponse.class,
         dduduEntity.scheduledOn,
         totalTodosTemplate,
+        completedTodosTemplate,
         uncompletedTodosTemplate
     );
   }

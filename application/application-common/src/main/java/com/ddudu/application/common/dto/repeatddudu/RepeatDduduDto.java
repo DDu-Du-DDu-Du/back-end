@@ -1,6 +1,7 @@
 package com.ddudu.application.common.dto.repeatddudu;
 
 import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
+import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
 import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +20,11 @@ public record RepeatDduduDto(
         example = "매일 아침 물 마시기"
     )
     String name,
+    @Schema(
+        description = "반복 유형 [DAILY|WEEKLY|MONTHLY]",
+        example = "DAILY"
+    )
+    RepeatType repeatType,
     @Schema(description = "반복 뚜두 반복 패턴")
     RepeatPattern repeatPattern,
     @Schema(
@@ -57,6 +63,7 @@ public record RepeatDduduDto(
     return new RepeatDduduDto(
         repeatDdudu.getId(),
         repeatDdudu.getName(),
+        repeatDdudu.getRepeatType(),
         repeatDdudu.getRepeatPattern(),
         repeatDdudu.getStartDate(),
         repeatDdudu.getEndDate(),

@@ -3,6 +3,7 @@ package com.ddudu.infra.mysql.planning.ddudu.repository;
 import com.ddudu.aggregate.BaseStats;
 import com.ddudu.application.common.dto.ddudu.DduduCursorDto;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.common.dto.stats.GoalStatusSummaryRaw;
 import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
@@ -50,6 +51,8 @@ public interface DduduQueryRepository {
       LocalDate from,
       LocalDate to
   );
+
+  List<GoalStatusSummaryRaw> findGoalStatuses(Long userId, Long goalId);
 
   int countTodayByUserId(Long userId);
 

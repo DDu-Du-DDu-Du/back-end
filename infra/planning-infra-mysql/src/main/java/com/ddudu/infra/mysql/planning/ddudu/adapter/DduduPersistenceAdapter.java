@@ -4,6 +4,7 @@ import com.ddudu.aggregate.BaseStats;
 import com.ddudu.aggregate.MonthlyStats;
 import com.ddudu.application.common.dto.ddudu.DduduCursorDto;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.common.dto.stats.GoalStatusSummaryRaw;
 import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
@@ -13,6 +14,7 @@ import com.ddudu.application.common.port.ddudu.out.DeleteDduduPort;
 import com.ddudu.application.common.port.ddudu.out.RepeatDduduPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.stats.out.DduduStatsPort;
+import com.ddudu.application.common.port.stats.out.GoalDetailStatsPort;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
 import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
@@ -35,7 +37,8 @@ import lombok.RequiredArgsConstructor;
 @DrivenAdapter
 @RequiredArgsConstructor
 public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort, SaveDduduPort,
-    RepeatDduduPort, DduduSearchPort, DeleteDduduPort, DduduStatsPort, MonthlyStatsPort {
+    RepeatDduduPort, DduduSearchPort, DeleteDduduPort, DduduStatsPort, MonthlyStatsPort,
+    GoalDetailStatsPort {
 
   private final DduduRepository dduduRepository;
 
@@ -152,6 +155,12 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
         privacyTypes,
         isAchieved
     );
+  }
+
+
+  @Override
+  public List<GoalStatusSummaryRaw> loadGoalStatuses(Long userId, Long goalId) {
+    return dduduRepository.findGoalStatuses(userId, goalId);
   }
 
   @Override

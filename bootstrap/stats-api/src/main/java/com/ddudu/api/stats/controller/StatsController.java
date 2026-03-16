@@ -1,14 +1,14 @@
 package com.ddudu.api.stats.controller;
 
-import static java.util.Objects.isNull;
-
 import com.ddudu.api.stats.doc.StatsControllerDoc;
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.GoalDetailStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
 import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
+import com.ddudu.application.common.port.stats.in.CollectGoalDetailStatsUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsDetailUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsReportUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsSummaryUseCase;
@@ -34,6 +34,7 @@ public class StatsController implements StatsControllerDoc {
   private final CalculateCompletionUseCase calculateCompletionUseCase;
   private final CollectMonthlyStatsSummaryUseCase collectMonthlyStatsSummaryUseCase;
   private final CollectMonthlyStatsDetailUseCase collectMonthlyStatsDetailUseCase;
+  private final CollectGoalDetailStatsUseCase collectGoalDetailStatsUseCase;
 
   /**
    * 월별 뚜두 완료율 조회 API (달성 뚜두 수 / 생성 뚜두 수)
@@ -45,7 +46,7 @@ public class StatsController implements StatsControllerDoc {
       @RequestParam(required = false)
       Long userId,
       @RequestParam(
-          value = "date",
+          value = "yearMonth",
           required = false
       )
       @DateTimeFormat(pattern = "yyyy-MM")
@@ -63,6 +64,7 @@ public class StatsController implements StatsControllerDoc {
   /**
    * 주간 뚜두 완료율 조회 API
    */
+  @Deprecated
   @GetMapping("/completion/weekly")
   public ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
       @Login
@@ -73,8 +75,6 @@ public class StatsController implements StatsControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM-dd")
       LocalDate date
   ) {
-    userId = isNull(userId) ? loginId : userId;
-
     List<DduduCompletionResponse> response = calculateCompletionUseCase.calculateWeekly(
         loginId,
         userId,
@@ -168,5 +168,25 @@ public class StatsController implements StatsControllerDoc {
 
     return ResponseEntity.ok(response);
   }
+
+  @Override
+  @GetMapping("/detail/{goalId}")
+  public ResponseEntity<GoalDetailStatsSummaryResponse> collectGoalDetailStats(
+      @Login
+      Long loginId,
+      @PathVariable("goalId")
+      Long goalId,
+      @RequestParam(required = false)
+      Long userId
+  ) {
+    GoalDetailStatsSummaryResponse response = collectGoalDetailStatsUseCase.collectDetail(
+        loginId,
+        goalId,
+        userId
+    );
+
+    return ResponseEntity.ok(response);
+  }
+
 
 }
