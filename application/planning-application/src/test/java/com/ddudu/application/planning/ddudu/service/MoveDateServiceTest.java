@@ -64,7 +64,7 @@ class MoveDateServiceTest {
   @Test
   void 뚜두를_미루기_한다() {
     // given
-    LocalDate previousScheduledOn = ddudu.getScheduledOn();
+    final LocalDate previousScheduledOn = ddudu.getScheduledOn();
     MoveDateRequest request = new MoveDateRequest(tomorrow, true);
 
     // when
