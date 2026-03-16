@@ -244,12 +244,18 @@ public interface StatsControllerDoc {
       }
   )
   @Parameter(
+      name = "userId",
+      description = "통계 조회 대상 사용자 아이디(미입력 시 로그인 사용자)",
+      in = ParameterIn.QUERY,
+      example = "1"
+  )
+  @Parameter(
       name = "yearMonth",
       description = "통계 조회 대상 기간 월 (기본값: 이번 달)",
       in = ParameterIn.QUERY,
       example = "2024-08"
   )
-  ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(Long loginId, YearMonth yearMonth);
+  ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(Long loginId, Long userId, YearMonth yearMonth);
 
   @Operation(summary = "월별 뚜두 달성 중심 상세 통계")
   @ApiResponses(
