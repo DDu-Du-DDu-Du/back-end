@@ -90,7 +90,8 @@ class CollectMonthlyStatsDetailServiceTest {
       // given
 
       // when
-      AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+      AchievedStatsDetailResponse response =
+          collectMonthlyAchievedDetailService.collectAchievedDetail(
           user.getId(),
           goal.getId(),
           thisMonth,
@@ -377,7 +378,8 @@ class CollectMonthlyStatsDetailServiceTest {
       // given
 
       // when
-      PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+      PostponedStatsDetailResponse response =
+          collectMonthlyAchievedDetailService.collectPostponedDetail(
           user.getId(),
           goal.getId(),
           thisMonth,
@@ -422,12 +424,13 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
-            user.getId(),
-            goal.getId(),
-            thisMonth,
-            thisMonth
-        );
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
+                user.getId(),
+                goal.getId(),
+                thisMonth,
+                thisMonth
+            );
 
         // then
         PostponedDetailOverviewDto actual = response.overview();
@@ -444,7 +447,8 @@ class CollectMonthlyStatsDetailServiceTest {
         YearMonth nextMonth = thisMonth.plusMonths(1);
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
             user.getId(),
             goal.getId(),
             nextMonth,
@@ -527,12 +531,13 @@ class CollectMonthlyStatsDetailServiceTest {
         saveDduduPort.save(excluded);
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
-            user.getId(),
-            goal.getId(),
-            nextMonth,
-            nextMonth
-        );
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
+                user.getId(),
+                goal.getId(),
+                nextMonth,
+                nextMonth
+            );
 
         // then
         PostponedDetailOverviewDto actual = response.overview();

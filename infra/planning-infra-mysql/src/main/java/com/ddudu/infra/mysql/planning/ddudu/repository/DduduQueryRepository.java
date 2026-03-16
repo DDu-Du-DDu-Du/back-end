@@ -44,7 +44,12 @@ public interface DduduQueryRepository {
 
   List<BaseStats> findStatsBaseOfUser(Long userId, Long goalId, LocalDate from, LocalDate to);
 
-  List<BaseStats> findPostponedStatsBaseOfUser(Long userId, Long goalId, LocalDate from, LocalDate to);
+  List<BaseStats> findPostponedStatsBaseOfUser(
+      Long userId,
+      Long goalId,
+      LocalDate from,
+      LocalDate to
+  );
 
   List<RepeatDduduStatsDto> countByRepeatDduduId(
       Long userId,
