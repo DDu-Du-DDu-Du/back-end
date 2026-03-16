@@ -164,6 +164,24 @@ public class DduduPersistenceAdapter implements DduduLoaderPort, DduduUpdatePort
     Long goalId = Objects.nonNull(goal) ? goal.getId() : null;
     List<BaseStats> stats = dduduRepository.findStatsBaseOfUser(userId, goalId, from, to);
 
+    return collectByMonth(userId, stats);
+  }
+
+  @Override
+  public Map<YearMonth, MonthlyStats> collectMonthlyPostponedStats(
+      Long userId,
+      Goal goal,
+      LocalDate from,
+      LocalDate to
+  ) {
+    Long goalId = Objects.nonNull(goal) ? goal.getId() : null;
+    List<BaseStats> stats = dduduRepository.findPostponedStatsBaseOfUser(userId, goalId, from, to);
+
+    return collectByMonth(userId, stats);
+  }
+
+  private Map<YearMonth, MonthlyStats> collectByMonth(Long userId, List<BaseStats> stats) {
+
     return stats.stream()
         .collect(Collectors.groupingBy(stat -> YearMonth.from(stat.getScheduledOn())))
         .entrySet()

@@ -8,6 +8,7 @@ import lombok.Builder;
 @Builder
 public record PostponedStatsDetailResponse(
     Long goalId,
+    String goalColor,
     PostponedDetailOverviewDto overview,
     DayOfWeekStatsDto dayOfWeekStats,
     GenericCalendarStats<DduduCompletionResponse> calendarStats

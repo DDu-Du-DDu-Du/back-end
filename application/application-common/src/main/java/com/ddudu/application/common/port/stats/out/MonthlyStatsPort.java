@@ -17,6 +17,13 @@ public interface MonthlyStatsPort {
       LocalDate to
   );
 
+  Map<YearMonth, MonthlyStats> collectMonthlyPostponedStats(
+      Long userId,
+      Goal goal,
+      LocalDate from,
+      LocalDate to
+  );
+
   List<RepeatDduduStatsDto> countRepeatDdudu(
       Long userId,
       Long goalId,

@@ -82,11 +82,15 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     }
 
     if (!isAchieved) {
-      condition.and(dduduEntity.postponedAt.isNotNull());
+      condition.and(dduduEntity.postponedAt.isNotNull())
+          .and(dduduEntity.postponedAt.between(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX)));
     }
 
-    condition.and(privacyTypesIn(privacyTypes))
-        .and(dduduEntity.scheduledOn.between(startDate, endDate));
+    condition.and(privacyTypesIn(privacyTypes));
+
+    if (isAchieved) {
+      condition.and(dduduEntity.scheduledOn.between(startDate, endDate));
+    }
 
     return jpaQueryFactory
         .select(projectCompletion())
@@ -178,6 +182,34 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
   ) {
     BooleanBuilder condition = new BooleanBuilder(goalEntity.userId.eq(userId))
         .and(dduduEntity.scheduledOn.between(from, to));
+
+    if (Objects.nonNull(goalId)) {
+      condition.and(dduduEntity.goalId.eq(goalId));
+    }
+
+    return jpaQueryFactory
+        .select(projectionStatsBase())
+        .from(dduduEntity)
+        .join(goalEntity)
+        .on(dduduEntity.goalId.eq(goalEntity.id))
+        .where(condition)
+        .orderBy(
+            dduduEntity.scheduledOn.yearMonth()
+                .asc(), dduduEntity.scheduledOn.asc(), dduduEntity.status.asc()
+        )
+        .fetch();
+  }
+
+  @Override
+  public List<BaseStats> findPostponedStatsBaseOfUser(
+      Long userId,
+      Long goalId,
+      LocalDate from,
+      LocalDate to
+  ) {
+    BooleanBuilder condition = new BooleanBuilder(goalEntity.userId.eq(userId))
+        .and(dduduEntity.postponedAt.isNotNull())
+        .and(dduduEntity.postponedAt.between(from.atStartOfDay(), to.atTime(LocalTime.MAX)));
 
     if (Objects.nonNull(goalId)) {
       condition.and(dduduEntity.goalId.eq(goalId));

@@ -87,6 +87,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
         .dayOfWeekStats(dayOfWeekStats)
         .repeatDduduStats(repeatDduduCounts)
         .goalId(goal.getId())
+        .goalColor(goal.getColor())
         .calendarStats(completions)
         .build();
   }
@@ -112,7 +113,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
     LocalDate from = fromMonth.atDay(1);
     LocalDate to = toMonth.atEndOfMonth();
     Goal goal = validateAndGetGoal(goalId);
-    MonthlyStats reduced = collectStatsAtOnce(user.getId(), goal, fromMonth, to);
+    MonthlyStats reduced = collectPostponedStatsAtOnce(user.getId(), goal, fromMonth, to);
     PostponedDetailOverviewDto overview = createPostponedOverview(reduced);
     DayOfWeekStatsDto dayOfWeekStats = createDayOfWeekStats(reduced, IS_POSTPONED);
     GenericCalendarStats<DduduCompletionResponse> calendarStats = getCalendarCompletions(
@@ -128,6 +129,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
     return PostponedStatsDetailResponse.builder()
         .overview(overview)
         .goalId(goal.getId())
+        .goalColor(goal.getColor())
         .calendarStats(calendarStats)
         .dayOfWeekStats(dayOfWeekStats)
         .build();
@@ -151,6 +153,18 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
       LocalDate to
   ) {
     return monthlyStatsPort.collectMonthlyStats(userId, goal, fromMonth.atDay(1), to)
+        .values()
+        .stream()
+        .reduce(MonthlyStats.empty(userId, fromMonth), MonthlyStats::merge);
+  }
+
+  private MonthlyStats collectPostponedStatsAtOnce(
+      Long userId,
+      Goal goal,
+      YearMonth fromMonth,
+      LocalDate to
+  ) {
+    return monthlyStatsPort.collectMonthlyPostponedStats(userId, goal, fromMonth.atDay(1), to)
         .values()
         .stream()
         .reduce(MonthlyStats.empty(userId, fromMonth), MonthlyStats::merge);

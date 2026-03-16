@@ -10,6 +10,7 @@ import lombok.Builder;
 @Builder
 public record AchievedStatsDetailResponse(
     Long goalId,
+    String goalColor,
     AchievedDetailOverviewDto overview,
     DayOfWeekStatsDto dayOfWeekStats,
     List<RepeatDduduStatsDto> repeatDduduStats,
