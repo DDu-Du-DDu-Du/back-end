@@ -2,16 +2,13 @@ package com.ddudu.application.stats.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.stats.CreationCountPerGoal;
-import com.ddudu.application.common.dto.stats.PostponedPerGoal;
-import com.ddudu.application.common.dto.stats.ReattainmentPerGoal;
-import com.ddudu.application.common.dto.stats.SustenancePerGoal;
+import com.ddudu.application.common.dto.stats.GoalMonthlyStatsSummary;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.StatsErrorCode;
+import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
@@ -43,45 +40,42 @@ import org.springframework.transaction.annotation.Transactional;
 class CollectMonthlyStatsSummaryServiceTest {
 
   @Autowired
-  CollectMonthlyStatsSummaryService collectMonthlyStatsSummaryService;
+  private CollectMonthlyStatsSummaryService collectMonthlyStatsSummaryService;
 
   @Autowired
-  SignUpPort signUpPort;
+  private SignUpPort signUpPort;
 
   @Autowired
-  SaveGoalPort saveGoalPort;
+  private SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  private SaveDduduPort saveDduduPort;
 
-  User user;
-  List<Goal> goals;
-  @Autowired
-  private DduduLoaderPort dduduLoaderPort;
+  private User user;
+  private List<Goal> goals;
 
   @Nested
   class 만든_수_통계_테스트 {
 
-    List<Integer> sizes;
+    private List<Integer> creationCounts;
 
     @BeforeEach
     void setUp() {
       user = signUpPort.save(UserFixture.createRandomUserWithId());
       goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user.getId(), 5));
-      sizes = new ArrayList<>();
+      creationCounts = new ArrayList<>();
 
-      for (int i = 0; i < 5; i++) {
-        sizes.add(DduduFixture.getRandomInt(1, 100));
+      for (int i = 0; i < goals.size(); i++) {
+        creationCounts.add(DduduFixture.getRandomInt(1, 100));
       }
 
-      Iterator<Integer> sizeIterator = sizes.iterator();
-
+      Iterator<Integer> countIterator = creationCounts.iterator();
       goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(
           goal,
-          sizeIterator.next()
+          countIterator.next()
       )));
 
-      sizes.sort(Comparator.reverseOrder());
+      creationCounts.sort(Comparator.reverseOrder());
     }
 
     @Test
@@ -92,33 +86,32 @@ class CollectMonthlyStatsSummaryServiceTest {
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           thisMonth
       );
 
       // then
-      List<CreationCountPerGoal> actual = response.creationCounts();
-      Iterator<Integer> sizeIterator = sizes.iterator();
+      List<Integer> actualCreationCounts = response.summaries().stream()
+          .map(GoalMonthlyStatsSummary::creationCount)
+          .toList();
 
-      Assertions.assertThat(actual.size())
-          .isEqualTo(goals.size());
-      Assertions.assertThat(actual)
-          .allMatch(goal -> goal.count() == sizeIterator.next());
+      assertThat(actualCreationCounts).isEqualTo(creationCounts);
     }
 
     @Test
     void 목표에_해당_달_생성_뚜두가_없으면_통계에서_제외한다() {
       // given
-      YearMonth lastMonth = YearMonth.now()
-          .minusMonths(1);
+      YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           lastMonth
       );
 
       // then
-      assertThat(response.creationCounts()).isEmpty();
+      assertThat(response.summaries()).isEmpty();
     }
 
     @Test
@@ -128,17 +121,16 @@ class CollectMonthlyStatsSummaryServiceTest {
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           null
       );
 
       // then
-      List<CreationCountPerGoal> actual = response.creationCounts();
-      Iterator<Integer> sizeIterator = sizes.iterator();
+      List<Integer> actualCreationCounts = response.summaries().stream()
+          .map(GoalMonthlyStatsSummary::creationCount)
+          .toList();
 
-      Assertions.assertThat(actual.size())
-          .isEqualTo(goals.size());
-      Assertions.assertThat(actual)
-          .allMatch(goal -> goal.count() == sizeIterator.next());
+      assertThat(actualCreationCounts).isEqualTo(creationCounts);
     }
 
   }
@@ -146,57 +138,50 @@ class CollectMonthlyStatsSummaryServiceTest {
   @Nested
   class 달성도_통계_테스트 {
 
-    List<Integer> sizes;
-
     @BeforeEach
     void setUp() {
       user = signUpPort.save(UserFixture.createRandomUserWithId());
       goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user.getId(), 5));
-      sizes = new ArrayList<>();
 
-      for (int i = 0; i < 5; i++) {
-        sizes.add(DduduFixture.getRandomInt(1, 100));
-      }
-
-      Iterator<Integer> sizeIterator = sizes.iterator();
-
-      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(
+      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createDifferentDdudusWithGoal(
           goal,
-          sizeIterator.next()
+          DduduFixture.getRandomInt(1, 10),
+          DduduFixture.getRandomInt(1, 10)
       )));
-
-      sizes.sort(Comparator.reverseOrder());
     }
 
     @Test
-    void 이번_달_목표별_뚜두_달성률_통계를_내림차순으로_반환한다() {
+    void 이번_달_목표별_뚜두_달성_수_통계를_반환한다() {
       // given
       YearMonth thisMonth = YearMonth.now();
 
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           thisMonth
       );
 
       // then
-      assertThat(response.achievements()).hasSize(goals.size());
+      assertThat(response.summaries())
+          .hasSize(goals.size())
+          .allMatch(summary -> summary.achievementCount() >= 0);
     }
 
     @Test
     void 목표에_해당_달의_뚜두_데이터가_없으면_통계에_포함되지_않는다() {
       // given
-      YearMonth lastMonth = YearMonth.now()
-          .minusMonths(1);
+      YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           lastMonth
       );
 
       // then
-      assertThat(response.achievements()).isEmpty();
+      assertThat(response.summaries()).isEmpty();
     }
 
     @ParameterizedTest
@@ -207,11 +192,12 @@ class CollectMonthlyStatsSummaryServiceTest {
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           yearMonth
       );
 
       // then
-      assertThat(response.achievements()).hasSize(goals.size());
+      assertThat(response.summaries()).hasSize(goals.size());
     }
 
   }
@@ -219,27 +205,25 @@ class CollectMonthlyStatsSummaryServiceTest {
   @Nested
   class 지속도_통계_테스트 {
 
-    List<Integer> expectedSustenanceCount;
+    private List<Integer> expectedSustenanceCounts;
 
     @BeforeEach
     void setUp() {
       user = signUpPort.save(UserFixture.createRandomUserWithId());
       goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user.getId(), 5));
-      expectedSustenanceCount = new ArrayList<>();
+      expectedSustenanceCounts = new ArrayList<>();
 
       for (int i = 0; i < goals.size(); i++) {
-        expectedSustenanceCount.add(MonthlyStatsFixture.getRandomInt(1, 10));
+        expectedSustenanceCounts.add(MonthlyStatsFixture.getRandomInt(1, 10));
       }
 
-      Iterator<Integer> iterator = expectedSustenanceCount.iterator();
-
+      Iterator<Integer> iterator = expectedSustenanceCounts.iterator();
       goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createConsecutiveCompletedDdudus(
           goal,
           iterator.next()
       )));
 
-      expectedSustenanceCount.sort(Comparator.comparingInt(Integer::intValue)
-          .reversed());
+      expectedSustenanceCounts.sort(Comparator.reverseOrder());
     }
 
     @Test
@@ -250,44 +234,48 @@ class CollectMonthlyStatsSummaryServiceTest {
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           thisMonth
       );
 
       // then
-      List<SustenancePerGoal> actual = response.sustenances();
-      List<Integer> actualSustenanceCounts = actual.stream()
-          .map(SustenancePerGoal::sustenanceCount)
+      List<Integer> actualSustenanceCounts = response.summaries().stream()
+          .map(GoalMonthlyStatsSummary::sustainedCount)
+          .sorted(Comparator.reverseOrder())
           .toList();
 
-      assertThat(actualSustenanceCounts).isEqualTo(expectedSustenanceCount);
+      assertThat(actualSustenanceCounts).isEqualTo(expectedSustenanceCounts);
     }
 
     @Test
     void 목표에_해당_월_지속한_뚜두가_없으면_통계에서_제외한다() {
       // given
-      YearMonth lastMonth = YearMonth.now()
-          .minusMonths(1);
+      YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           lastMonth
       );
 
       // then
-      assertThat(response.sustenances()).isEmpty();
+      assertThat(response.summaries()).isEmpty();
     }
 
     @Test
     void 날짜가_null이면_이번_달_통계를_반환한다() {
+      // given
+
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           null
       );
 
       // then
-      assertThat(response.sustenances()).hasSameSizeAs(goals);
+      assertThat(response.summaries()).hasSameSizeAs(goals);
     }
 
   }
@@ -295,27 +283,26 @@ class CollectMonthlyStatsSummaryServiceTest {
   @Nested
   class 미루기_통계_테스트 {
 
-    List<Integer> postponedCounts;
+    private List<Integer> expectedPostponedCounts;
 
     @BeforeEach
     void setUp() {
       user = signUpPort.save(UserFixture.createRandomUserWithId());
       goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user.getId(), 5));
-      postponedCounts = new ArrayList<>();
+      expectedPostponedCounts = new ArrayList<>();
 
       for (int i = 0; i < goals.size(); i++) {
-        postponedCounts.add(DduduFixture.getRandomInt(0, 100));
+        expectedPostponedCounts.add(DduduFixture.getRandomInt(0, 100));
       }
 
-      Iterator<Integer> iterator = postponedCounts.iterator();
-
+      Iterator<Integer> iterator = expectedPostponedCounts.iterator();
       goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createDdudusWithPostponedFlag(
           goal,
           iterator.next(),
           DduduFixture.getRandomInt(1, 100)
       )));
 
-      postponedCounts.sort(Comparator.reverseOrder());
+      expectedPostponedCounts.sort(Comparator.reverseOrder());
     }
 
     @Test
@@ -326,143 +313,139 @@ class CollectMonthlyStatsSummaryServiceTest {
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           thisMonth
       );
 
       // then
-      List<Integer> actual = response.postponements()
-          .stream()
-          .map(PostponedPerGoal::postponementCount)
+      List<Integer> actualPostponedCounts = response.summaries().stream()
+          .map(GoalMonthlyStatsSummary::postponedCount)
+          .sorted(Comparator.reverseOrder())
           .toList();
 
-      assertThat(actual).isEqualTo(postponedCounts);
+      assertThat(actualPostponedCounts).isEqualTo(expectedPostponedCounts);
     }
 
     @Test
     void 미루기_뚜두가_없는_달이면_통계는_비어있다() {
       // given
-      YearMonth noDduduMonth = YearMonth.now()
-          .minusMonths(2);
+      YearMonth noDduduMonth = YearMonth.now().minusMonths(2);
 
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           noDduduMonth
       );
 
       // then
-      assertThat(response.postponements()).isEmpty();
-    }
-
-    @Test
-    void 날짜가_null이면_이번_달_통계를_반환한다() {
-      // given
-
-      // when
-      MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
-          user.getId(),
-          null
-      );
-
-      // then
-      assertThat(response.postponements()).isNotEmpty();
+      assertThat(response.summaries()).isEmpty();
     }
 
   }
 
   @Nested
-  class 재달성률_통계_테스트 {
+  class 재달성_통계_테스트 {
 
-    List<Integer> sizes;
+    private List<Integer> expectedReattainmentCounts;
 
     @BeforeEach
     void setUp() {
       user = signUpPort.save(UserFixture.createRandomUserWithId());
       goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user.getId(), 5));
-      sizes = new ArrayList<>();
-      List<Integer> reattainmentRates = new ArrayList<>();
+      expectedReattainmentCounts = new ArrayList<>();
 
       for (int i = 0; i < goals.size(); i++) {
-        sizes.add(DduduFixture.getRandomInt(1, 100));
-      }
-
-      for (int i = 0; i < goals.size(); i++) {
-        int totalPostponed = sizes.get(i);
-        int reattainment = MonthlyStatsFixture.getRandomInt(1, totalPostponed);
+        int totalPostponedCount = DduduFixture.getRandomInt(1, 100);
+        int reattainedCount = MonthlyStatsFixture.getRandomInt(1, totalPostponedCount);
 
         saveDduduPort.saveAll(DduduFixture.createReattainedDdudus(
             goals.get(i),
-            reattainment,
-            totalPostponed
+            reattainedCount,
+            totalPostponedCount
         ));
 
-        reattainmentRates.add(Math.round((float) reattainment / totalPostponed * 100));
+        expectedReattainmentCounts.add(reattainedCount);
       }
 
-      reattainmentRates.sort(Comparator.reverseOrder());
-
-      sizes = reattainmentRates;
+      expectedReattainmentCounts.sort(Comparator.reverseOrder());
     }
 
     @Test
-    void 월_목표_별_재달성률_통계를_반환한다() {
+    void 월_목표_별_재달성_수_통계를_반환한다() {
       // given
       YearMonth thisMonth = YearMonth.now();
 
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           thisMonth
       );
-      List<Integer> actual = response.reattainments()
-          .stream()
-          .map(ReattainmentPerGoal::reattainmentRate)
-          .toList();
 
       // then
-      assertThat(actual).isEqualTo(sizes);
+      List<Integer> actualReattainmentCounts = response.summaries().stream()
+          .map(GoalMonthlyStatsSummary::reattainedCount)
+          .sorted(Comparator.reverseOrder())
+          .toList();
+
+      assertThat(actualReattainmentCounts).isEqualTo(expectedReattainmentCounts);
     }
 
     @Test
-    void 목표에_해당_월_지속한_뚜두가_없으면_통계에서_제외한다() {
+    void 목표에_해당_월_뚜두가_없으면_통계에서_제외한다() {
       // given
-      YearMonth lastMonth = YearMonth.now()
-          .minusMonths(1);
+      YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
+          null,
           lastMonth
       );
 
       // then
-      assertThat(response.reattainments()).isEmpty();
+      assertThat(response.summaries()).isEmpty();
     }
 
-    @Test
-    void 날짜가_null이면_이번_달_통계를_반환한다() {
-      // when
-      MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
-          user.getId(),
-          null
-      );
+  }
 
-      // then
-      assertThat(response.reattainments()).hasSameSizeAs(goals);
-    }
+  @Test
+  void 요청_사용자_아이디가_있으면_로그인_사용자_대신_해당_사용자_기준으로_월_요약을_조회한다() {
+    // given
+    User loginUser = signUpPort.save(UserFixture.createRandomUserWithId());
+    User targetUser = signUpPort.save(UserFixture.createRandomUserWithId());
+    Goal targetGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(targetUser.getId()));
 
+    saveDduduPort.saveAll(List.of(
+        DduduFixture.createRandomDduduWithReference(targetGoal.getId(), targetUser.getId(), true,
+            DduduStatus.COMPLETE),
+        DduduFixture.createRandomDduduWithReference(targetGoal.getId(), targetUser.getId(), false,
+            DduduStatus.UNCOMPLETED)
+    ));
+
+    // when
+    MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
+        loginUser.getId(),
+        targetUser.getId(),
+        YearMonth.now()
+    );
+
+    // then
+    assertThat(response.summaries()).hasSize(1);
+    assertThat(response.summaries().get(0).goalColor()).isEqualTo(targetGoal.getColor());
   }
 
   @Test
   void 로그인_사용자가_없으면_월_통계_계산을_실패한다() {
     // given
     long invalidId = GoalFixture.getRandomId();
-    YearMonth thisMonth = YearMonth.now();
 
     // when
     ThrowingCallable collect = () -> collectMonthlyStatsSummaryService.collectSummary(
         invalidId,
-        thisMonth
+        null,
+        YearMonth.now()
     );
 
     // then
