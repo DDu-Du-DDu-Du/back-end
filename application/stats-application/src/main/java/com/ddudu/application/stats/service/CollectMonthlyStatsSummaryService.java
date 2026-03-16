@@ -59,7 +59,9 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
     return collectSummaryByGoal(monthlyStatsByGoal);
   }
 
-  private MonthlyStatsSummaryResponse collectSummaryByGoal(Map<Long, MonthlyStats> monthlyStatsByGoal) {
+  private MonthlyStatsSummaryResponse collectSummaryByGoal(
+      Map<Long, MonthlyStats> monthlyStatsByGoal
+  ) {
     List<GoalMonthlyStatsSummary> summaries = monthlyStatsByGoal.values()
         .stream()
         .map(this::toSummary)

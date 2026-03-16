@@ -255,7 +255,11 @@ public interface StatsControllerDoc {
       in = ParameterIn.QUERY,
       example = "2024-08"
   )
-  ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(Long loginId, Long userId, YearMonth yearMonth);
+  ResponseEntity<MonthlyStatsSummaryResponse> collectSummary(
+      Long loginId,
+      Long userId,
+      YearMonth yearMonth
+  );
 
   @Operation(summary = "월별 뚜두 달성 중심 상세 통계")
   @ApiResponses(
