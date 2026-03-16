@@ -271,7 +271,7 @@ public final class BaseStatsFixture extends BaseFixture {
         .dduduId(dduduId)
         .goalId(goalId)
         .goalName(goalId.toString())
-        .goalColor(goalId.toString())
+        .goalColor(getRandomColor())
         .status(status)
         .scheduledOn(scheduledOn)
         .isPostponed(isPostponed)
