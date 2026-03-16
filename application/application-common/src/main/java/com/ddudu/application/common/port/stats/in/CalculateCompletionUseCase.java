@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface CalculateCompletionUseCase {
 
+  @Deprecated
   List<DduduCompletionResponse> calculateWeekly(Long loginId, Long userId, LocalDate date);
 
   List<DduduCompletionResponse> calculateMonthly(Long loginId, Long userId, YearMonth yearMonth);

@@ -95,6 +95,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .on(dduduEntity.goalId.eq(goalEntity.id))
         .where(condition)
         .groupBy(dduduEntity.scheduledOn)
+        .orderBy(dduduEntity.scheduledOn.asc())
         .fetch();
   }
 

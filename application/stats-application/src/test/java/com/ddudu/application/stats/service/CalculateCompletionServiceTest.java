@@ -9,7 +9,6 @@ import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.StatsErrorCode;
-import com.ddudu.common.util.DayOfWeekUtil;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
@@ -18,7 +17,6 @@ import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.MissingResourceException;
 import org.assertj.core.api.Assertions;
@@ -74,9 +72,6 @@ class CalculateCompletionServiceTest {
   @Test
   void 자신의_주간_할_일_달성률_조회를_성공한다() {
     // given
-    LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(today);
-    int indexOfToday = (int) ChronoUnit.DAYS.between(firstDayOfWeek, today);
-
     // when
     List<DduduCompletionResponse> responses = calculateCompletionService.calculateWeekly(
         user.getId(),
@@ -86,8 +81,8 @@ class CalculateCompletionServiceTest {
 
     // then
     Assertions.assertThat(responses)
-        .hasSize(7);
-    assertThat(responses.get(indexOfToday))
+        .hasSize(1);
+    assertThat(responses.get(0))
         .extracting("date", "totalCount", "completedCount", "uncompletedCount")
         .containsExactly(today, 2, 0, 2);
   }
@@ -96,9 +91,6 @@ class CalculateCompletionServiceTest {
   void 다른_사용자의_주간_할_일_달성률_조회를_성공한다() {
     // given
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
-    LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(today);
-    int indexOfToday = (int) ChronoUnit.DAYS.between(firstDayOfWeek, today);
-
     // when
     List<DduduCompletionResponse> responses = calculateCompletionService.calculateWeekly(
         anotherUser.getId(),
@@ -108,8 +100,8 @@ class CalculateCompletionServiceTest {
 
     // then
     Assertions.assertThat(responses)
-        .hasSize(7);
-    assertThat(responses.get(indexOfToday))
+        .hasSize(1);
+    assertThat(responses.get(0))
         .extracting("date", "totalCount", "completedCount", "uncompletedCount")
         .containsExactly(today, 1, 0, 1);
   }

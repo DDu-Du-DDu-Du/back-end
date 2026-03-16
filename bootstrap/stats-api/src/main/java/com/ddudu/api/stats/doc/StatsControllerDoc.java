@@ -79,6 +79,7 @@ public interface StatsControllerDoc {
           )
       }
   )
+  @Deprecated
   ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
       Long loginId, Long userId, LocalDate date
   );
