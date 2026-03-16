@@ -9,4 +9,11 @@ public final class UserErrorExamples {
       }
       """;
 
+  public static final String USER_INVALID_WEEK_START_DAY = """
+      {
+        "code": 1012,
+        "message": "주 시작 요일은 MON 또는 SUN만 입력할 수 있습니다."
+      }
+      """;
+
 }
