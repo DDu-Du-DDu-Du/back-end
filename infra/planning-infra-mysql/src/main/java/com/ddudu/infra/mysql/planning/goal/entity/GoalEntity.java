@@ -97,6 +97,7 @@ public class GoalEntity extends BaseEntity {
         .color(color)
         .privacyType(privacyType)
         .priority(priority)
+        .createdAt(getCreatedAt())
         .build();
   }
 

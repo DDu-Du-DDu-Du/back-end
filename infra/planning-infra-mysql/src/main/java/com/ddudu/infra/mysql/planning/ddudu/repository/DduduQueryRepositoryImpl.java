@@ -9,6 +9,7 @@ import com.ddudu.application.common.dto.ddudu.DduduCursorDto;
 import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
 import com.ddudu.application.common.dto.scroll.OrderType;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
+import com.ddudu.application.common.dto.stats.GoalStatusSummaryRaw;
 import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
@@ -226,6 +227,22 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         .fetch();
   }
 
+
+  @Override
+  public List<GoalStatusSummaryRaw> findGoalStatuses(Long userId, Long goalId) {
+    return jpaQueryFactory
+        .select(projectGoalStatusSummary())
+        .from(dduduEntity)
+        .join(goalEntity)
+        .on(dduduEntity.goalId.eq(goalEntity.id))
+        .where(
+            dduduEntity.userId.eq(userId),
+            dduduEntity.goalId.eq(goalId),
+            goalEntity.userId.eq(userId)
+        )
+        .fetch();
+  }
+
   @Override
   public int countTodayByUserId(Long userId) {
     return jpaQueryFactory.select(Wildcard.countAsInt)
@@ -291,6 +308,15 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     if (Objects.isNull(orderType) || !orderType.isLatest()) {
       throw new NotImplementedException("아직 구현되지 않은 검색 결과 순서입니다.");
     }
+  }
+
+
+  private ConstructorExpression<GoalStatusSummaryRaw> projectGoalStatusSummary() {
+    return Projections.constructor(
+        GoalStatusSummaryRaw.class,
+        dduduEntity.id,
+        dduduEntity.status
+    );
   }
 
   private BooleanExpression privacyTypesIn(List<PrivacyType> accessiblePrivacyTypes) {
