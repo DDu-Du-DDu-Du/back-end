@@ -64,6 +64,7 @@ class MoveDateServiceTest {
   @Test
   void 뚜두를_미루기_한다() {
     // given
+    LocalDate previousScheduledOn = ddudu.getScheduledOn();
     MoveDateRequest request = new MoveDateRequest(tomorrow, true);
 
     // when
@@ -74,6 +75,7 @@ class MoveDateServiceTest {
 
     assertThat(actual.getScheduledOn()).isEqualTo(tomorrow);
     assertThat(actual.isPostponed()).isTrue();
+    assertThat(actual.getPostponedAt()).isEqualTo(previousScheduledOn.atStartOfDay());
   }
 
   @Test
