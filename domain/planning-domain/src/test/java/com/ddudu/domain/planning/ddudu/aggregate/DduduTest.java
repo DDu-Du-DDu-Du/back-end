@@ -395,7 +395,7 @@ class DduduTest {
             .hasFieldOrPropertyWithValue("id", ddudu.getId())
             .hasFieldOrPropertyWithValue("userId", ddudu.getUserId())
             .hasFieldOrPropertyWithValue("name", ddudu.getName())
-            .hasFieldOrPropertyWithValue("isPostponed", ddudu.isPostponed())
+            .hasFieldOrPropertyWithValue("postponedAt", ddudu.getPostponedAt())
             .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
             .hasFieldOrPropertyWithValue("goalId", ddudu.getGoalId())
             .hasFieldOrPropertyWithValue("beginAt", now)
@@ -436,7 +436,7 @@ class DduduTest {
     class 날짜_변경_테스트 {
 
       @Test
-      void 이미_완료한_뚜두면_날짜_변경_시_상태가_변하지_않는다() {
+      void 이미_완료한_뚜두에_미루기_요청하면_실패한다() {
         // given
         LocalDate newDate = LocalDate.now()
             .plusDays(1);
@@ -445,11 +445,12 @@ class DduduTest {
         assertThat(ddudu.getStatus()).isEqualTo(DduduStatus.COMPLETE);
 
         // when
-        Ddudu actual = ddudu.moveDate(newDate);
+        ThrowingCallable moveDate = () -> ddudu.moveDate(newDate, true);
 
         // then
-        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
-        assertThat(actual.isPostponed()).isFalse();
+        Assertions.assertThatIllegalArgumentException()
+            .isThrownBy(moveDate)
+            .withMessage(DduduErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
       }
 
       @Test
@@ -459,7 +460,7 @@ class DduduTest {
             .plusDays(1);
 
         // when
-        Ddudu actual = ddudu.moveDate(newDate);
+        Ddudu actual = ddudu.moveDate(newDate, true);
 
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);
@@ -467,13 +468,12 @@ class DduduTest {
       }
 
       @Test
-      void 완료_하지_않은_뚜두의_날짜를_기존_날짜_이전으로_변경하면_상태가_변하지_않는다() {
+      void 미루기_요청이_false면_날짜만_변경된다() {
         // given
-        LocalDate newDate = LocalDate.now()
-            .minusDays(1);
+        LocalDate newDate = LocalDate.now().plusDays(1);
 
         // when
-        Ddudu actual = ddudu.moveDate(newDate);
+        Ddudu actual = ddudu.moveDate(newDate, false);
 
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);
@@ -494,19 +494,25 @@ class DduduTest {
       }
 
       @Test
-      void 변경할_날짜가_예정_날짜보다_이전이어도_이미_미루기한_뚜두면_미루기_상태가_유지된다() {
+      void postponedAt이_존재하면_isPostponed는_true를_반환한다() {
         // given
         Ddudu postponedDdudu = DduduFixture.createRandomDduduWithReference(
             goalId, userId, true, null);
-        LocalDate newDate = LocalDate.now()
-            .minusDays(1);
-
-        // when
-        Ddudu actual = postponedDdudu.moveDate(newDate);
+        Ddudu actual = postponedDdudu;
 
         // then
-        assertThat(actual.getScheduledOn()).isEqualTo(newDate);
         assertThat(actual.isPostponed()).isTrue();
+      }
+
+      @Test
+      void postponedAt이_없으면_isPostponed는_false를_반환한다() {
+        // given
+
+        // when
+        Ddudu actual = ddudu;
+
+        // then
+        assertThat(actual.isPostponed()).isFalse();
       }
 
     }
@@ -770,7 +776,7 @@ class DduduTest {
           .hasFieldOrPropertyWithValue("userId", ddudu.getUserId())
           .hasFieldOrPropertyWithValue("name", ddudu.getName())
           .hasFieldOrPropertyWithValue("status", DduduStatus.UNCOMPLETED)
-          .hasFieldOrPropertyWithValue("isPostponed", false)
+          .hasFieldOrPropertyWithValue("postponedAt", null)
           .hasFieldOrPropertyWithValue("scheduledOn", tomorrow)
           .hasFieldOrPropertyWithValue("beginAt", ddudu.getBeginAt())
           .hasFieldOrPropertyWithValue("endAt", ddudu.getEndAt());

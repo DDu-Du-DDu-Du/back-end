@@ -9,6 +9,7 @@ import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.DduduErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
@@ -63,7 +64,7 @@ class MoveDateServiceTest {
   @Test
   void 뚜두를_미루기_한다() {
     // given
-    MoveDateRequest request = new MoveDateRequest(tomorrow);
+    MoveDateRequest request = new MoveDateRequest(tomorrow, true);
 
     // when
     moveDateService.moveDate(user.getId(), ddudu.getId(), request);
@@ -85,7 +86,7 @@ class MoveDateServiceTest {
         goal.getId(),
         yesterday
     ));
-    MoveDateRequest request = new MoveDateRequest(LocalDate.now());
+    MoveDateRequest request = new MoveDateRequest(LocalDate.now(), false);
 
     // when
     moveDateService.moveDate(user.getId(), pastDdudu.getId(), request);
@@ -108,7 +109,12 @@ class MoveDateServiceTest {
     ));
     LocalDate yesterday = LocalDate.now()
         .minusDays(1);
-    MoveDateRequest request = new MoveDateRequest(yesterday);
+    pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithStatusAndSchedule(
+        goal,
+        DduduStatus.COMPLETE,
+        twoDaysAgo
+    ));
+    MoveDateRequest request = new MoveDateRequest(yesterday, false);
 
     // when
     moveDateService.moveDate(user.getId(), pastDdudu.getId(), request);
@@ -120,10 +126,29 @@ class MoveDateServiceTest {
   }
 
   @Test
+  void 완료된_뚜두에_미루기_요청을_하면_실패한다() {
+    // given
+    Ddudu completedDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithStatus(
+        goal,
+        DduduStatus.COMPLETE
+    ));
+    MoveDateRequest request = new MoveDateRequest(tomorrow, true);
+
+    // when
+    ThrowingCallable moveDate = () -> moveDateService.moveDate(user.getId(), completedDdudu.getId(),
+        request);
+
+    // then
+    Assertions.assertThatIllegalArgumentException()
+        .isThrownBy(moveDate)
+        .withMessage(DduduErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
+  }
+
+  @Test
   void 뚜두가_존재하지_않으면_날짜_변경을_실패한다() {
     // given
     long invalidId = DduduFixture.getRandomId();
-    MoveDateRequest request = new MoveDateRequest(tomorrow);
+    MoveDateRequest request = new MoveDateRequest(tomorrow, true);
 
     // when
     ThrowingCallable moveDate = () -> moveDateService.moveDate(user.getId(), invalidId, request);

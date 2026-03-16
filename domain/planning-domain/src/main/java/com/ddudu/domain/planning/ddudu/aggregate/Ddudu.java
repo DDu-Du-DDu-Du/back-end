@@ -30,7 +30,7 @@ public class Ddudu {
   private final Long repeatDduduId;
   private final String name;
   private final DduduStatus status;
-  private final boolean isPostponed;
+  private final LocalDateTime postponedAt;
   private final LocalDate scheduledOn;
   private final LocalTime beginAt;
   private final LocalTime endAt;
@@ -44,6 +44,7 @@ public class Ddudu {
       Long repeatDduduId,
       String name,
       Boolean isPostponed,
+      LocalDateTime postponedAt,
       DduduStatus status,
       String statusValue,
       LocalDate scheduledOn,
@@ -62,7 +63,7 @@ public class Ddudu {
     this.repeatDduduId = repeatDduduId;
     this.name = name;
     this.status = Objects.requireNonNullElse(status, DduduStatus.from(statusValue));
-    this.isPostponed = Objects.requireNonNullElse(isPostponed, false);
+    this.postponedAt = resolvePostponedAt(postponedAt, isPostponed);
     this.scheduledOn = Objects.requireNonNullElse(scheduledOn, LocalDate.now());
     this.beginAt = beginAt;
     this.endAt = endAt;
@@ -82,18 +83,24 @@ public class Ddudu {
   }
 
   public Ddudu moveDate(LocalDate newDate) {
+    return moveDate(newDate, true);
+  }
+
+  public Ddudu moveDate(LocalDate newDate, boolean postpone) {
     checkArgument(Objects.nonNull(newDate), DduduErrorCode.NULL_DATE_TO_MOVE.getCodeName());
 
     DduduBuilder builder = getFullBuilder()
         .scheduledOn(newDate);
 
-    // 완료한 뚜두이거나 과거로 날짜를 변경하는 경우, 기존 미루기 상태가 적용된다.
-    if (this.status.isCompleted() || newDate.isBefore(scheduledOn)) {
+    if (!postpone) {
       return builder.build();
     }
 
+    checkArgument(!this.status.isCompleted(),
+        DduduErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
+
     return builder
-        .isPostponed(true)
+        .postponedAt(LocalDateTime.now())
         .build();
   }
 
@@ -105,7 +112,7 @@ public class Ddudu {
 
     return getFullBuilder()
         .id(null)
-        .isPostponed(false)
+        .postponedAt(null)
         .status(DduduStatus.UNCOMPLETED)
         .scheduledOn(scheduledOn)
         .build();
@@ -169,6 +176,10 @@ public class Ddudu {
     return nonNull(remindAt);
   }
 
+  public boolean isPostponed() {
+    return nonNull(postponedAt);
+  }
+
   public Ddudu setReminder(int days, int hours, int minutes) {
     LocalDateTime reminder = validateReminder(days, hours, minutes);
 
@@ -208,10 +219,22 @@ public class Ddudu {
         .name(this.name)
         .status(this.status)
         .scheduledOn(this.scheduledOn)
-        .isPostponed(this.isPostponed)
+        .postponedAt(this.postponedAt)
         .beginAt(this.beginAt)
         .endAt(this.endAt)
         .remindAt(this.remindAt);
+  }
+
+  private LocalDateTime resolvePostponedAt(LocalDateTime postponedAt, Boolean isPostponed) {
+    if (nonNull(postponedAt)) {
+      return postponedAt;
+    }
+
+    if (Boolean.TRUE.equals(isPostponed)) {
+      return LocalDateTime.now();
+    }
+
+    return null;
   }
 
   private void validate(Long goalId, Long userId, String name, LocalTime beginAt, LocalTime endAt) {
