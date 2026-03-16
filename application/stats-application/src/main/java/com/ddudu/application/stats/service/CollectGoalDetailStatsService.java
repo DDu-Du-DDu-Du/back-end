@@ -10,8 +10,8 @@ import com.ddudu.application.common.port.stats.out.GoalDetailStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.StatsErrorCode;
-import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +29,16 @@ public class CollectGoalDetailStatsService implements CollectGoalDetailStatsUseC
   public GoalDetailStatsSummaryResponse collectDetail(Long loginId, Long goalId, Long userId) {
     Long targetUserId = nonNull(userId) ? userId : loginId;
 
-    userLoaderPort.getUserOrElseThrow(targetUserId, StatsErrorCode.USER_NOT_EXISTING.getCodeName());
-    Goal goal = goalLoaderPort.getGoalOrElseThrow(goalId, StatsErrorCode.GOAL_NOT_EXISTING.getCodeName());
+    userLoaderPort.getUserOrElseThrow(
+        targetUserId,
+        StatsErrorCode.USER_NOT_EXISTING.getCodeName());
+    Goal goal = goalLoaderPort.getGoalOrElseThrow(
+        goalId,
+        StatsErrorCode.GOAL_NOT_EXISTING.getCodeName());
 
-    List<GoalStatusSummaryRaw> statuses = goalDetailStatsPort.loadGoalStatuses(targetUserId, goalId);
+    List<GoalStatusSummaryRaw> statuses = goalDetailStatsPort.loadGoalStatuses(
+        targetUserId,
+        goalId);
 
     int totalCount = statuses.size();
     int completedCount = (int) statuses.stream()
