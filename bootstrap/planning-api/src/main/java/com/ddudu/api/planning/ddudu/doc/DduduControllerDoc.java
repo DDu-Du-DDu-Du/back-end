@@ -528,6 +528,10 @@ public interface DduduControllerDoc {
                       @ExampleObject(
                           name = "2012",
                           value = DduduErrorExamples.DDUDU_SHOULD_POSTPONE_UNTIL_FUTURE
+                      ),
+                      @ExampleObject(
+                          name = "2022",
+                          value = DduduErrorExamples.DDUDU_UNABLE_TO_POSTPONE_COMPLETED_DDUDU
                       )
                   }
               )

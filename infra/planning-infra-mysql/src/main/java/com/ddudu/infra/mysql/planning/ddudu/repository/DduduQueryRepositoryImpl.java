@@ -82,7 +82,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
     }
 
     if (!isAchieved) {
-      condition.and(dduduEntity.isPostponed.isTrue());
+      condition.and(dduduEntity.postponedAt.isNotNull());
     }
 
     condition.and(privacyTypesIn(privacyTypes))
@@ -337,7 +337,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         goalEntity.id,
         goalEntity.name,
         status,
-        dduduEntity.isPostponed,
+        dduduEntity.postponedAt.isNotNull(),
         dduduEntity.scheduledOn,
         dduduEntity.beginAt,
         dduduEntity.endAt

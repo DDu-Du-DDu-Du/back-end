@@ -81,10 +81,10 @@ public class DduduEntity extends BaseEntity {
   private LocalTime endAt;
 
   @Column(
-      name = "is_postponed",
-      nullable = false
+      name = "postponed_at",
+      columnDefinition = "TIMESTAMP"
   )
-  private boolean isPostponed;
+  private LocalDateTime postponedAt;
 
   @Column(
       name = "remind_at",
@@ -100,7 +100,7 @@ public class DduduEntity extends BaseEntity {
         .repeatDduduId(ddudu.getRepeatDduduId())
         .name(ddudu.getName())
         .status(ddudu.getStatus())
-        .isPostponed(ddudu.isPostponed())
+        .postponedAt(ddudu.getPostponedAt())
         .scheduledOn(ddudu.getScheduledOn())
         .beginAt(ddudu.getBeginAt())
         .endAt(ddudu.getEndAt())
@@ -116,7 +116,7 @@ public class DduduEntity extends BaseEntity {
         .repeatDduduId(repeatDduduId)
         .name(name)
         .status(status)
-        .isPostponed(isPostponed)
+        .postponedAt(postponedAt)
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt)
@@ -127,7 +127,7 @@ public class DduduEntity extends BaseEntity {
   public void update(Ddudu ddudu) {
     this.name = ddudu.getName();
     this.status = ddudu.getStatus();
-    this.isPostponed = ddudu.isPostponed();
+    this.postponedAt = ddudu.getPostponedAt();
     this.scheduledOn = ddudu.getScheduledOn();
     this.beginAt = ddudu.getBeginAt();
     this.endAt = ddudu.getEndAt();

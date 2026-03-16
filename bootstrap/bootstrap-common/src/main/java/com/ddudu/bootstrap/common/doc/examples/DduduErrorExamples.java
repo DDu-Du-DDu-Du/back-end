@@ -86,6 +86,13 @@ public final class DduduErrorExamples {
       }
       """;
 
+  public static final String DDUDU_UNABLE_TO_POSTPONE_COMPLETED_DDUDU = """
+      {
+        "code": 2022,
+        "message": "완료된 뚜두는 미루기 처리할 수 없습니다."
+      }
+      """;
+
   public static final String DDUDU_UNABLE_TO_REPRODUCE_ON_SAME_DATE = """
       {
         "code": 2013,

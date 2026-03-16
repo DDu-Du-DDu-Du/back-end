@@ -87,7 +87,7 @@ class CreateDduduServiceTest {
             "goalId",
             "userId",
             "status",
-            "isPostponed"
+            "postponedAt"
         )
         .containsExactly(
             name,
@@ -95,7 +95,7 @@ class CreateDduduServiceTest {
             goal.getId(),
             user.getId(),
             DduduStatus.UNCOMPLETED,
-            false);
+            null);
   }
 
   @Test
