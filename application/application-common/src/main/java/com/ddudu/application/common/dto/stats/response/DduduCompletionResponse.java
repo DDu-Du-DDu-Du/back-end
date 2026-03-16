@@ -7,6 +7,7 @@ import lombok.Builder;
 public record DduduCompletionResponse(
     LocalDate date,
     int totalCount,
+    int completedCount,
     int uncompletedCount
 ) {
 
@@ -14,6 +15,7 @@ public record DduduCompletionResponse(
     return DduduCompletionResponse.builder()
         .date(date)
         .totalCount(0)
+        .completedCount(0)
         .uncompletedCount(0)
         .build();
   }

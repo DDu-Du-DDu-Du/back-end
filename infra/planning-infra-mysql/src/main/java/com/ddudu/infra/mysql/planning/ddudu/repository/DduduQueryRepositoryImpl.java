@@ -307,6 +307,13 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         "COUNT({0})",
         dduduEntity.id
     );
+    NumberTemplate<Integer> completedTodosTemplate = Expressions.numberTemplate(
+        Integer.class,
+        "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
+        dduduEntity.status,
+        DduduStatus.COMPLETE,
+        dduduEntity.id
+    );
     NumberTemplate<Integer> uncompletedTodosTemplate = Expressions.numberTemplate(
         Integer.class,
         "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
@@ -319,6 +326,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         DduduCompletionResponse.class,
         dduduEntity.scheduledOn,
         totalTodosTemplate,
+        completedTodosTemplate,
         uncompletedTodosTemplate
     );
   }

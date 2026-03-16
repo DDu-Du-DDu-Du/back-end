@@ -35,7 +35,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
     LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
     LocalDate afterOneWeek = firstDayOfWeek.plusDays(6);
 
-    return calculate(loginId, userId, firstDayOfWeek, afterOneWeek);
+    return calculate(loginId, userId, firstDayOfWeek, afterOneWeek, true);
   }
 
   @Override
@@ -45,39 +45,40 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
       YearMonth yearMonth
   ) {
     YearMonth month = Objects.requireNonNullElse(yearMonth, YearMonth.now());
-    LocalDate firstDayOfMonth = month.atDay(1);
-    LocalDate endDate = month.atEndOfMonth();
+    LocalDate firstDayOfMonth = month.minusMonths(1)
+        .atDay(1);
+    LocalDate endDate = month.plusMonths(1)
+        .atEndOfMonth();
 
-    return calculate(loginId, userId, firstDayOfMonth, endDate);
+    return calculate(loginId, userId, firstDayOfMonth, endDate, false);
   }
 
   private List<DduduCompletionResponse> calculate(
       Long loginId,
       Long userId,
       LocalDate from,
-      LocalDate to
+      LocalDate to,
+      boolean includeEmpty
   ) {
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId,
         StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
     );
-    User user = loginUser;
+    Long targetUserId = Objects.requireNonNullElse(userId, loginId);
+    User user = userLoaderPort.getUserOrElseThrow(
+        targetUserId,
+        StatsErrorCode.USER_NOT_EXISTING.getCodeName()
+    );
 
-    if (Objects.nonNull(userId)) {
-      user = userLoaderPort.getUserOrElseThrow(
-          userId,
-          StatsErrorCode.USER_NOT_EXISTING.getCodeName()
-      );
-    }
-
-    return generateCompletions(from, to, loginUser, user);
+    return generateCompletions(from, to, loginUser, user, includeEmpty);
   }
 
   private List<DduduCompletionResponse> generateCompletions(
       LocalDate startDate,
       LocalDate endDate,
       User loginUser,
-      User user
+      User user,
+      boolean includeEmpty
   ) {
     Relationship relationship = Relationship.getRelationship(loginUser, user);
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
@@ -91,7 +92,15 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
             IS_ACHIEVED
         )
         .stream()
+        .filter(response -> response.totalCount() > 0)
         .collect(Collectors.toMap(DduduCompletionResponse::date, response -> response));
+
+    if (!includeEmpty) {
+      return completionByDate.values()
+          .stream()
+          .sorted(java.util.Comparator.comparing(DduduCompletionResponse::date))
+          .toList();
+    }
 
     List<DduduCompletionResponse> completionList = new ArrayList<>();
 

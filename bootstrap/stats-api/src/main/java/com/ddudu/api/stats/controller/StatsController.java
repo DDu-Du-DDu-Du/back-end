@@ -45,7 +45,7 @@ public class StatsController implements StatsControllerDoc {
       @RequestParam(required = false)
       Long userId,
       @RequestParam(
-          value = "date",
+          value = "yearMonth",
           required = false
       )
       @DateTimeFormat(pattern = "yyyy-MM")

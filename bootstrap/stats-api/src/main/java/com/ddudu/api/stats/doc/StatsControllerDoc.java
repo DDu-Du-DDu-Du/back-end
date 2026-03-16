@@ -129,7 +129,7 @@ public interface StatsControllerDoc {
               in = ParameterIn.QUERY
           ),
           @Parameter(
-              name = "date",
+              name = "yearMonth",
               description = "조회할 달 (기본값: 이번 달)",
               in = ParameterIn.QUERY
           )
