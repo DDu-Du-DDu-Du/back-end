@@ -431,7 +431,7 @@ class CollectMonthlyStatsDetailServiceTest {
 
         // then
         PostponedDetailOverviewDto actual = response.overview();
-        assertThat(actual.totalCount()).isEqualTo(totalCount);
+        assertThat(actual.totalCount()).isEqualTo(totalPostponed);
         assertThat(actual.postponedCount()).isEqualTo(totalPostponed);
         assertThat(actual.reattainedCount()).isEqualTo(reattained);
         assertThat(actual.postponementRate()).isBetween(0, 100);
@@ -477,7 +477,7 @@ class CollectMonthlyStatsDetailServiceTest {
         // then
         PostponedDetailOverviewDto actual = response.overview();
 
-        assertThat(actual.totalCount()).isEqualTo(totalCount);
+        assertThat(actual.totalCount()).isEqualTo(totalPostponed);
         assertThat(actual.postponedCount()).isEqualTo(totalPostponed);
         assertThat(actual.reattainedCount()).isEqualTo(reattained);
       }
@@ -498,7 +498,7 @@ class CollectMonthlyStatsDetailServiceTest {
         // then
         PostponedDetailOverviewDto actual = response.overview();
 
-        assertThat(actual.totalCount()).isEqualTo(totalCount);
+        assertThat(actual.totalCount()).isEqualTo(totalPostponed);
         assertThat(actual.postponedCount()).isEqualTo(totalPostponed);
         assertThat(actual.reattainedCount()).isEqualTo(reattained);
       }
