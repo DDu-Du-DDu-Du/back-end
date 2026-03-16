@@ -1,11 +1,7 @@
 package com.ddudu.application.stats.service;
 
 import com.ddudu.aggregate.MonthlyStats;
-import com.ddudu.application.common.dto.stats.AchievementPerGoal;
-import com.ddudu.application.common.dto.stats.CreationCountPerGoal;
-import com.ddudu.application.common.dto.stats.PostponedPerGoal;
-import com.ddudu.application.common.dto.stats.ReattainmentPerGoal;
-import com.ddudu.application.common.dto.stats.SustenancePerGoal;
+import com.ddudu.application.common.dto.stats.GoalMonthlyStatsSummary;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsSummaryUseCase;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
@@ -15,7 +11,6 @@ import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.user.user.aggregate.User;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,10 +30,13 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
   @Override
   public MonthlyStatsSummaryResponse collectSummary(
       Long loginId,
+      Long userId,
       YearMonth yearMonth
   ) {
+    Long targetUserId = Objects.nonNull(userId) ? userId : loginId;
+
     User user = userLoaderPort.getUserOrElseThrow(
-        loginId,
+        targetUserId,
         StatsErrorCode.USER_NOT_EXISTING.getCodeName()
     );
 
@@ -61,64 +59,39 @@ public class CollectMonthlyStatsSummaryService implements CollectMonthlyStatsSum
     return collectSummaryByGoal(monthlyStatsByGoal);
   }
 
-  private MonthlyStatsSummaryResponse collectSummaryByGoal(Map<Long, MonthlyStats> monthlyStats) {
-    List<CreationCountPerGoal> creationStats = collectCreation(monthlyStats);
-    List<AchievementPerGoal> achievementStats = collectAchievement(monthlyStats);
-    List<SustenancePerGoal> sustenanceStats = collectSustenance(monthlyStats);
-    List<PostponedPerGoal> postponementStats = collectPostponement(monthlyStats);
-    List<ReattainmentPerGoal> reattainmentStats = collectReattainment(monthlyStats);
+  private MonthlyStatsSummaryResponse collectSummaryByGoal(
+      Map<Long, MonthlyStats> monthlyStatsByGoal
+  ) {
+    List<GoalMonthlyStatsSummary> summaries = monthlyStatsByGoal.values()
+        .stream()
+        .map(this::toSummary)
+        .sorted((first, second) -> {
+          int compare = Integer.compare(second.creationCount(), first.creationCount());
+
+          if (compare != 0) {
+            return compare;
+          }
+
+          return Long.compare(first.goalId(), second.goalId());
+        })
+        .toList();
 
     return MonthlyStatsSummaryResponse.builder()
-        .creationCounts(creationStats)
-        .achievements(achievementStats)
-        .sustenances(sustenanceStats)
-        .postponements(postponementStats)
-        .reattainments(reattainmentStats)
+        .summaries(summaries)
         .build();
   }
 
-  private List<CreationCountPerGoal> collectCreation(Map<Long, MonthlyStats> monthlyStats) {
-    return monthlyStats.values()
-        .stream()
-        .map(CreationCountPerGoal::from)
-        .sorted((first, second) -> second.count() - first.count())
-        .toList();
-  }
-
-  private List<AchievementPerGoal> collectAchievement(Map<Long, MonthlyStats> monthlyStats) {
-    return monthlyStats.values()
-        .stream()
-        .map(AchievementPerGoal::from)
-        .sorted(Comparator.comparingInt(AchievementPerGoal::achievementRate)
-            .reversed())
-        .toList();
-  }
-
-  private List<SustenancePerGoal> collectSustenance(Map<Long, MonthlyStats> monthlyStats) {
-    return monthlyStats.values()
-        .stream()
-        .map(SustenancePerGoal::from)
-        .sorted(Comparator.comparingInt(SustenancePerGoal::sustenanceCount)
-            .reversed())
-        .toList();
-  }
-
-  private List<PostponedPerGoal> collectPostponement(Map<Long, MonthlyStats> monthlyStats) {
-    return monthlyStats.values()
-        .stream()
-        .map(PostponedPerGoal::from)
-        .sorted(Comparator.comparingInt(PostponedPerGoal::postponementCount)
-            .reversed())
-        .toList();
-  }
-
-  private List<ReattainmentPerGoal> collectReattainment(Map<Long, MonthlyStats> monthlyStats) {
-    return monthlyStats.values()
-        .stream()
-        .map(ReattainmentPerGoal::from)
-        .sorted(Comparator.comparingInt(ReattainmentPerGoal::reattainmentRate)
-            .reversed())
-        .toList();
+  private GoalMonthlyStatsSummary toSummary(MonthlyStats monthlyStats) {
+    return GoalMonthlyStatsSummary.builder()
+        .goalId(monthlyStats.getGoalId())
+        .goalName(monthlyStats.getGoalName())
+        .goalColor(monthlyStats.getGoalColor())
+        .creationCount(monthlyStats.size())
+        .achievementCount(monthlyStats.countAchievements())
+        .postponedCount(monthlyStats.calculatePostponementCount())
+        .sustainedCount(monthlyStats.calculateSustenanceCount())
+        .reattainedCount(monthlyStats.calculateReattainmentCount())
+        .build();
   }
 
 }

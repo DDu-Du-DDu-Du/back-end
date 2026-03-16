@@ -371,6 +371,7 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         dduduEntity.id.as("dduduId"),
         goalEntity.id,
         goalEntity.name,
+        goalEntity.color.stringValue(),
         status,
         dduduEntity.postponedAt.isNotNull(),
         dduduEntity.scheduledOn,

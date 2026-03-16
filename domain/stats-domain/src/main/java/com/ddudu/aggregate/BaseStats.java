@@ -21,6 +21,7 @@ public class BaseStats {
   private final Long dduduId;
   private final Long goalId;
   private final String goalName;
+  private final String goalColor;
   private final DduduStatus status;
   private final boolean isPostponed;
   private final LocalDate scheduledOn;
