@@ -12,11 +12,8 @@ import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.domain.user.user.aggregate.enums.Relationship;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +27,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
   private final UserLoaderPort userLoaderPort;
   private final DduduStatsPort dduduStatsPort;
 
+  @Deprecated
   @Override
   public List<DduduCompletionResponse> calculateWeekly(Long loginId, Long userId, LocalDate date) {
     LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
@@ -45,8 +43,10 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
       YearMonth yearMonth
   ) {
     YearMonth month = Objects.requireNonNullElse(yearMonth, YearMonth.now());
-    LocalDate firstDayOfMonth = month.atDay(1);
-    LocalDate endDate = month.atEndOfMonth();
+    LocalDate firstDayOfMonth = month.minusMonths(1)
+        .atDay(1);
+    LocalDate endDate = month.plusMonths(1)
+        .atEndOfMonth();
 
     return calculate(loginId, userId, firstDayOfMonth, endDate);
   }
@@ -61,14 +61,11 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
         loginId,
         StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
     );
-    User user = loginUser;
-
-    if (Objects.nonNull(userId)) {
-      user = userLoaderPort.getUserOrElseThrow(
-          userId,
-          StatsErrorCode.USER_NOT_EXISTING.getCodeName()
-      );
-    }
+    Long targetUserId = Objects.requireNonNullElse(userId, loginId);
+    User user = userLoaderPort.getUserOrElseThrow(
+        targetUserId,
+        StatsErrorCode.USER_NOT_EXISTING.getCodeName()
+    );
 
     return generateCompletions(from, to, loginUser, user);
   }
@@ -82,7 +79,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
     Relationship relationship = Relationship.getRelationship(loginUser, user);
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
-    Map<LocalDate, DduduCompletionResponse> completionByDate = dduduStatsPort.calculateDdudusCompletion(
+    return dduduStatsPort.calculateDdudusCompletion(
             startDate,
             endDate,
             user.getId(),
@@ -91,21 +88,8 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
             IS_ACHIEVED
         )
         .stream()
-        .collect(Collectors.toMap(DduduCompletionResponse::date, response -> response));
-
-    List<DduduCompletionResponse> completionList = new ArrayList<>();
-
-    for (LocalDate currentDate = startDate; !currentDate.isAfter(endDate);
-        currentDate = currentDate.plusDays(1)) {
-      DduduCompletionResponse response = completionByDate.getOrDefault(
-          currentDate,
-          DduduCompletionResponse.createEmptyResponse(currentDate)
-      );
-
-      completionList.add(response);
-    }
-
-    return completionList;
+        .filter(response -> response.totalCount() > 0)
+        .toList();
   }
 
 }

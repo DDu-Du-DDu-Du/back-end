@@ -11,14 +11,12 @@ import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.common.util.DayOfWeekUtil;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.MissingResourceException;
 import org.assertj.core.api.Assertions;
@@ -74,9 +72,6 @@ class CalculateCompletionServiceTest {
   @Test
   void 자신의_주간_할_일_달성률_조회를_성공한다() {
     // given
-    LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(today);
-    int indexOfToday = (int) ChronoUnit.DAYS.between(firstDayOfWeek, today);
-
     // when
     List<DduduCompletionResponse> responses = calculateCompletionService.calculateWeekly(
         user.getId(),
@@ -86,19 +81,16 @@ class CalculateCompletionServiceTest {
 
     // then
     Assertions.assertThat(responses)
-        .hasSize(7);
-    assertThat(responses.get(indexOfToday))
-        .extracting("date", "totalCount", "uncompletedCount")
-        .containsExactly(today, 2, 2);
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 2, 0, 2);
   }
 
   @Test
   void 다른_사용자의_주간_할_일_달성률_조회를_성공한다() {
     // given
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
-    LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(today);
-    int indexOfToday = (int) ChronoUnit.DAYS.between(firstDayOfWeek, today);
-
     // when
     List<DduduCompletionResponse> responses = calculateCompletionService.calculateWeekly(
         anotherUser.getId(),
@@ -108,15 +100,15 @@ class CalculateCompletionServiceTest {
 
     // then
     Assertions.assertThat(responses)
-        .hasSize(7);
-    assertThat(responses.get(indexOfToday)).extracting("date", "totalCount", "uncompletedCount")
-        .containsExactly(today, 1, 1);
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 1, 0, 1);
   }
 
   @Test
   void 자신의_월간_할_일_달성률_조회를_성공한다() {
     // given
-    int indexOfToday = today.getDayOfMonth() - 1;
 
     // when
     List<DduduCompletionResponse> responses = calculateCompletionService.calculateMonthly(
@@ -126,21 +118,17 @@ class CalculateCompletionServiceTest {
     );
 
     // then
-    int days = thisMonth.atEndOfMonth()
-        .getDayOfMonth();
-
     Assertions.assertThat(responses)
-        .hasSize(days);
-    assertThat(responses.get(indexOfToday))
-        .extracting("date", "totalCount", "uncompletedCount")
-        .containsExactly(today, 2, 2);
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 2, 0, 2);
   }
 
   @Test
   void 다른_사용자의_월간_할_일_달성률_조회를_성공한다() {
     // given
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
-    int indexOfToday = today.getDayOfMonth() - 1;
 
     // when
     List<DduduCompletionResponse> responses = calculateCompletionService.calculateMonthly(
@@ -150,13 +138,30 @@ class CalculateCompletionServiceTest {
     );
 
     // then
-    int days = thisMonth.atEndOfMonth()
-        .getDayOfMonth();
-
     Assertions.assertThat(responses)
-        .hasSize(days);
-    assertThat(responses.get(indexOfToday)).extracting("date", "totalCount", "uncompletedCount")
-        .containsExactly(today, 1, 1);
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 1, 0, 1);
+  }
+
+  @Test
+  void 월간_조회에서_사용자_아이디가_없으면_로그인_사용자로_조회한다() {
+    // given
+
+    // when
+    List<DduduCompletionResponse> responses = calculateCompletionService.calculateMonthly(
+        user.getId(),
+        null,
+        thisMonth
+    );
+
+    // then
+    Assertions.assertThat(responses)
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 2, 0, 2);
   }
 
   @Test

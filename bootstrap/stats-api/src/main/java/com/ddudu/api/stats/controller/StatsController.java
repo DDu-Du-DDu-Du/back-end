@@ -1,7 +1,5 @@
 package com.ddudu.api.stats.controller;
 
-import static java.util.Objects.isNull;
-
 import com.ddudu.api.stats.doc.StatsControllerDoc;
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
 import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
@@ -48,7 +46,7 @@ public class StatsController implements StatsControllerDoc {
       @RequestParam(required = false)
       Long userId,
       @RequestParam(
-          value = "date",
+          value = "yearMonth",
           required = false
       )
       @DateTimeFormat(pattern = "yyyy-MM")
@@ -66,6 +64,7 @@ public class StatsController implements StatsControllerDoc {
   /**
    * 주간 뚜두 완료율 조회 API
    */
+  @Deprecated
   @GetMapping("/completion/weekly")
   public ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
       @Login
@@ -76,8 +75,6 @@ public class StatsController implements StatsControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM-dd")
       LocalDate date
   ) {
-    userId = isNull(userId) ? loginId : userId;
-
     List<DduduCompletionResponse> response = calculateCompletionUseCase.calculateWeekly(
         loginId,
         userId,
