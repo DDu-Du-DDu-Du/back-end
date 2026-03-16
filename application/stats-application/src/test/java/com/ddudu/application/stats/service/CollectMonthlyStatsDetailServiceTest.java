@@ -29,6 +29,7 @@ import com.ddudu.fixture.UserFixture;
 import com.ddudu.fixtures.MonthlyStatsFixture;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +84,23 @@ class CollectMonthlyStatsDetailServiceTest {
 
   @Nested
   class 달성_상세_통계_테스트 {
+
+    @Test
+    void 달성_상세_응답에_목표_색상이_포함된다() {
+      // given
+
+      // when
+      AchievedStatsDetailResponse response =
+          collectMonthlyAchievedDetailService.collectAchievedDetail(
+          user.getId(),
+          goal.getId(),
+          thisMonth,
+          thisMonth
+      );
+
+      // then
+      assertThat(response.goalColor()).isEqualTo(goal.getColor());
+    }
 
     @Nested
     class 오버뷰_테스트 {
@@ -355,6 +373,23 @@ class CollectMonthlyStatsDetailServiceTest {
   @Nested
   class 미루기_상세_통계_테스트 {
 
+    @Test
+    void 미루기_상세_응답에_목표_색상이_포함된다() {
+      // given
+
+      // when
+      PostponedStatsDetailResponse response =
+          collectMonthlyAchievedDetailService.collectPostponedDetail(
+          user.getId(),
+          goal.getId(),
+          thisMonth,
+          thisMonth
+      );
+
+      // then
+      assertThat(response.goalColor()).isEqualTo(goal.getColor());
+    }
+
     @Nested
     class 오버뷰_테스트 {
 
@@ -389,16 +424,17 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
-            user.getId(),
-            goal.getId(),
-            thisMonth,
-            thisMonth
-        );
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
+                user.getId(),
+                goal.getId(),
+                thisMonth,
+                thisMonth
+            );
 
         // then
         PostponedDetailOverviewDto actual = response.overview();
-        assertThat(actual.totalCount()).isEqualTo(totalCount);
+        assertThat(actual.totalCount()).isEqualTo(totalPostponed);
         assertThat(actual.postponedCount()).isEqualTo(totalPostponed);
         assertThat(actual.reattainedCount()).isEqualTo(reattained);
         assertThat(actual.postponementRate()).isBetween(0, 100);
@@ -411,7 +447,8 @@ class CollectMonthlyStatsDetailServiceTest {
         YearMonth nextMonth = thisMonth.plusMonths(1);
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
             user.getId(),
             goal.getId(),
             nextMonth,
@@ -444,7 +481,7 @@ class CollectMonthlyStatsDetailServiceTest {
         // then
         PostponedDetailOverviewDto actual = response.overview();
 
-        assertThat(actual.totalCount()).isEqualTo(totalCount);
+        assertThat(actual.totalCount()).isEqualTo(totalPostponed);
         assertThat(actual.postponedCount()).isEqualTo(totalPostponed);
         assertThat(actual.reattainedCount()).isEqualTo(reattained);
       }
@@ -465,9 +502,47 @@ class CollectMonthlyStatsDetailServiceTest {
         // then
         PostponedDetailOverviewDto actual = response.overview();
 
-        assertThat(actual.totalCount()).isEqualTo(totalCount);
+        assertThat(actual.totalCount()).isEqualTo(totalPostponed);
         assertThat(actual.postponedCount()).isEqualTo(totalPostponed);
         assertThat(actual.reattainedCount()).isEqualTo(reattained);
+      }
+
+      @Test
+      void 미루기_상세_집계_대상은_postponedAt_날짜_기준이다() {
+        // given
+        YearMonth nextMonth = thisMonth.plusMonths(1);
+        LocalDate inRangeDate = nextMonth.atDay(10);
+        LocalDate outRangeDate = thisMonth.atDay(10);
+
+        Ddudu included = DduduFixture.getDduduBuilder()
+            .goalId(goal.getId())
+            .userId(user.getId())
+            .scheduledOn(outRangeDate)
+            .postponedAt(inRangeDate.atStartOfDay())
+            .build();
+        Ddudu excluded = DduduFixture.getDduduBuilder()
+            .goalId(goal.getId())
+            .userId(user.getId())
+            .scheduledOn(inRangeDate)
+            .postponedAt(LocalDateTime.of(outRangeDate, LocalDateTime.now().toLocalTime()))
+            .build();
+
+        saveDduduPort.save(included);
+        saveDduduPort.save(excluded);
+
+        // when
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
+                user.getId(),
+                goal.getId(),
+                nextMonth,
+                nextMonth
+            );
+
+        // then
+        PostponedDetailOverviewDto actual = response.overview();
+        assertThat(actual.totalCount()).isEqualTo(1);
+        assertThat(actual.postponedCount()).isEqualTo(1);
       }
 
     }
