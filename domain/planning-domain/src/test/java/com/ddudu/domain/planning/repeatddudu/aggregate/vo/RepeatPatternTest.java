@@ -3,6 +3,7 @@ package com.ddudu.domain.planning.repeatddudu.aggregate.vo;
 import com.ddudu.common.exception.RepeatDduduErrorCode;
 import com.ddudu.fixture.RepeatDduduFixture;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -74,8 +75,7 @@ class RepeatPatternTest {
 
       // then
       Assertions.assertThat(repeatDates)
-          .hasSize(startDate.until(endDate)
-              .getDays() + 1);
+          .hasSize((int) ChronoUnit.DAYS.between(startDate, endDate) + 1);
     }
 
     @Test
@@ -88,10 +88,32 @@ class RepeatPatternTest {
       List<LocalDate> repeatDates = weeklyPattern.calculateRepeatDates(startDate, endDate);
 
       // then
+      Assertions.assertThat(repeatDates)
+          .isNotEmpty();
       repeatDates.stream()
           .map(LocalDate::getDayOfWeek)
           .forEach(dayOfWeek -> Assertions.assertThat(repeatDaysOfWeek)
               .contains(dayOfWeek.toString()));
+    }
+
+    @Test
+    void 월_경계_기간에서_위클리_반복_날짜_리스트_조회에_성공한다() {
+      // given
+      LocalDate start = LocalDate.of(2024, 1, 31);
+      LocalDate end = LocalDate.of(2024, 2, 29);
+      List<String> repeatDaysOfWeek = List.of("THURSDAY");
+      RepeatPattern weeklyPattern = RepeatDduduFixture.createWeeklyRepeatPattern(repeatDaysOfWeek);
+
+      // when
+      List<LocalDate> repeatDates = weeklyPattern.calculateRepeatDates(start, end);
+
+      // then
+      Assertions.assertThat(repeatDates)
+          .isNotEmpty();
+      repeatDates.stream()
+          .map(LocalDate::getDayOfWeek)
+          .forEach(dayOfWeek -> Assertions.assertThat(dayOfWeek.name())
+              .isEqualTo("THURSDAY"));
     }
 
     @Test

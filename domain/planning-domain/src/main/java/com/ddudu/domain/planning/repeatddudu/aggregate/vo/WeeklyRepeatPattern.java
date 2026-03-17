@@ -7,6 +7,7 @@ import com.ddudu.common.exception.RepeatDduduErrorCode;
 import com.ddudu.common.util.DayOfWeekUtil;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -45,8 +46,7 @@ public class WeeklyRepeatPattern implements RepeatPattern {
   }
 
   private long countDaysBetween(LocalDate startDate, LocalDate endDate) {
-    return startDate.until(endDate)
-        .getDays() + 1;
+    return ChronoUnit.DAYS.between(startDate, endDate) + 1;
   }
 
 }
