@@ -11,4 +11,6 @@ public interface TokenManipulationPort {
 
   void deleteAllFamily(List<RefreshToken> tokenFamily);
 
+  void deleteByUserFamily(Long userId, int family);
+
 }

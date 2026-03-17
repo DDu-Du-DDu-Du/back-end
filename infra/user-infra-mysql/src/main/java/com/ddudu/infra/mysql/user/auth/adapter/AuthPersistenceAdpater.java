@@ -37,6 +37,11 @@ public class AuthPersistenceAdpater implements TokenManipulationPort, TokenLoade
   }
 
   @Override
+  public void deleteByUserFamily(Long userId, int family) {
+    refreshTokenRepository.deleteByUserFamily(userId, family);
+  }
+
+  @Override
   public List<RefreshToken> loadByUserFamily(Long userId, int family) {
     return refreshTokenRepository.findAllByUserFamily(userId, family)
         .stream()

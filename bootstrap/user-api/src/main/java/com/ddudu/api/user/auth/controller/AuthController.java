@@ -1,14 +1,17 @@
 package com.ddudu.api.user.auth.controller;
 
 import com.ddudu.api.user.auth.doc.AuthControllerDoc;
+import com.ddudu.application.common.port.auth.in.LogoutUseCase;
 import com.ddudu.application.common.dto.auth.request.SocialRequest;
 import com.ddudu.application.common.dto.auth.request.TokenRefreshRequest;
 import com.ddudu.application.common.dto.auth.response.TokenResponse;
 import com.ddudu.application.common.port.auth.in.SocialLoginUseCase;
 import com.ddudu.application.common.port.auth.in.TokenRefreshUseCase;
+import com.ddudu.bootstrap.common.annotation.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +26,7 @@ public class AuthController implements AuthControllerDoc {
 
   private final SocialLoginUseCase socialLoginUseCase;
   private final TokenRefreshUseCase tokenRefreshUseCase;
+  private final LogoutUseCase logoutUseCase;
 
   @PostMapping("/login/{providerType}")
   public ResponseEntity<TokenResponse> login(
@@ -45,6 +49,19 @@ public class AuthController implements AuthControllerDoc {
     TokenResponse response = tokenRefreshUseCase.refresh(request);
 
     return ResponseEntity.ok(response);
+  }
+
+  @DeleteMapping("/logout")
+  public ResponseEntity<Void> logout(
+      @Login
+      Long loginUserId,
+      @RequestHeader("Refresh-Token")
+      String refreshToken
+  ) {
+    logoutUseCase.logout(loginUserId, refreshToken);
+
+    return ResponseEntity.noContent()
+        .build();
   }
 
 }

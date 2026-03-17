@@ -1,6 +1,7 @@
 package com.ddudu.domain.planning.repeatddudu.aggregate.vo;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,8 +20,7 @@ public class DailyRepeatPattern implements RepeatPattern {
   }
 
   private long countDaysBetween(LocalDate startDate, LocalDate endDate) {
-    return startDate.until(endDate)
-        .getDays() + 1;
+    return ChronoUnit.DAYS.between(startDate, endDate) + 1;
   }
 
 }
