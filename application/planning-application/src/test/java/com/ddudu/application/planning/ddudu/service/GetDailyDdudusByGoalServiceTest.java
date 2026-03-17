@@ -77,6 +77,29 @@ class GetDailyDdudusByGoalServiceTest {
         .isEqualTo(goal.getId());
     assertThat(firstElement.ddudus()).extracting("id")
         .containsExactly(ddudu.getId());
+    assertThat(firstElement.ddudus().get(0)
+        .postponedAt()).isNull();
+  }
+
+  @Test
+  void 미룬_뚜두_조회시_미루기_일시를_포함한다() {
+    // given
+    LocalDate date = LocalDate.now();
+    Goal goal = saveGoalPort.save(
+        GoalFixture.createRandomGoalWithUserAndPrivacyType(user.getId(), PrivacyType.PRIVATE));
+    saveDduduPort.save(DduduFixture.createDduduWithScheduleAndPostponedFlag(goal, true, date));
+
+    // when
+    List<GoalGroupedDdudus> responses = getDailyDdudusByGoalService.get(
+        user.getId(),
+        user.getId(),
+        date
+    );
+
+    // then
+    assertThat(responses.get(0)
+        .ddudus().get(0)
+        .postponedAt()).isNotNull();
   }
 
   @Test

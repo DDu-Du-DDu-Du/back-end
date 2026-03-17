@@ -13,6 +13,7 @@ import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
+import java.time.LocalDate;
 import java.util.MissingResourceException;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -67,8 +68,26 @@ class RetrieveDduduServiceTest {
         .hasFieldOrPropertyWithValue("scheduledOn", ddudu.getScheduledOn())
         .hasFieldOrPropertyWithValue("beginAt", ddudu.getBeginAt())
         .hasFieldOrPropertyWithValue("endAt", ddudu.getEndAt())
+        .hasFieldOrPropertyWithValue("postponedAt", ddudu.getPostponedAt())
         .hasFieldOrPropertyWithValue("remindAt", ddudu.getRemindAt());
 
+  }
+
+  @Test
+  void 미룬_뚜두_상세조회시_미루기_일시를_반환한다() {
+    // given
+    Ddudu postponedDdudu = saveDduduPort.save(
+        DduduFixture.createDduduWithScheduleAndPostponedFlag(goal, true, LocalDate.now())
+    );
+
+    // when
+    DduduDetailResponse actual = retrieveDduduService.findById(
+        user.getId(),
+        postponedDdudu.getId()
+    );
+
+    // then
+    assertThat(actual.postponedAt()).isNotNull();
   }
 
   @Test

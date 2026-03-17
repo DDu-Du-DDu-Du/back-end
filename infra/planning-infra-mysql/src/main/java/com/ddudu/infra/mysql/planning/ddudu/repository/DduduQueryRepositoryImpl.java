@@ -327,7 +327,8 @@ public class DduduQueryRepositoryImpl implements DduduQueryRepository {
         SimpleDduduSearchDto.class,
         dduduEntity.id,
         dduduEntity.name,
-        dduduEntity.scheduledOn
+        dduduEntity.scheduledOn,
+        dduduEntity.postponedAt
     );
   }
 

@@ -49,6 +49,7 @@ class DduduSearchServiceTest {
   SaveDduduPort saveDduduPort;
 
   User user;
+  Goal goal;
   int size;
   List<Ddudu> ddudus;
   Long latestId;
@@ -56,7 +57,7 @@ class DduduSearchServiceTest {
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
-    Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
+    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     size = DduduFixture.getRandomInt(10, 100);
     ddudus = saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(goal, size + 1));
     latestId = ddudus.get(size)
@@ -135,8 +136,16 @@ class DduduSearchServiceTest {
   @Test
   void 검색어_조회를_성공한다() {
     // given
-    Ddudu firstDdudu = ddudus.get(0);
-    DduduSearchRequest request = new DduduSearchRequest(null, null, size, firstDdudu.getName());
+    Ddudu postponedDdudu = saveDduduPort.save(
+        DduduFixture.createDduduWithScheduleAndPostponedFlag(goal, true, ddudus.get(0)
+            .getScheduledOn())
+    );
+    DduduSearchRequest request = new DduduSearchRequest(
+        null,
+        null,
+        size,
+        postponedDdudu.getName()
+    );
 
     // when
     ScrollResponse<SimpleDduduSearchDto> response = dduduSearchService.search(
@@ -149,6 +158,8 @@ class DduduSearchServiceTest {
     assertThat(response.contents()).hasSize(1);
     assertThat(response.nextCursor()).isNull();
     assertThat(response.hasNext()).isFalse();
+    assertThat(response.contents().get(0)
+        .postponedAt()).isNotNull();
   }
 
   @Test
