@@ -113,8 +113,22 @@ class CreateRepeatDduduServiceTest {
 
   @Test
   void 반복_뚜두_생성_시_뚜두도_함께_생성된다() {
+    // given
+    CreateRepeatDduduRequest dailyRepeatDduduRequest = new CreateRepeatDduduRequest(
+        name,
+        goal.getId(),
+        RepeatType.DAILY.name(),
+        repeatDaysOfWeek,
+        repeatDaysOfMonth,
+        lastDayOfMonth,
+        startDate,
+        endDate,
+        null,
+        null
+    );
+
     // when
-    Long repeatDduduId = createRepeatDduduService.create(user.getId(), request);
+    Long repeatDduduId = createRepeatDduduService.create(user.getId(), dailyRepeatDduduRequest);
 
     // then
     RepeatDdudu repeatDdudu = repeatDduduLoaderPort.getOptionalRepeatDdudu(repeatDduduId)

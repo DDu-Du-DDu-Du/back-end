@@ -79,7 +79,8 @@ class LogoutServiceTest {
     Long unknownUserId = UserFixture.getRandomLong(1000000000L, Long.MAX_VALUE);
 
     // when
-    ThrowingCallable logout = () -> logoutService.logout(unknownUserId, refreshToken.getTokenValue());
+    ThrowingCallable logout = () ->
+        logoutService.logout(unknownUserId, refreshToken.getTokenValue());
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
@@ -96,7 +97,8 @@ class LogoutServiceTest {
     tokenManipulationPort.save(refreshToken);
 
     // when
-    ThrowingCallable logout = () -> logoutService.logout(loginUser.getId(), refreshToken.getTokenValue());
+    ThrowingCallable logout = () ->
+        logoutService.logout(loginUser.getId(), refreshToken.getTokenValue());
 
     // then
     Assertions.assertThatExceptionOfType(SecurityException.class)
