@@ -4,6 +4,7 @@ import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.Builder;
 
@@ -14,6 +15,7 @@ public record DduduForTimetable(
     DduduStatus status,
     Long goalId,
     String color,
+    LocalDateTime postponedAt,
     @Schema(
         type = "string",
         pattern = "HH:mm",
@@ -43,6 +45,7 @@ public record DduduForTimetable(
         .status(ddudu.getStatus())
         .goalId(ddudu.getGoalId())
         .color(color)
+        .postponedAt(ddudu.getPostponedAt())
         .beginAt(ddudu.getBeginAt())
         .endAt(ddudu.getEndAt())
         .build();

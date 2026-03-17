@@ -89,6 +89,7 @@ class GetDailyDdudusByTimeServiceTest {
     AssertionsForClassTypes.assertThat(earliestTime)
         .isEqualTo(beginAt);
     assertThat(firstOfEarliestTime.id()).isEqualTo(ddudu.getId());
+    assertThat(firstOfEarliestTime.postponedAt()).isNull();
     assertThat(response.unassignedDdudus()
         .get(0)
         .ddudus()
@@ -118,6 +119,37 @@ class GetDailyDdudusByTimeServiceTest {
         .ddudus()
         .get(0)
         .id()).isEqualTo(ddudu.getId());
+    assertThat(response.unassignedDdudus()
+        .get(0)
+        .ddudus()
+        .get(0)
+        .postponedAt()).isNull();
+  }
+
+  @Test
+  void 미룬_뚜두_시간표_조회시_미루기_일시를_포함한다() {
+    // given
+    Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
+        user.getId(),
+        PrivacyType.PRIVATE
+    ));
+    saveDduduPort.save(
+        DduduFixture.createDduduWithScheduleAndPostponedFlag(goal, true, LocalDate.now())
+    );
+
+    // when
+    TimetableResponse response = getTimetableService.get(
+        user.getId(),
+        user.getId(),
+        LocalDate.now()
+    );
+
+    // then
+    assertThat(response.unassignedDdudus()
+        .get(0)
+        .ddudus()
+        .get(0)
+        .postponedAt()).isNotNull();
   }
 
   @Test

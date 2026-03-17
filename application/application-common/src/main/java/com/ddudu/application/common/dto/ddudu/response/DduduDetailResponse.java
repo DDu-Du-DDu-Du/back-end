@@ -63,6 +63,7 @@ public record DduduDetailResponse(
         pattern = "HH:mm"
     )
     LocalTime endAt,
+    LocalDateTime postponedAt,
     LocalDateTime remindAt
 ) {
 
@@ -73,6 +74,7 @@ public record DduduDetailResponse(
         .endAt(ddudu.getEndAt())
         .goalId(ddudu.getGoalId())
         .name(ddudu.getName())
+        .postponedAt(ddudu.getPostponedAt())
         .remindAt(ddudu.getRemindAt())
         .repeatDduduId(ddudu.getRepeatDduduId())
         .scheduledOn(ddudu.getScheduledOn())
