@@ -32,6 +32,7 @@ class DduduDomainServiceTest {
     Long userId;
     Long goalId;
     String name;
+    String memo;
     LocalDate scheduledOn;
     CreateDduduCommand command;
 
@@ -40,8 +41,10 @@ class DduduDomainServiceTest {
       userId = GoalFixture.getRandomId();
       goalId = GoalFixture.getRandomId();
       name = DduduFixture.getRandomSentenceWithMax(50);
+      memo = DduduFixture.createValidMemo();
       scheduledOn = LocalDate.now();
-      command = new CreateDduduCommand(goalId, name, scheduledOn, null, null, null, null, null);
+      command = new CreateDduduCommand(
+          goalId, name, memo, scheduledOn, null, null, null, null, null);
     }
 
     @Test
@@ -52,8 +55,8 @@ class DduduDomainServiceTest {
       Ddudu actual = dduduDomainService.create(userId, command);
 
       // then
-      assertThat(actual).extracting("userId", "goalId", "name", "scheduledOn")
-          .containsExactly(userId, goalId, name, scheduledOn);
+      assertThat(actual).extracting("userId", "goalId", "name", "memo", "scheduledOn")
+          .containsExactly(userId, goalId, name, memo, scheduledOn);
     }
 
     @Test
@@ -62,6 +65,7 @@ class DduduDomainServiceTest {
       CreateDduduCommand request = new CreateDduduCommand(
           goalId,
           name,
+          memo,
           null,
           null,
           null,
@@ -74,8 +78,8 @@ class DduduDomainServiceTest {
       Ddudu actual = dduduDomainService.create(userId, request);
 
       // then
-      assertThat(actual).extracting("userId", "goalId", "name", "scheduledOn")
-          .containsExactly(userId, goalId, name, LocalDate.now());
+      assertThat(actual).extracting("userId", "goalId", "name", "memo", "scheduledOn")
+          .containsExactly(userId, goalId, name, memo, LocalDate.now());
     }
 
   }
@@ -90,6 +94,7 @@ class DduduDomainServiceTest {
     UpdateDduduCommand command = UpdateDduduCommand.builder()
         .goalId(GoalFixture.getRandomId())
         .name(DduduFixture.getRandomSentenceWithMax(50))
+        .memo(DduduFixture.createValidMemo())
         .scheduledOn(LocalDate.now().plusDays(1))
         .beginAt(LocalTime.of(10, 0))
         .endAt(LocalTime.of(11, 0))
@@ -99,10 +104,11 @@ class DduduDomainServiceTest {
     Ddudu actual = dduduDomainService.update(ddudu, command);
 
     // then
-    assertThat(actual).extracting("goalId", "name", "scheduledOn", "beginAt", "endAt")
+    assertThat(actual).extracting("goalId", "name", "memo", "scheduledOn", "beginAt", "endAt")
         .containsExactly(
             command.goalId(),
             command.name(),
+            command.memo(),
             command.scheduledOn(),
             command.beginAt(),
             command.endAt());

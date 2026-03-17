@@ -15,6 +15,7 @@ public class DduduDomainService {
         .userId(userId)
         .goalId(command.goalId())
         .name(command.name())
+        .memo(command.memo())
         .scheduledOn(command.scheduledOn())
         .beginAt(command.beginAt())
         .endAt(command.endAt())
@@ -28,6 +29,7 @@ public class DduduDomainService {
     return ddudu.update(
         command.goalId(),
         command.name(),
+        command.memo(),
         command.scheduledOn(),
         command.beginAt(),
         command.endAt(),

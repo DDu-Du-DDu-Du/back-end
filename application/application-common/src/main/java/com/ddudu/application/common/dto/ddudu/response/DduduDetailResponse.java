@@ -23,6 +23,11 @@ public record DduduDetailResponse(
     )
     String name,
     @Schema(
+        description = "뚜두 메모",
+        example = "리뷰 코멘트 반영 후 머지"
+    )
+    String memo,
+    @Schema(
         description = "뚜두 상태 [UNCOMPLETED|COMPLETE]",
         example = "UNCOMPLETED"
     )
@@ -73,6 +78,7 @@ public record DduduDetailResponse(
         .beginAt(ddudu.getBeginAt())
         .endAt(ddudu.getEndAt())
         .goalId(ddudu.getGoalId())
+        .memo(ddudu.getMemo())
         .name(ddudu.getName())
         .postponedAt(ddudu.getPostponedAt())
         .remindAt(ddudu.getRemindAt())

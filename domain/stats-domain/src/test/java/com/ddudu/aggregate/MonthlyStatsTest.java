@@ -48,7 +48,7 @@ class MonthlyStatsTest {
     void setUp() {
       anotherGoalId = BaseStatsFixture.getRandomId();
       totalSize = BaseStatsFixture.getRandomInt(10, 100);
-      completedSize = BaseStatsFixture.getRandomInt(1, totalSize);
+      completedSize = BaseStatsFixture.getRandomInt(1, totalSize - 1);
       uncompletedSize = totalSize - completedSize;
 
       stats.addAll(BaseStatsFixture.createNotPostponedStats(goalId, completedSize));

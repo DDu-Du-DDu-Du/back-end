@@ -8,6 +8,7 @@ import lombok.Builder;
 public record UpdateDduduCommand(
     Long goalId,
     String name,
+    String memo,
     LocalDate scheduledOn,
     LocalTime beginAt,
     LocalTime endAt,
