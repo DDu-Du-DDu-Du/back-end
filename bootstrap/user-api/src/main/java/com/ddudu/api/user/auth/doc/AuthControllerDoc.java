@@ -76,4 +76,40 @@ public interface AuthControllerDoc {
   )
   ResponseEntity<TokenResponse> refresh(TokenRefreshRequest request);
 
+  @Operation(
+      summary = "로그아웃",
+      description = "리프레시 토큰 패밀리를 삭제하는 API"
+  )
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "204",
+              description = "NO_CONTENT"
+          ),
+          @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5003",
+                      description = "로그인 사용자와 리프레시 토큰의 사용자 아이디가 다른 경우",
+                      value = AuthErrorExamples.AUTH_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5008",
+                      description = "로그인 사용자를 찾을 수 없는 경우",
+                      value = AuthErrorExamples.AUTH_USER_NOT_FOUND
+                  )
+              )
+          )
+      }
+  )
+  ResponseEntity<Void> logout(Long loginUserId, String refreshToken);
+
 }

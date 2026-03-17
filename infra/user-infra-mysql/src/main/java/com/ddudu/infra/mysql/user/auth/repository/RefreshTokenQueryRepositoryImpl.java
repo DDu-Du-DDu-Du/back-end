@@ -37,4 +37,14 @@ public class RefreshTokenQueryRepositoryImpl implements RefreshTokenQueryReposit
         .fetch();
   }
 
+  @Override
+  public void deleteByUserFamily(Long userId, int family) {
+    BooleanBuilder whereCondition = new BooleanBuilder(refreshTokenEntity.userId.eq(userId))
+        .and(refreshTokenEntity.family.eq(family));
+
+    jpaQueryFactory.delete(refreshTokenEntity)
+        .where(whereCondition)
+        .execute();
+  }
+
 }

@@ -10,4 +10,6 @@ public interface RefreshTokenQueryRepository {
 
   List<RefreshTokenEntity> findAllByUserFamily(Long userId, int family);
 
+  void deleteByUserFamily(Long userId, int family);
+
 }
