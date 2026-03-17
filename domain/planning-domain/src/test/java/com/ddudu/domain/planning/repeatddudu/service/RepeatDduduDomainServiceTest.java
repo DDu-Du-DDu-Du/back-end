@@ -9,6 +9,7 @@ import com.ddudu.domain.planning.repeatddudu.dto.CreateRepeatDduduCommand;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatDduduFixture;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -152,9 +153,10 @@ class RepeatDduduDomainServiceTest {
       List<Ddudu> ddudus = repeatDduduDomainService.createRepeatedDdudus(userId, dailyRepeatDdudu);
 
       // then
+      long expectedCount = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
       Assertions.assertThat(ddudus)
-          .hasSize(startDate.until(endDate)
-              .getDays() + 1);
+          .hasSize((int) expectedCount);
       ddudus.stream()
           .map(Ddudu::getScheduledOn)
           .forEach(date -> Assertions.assertThat(date)
