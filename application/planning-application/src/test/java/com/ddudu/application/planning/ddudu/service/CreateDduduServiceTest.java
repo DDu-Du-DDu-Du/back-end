@@ -49,6 +49,7 @@ class CreateDduduServiceTest {
   Goal goal;
   String name;
   LocalDate scheduledOn;
+  String memo;
 
   @BeforeEach
   void setUp() {
@@ -56,6 +57,7 @@ class CreateDduduServiceTest {
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     name = DduduFixture.getRandomSentenceWithMax(50);
     scheduledOn = LocalDate.now();
+    memo = DduduFixture.createValidMemo();
   }
 
 
@@ -65,6 +67,7 @@ class CreateDduduServiceTest {
     CreateDduduRequest request = new CreateDduduRequest(
         goal.getId(),
         name,
+        memo,
         scheduledOn,
         null,
         null,
@@ -83,6 +86,7 @@ class CreateDduduServiceTest {
     );
     assertThat(actual).extracting(
             "name",
+            "memo",
             "scheduledOn",
             "goalId",
             "userId",
@@ -91,6 +95,7 @@ class CreateDduduServiceTest {
         )
         .containsExactly(
             name,
+            memo,
             scheduledOn,
             goal.getId(),
             user.getId(),
@@ -104,6 +109,7 @@ class CreateDduduServiceTest {
     CreateDduduRequest request = new CreateDduduRequest(
         goal.getId(),
         name,
+        memo,
         null,
         null,
         null,
@@ -130,6 +136,7 @@ class CreateDduduServiceTest {
     CreateDduduRequest request = new CreateDduduRequest(
         goal.getId(),
         name,
+        memo,
         scheduledOn,
         null,
         null,
@@ -154,6 +161,7 @@ class CreateDduduServiceTest {
     CreateDduduRequest request = new CreateDduduRequest(
         invalidGoalId,
         name,
+        memo,
         scheduledOn,
         null,
         null,
@@ -183,6 +191,7 @@ class CreateDduduServiceTest {
     CreateDduduRequest request = new CreateDduduRequest(
         goalOfAnotherUser.getId(),
         name,
+        memo,
         scheduledOn,
         null,
         null,

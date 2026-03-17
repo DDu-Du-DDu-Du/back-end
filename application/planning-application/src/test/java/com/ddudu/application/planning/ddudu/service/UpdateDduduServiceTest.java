@@ -57,6 +57,7 @@ class UpdateDduduServiceTest {
     request = new UpdateDduduRequest(
         goal.getId(),
         DduduFixture.getRandomSentenceWithMax(50),
+        DduduFixture.createValidMemo(),
         LocalDate.now().plusDays(1),
         LocalTime.of(10, 0),
         LocalTime.of(11, 0),

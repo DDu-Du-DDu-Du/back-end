@@ -118,6 +118,42 @@ class DduduTest {
     }
 
     @Test
+    void 메모가_2000자_이하면_생성을_성공한다() {
+      // given
+      String validMemo = DduduFixture.createValidMemo();
+
+      // when
+      Ddudu ddudu = Ddudu.builder()
+          .goalId(goalId)
+          .userId(userId)
+          .name(name)
+          .memo(validMemo)
+          .build();
+
+      // then
+      assertThat(ddudu.getMemo()).isEqualTo(validMemo);
+    }
+
+    @Test
+    void 메모가_2000자를_넘으면_생성을_실패한다() {
+      // given
+      String overLengthMemo = DduduFixture.createOverLengthMemo();
+      DduduBuilder builder = Ddudu.builder()
+          .goalId(goalId)
+          .userId(userId)
+          .name(name)
+          .memo(overLengthMemo);
+
+      // when
+      ThrowingCallable create = builder::build;
+
+      // then
+      Assertions.assertThatIllegalArgumentException()
+          .isThrownBy(create)
+          .withMessage(DduduErrorCode.EXCESSIVE_MEMO_LENGTH.getCodeName());
+    }
+
+    @Test
     void 목표가_없으면_생성을_실패한다() {
       // given
       DduduBuilder builder = Ddudu.builder()
@@ -703,6 +739,7 @@ class DduduTest {
       Ddudu updated = ddudu.update(
           goalId,
           DduduFixture.getRandomSentenceWithMax(50),
+          DduduFixture.createValidMemo(),
           scheduledOn,
           beginAt,
           LocalTime.of(11, 0),
@@ -733,6 +770,7 @@ class DduduTest {
       Ddudu updated = ddudu.update(
           goalId,
           DduduFixture.getRandomSentenceWithMax(50),
+          DduduFixture.createValidMemo(),
           scheduledOn,
           beginAt,
           LocalTime.of(11, 0),

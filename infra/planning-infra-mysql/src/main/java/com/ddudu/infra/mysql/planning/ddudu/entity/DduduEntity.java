@@ -53,6 +53,12 @@ public class DduduEntity extends BaseEntity {
   private String name;
 
   @Column(
+      name = "memo",
+      length = 2000
+  )
+  private String memo;
+
+  @Column(
       name = "status",
       nullable = false,
       columnDefinition = "VARCHAR",
@@ -99,6 +105,7 @@ public class DduduEntity extends BaseEntity {
         .userId(ddudu.getUserId())
         .repeatDduduId(ddudu.getRepeatDduduId())
         .name(ddudu.getName())
+        .memo(ddudu.getMemo())
         .status(ddudu.getStatus())
         .postponedAt(ddudu.getPostponedAt())
         .scheduledOn(ddudu.getScheduledOn())
@@ -115,6 +122,7 @@ public class DduduEntity extends BaseEntity {
         .goalId(goalId)
         .repeatDduduId(repeatDduduId)
         .name(name)
+        .memo(memo)
         .status(status)
         .postponedAt(postponedAt)
         .scheduledOn(scheduledOn)
@@ -126,6 +134,7 @@ public class DduduEntity extends BaseEntity {
 
   public void update(Ddudu ddudu) {
     this.name = ddudu.getName();
+    this.memo = ddudu.getMemo();
     this.status = ddudu.getStatus();
     this.postponedAt = ddudu.getPostponedAt();
     this.scheduledOn = ddudu.getScheduledOn();

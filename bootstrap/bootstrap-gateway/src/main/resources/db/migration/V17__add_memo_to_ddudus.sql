@@ -1,0 +1,2 @@
+ALTER TABLE ddudus
+    ADD COLUMN memo VARCHAR(2000) NULL;

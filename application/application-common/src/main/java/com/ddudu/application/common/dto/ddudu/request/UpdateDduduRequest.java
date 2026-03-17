@@ -19,6 +19,11 @@ public record UpdateDduduRequest(
         message = "2003 EXCESSIVE_NAME_LENGTH"
     )
     String name,
+    @Size(
+        max = 2000,
+        message = "2023 EXCESSIVE_MEMO_LENGTH"
+    )
+    String memo,
     @NotNull(message = "2015 NULL_SCHEDULED_DATE")
     LocalDate scheduledOn,
     LocalTime beginAt,
@@ -35,6 +40,7 @@ public record UpdateDduduRequest(
     return UpdateDduduCommand.builder()
         .goalId(goalId)
         .name(name)
+        .memo(memo)
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt)

@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 public class Ddudu {
 
   private static final int MAX_NAME_LENGTH = 50;
+  private static final int MAX_MEMO_LENGTH = 2000;
 
   @EqualsAndHashCode.Include
   private final Long id;
@@ -29,6 +30,7 @@ public class Ddudu {
   private final Long userId;
   private final Long repeatDduduId;
   private final String name;
+  private final String memo;
   private final DduduStatus status;
   private final LocalDateTime postponedAt;
   private final LocalDate scheduledOn;
@@ -43,6 +45,7 @@ public class Ddudu {
       Long userId,
       Long repeatDduduId,
       String name,
+      String memo,
       Boolean isPostponed,
       LocalDateTime postponedAt,
       DduduStatus status,
@@ -55,13 +58,14 @@ public class Ddudu {
       Integer remindHours,
       Integer remindMinutes
   ) {
-    validate(goalId, userId, name, beginAt, endAt);
+    validate(goalId, userId, name, memo, beginAt, endAt);
 
     this.id = id;
     this.goalId = goalId;
     this.userId = userId;
     this.repeatDduduId = repeatDduduId;
     this.name = name;
+    this.memo = memo;
     this.status = Objects.requireNonNullElse(status, DduduStatus.from(statusValue));
     this.postponedAt = resolvePostponedAt(postponedAt, isPostponed);
     this.scheduledOn = Objects.requireNonNullElse(scheduledOn, LocalDate.now());
@@ -135,6 +139,7 @@ public class Ddudu {
   public Ddudu update(
       Long goalId,
       String name,
+      String memo,
       LocalDate scheduledOn,
       LocalTime beginAt,
       LocalTime endAt,
@@ -145,6 +150,7 @@ public class Ddudu {
     DduduBuilder builder = getFullBuilder()
         .goalId(goalId)
         .name(name)
+        .memo(memo)
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt);
@@ -218,6 +224,7 @@ public class Ddudu {
         .userId(this.userId)
         .repeatDduduId(this.repeatDduduId)
         .name(this.name)
+        .memo(this.memo)
         .status(this.status)
         .scheduledOn(this.scheduledOn)
         .postponedAt(this.postponedAt)
@@ -238,10 +245,18 @@ public class Ddudu {
     return null;
   }
 
-  private void validate(Long goalId, Long userId, String name, LocalTime beginAt, LocalTime endAt) {
+  private void validate(
+      Long goalId,
+      Long userId,
+      String name,
+      String memo,
+      LocalTime beginAt,
+      LocalTime endAt
+  ) {
     checkArgument(Objects.nonNull(goalId), DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
     checkArgument(Objects.nonNull(userId), DduduErrorCode.NULL_USER.getCodeName());
     validateName(name);
+    validateMemo(memo);
     validatePeriod(beginAt, endAt);
   }
 
@@ -250,6 +265,17 @@ public class Ddudu {
     checkArgument(
         name.length() <= MAX_NAME_LENGTH,
         DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName()
+    );
+  }
+
+  private void validateMemo(String memo) {
+    if (isNull(memo)) {
+      return;
+    }
+
+    checkArgument(
+        memo.length() <= MAX_MEMO_LENGTH,
+        DduduErrorCode.EXCESSIVE_MEMO_LENGTH.getCodeName()
     );
   }
 

@@ -17,6 +17,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DduduFixture extends BaseFixture {
 
+  public static String createValidMemo() {
+    return getRandomSentenceWithMax(2000);
+  }
+
+  public static String createOverLengthMemo() {
+    return getRandomSentence(2001, 2200);
+  }
+
   public static List<Ddudu> createReattainedDdudus(
       Goal goal,
       int reattainedCount,

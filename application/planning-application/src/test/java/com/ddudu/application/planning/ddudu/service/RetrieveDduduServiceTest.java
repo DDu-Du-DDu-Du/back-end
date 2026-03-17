@@ -61,6 +61,7 @@ class RetrieveDduduServiceTest {
     assertThat(actual)
         .hasFieldOrPropertyWithValue("id", ddudu.getId())
         .hasFieldOrPropertyWithValue("name", ddudu.getName())
+        .hasFieldOrPropertyWithValue("memo", ddudu.getMemo())
         .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
         .hasFieldOrPropertyWithValue("goalId", ddudu.getGoalId())
         .hasFieldOrPropertyWithValue("repeatDduduId", ddudu.getRepeatDduduId())
