@@ -43,7 +43,8 @@ class DduduDomainServiceTest {
       name = DduduFixture.getRandomSentenceWithMax(50);
       memo = DduduFixture.createValidMemo();
       scheduledOn = LocalDate.now();
-      command = new CreateDduduCommand(goalId, name, memo, scheduledOn, null, null, null, null, null);
+      command = new CreateDduduCommand(
+          goalId, name, memo, scheduledOn, null, null, null, null, null);
     }
 
     @Test
