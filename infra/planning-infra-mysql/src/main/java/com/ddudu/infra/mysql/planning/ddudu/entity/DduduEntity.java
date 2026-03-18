@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "ddudus")
+@Table(name = "todos")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -42,7 +42,7 @@ public class DduduEntity extends BaseEntity {
   @Column(name = "user_id")
   private Long userId;
 
-  @Column(name = "repeat_ddudu_id")
+  @Column(name = "repeat_todo_id")
   private Long repeatDduduId;
 
   @Column(

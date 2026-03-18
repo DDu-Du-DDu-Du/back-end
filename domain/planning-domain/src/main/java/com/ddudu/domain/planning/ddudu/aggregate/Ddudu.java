@@ -167,6 +167,11 @@ public class Ddudu {
         .build();
   }
 
+
+  public Long getRepeatTodoId() {
+    return repeatDduduId;
+  }
+
   public boolean hasStartTime() {
     return nonNull(beginAt);
   }
