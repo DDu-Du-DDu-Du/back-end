@@ -16,7 +16,7 @@ ALTER TABLE ddudus
 RENAME TABLE repeat_ddudus TO repeat_todos;
 
 ALTER TABLE ddudus
-    ADD CONSTRAINT fk_ddudu_repeat_todo_id FOREIGN KEY (repeat_todo_id) REFERENCES repeat_todos(id);
+    ADD CONSTRAINT fk_todo_repeat_todo_id FOREIGN KEY (repeat_todo_id) REFERENCES repeat_todos(id);
 
 RENAME TABLE ddudus TO todos;
 RENAME TABLE template_ddudus TO template_todos;
