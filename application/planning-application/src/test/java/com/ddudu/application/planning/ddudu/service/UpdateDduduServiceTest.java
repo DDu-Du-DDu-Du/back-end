@@ -68,7 +68,7 @@ class UpdateDduduServiceTest {
   }
 
   @Test
-  void 뚜두를_수정한다() {
+  void 투두를_수정한다() {
     // given
 
     // when
@@ -102,7 +102,7 @@ class UpdateDduduServiceTest {
   }
 
   @Test
-  void 존재하지_않는_뚜두면_수정에_실패한다() {
+  void 존재하지_않는_투두면_수정에_실패한다() {
     // given
     Long invalidDduduId = DduduFixture.getRandomId();
 

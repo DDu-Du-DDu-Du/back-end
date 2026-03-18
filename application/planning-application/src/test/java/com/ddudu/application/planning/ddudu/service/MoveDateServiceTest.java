@@ -62,7 +62,7 @@ class MoveDateServiceTest {
   }
 
   @Test
-  void 뚜두를_미루기_한다() {
+  void 투두를_미루기_한다() {
     // given
     final LocalDate previousScheduledOn = ddudu.getScheduledOn();
     MoveDateRequest request = new MoveDateRequest(tomorrow, true);
@@ -79,7 +79,7 @@ class MoveDateServiceTest {
   }
 
   @Test
-  void 뚜두를_오늘_다시_하기_한다() {
+  void 투두를_오늘_다시_하기_한다() {
     // given
     LocalDate yesterday = LocalDate.now()
         .minusDays(1);
@@ -100,7 +100,7 @@ class MoveDateServiceTest {
   }
 
   @Test
-  void 완료한_지난_뚜두의_날짜를_바꾼다() {
+  void 완료한_지난_투두의_날짜를_바꾼다() {
     // given
     LocalDate twoDaysAgo = LocalDate.now()
         .minusDays(2);
@@ -128,7 +128,7 @@ class MoveDateServiceTest {
   }
 
   @Test
-  void 완료된_뚜두에_미루기_요청을_하면_실패한다() {
+  void 완료된_투두에_미루기_요청을_하면_실패한다() {
     // given
     Ddudu completedDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithStatus(
         goal,
@@ -147,7 +147,7 @@ class MoveDateServiceTest {
   }
 
   @Test
-  void 뚜두가_존재하지_않으면_날짜_변경을_실패한다() {
+  void 투두가_존재하지_않으면_날짜_변경을_실패한다() {
     // given
     long invalidId = DduduFixture.getRandomId();
     MoveDateRequest request = new MoveDateRequest(tomorrow, true);

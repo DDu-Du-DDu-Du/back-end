@@ -150,7 +150,7 @@ class MonthlyStatsTest {
   }
 
   @Nested
-  class 뚜두_달성도_테스트 {
+  class 투두_달성도_테스트 {
 
     @BeforeEach
     void setUp() {
@@ -193,7 +193,7 @@ class MonthlyStatsTest {
   }
 
   @Nested
-  class 뚜두_지속도_테스트 {
+  class 투두_지속도_테스트 {
 
     @BeforeEach
     void setUp() {
@@ -237,7 +237,7 @@ class MonthlyStatsTest {
   }
 
   @Nested
-  class 미룬_뚜두_테스트 {
+  class 미룬_투두_테스트 {
 
     @BeforeEach
     void setUp() {
@@ -279,7 +279,7 @@ class MonthlyStatsTest {
   }
 
   @Nested
-  class 뚜두_재달성률_테스트 {
+  class 투두_재달성률_테스트 {
 
     @BeforeEach
     void setUp() {

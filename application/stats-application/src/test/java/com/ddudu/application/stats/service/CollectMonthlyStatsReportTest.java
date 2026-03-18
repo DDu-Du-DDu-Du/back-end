@@ -84,7 +84,7 @@ class CollectMonthlyStatsReportTest {
   }
 
   @Test
-  void 이번달_뚜두_통합_통계를_낸다() {
+  void 이번달_투두_통합_통계를_낸다() {
     // given
     YearMonth thisMonth = YearMonth.now();
 
@@ -104,7 +104,7 @@ class CollectMonthlyStatsReportTest {
   }
 
   @Test
-  void 요청의_날짜가_없으면_이번달의_뚜두_통계를_낸다() {
+  void 요청의_날짜가_없으면_이번달의_투두_통계를_낸다() {
     // given
     YearMonth thisMonth = YearMonth.now();
 
@@ -126,7 +126,7 @@ class CollectMonthlyStatsReportTest {
   }
 
   @Test
-  void 지난달_뚜두가_없어도_통계는_0으로_계산된다() {
+  void 지난달_투두가_없어도_통계는_0으로_계산된다() {
     // given
     YearMonth lastMonth = YearMonth.now()
         .minusMonths(1);
@@ -143,7 +143,7 @@ class CollectMonthlyStatsReportTest {
   }
 
   @Test
-  void 로그인_사용자가_없으면_월_달성_뚜두_수_통계를_실패한다() {
+  void 로그인_사용자가_없으면_월_달성_투두_수_통계를_실패한다() {
     // given
     long invalidId = GoalFixture.getRandomId();
     YearMonth thisMonth = YearMonth.now();

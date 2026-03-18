@@ -72,7 +72,7 @@ class DeleteGoalServiceTest {
   }
 
   @Test
-  void 목표_삭제_시_해당_목표의_뚜두도_삭제된다() {
+  void 목표_삭제_시_해당_목표의_투두도_삭제된다() {
     //given
     Ddudu ddudu = DduduFixture.createRandomDduduWithGoal(goal);
     ddudu = saveDduduPort.save(ddudu);

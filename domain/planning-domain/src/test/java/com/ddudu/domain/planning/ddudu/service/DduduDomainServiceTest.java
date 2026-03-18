@@ -27,7 +27,7 @@ class DduduDomainServiceTest {
   }
 
   @Nested
-  class 뚜두_생성_테스트 {
+  class 투두_생성_테스트 {
 
     Long userId;
     Long goalId;
@@ -48,7 +48,7 @@ class DduduDomainServiceTest {
     }
 
     @Test
-    void 뚜두를_생성한다() {
+    void 투두를_생성한다() {
       // given
 
       // when
@@ -60,7 +60,7 @@ class DduduDomainServiceTest {
     }
 
     @Test
-    void 날짜가_설정되지_않으면_뚜두의_날짜가_생성_날짜가_된다() {
+    void 날짜가_설정되지_않으면_투두의_날짜가_생성_날짜가_된다() {
       // given
       CreateDduduCommand request = new CreateDduduCommand(
           goalId,
@@ -85,7 +85,7 @@ class DduduDomainServiceTest {
   }
 
   @Test
-  void 뚜두를_수정한다() {
+  void 투두를_수정한다() {
     // given
     Ddudu ddudu = DduduFixture.getDduduBuilder()
         .userId(GoalFixture.getRandomId())

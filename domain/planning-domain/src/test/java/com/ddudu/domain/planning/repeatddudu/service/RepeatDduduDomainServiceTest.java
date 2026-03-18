@@ -30,7 +30,7 @@ class RepeatDduduDomainServiceTest {
   }
 
   @Nested
-  class 반복_뚜두_생성_테스트 {
+  class 반복_투두_생성_테스트 {
 
     String name;
     Long goalId;
@@ -47,7 +47,7 @@ class RepeatDduduDomainServiceTest {
     }
 
     @Test
-    void 데일리_반복_뚜두를_생성한다() {
+    void 데일리_반복_투두를_생성한다() {
       // given
       CreateRepeatDduduCommand command = new CreateRepeatDduduCommand(
           name,
@@ -71,7 +71,7 @@ class RepeatDduduDomainServiceTest {
     }
 
     @Test
-    void 위클리_반복_뚜두를_생성한다() {
+    void 위클리_반복_투두를_생성한다() {
       // given
       CreateRepeatDduduCommand command = new CreateRepeatDduduCommand(
           name,
@@ -95,7 +95,7 @@ class RepeatDduduDomainServiceTest {
     }
 
     @Test
-    void 먼슬리_반복_뚜두를_생성한다() {
+    void 먼슬리_반복_투두를_생성한다() {
       // given
       CreateRepeatDduduCommand command = new CreateRepeatDduduCommand(
           name,
@@ -121,7 +121,7 @@ class RepeatDduduDomainServiceTest {
   }
 
   @Nested
-  class 뚜두_생성_테스트 {
+  class 투두_생성_테스트 {
 
     Long userId;
     String name;
@@ -140,7 +140,7 @@ class RepeatDduduDomainServiceTest {
     }
 
     @Test
-    void 데일리_반복_뚜두의_뚜두를_생성한다() {
+    void 데일리_반복_투두의_투두를_생성한다() {
       // given
       RepeatDdudu dailyRepeatDdudu = RepeatDduduFixture.createRepeatDdudu(
           RepeatType.DAILY,
@@ -164,7 +164,7 @@ class RepeatDduduDomainServiceTest {
     }
 
     @Test
-    void 위클리_반복_뚜두의_뚜두를_생성한다() {
+    void 위클리_반복_투두의_투두를_생성한다() {
       // given
       List<String> repeatDayOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek(1);
       RepeatDdudu weeklyRepeatDdudu = RepeatDduduFixture.createRepeatDdudu(
@@ -185,7 +185,7 @@ class RepeatDduduDomainServiceTest {
     }
 
     @Test
-    void 먼슬리_반복_뚜두의_뚜두를_생성한다() {
+    void 먼슬리_반복_투두의_투두를_생성한다() {
       // given
       int repeatDayOfMonth = RepeatDduduFixture.getRandomInt(1, 31);
       RepeatDdudu monthlyRepeatDdudu = RepeatDduduFixture.createRepeatDdudu(

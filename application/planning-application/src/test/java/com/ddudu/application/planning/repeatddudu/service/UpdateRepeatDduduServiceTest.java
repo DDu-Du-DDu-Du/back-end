@@ -84,7 +84,7 @@ class UpdateRepeatDduduServiceTest {
     originalRepeatDayOfWeek = DayOfWeek.MONDAY;
     repeatDdudu = saveRepeatDduduPort.save(
         RepeatDdudu.builder()
-            .name("반복 뚜두")
+            .name("반복 투두")
             .repeatType(RepeatType.WEEKLY)
             .repeatPattern(RepeatType.WEEKLY.createRepeatPattern(
                 List.of(originalRepeatDayOfWeek.name()),
@@ -100,7 +100,7 @@ class UpdateRepeatDduduServiceTest {
         repeatDduduDomainService.createRepeatedDdudus(user.getId(), repeatDdudu)
     );
     repeatDayOfWeekToUpdate = DayOfWeek.TUESDAY;
-    nameToUpdate = "수정된 반복 뚜두";
+    nameToUpdate = "수정된 반복 투두";
     request = new UpdateRepeatDduduRequest(
         nameToUpdate,
         RepeatType.WEEKLY.name(),
@@ -115,7 +115,7 @@ class UpdateRepeatDduduServiceTest {
   }
 
   @Test
-  void 반복_뚜두를_업데이트_하면_연결된_뚜두들도_함께_업데이트된다() {
+  void 반복_투두를_업데이트_하면_연결된_투두들도_함께_업데이트된다() {
     // when
     updateRepeatDduduService.update(user.getId(), repeatDdudu.getId(), request);
 
@@ -138,7 +138,7 @@ class UpdateRepeatDduduServiceTest {
   }
 
   @Test
-  void 이미_완료된_반복_뚜두는_변경되지_않는다() {
+  void 이미_완료된_반복_투두는_변경되지_않는다() {
     // given
     dduduUpdatePort.update(repeatedDdudus.get(0)
         .switchStatus());

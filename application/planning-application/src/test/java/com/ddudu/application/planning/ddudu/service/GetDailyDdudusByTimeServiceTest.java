@@ -57,7 +57,7 @@ class GetDailyDdudusByTimeServiceTest {
   }
 
   @Test
-  void 주어진_날짜에_자신의_시간별_뚜두_리스트_조회를_성공한다() {
+  void 주어진_날짜에_자신의_시간별_투두_리스트_조회를_성공한다() {
     // given
     Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
         user.getId(),
@@ -97,7 +97,7 @@ class GetDailyDdudusByTimeServiceTest {
   }
 
   @Test
-  void 시간이_설정되지_않은_뚜두_조회에_성공한다() {
+  void 시간이_설정되지_않은_투두_조회에_성공한다() {
     // given
     Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
         user.getId(),
@@ -127,7 +127,7 @@ class GetDailyDdudusByTimeServiceTest {
   }
 
   @Test
-  void 미룬_뚜두_시간표_조회시_미루기_일시를_포함한다() {
+  void 미룬_투두_시간표_조회시_미루기_일시를_포함한다() {
     // given
     Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
         user.getId(),
@@ -153,7 +153,7 @@ class GetDailyDdudusByTimeServiceTest {
   }
 
   @Test
-  void 다른_사용자의_시간별_뚜두_리스트를_조회할_경우_전체공개_목표의_뚜두만_조회한다() {
+  void 다른_사용자의_시간별_투두_리스트를_조회할_경우_전체공개_목표의_투두만_조회한다() {
     // given
     Goal publicGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
         user.getId(),
@@ -192,7 +192,7 @@ class GetDailyDdudusByTimeServiceTest {
   }
 
   @Test
-  void 로그인_아이디가_존재하지_않아_목표별_뚜두_조회를_실패한다() {
+  void 로그인_아이디가_존재하지_않아_목표별_투두_조회를_실패한다() {
     // given
     Long invalidLoginId = UserFixture.getRandomId();
     LocalDate date = LocalDate.now();
@@ -211,7 +211,7 @@ class GetDailyDdudusByTimeServiceTest {
   }
 
   @Test
-  void 사용자_아이디가_존재하지_않아_목표별_뚜두_조회를_실패한다() {
+  void 사용자_아이디가_존재하지_않아_목표별_투두_조회를_실패한다() {
     // given
     Long loginUserId = user.getId();
     Long invalidUserId = UserFixture.getRandomId();

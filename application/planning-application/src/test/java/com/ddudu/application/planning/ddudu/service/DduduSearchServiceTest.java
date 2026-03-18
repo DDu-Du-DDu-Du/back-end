@@ -65,7 +65,7 @@ class DduduSearchServiceTest {
   }
 
   @Test
-  void 뚜두_최신순_목록_조회를_성공한다() {
+  void 투두_최신순_목록_조회를_성공한다() {
     // given
     DduduSearchRequest request = new DduduSearchRequest(null, null, size, null);
 
@@ -87,7 +87,7 @@ class DduduSearchServiceTest {
   }
 
   @Test
-  void 기본_10개의_뚜두_목록_조회를_성공한다() {
+  void 기본_10개의_투두_목록_조회를_성공한다() {
     // given
     DduduSearchRequest request = new DduduSearchRequest(null, null, null, null);
     int defaultSize = 10;
@@ -110,7 +110,7 @@ class DduduSearchServiceTest {
   }
 
   @Test
-  void 다음_커서_기반으로_뚜두_최신순_목록_조회를_성공한다() {
+  void 다음_커서_기반으로_투두_최신순_목록_조회를_성공한다() {
     // given
     int expectedSize = 5;
     String nextCursor = String.valueOf(latestId - expectedSize + 1);

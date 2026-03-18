@@ -19,11 +19,11 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 class RepeatPatternTest {
 
   @Nested
-  class 반복_뚜두_패턴_생성_테스트 {
+  class 반복_투두_패턴_생성_테스트 {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void 위클리_반복_뚜두의_경우_반복_요일이_없으면_생성을_실패한다(List<String> repeatDaysOfWeek) {
+    void 위클리_반복_투두의_경우_반복_요일이_없으면_생성을_실패한다(List<String> repeatDaysOfWeek) {
       // given
 
       // when
@@ -37,7 +37,7 @@ class RepeatPatternTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void 먼슬리_반복_뚜두의_경우_반복_날짜가_없으면_생성을_실패한다(List<Integer> repeatDaysOfMonth) {
+    void 먼슬리_반복_투두의_경우_반복_날짜가_없으면_생성을_실패한다(List<Integer> repeatDaysOfMonth) {
       // given
 
       // when
@@ -66,7 +66,7 @@ class RepeatPatternTest {
     }
 
     @Test
-    void 데일리_반복_뚜두의_반복_날짜_리스트_조회에_성공한다() {
+    void 데일리_반복_투두의_반복_날짜_리스트_조회에_성공한다() {
       // given
       RepeatPattern dailyPattern = RepeatDduduFixture.createDailyRepeatPattern();
 
@@ -79,7 +79,7 @@ class RepeatPatternTest {
     }
 
     @Test
-    void 위클리_반복_뚜두의_반복_날짜_리스트_조회에_성공한다() {
+    void 위클리_반복_투두의_반복_날짜_리스트_조회에_성공한다() {
       // given
       List<String> repeatDaysOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek(1);
       RepeatPattern weeklyPattern = RepeatDduduFixture.createWeeklyRepeatPattern(repeatDaysOfWeek);
@@ -117,7 +117,7 @@ class RepeatPatternTest {
     }
 
     @Test
-    void 먼슬리_반복_뚜두의_반복_날짜_리스트_조회에_성공한() {
+    void 먼슬리_반복_투두의_반복_날짜_리스트_조회에_성공한() {
       // given
       RepeatPattern monthlyPattern = RepeatDduduFixture.createMonthlyRepeatPattern(List.of(), true);
 

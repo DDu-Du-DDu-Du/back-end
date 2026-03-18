@@ -250,7 +250,7 @@ class CollectMonthlyStatsDetailServiceTest {
     }
 
     @Nested
-    class 반복뚜두통계_테스트 {
+    class 반복투두통계_테스트 {
 
       int repeatDduduSize;
       Map<Long, Integer> repeatDdudus;
@@ -276,7 +276,7 @@ class CollectMonthlyStatsDetailServiceTest {
       }
 
       @Test
-      void 이번_달_반복뚜두_통계를_반환한다() {
+      void 이번_달_반복투두_통계를_반환한다() {
         // given
 
         // when

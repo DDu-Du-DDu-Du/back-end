@@ -72,7 +72,7 @@ class BriefTodayPlanningServiceTest {
   }
 
   @Test
-  void 오늘_처음_조회하는_경우_뚜두_개수와_함께_응답을_반환한다() {
+  void 오늘_처음_조회하는_경우_투두_개수와_함께_응답을_반환한다() {
     // given
 
     // when

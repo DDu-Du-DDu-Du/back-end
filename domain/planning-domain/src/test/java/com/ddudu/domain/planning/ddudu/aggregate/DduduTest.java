@@ -47,7 +47,7 @@ class DduduTest {
     }
 
     @Test
-    void 뚜두_생성을_성공한다() {
+    void 투두_생성을_성공한다() {
       // given
 
       // when
@@ -64,7 +64,7 @@ class DduduTest {
     }
 
     @Test
-    void 뚜두_생성_시_디폴트_값이_적용된다() {
+    void 투두_생성_시_디폴트_값이_적용된다() {
       // given
 
       // when
@@ -248,7 +248,7 @@ class DduduTest {
       }
 
       @Test
-      void 시작_시간이_있는_뚜두에_미리알림을_설정한다() {
+      void 시작_시간이_있는_투두에_미리알림을_설정한다() {
         // given
 
         // when
@@ -472,7 +472,7 @@ class DduduTest {
     class 날짜_변경_테스트 {
 
       @Test
-      void 이미_완료한_뚜두에_미루기_요청하면_실패한다() {
+      void 이미_완료한_투두에_미루기_요청하면_실패한다() {
         // given
         LocalDate newDate = LocalDate.now()
             .plusDays(1);
@@ -490,7 +490,7 @@ class DduduTest {
       }
 
       @Test
-      void 완료_하지_않은_뚜두의_날짜를_기존_날짜_이후로_변경하면_미루기_상태가_된다() {
+      void 완료_하지_않은_투두의_날짜를_기존_날짜_이후로_변경하면_미루기_상태가_된다() {
         // given
         LocalDate previousScheduledOn = ddudu.getScheduledOn();
         LocalDate newDate = LocalDate.now()
@@ -559,7 +559,7 @@ class DduduTest {
     class 상태_변경_테스트 {
 
       @Test
-      void 미완료_뚜두는_완료_상태로_변경된다() {
+      void 미완료_투두는_완료_상태로_변경된다() {
         // given
         DduduStatus before = ddudu.getStatus();
         assertThat(before).isEqualTo(DduduStatus.UNCOMPLETED);
@@ -572,7 +572,7 @@ class DduduTest {
       }
 
       @Test
-      void 완료_뚜두는_미완료_상태로_변경된다() {
+      void 완료_투두는_미완료_상태로_변경된다() {
         // given
         Ddudu completeDdudu = DduduFixture.createRandomDduduWithReference(
             goalId, userId, false, DduduStatus.COMPLETE);
@@ -590,7 +590,7 @@ class DduduTest {
     class 이름_변경_테스트 {
 
       @Test
-      void 뚜두_이름_변경을_성공한다() {
+      void 투두_이름_변경을_성공한다() {
         // given
         String expected = DduduFixture.getRandomSentenceWithMax(50);
 
@@ -649,7 +649,7 @@ class DduduTest {
       }
 
       @Test
-      void 뚜두_시작시간이_없으면_미리알림_시간차_계산을_실패한다() {
+      void 투두_시작시간이_없으면_미리알림_시간차_계산을_실패한다() {
         // given
         Ddudu dduduWithoutTime = DduduFixture.createRandomDduduWithSchedule(
             userId,
@@ -666,7 +666,7 @@ class DduduTest {
       }
 
       @Test
-      void 뚜두_미리알림_시간이_없으면_미리알림_시간차_계산을_실패한다() {
+      void 투두_미리알림_시간이_없으면_미리알림_시간차_계산을_실패한다() {
         // given
         Ddudu dduduWithoutReminder = DduduFixture.createRandomDduduWithSchedule(
                 userId,
@@ -684,7 +684,7 @@ class DduduTest {
       }
 
       @Test
-      void 뚜두_미리알림_시간이_시작시간보다_늦으면_시간차_계산을_실패한다() {
+      void 투두_미리알림_시간이_시작시간보다_늦으면_시간차_계산을_실패한다() {
         // given
         int futureReminderDays = DduduFixture.getRandomInt(1, 10);
         LocalDateTime futureReminder = scheduledAt.plusDays(futureReminderDays);
@@ -801,7 +801,7 @@ class DduduTest {
     }
 
     @Test
-    void 뚜두_복제를_성공한다() {
+    void 투두_복제를_성공한다() {
       // given
       LocalDate tomorrow = LocalDate.now()
           .plusDays(1);

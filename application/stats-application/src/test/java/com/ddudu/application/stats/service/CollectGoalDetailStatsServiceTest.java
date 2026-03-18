@@ -71,7 +71,7 @@ class CollectGoalDetailStatsServiceTest {
   }
 
   @Test
-  void 생성된_뚜두가_없으면_0으로_채워_반환한다() {
+  void 생성된_투두가_없으면_0으로_채워_반환한다() {
     // given
 
     // when

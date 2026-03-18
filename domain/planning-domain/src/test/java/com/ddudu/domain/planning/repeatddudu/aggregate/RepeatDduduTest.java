@@ -51,7 +51,7 @@ class RepeatDduduTest {
     }
 
     @Test
-    void 반복_뚜두_생성을_성공한다() {
+    void 반복_투두_생성을_성공한다() {
       // when
       RepeatDdudu repeatDdudu = RepeatDdudu.builder()
           .goalId(goalId)

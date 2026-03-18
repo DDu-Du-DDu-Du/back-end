@@ -104,7 +104,7 @@ class SetReminderServiceTest {
   }
 
   @Test
-  void 존재하지_않는_뚜두는_미리알림_설정에_실패한다() {
+  void 존재하지_않는_투두는_미리알림_설정에_실패한다() {
     // given
     long invalidId = DduduFixture.getRandomId();
     SetReminderRequest request = new SetReminderRequest(0, 1, 0);

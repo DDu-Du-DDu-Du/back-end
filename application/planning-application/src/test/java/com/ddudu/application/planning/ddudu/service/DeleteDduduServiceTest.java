@@ -63,7 +63,7 @@ class DeleteDduduServiceTest {
   }
 
   @Test
-  void 뚜두를_삭제_할_수_있다() {
+  void 투두를_삭제_할_수_있다() {
     // when
     deleteDduduService.delete(user.getId(), ddudu.getId());
 
@@ -72,7 +72,7 @@ class DeleteDduduServiceTest {
   }
 
   @Test
-  void 뚜두가_존재하지_않는_경우_예외가_발생하지_않는다() {
+  void 투두가_존재하지_않는_경우_예외가_발생하지_않는다() {
     // given
     Long invalidId = DduduFixture.getRandomId();
 

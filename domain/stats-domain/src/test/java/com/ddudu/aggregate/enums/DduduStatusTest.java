@@ -14,7 +14,7 @@ class DduduStatusTest {
 
   @ParameterizedTest
   @NullAndEmptySource
-  void 통계를_위한_뚜두_상태는_항상_유효해야한다(String value) {
+  void 통계를_위한_투두_상태는_항상_유효해야한다(String value) {
     // given
     ThrowingCallable create = () -> DduduStatus.from(value);
 

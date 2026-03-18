@@ -95,7 +95,7 @@ class CreateRepeatDduduServiceTest {
   }
 
   @Test
-  void 반복_뚜두_생성에_성공한다() {
+  void 반복_투두_생성에_성공한다() {
     // when
     Long repeatDduduId = createRepeatDduduService.create(user.getId(), request);
 
@@ -112,7 +112,7 @@ class CreateRepeatDduduServiceTest {
   }
 
   @Test
-  void 반복_뚜두_생성_시_뚜두도_함께_생성된다() {
+  void 반복_투두_생성_시_투두도_함께_생성된다() {
     // given
 
     // when

@@ -67,7 +67,7 @@ class DeleteRepeatDduduServiceTest {
   }
 
   @Test
-  void 반복뚜두를_삭제_할_수_있다() {
+  void 반복투두를_삭제_할_수_있다() {
     // when
     deleteRepeatDduduService.delete(userId, repeatDdudu.getId());
 
@@ -80,7 +80,7 @@ class DeleteRepeatDduduServiceTest {
   }
 
   @Test
-  void 반복뚜두_삭제_시_해당_반복뚜두의_뚜두도_삭제된다() {
+  void 반복투두_삭제_시_해당_반복투두의_투두도_삭제된다() {
     //given
     Ddudu ddudu = DduduFixture.createRandomDduduWithRepeatDdudu(userId, repeatDdudu);
     ddudu = saveDduduPort.save(ddudu);
@@ -93,7 +93,7 @@ class DeleteRepeatDduduServiceTest {
   }
 
   @Test
-  void 반복뚜두가_존재하지_않는_경우_예외가_발생하지_않는다() {
+  void 반복투두가_존재하지_않는_경우_예외가_발생하지_않는다() {
     // given
     Long invalidId = RepeatDduduFixture.getRandomId();
 

@@ -109,7 +109,7 @@ class CancelReminderServiceTest {
   }
 
   @Test
-  void 존재하지_않는_뚜두는_미리알림_취소에_실패한다() {
+  void 존재하지_않는_투두는_미리알림_취소에_실패한다() {
     // given
     long invalidId = DduduFixture.getRandomId();
 

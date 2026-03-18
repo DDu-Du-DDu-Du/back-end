@@ -59,7 +59,7 @@ class RepeatServiceTest {
   }
 
   @Test
-  void 뚜두_다른_날_반복하기를_성공한다() {
+  void 투두_다른_날_반복하기를_성공한다() {
     // given
     LocalDate tomorrow = LocalDate.now()
         .plusDays(1);
@@ -80,7 +80,7 @@ class RepeatServiceTest {
   }
 
   @Test
-  void 뚜두가_없으면_다른_날_반복하기를_실패한다() {
+  void 투두가_없으면_다른_날_반복하기를_실패한다() {
     // given
     long invalidId = DduduFixture.getRandomId();
     LocalDate tomorrow = LocalDate.now()

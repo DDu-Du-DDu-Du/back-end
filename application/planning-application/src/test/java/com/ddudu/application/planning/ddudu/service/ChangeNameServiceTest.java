@@ -56,7 +56,7 @@ class ChangeNameServiceTest {
   }
 
   @Test
-  void 뚜두의_이름을_변경한다() {
+  void 투두의_이름을_변경한다() {
     // when
     BasicDduduResponse actual = changeNameService.change(user.getId(), ddudu.getId(), request);
 
@@ -83,7 +83,7 @@ class ChangeNameServiceTest {
   }
 
   @Test
-  void 존재하지_않는_뚜두인_경우_변경에_실패한다() {
+  void 존재하지_않는_투두인_경우_변경에_실패한다() {
     // given
     Long invalidId = DduduFixture.getRandomId();
 
@@ -97,7 +97,7 @@ class ChangeNameServiceTest {
   }
 
   @Test
-  void 뚜두를_생성한_사용자가_아닌_경우_변경에_실패한다() {
+  void 투두를_생성한_사용자가_아닌_경우_변경에_실패한다() {
     // given
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 

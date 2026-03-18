@@ -76,7 +76,7 @@ class RetrieveGoalServiceTest {
   }
 
   @Test
-  void 목표_조회_시_해당_목표의_반복_뚜두도_함께_조회된다() {
+  void 목표_조회_시_해당_목표의_반복_투두도_함께_조회된다() {
     // given
     LocalDate startDate = LocalDate.now();
     LocalDate endDate = LocalDate.now()

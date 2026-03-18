@@ -177,7 +177,7 @@ class CreateGoalServiceTest {
   }
 
   @Test
-  void 목표_생성_시_반복_뚜두도_함께_생성할_수_있다() {
+  void 목표_생성_시_반복_투두도_함께_생성할_수_있다() {
     // given
     LocalDate nextMonday = LocalDate.now()
         .with(DayOfWeek.MONDAY)
@@ -185,7 +185,7 @@ class CreateGoalServiceTest {
     LocalDate nextSunday = nextMonday.plusDays(6);
     List<CreateRepeatDduduRequestWithoutGoal> requests = List.of(
         new CreateRepeatDduduRequestWithoutGoal(
-            "반복 뚜두",
+            "반복 투두",
             RepeatType.WEEKLY.name(),
             List.of(DayOfWeek.SUNDAY.name()),
             null,
@@ -211,7 +211,7 @@ class CreateGoalServiceTest {
         .hasSize(1);
     assertThat(repeatDdudus.get(0))
         .extracting("name", "repeatType", "startDate", "endDate")
-        .containsExactly("반복 뚜두", RepeatType.WEEKLY, nextMonday, nextSunday);
+        .containsExactly("반복 투두", RepeatType.WEEKLY, nextMonday, nextSunday);
 
     List<Ddudu> ddudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudus.get(0));
 

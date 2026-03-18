@@ -54,7 +54,7 @@ class RetrieveDduduServiceTest {
   }
 
   @Test
-  void ID를_통해_뚜두를_조회할_수_있다() {
+  void ID를_통해_투두를_조회할_수_있다() {
     // when
     DduduDetailResponse actual = retrieveDduduService.findById(user.getId(), ddudu.getId());
 
@@ -75,7 +75,7 @@ class RetrieveDduduServiceTest {
   }
 
   @Test
-  void 미룬_뚜두_상세조회시_미루기_일시를_반환한다() {
+  void 미룬_투두_상세조회시_미루기_일시를_반환한다() {
     // given
     Ddudu postponedDdudu = saveDduduPort.save(
         DduduFixture.createDduduWithScheduleAndPostponedFlag(goal, true, LocalDate.now())
@@ -106,7 +106,7 @@ class RetrieveDduduServiceTest {
   }
 
   @Test
-  void 로그인_사용자가_뚜두의_주인이_아닌_경우_조회에_실패한다() {
+  void 로그인_사용자가_투두의_주인이_아닌_경우_조회에_실패한다() {
     // given
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 

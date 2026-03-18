@@ -79,7 +79,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 이번_달_월별_목표들의_뚜두_생성_수_통계를_내림차순으로_낸다() {
+    void 이번_달_월별_목표들의_투두_생성_수_통계를_내림차순으로_낸다() {
       // given
       YearMonth thisMonth = YearMonth.now();
 
@@ -99,7 +99,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 목표에_해당_달_생성_뚜두가_없으면_통계에서_제외한다() {
+    void 목표에_해당_달_생성_투두가_없으면_통계에서_제외한다() {
       // given
       YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
@@ -151,7 +151,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 이번_달_목표별_뚜두_달성_수_통계를_반환한다() {
+    void 이번_달_목표별_투두_달성_수_통계를_반환한다() {
       // given
       YearMonth thisMonth = YearMonth.now();
 
@@ -169,7 +169,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 목표에_해당_달의_뚜두_데이터가_없으면_통계에_포함되지_않는다() {
+    void 목표에_해당_달의_투두_데이터가_없으면_통계에_포함되지_않는다() {
       // given
       YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
@@ -227,7 +227,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 이번_달_지속한_뚜두_수_통계를_내림차순으로_반환한다() {
+    void 이번_달_지속한_투두_수_통계를_내림차순으로_반환한다() {
       // given
       YearMonth thisMonth = YearMonth.now();
 
@@ -248,7 +248,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 목표에_해당_월_지속한_뚜두가_없으면_통계에서_제외한다() {
+    void 목표에_해당_월_지속한_투두가_없으면_통계에서_제외한다() {
       // given
       YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
@@ -327,7 +327,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 미루기_뚜두가_없는_달이면_통계는_비어있다() {
+    void 미루기_투두가_없는_달이면_통계는_비어있다() {
       // given
       YearMonth noDduduMonth = YearMonth.now().minusMonths(2);
 
@@ -393,7 +393,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 목표에_해당_월_뚜두가_없으면_통계에서_제외한다() {
+    void 목표에_해당_월_투두가_없으면_통계에서_제외한다() {
       // given
       YearMonth lastMonth = YearMonth.now().minusMonths(1);
 

@@ -118,7 +118,7 @@ class SendNotificationEventServiceTest {
   }
 
   @Test
-  void 알림_이벤트에_연동된_뚜두가_없는_경우_알림_발송을_실패한다() {
+  void 알림_이벤트에_연동된_투두가_없는_경우_알림_발송을_실패한다() {
     // given
     long invalidId = NotificationEventFixture.getRandomId();
     NotificationEvent eventWithInvalidDdudu = notificationEventCommandPort.save(
