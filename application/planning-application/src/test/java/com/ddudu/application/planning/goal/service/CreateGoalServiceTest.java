@@ -6,7 +6,7 @@ import com.ddudu.application.common.dto.goal.request.CreateGoalRequest;
 import com.ddudu.application.common.dto.goal.request.CreateRepeatTodoRequestWithoutGoal;
 import com.ddudu.application.common.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.repeattodo.out.RepeatTodoLoaderPort;
 import com.ddudu.common.exception.GoalErrorCode;

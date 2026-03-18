@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.common.dto.notification.response.DailyBriefingResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.out.DailyBriefingCommandPort;
 import com.ddudu.common.exception.DailyBriefingLogErrorCode;

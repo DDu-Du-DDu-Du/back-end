@@ -8,7 +8,7 @@ import com.ddudu.application.common.dto.notification.response.NotificationInboxS
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationInboxCommandPort;

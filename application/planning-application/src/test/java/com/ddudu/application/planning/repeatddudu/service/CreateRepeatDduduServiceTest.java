@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.repeattodo.request.CreateRepeatTodoRequest;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.repeattodo.out.RepeatTodoLoaderPort;
 import com.ddudu.common.exception.GoalErrorCode;
