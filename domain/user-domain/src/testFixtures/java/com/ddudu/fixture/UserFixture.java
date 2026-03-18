@@ -64,7 +64,7 @@ public class UserFixture extends BaseFixture {
         .options(null)
         .allowingFollowsAfterApproval(null)
         .templateNotification(null)
-        .dduduNotification(null)
+        .todoNotification(null)
         .build();
   }
 
@@ -84,7 +84,7 @@ public class UserFixture extends BaseFixture {
     return Options.builder()
         .allowingFollowsAfterApproval(faker.bool().bool())
         .templateNotification(faker.bool().bool())
-        .dduduNotification(faker.bool().bool())
+        .todoNotification(faker.bool().bool())
         .display(DisplayOptions.builder()
             .weekStartDay(getRandomWeekStartDay())
             .darkMode(faker.bool().bool())
@@ -143,7 +143,7 @@ public class UserFixture extends BaseFixture {
       Options options,
       Boolean allowingFollowsAfterApproval,
       Boolean templateNotification,
-      Boolean dduduNotification
+      Boolean todoNotification
   ) {
     String lowTime = UUID.randomUUID()
         .toString()
@@ -170,7 +170,7 @@ public class UserFixture extends BaseFixture {
         .templateNotification(Objects.nonNull(templateNotification) ? templateNotification
             : faker.bool()
                 .bool())
-        .dduduNotification(Objects.nonNull(dduduNotification) ? dduduNotification : faker.bool()
+        .todoNotification(Objects.nonNull(todoNotification) ? todoNotification : faker.bool()
             .bool())
         .build();
   }
@@ -179,7 +179,7 @@ public class UserFixture extends BaseFixture {
     return Options.builder()
         .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
         .templateNotification(user.isNotifyingTemplate())
-        .dduduNotification(user.isNotifyingTodo())
+        .todoNotification(user.isNotifyingTodo())
         .display(DisplayOptions.builder()
             .weekStartDay(user.getWeekStartDay())
             .darkMode(user.isDarkMode())

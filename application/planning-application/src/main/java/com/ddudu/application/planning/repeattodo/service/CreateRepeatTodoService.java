@@ -37,13 +37,13 @@ public class CreateRepeatTodoService implements CreateRepeatTodoUseCase {
     // 3. 종료되지 않은 목표인지 확인
     validateGoalNotDone(goal);
 
-    // 4. 반복 뚜두 생성 후 저장
+    // 4. 반복 투두 생성 후 저장
     RepeatTodo repeatTodo = saveRepeatTodoPort.save(repeatTodoDomainService.create(
         goal.getId(),
         request.toCommand()
     ));
 
-    // 5. (반복되는) 뚜두 생성 후 저장
+    // 5. (반복되는) 투두 생성 후 저장
     saveTodoPort.saveAll(repeatTodoDomainService.createRepeatedTodos(loginId, repeatTodo));
 
     return repeatTodo.getId();

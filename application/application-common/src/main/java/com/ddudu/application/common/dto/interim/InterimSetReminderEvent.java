@@ -16,7 +16,7 @@ public record InterimSetReminderEvent(
   public static InterimSetReminderEvent from(Long userId, Todo todo) {
     return InterimSetReminderEvent.builder()
         .userId(userId)
-        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
         .contextId(todo.getId())
         .willFireAt(todo.getRemindAt())
         .build();

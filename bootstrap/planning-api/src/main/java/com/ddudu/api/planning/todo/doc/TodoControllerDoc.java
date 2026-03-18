@@ -531,7 +531,7 @@ public interface TodoControllerDoc {
                       ),
                       @ExampleObject(
                           name = "2022",
-                          value = TodoErrorExamples.TODO_UNABLE_TO_POSTPONE_COMPLETED_DDUDU
+                          value = TodoErrorExamples.TODO_UNABLE_TO_POSTPONE_COMPLETED_TODO
                       )
                   }
               )

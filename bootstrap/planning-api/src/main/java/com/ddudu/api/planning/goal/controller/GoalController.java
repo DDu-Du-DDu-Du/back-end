@@ -46,7 +46,7 @@ public class GoalController implements GoalControllerDoc {
   private final DeleteGoalUseCase deleteGoalUseCase;
 
   /**
-   * 목표 생성 API (반복 뚜두도 함께 생성 가능)
+   * 목표 생성 API (반복 투두도 함께 생성 가능)
    */
   @PostMapping
   public ResponseEntity<GoalIdResponse> create(
@@ -64,7 +64,7 @@ public class GoalController implements GoalControllerDoc {
   }
 
   /**
-   * 목표 상세 조회 API (반복 뚜두도 함께)
+   * 목표 상세 조회 API (반복 투두도 함께)
    */
   @GetMapping("/{id}")
   public ResponseEntity<GoalWithRepeatTodoResponse> getById(
@@ -79,7 +79,7 @@ public class GoalController implements GoalControllerDoc {
   }
 
   /**
-   * 목표 전체 조회 API (사용자 기준, 뚜두도 함께)
+   * 목표 전체 조회 API (사용자 기준, 투두도 함께)
    */
   @GetMapping
   public ResponseEntity<List<BasicGoalResponse>> getAllByUser(
@@ -133,7 +133,7 @@ public class GoalController implements GoalControllerDoc {
   }
 
   /**
-   * 목표 삭제 API (해당 목표의 반복 뚜두 / 뚜두도 함께 삭제)
+   * 목표 삭제 API (해당 목표의 반복 투두 / 투두도 함께 삭제)
    */
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(

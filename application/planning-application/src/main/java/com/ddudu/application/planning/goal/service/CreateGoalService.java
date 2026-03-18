@@ -48,8 +48,8 @@ public class CreateGoalService implements CreateGoalUseCase {
 
     Goal goal = saveGoalPort.save(goalDomainService.create(user.getId(), command));
 
-    // 3. 반복 뚜두 생성 후 저장
-    // TODO: 반복 뚜두 생성 부분을 비동기로 변경
+    // 3. 반복 투두 생성 후 저장
+    // TODO: 반복 투두 생성 부분을 비동기로 변경
     request.repeatTodos()
         .forEach(repeatTodoRequest -> createRepeatTodoService.create(
             userId,

@@ -16,7 +16,7 @@ public record InterimDeleteTodoEvent(
   public static InterimDeleteTodoEvent from(Long userId, Todo todo) {
     return InterimDeleteTodoEvent.builder()
         .userId(userId)
-        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
         .contextId(todo.getId())
         .build();
   }

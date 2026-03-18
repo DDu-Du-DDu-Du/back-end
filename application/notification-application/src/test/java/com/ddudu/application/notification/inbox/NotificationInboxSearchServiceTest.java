@@ -77,7 +77,7 @@ class NotificationInboxSearchServiceTest {
     Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
 
     for (int i = 0; i < size + 1; i++) {
-      Todo ddudu = saveTodoPort.save(TodoFixture.createTodoWithReminderFor(
+      Todo todo = saveTodoPort.save(TodoFixture.createTodoWithReminderFor(
           user.getId(),
           goal.getId(),
           remindAt
@@ -85,7 +85,7 @@ class NotificationInboxSearchServiceTest {
       NotificationEvent notificationEvent = notificationEventCommandPort.save(
           NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(
               user.getId(),
-              ddudu.getId()
+              todo.getId()
           )
       );
 
@@ -93,7 +93,7 @@ class NotificationInboxSearchServiceTest {
           NotificationInboxFixture.createNotReadInboxSelfWithContextAndContent(
               notificationEvent.getId(),
               user.getId(),
-              NotificationEventTypeCode.DDUDU_REMINDER,
+              NotificationEventTypeCode.TODO_REMINDER,
               BaseFixture.getRandomId(),
               BaseFixture.getRandomSentenceWithMax(50),
               BaseFixture.getRandomSentenceWithMax(200)

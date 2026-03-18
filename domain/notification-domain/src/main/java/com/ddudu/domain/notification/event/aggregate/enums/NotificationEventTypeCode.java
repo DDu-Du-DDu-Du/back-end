@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum NotificationEventTypeCode {
-  DDUDU_REMINDER("DDUDU", "뚜두 시작 {0} 전에 알려드려요."),
+  TODO_REMINDER("TODO", "투두 시작 {0} 전에 알려드려요."),
   TEMPLATE_COMMENT("TEMPLATE", ""),
   TEMPLATE_LIKE("TEMPLATE", ""),
   FOLLOWING_REQUEST("FOLLOWING", ""),

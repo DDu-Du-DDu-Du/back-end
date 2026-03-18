@@ -42,7 +42,7 @@ public class CreateTodoService implements CreateTodoUseCase {
     // 3. 종료되지 않은 목표인지 확인
     validateGoalNotDone(goal);
 
-    // 4. 뚜두 생성 후 저장
+    // 4. 투두 생성 후 저장
     Todo todo = todoDomainService.create(user.getId(), request.toCommand());
     Todo saved = saveTodoPort.save(todo);
 

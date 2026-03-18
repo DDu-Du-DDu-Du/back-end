@@ -12,7 +12,7 @@ public enum TodoStatus {
     return Arrays.stream(TodoStatus.values())
         .filter(status -> Objects.equals(value, status.name()))
         .findFirst()
-        .orElseThrow(() -> new RuntimeException(StatsErrorCode.INVALID_DDUDU_STATUS.getCodeName()));
+        .orElseThrow(() -> new RuntimeException(StatsErrorCode.INVALID_TODO_STATUS.getCodeName()));
   }
 
   public boolean isCompleted() {

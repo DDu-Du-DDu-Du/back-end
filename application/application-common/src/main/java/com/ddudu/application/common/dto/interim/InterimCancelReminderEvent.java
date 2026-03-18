@@ -16,7 +16,7 @@ public record InterimCancelReminderEvent(
   public static InterimCancelReminderEvent from(Long userId, Todo todo) {
     return InterimCancelReminderEvent.builder()
         .userId(userId)
-        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
         .contextId(todo.getId())
         .build();
   }

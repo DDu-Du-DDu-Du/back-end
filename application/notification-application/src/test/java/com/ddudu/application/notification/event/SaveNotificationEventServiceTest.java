@@ -58,14 +58,14 @@ class SaveNotificationEventServiceTest {
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
   LocalDateTime willFireAt;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
     willFireAt = NotificationEventFixture.getFutureDateTime(10, TimeUnit.DAYS);
     // events are cleared per-test by the framework when using @RecordApplicationEvents
   }
@@ -75,8 +75,8 @@ class SaveNotificationEventServiceTest {
     // given
     NotificationEventSaveEvent saveEvent = NotificationEventSaveEvent.builder()
         .userId(user.getId())
-        .contextId(ddudu.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
+        .contextId(todo.getId())
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
         .willFireAt(willFireAt)
         .build();
 
@@ -86,8 +86,8 @@ class SaveNotificationEventServiceTest {
     // then
     Optional<NotificationEvent> actual = notificationEventLoaderPort.getOptionalEventByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
 
     assertThat(actual).isPresent();
@@ -101,14 +101,14 @@ class SaveNotificationEventServiceTest {
     NotificationEvent savedNotificationEvent = notificationEventCommandPort.save(
         NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
             user.getId(),
-            ddudu.getId()
+            todo.getId()
         )
     );
 
     NotificationEventSaveEvent saveEvent = NotificationEventSaveEvent.builder()
         .userId(user.getId())
-        .contextId(ddudu.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
+        .contextId(todo.getId())
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
         .willFireAt(willFireAt)
         .build();
 
@@ -118,8 +118,8 @@ class SaveNotificationEventServiceTest {
     // then
     NotificationEvent actual = notificationEventLoaderPort.getOptionalEventByContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
-            ddudu.getId()
+            NotificationEventTypeCode.TODO_REMINDER,
+            todo.getId()
         )
         .orElseThrow();
 
@@ -132,8 +132,8 @@ class SaveNotificationEventServiceTest {
     // given
     NotificationEventSaveEvent saveEvent = buildSaveEventPlannedToday(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
 
     // when
@@ -142,8 +142,8 @@ class SaveNotificationEventServiceTest {
     // then
     NotificationEvent persisted = notificationEventLoaderPort.getOptionalEventByContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
-            ddudu.getId())
+            NotificationEventTypeCode.TODO_REMINDER,
+            todo.getId())
         .orElseThrow();
 
     assertThat(events.stream(NotificationScheduleEvent.class)).hasSize(1);
@@ -158,8 +158,8 @@ class SaveNotificationEventServiceTest {
     // given
     NotificationEventSaveEvent saveEvent = buildSaveEventPlannedAnotherDay(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
 
     // when
@@ -174,31 +174,31 @@ class SaveNotificationEventServiceTest {
     // given: first save for another day
     NotificationEventSaveEvent first = buildSaveEventPlannedAnotherDay(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
     saveNotificationEventUseCase.save(first);
     assertThat(events.stream(NotificationScheduleEvent.class)).isEmpty();
 
     NotificationEvent beforeUpdate = notificationEventLoaderPort.getOptionalEventByContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
-            ddudu.getId())
+            NotificationEventTypeCode.TODO_REMINDER,
+            todo.getId())
         .orElseThrow();
 
     // when: update to today
     NotificationEventSaveEvent second = buildSaveEventPlannedToday(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
     saveNotificationEventUseCase.save(second);
 
     // then
     NotificationEvent afterUpdate = notificationEventLoaderPort.getOptionalEventByContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
-            ddudu.getId())
+            NotificationEventTypeCode.TODO_REMINDER,
+            todo.getId())
         .orElseThrow();
     assertThat(afterUpdate.getId()).isEqualTo(beforeUpdate.getId());
     assertThat(events.stream(NotificationScheduleEvent.class)).hasSize(1);
@@ -209,8 +209,8 @@ class SaveNotificationEventServiceTest {
     // given: first save for today
     NotificationEventSaveEvent first = buildSaveEventPlannedToday(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
     saveNotificationEventUseCase.save(first);
     long before = events.stream(NotificationScheduleEvent.class).count();
@@ -219,8 +219,8 @@ class SaveNotificationEventServiceTest {
     // when: update to not today
     NotificationEventSaveEvent second = buildSaveEventPlannedAnotherDay(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
     saveNotificationEventUseCase.save(second);
 

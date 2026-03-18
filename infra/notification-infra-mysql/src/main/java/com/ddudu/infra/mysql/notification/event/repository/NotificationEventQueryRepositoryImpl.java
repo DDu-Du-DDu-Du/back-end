@@ -36,7 +36,7 @@ public class NotificationEventQueryRepositoryImpl implements NotificationEventQu
             endOfDay
         )
     ).and(notificationEventEntity.firedAt.isNull())
-        .and(notificationEventEntity.typeCode.eq(NotificationEventTypeCode.DDUDU_REMINDER));
+        .and(notificationEventEntity.typeCode.eq(NotificationEventTypeCode.TODO_REMINDER));
 
     return jpaQueryFactory
         .from(notificationEventEntity)

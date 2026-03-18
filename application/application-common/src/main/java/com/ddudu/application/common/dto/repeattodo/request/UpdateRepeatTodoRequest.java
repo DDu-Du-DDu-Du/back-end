@@ -9,11 +9,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Schema(description = "반복 뚜두 수정 요청")
+@Schema(description = "반복 투두 수정 요청")
 public record UpdateRepeatTodoRequest(
     @Schema(
         name = "name",
-        description = "반복 뚜두명",
+        description = "반복 투두명",
         example = "물 한 컵 마시기"
     )
     @NotNull(message = "6001 BLANK_NAME")

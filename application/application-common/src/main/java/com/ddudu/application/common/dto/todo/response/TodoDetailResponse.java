@@ -9,26 +9,26 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.Builder;
 
-@Schema(description = "뚜두 상세 응답")
+@Schema(description = "투두 상세 응답")
 @Builder
 public record TodoDetailResponse(
     @Schema(
-        description = "뚜두 ID",
+        description = "투두 ID",
         example = "1"
     )
     Long id,
     @Schema(
-        description = "뚜두 이름",
+        description = "투두 이름",
         example = "로그인 PR 날리기"
     )
     String name,
     @Schema(
-        description = "뚜두 메모",
+        description = "투두 메모",
         example = "리뷰 코멘트 반영 후 머지"
     )
     String memo,
     @Schema(
-        description = "뚜두 상태 [UNCOMPLETED|COMPLETE]",
+        description = "투두 상태 [UNCOMPLETED|COMPLETE]",
         example = "UNCOMPLETED"
     )
     TodoStatus status,
@@ -38,7 +38,7 @@ public record TodoDetailResponse(
     )
     Long goalId,
     @Schema(
-        description = "반복 뚜두 ID",
+        description = "반복 투두 ID",
         example = "1"
     )
     Long repeatTodoId,

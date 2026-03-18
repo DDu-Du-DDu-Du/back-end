@@ -21,7 +21,7 @@ public class DeleteRepeatTodoService implements DeleteRepeatTodoUseCase {
 
   public void delete(Long userId, Long id) {
     /**
-     * 하위 뚜두들도 모두 삭제
+     * 하위 투두들도 모두 삭제
      */
     repeatTodoLoaderPort.getOptionalRepeatTodo(id)
         .ifPresent(repeatTodo -> {

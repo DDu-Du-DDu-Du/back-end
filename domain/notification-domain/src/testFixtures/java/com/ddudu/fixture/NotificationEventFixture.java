@@ -12,46 +12,46 @@ public final class NotificationEventFixture extends BaseFixture {
 
   public static NotificationEvent createFiredTodoEventNowWithUserAndContext(
       Long receiverId,
-      Long dduduId
+      Long todoId
   ) {
     LocalDateTime nearNow = LocalDateTime.now()
         .plusSeconds(10);
 
-    return createFiredTodoEventWithUserAndContext(receiverId, dduduId, nearNow);
+    return createFiredTodoEventWithUserAndContext(receiverId, todoId, nearNow);
   }
 
   public static NotificationEvent createValidTodoEventNowWithUserAndContext(
       Long receiverId,
-      Long dduduId
+      Long todoId
   ) {
     LocalDateTime nearNow = LocalDateTime.now()
         .plusSeconds(10);
 
-    return createValidTodoEventWithUserAndContext(receiverId, dduduId, nearNow);
+    return createValidTodoEventWithUserAndContext(receiverId, todoId, nearNow);
   }
 
   public static NotificationEvent createFiredTodoEventWithUserAndContext(
       Long receiverId,
-      Long dduduId,
+      Long todoId,
       LocalDateTime willFireAt
   ) {
     return createFiredEventWithUserAndContext(
         receiverId,
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        dduduId,
+        NotificationEventTypeCode.TODO_REMINDER,
+        todoId,
         willFireAt
     );
   }
 
   public static NotificationEvent createValidTodoEventWithUserAndContext(
       Long receiverId,
-      Long dduduId,
+      Long todoId,
       LocalDateTime willFireAt
   ) {
     return createValidEventWithUserAndContext(
         receiverId,
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        dduduId,
+        NotificationEventTypeCode.TODO_REMINDER,
+        todoId,
         willFireAt
     );
   }

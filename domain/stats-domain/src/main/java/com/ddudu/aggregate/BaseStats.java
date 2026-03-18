@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class BaseStats {
 
   @EqualsAndHashCode.Include
-  private final Long dduduId;
+  private final Long todoId;
   private final Long goalId;
   private final String goalName;
   private final String goalColor;

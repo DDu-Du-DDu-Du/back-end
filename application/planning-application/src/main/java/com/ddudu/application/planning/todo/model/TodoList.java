@@ -39,7 +39,7 @@ public class TodoList {
                 .map(BasicTodoResponse::from)
                 .toList()
         ))
-        .filter((groupedTodos) -> !isDoneGoalAndEmpty(groupedTodos)) // 종료된 목표는 하위 뚜두가 있을 때만 조회
+        .filter((groupedTodos) -> !isDoneGoalAndEmpty(groupedTodos)) // 종료된 목표는 하위 투두가 있을 때만 조회
         .toList();
   }
 

@@ -40,11 +40,11 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
     RepeatTodoPort, TodoSearchPort, DeleteTodoPort, TodoStatsPort, MonthlyStatsPort,
     GoalDetailStatsPort {
 
-  private final TodoRepository dduduRepository;
+  private final TodoRepository todoRepository;
 
   @Override
   public Todo getTodoOrElseThrow(Long id, String message) {
-    return dduduRepository.findById(id)
+    return todoRepository.findById(id)
         .orElseThrow(() -> new MissingResourceException(
             message,
             Todo.class.getName(),
@@ -55,13 +55,13 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
 
   @Override
   public Optional<Todo> getOptionalTodo(Long id) {
-    return dduduRepository.findById(id)
+    return todoRepository.findById(id)
         .map(TodoEntity::toDomain);
   }
 
   @Override
   public List<Todo> getRepeatedTodos(RepeatTodo repeatTodo) {
-    return dduduRepository.findAllByRepeatTodoId(repeatTodo.getId())
+    return todoRepository.findAllByRepeatTodoId(repeatTodo.getId())
         .stream()
         .map(TodoEntity::toDomain)
         .toList();
@@ -73,7 +73,7 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
       Long userId,
       List<PrivacyType> accessiblePrivacyTypes
   ) {
-    return dduduRepository.findAllByDateAndUserAndPrivacyTypes(date, userId, accessiblePrivacyTypes)
+    return todoRepository.findAllByDateAndUserAndPrivacyTypes(date, userId, accessiblePrivacyTypes)
         .stream()
         .map(TodoEntity::toDomain)
         .toList();
@@ -81,32 +81,32 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
 
   @Override
   public int countTodayTodo(Long userId) {
-    return dduduRepository.countTodayByUserId(userId);
+    return todoRepository.countTodayByUserId(userId);
   }
 
   @Override
   public Todo update(Todo todo) {
-    TodoEntity dduduEntity = dduduRepository.findById(todo.getId())
+    TodoEntity todoEntity = todoRepository.findById(todo.getId())
         .orElseThrow(EntityNotFoundException::new);
 
-    dduduEntity.update(todo);
+    todoEntity.update(todo);
 
-    return dduduEntity.toDomain();
+    return todoEntity.toDomain();
   }
 
   @Override
   public Todo save(Todo todo) {
-    return dduduRepository.save(TodoEntity.from(todo))
+    return todoRepository.save(TodoEntity.from(todo))
         .toDomain();
   }
 
   @Override
-  public List<Todo> saveAll(List<Todo> ddudus) {
-    List<TodoEntity> dduduEntities = ddudus.stream()
+  public List<Todo> saveAll(List<Todo> todos) {
+    List<TodoEntity> todoEntities = todos.stream()
         .map(TodoEntity::from)
         .toList();
 
-    return dduduRepository.saveAll(dduduEntities)
+    return todoRepository.saveAll(todoEntities)
         .stream()
         .map(TodoEntity::toDomain)
         .toList();
@@ -119,7 +119,7 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
       String query,
       Boolean isMine
   ) {
-    return dduduRepository.findScrollTodos(
+    return todoRepository.findScrollTodos(
         userId,
         request,
         query,
@@ -130,12 +130,12 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
 
   @Override
   public void delete(Todo todo) {
-    dduduRepository.delete(TodoEntity.from(todo));
+    todoRepository.delete(TodoEntity.from(todo));
   }
 
   @Override
   public void deleteAllByRepeatTodo(RepeatTodo repeatTodo) {
-    dduduRepository.deleteAllByRepeatTodoId(repeatTodo.getId());
+    todoRepository.deleteAllByRepeatTodoId(repeatTodo.getId());
   }
 
   @Override
@@ -147,7 +147,7 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
       List<PrivacyType> privacyTypes,
       boolean isAchieved
   ) {
-    return dduduRepository.findTodosCompletion(
+    return todoRepository.findTodosCompletion(
         startDate,
         endDate,
         userId,
@@ -160,7 +160,7 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
 
   @Override
   public List<GoalStatusSummaryRaw> loadGoalStatuses(Long userId, Long goalId) {
-    return dduduRepository.findGoalStatuses(userId, goalId);
+    return todoRepository.findGoalStatuses(userId, goalId);
   }
 
   @Override
@@ -171,7 +171,7 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
       LocalDate to
   ) {
     Long goalId = Objects.nonNull(goal) ? goal.getId() : null;
-    List<BaseStats> stats = dduduRepository.findStatsBaseOfUser(userId, goalId, from, to);
+    List<BaseStats> stats = todoRepository.findStatsBaseOfUser(userId, goalId, from, to);
 
     return collectByMonth(userId, stats);
   }
@@ -184,7 +184,7 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
       LocalDate to
   ) {
     Long goalId = Objects.nonNull(goal) ? goal.getId() : null;
-    List<BaseStats> stats = dduduRepository.findPostponedStatsBaseOfUser(userId, goalId, from, to);
+    List<BaseStats> stats = todoRepository.findPostponedStatsBaseOfUser(userId, goalId, from, to);
 
     return collectByMonth(userId, stats);
   }
@@ -213,7 +213,7 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
       LocalDate from,
       LocalDate to
   ) {
-    return dduduRepository.countByRepeatTodoId(userId, goalId, from, to);
+    return todoRepository.countByRepeatTodoId(userId, goalId, from, to);
   }
 
 }

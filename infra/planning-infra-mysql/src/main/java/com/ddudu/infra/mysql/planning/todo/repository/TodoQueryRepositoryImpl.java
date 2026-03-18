@@ -406,7 +406,7 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
 
     return Projections.constructor(
         BaseStats.class,
-        todoEntity.id.as("dduduId"),
+        todoEntity.id.as("todoId"),
         goalEntity.id,
         goalEntity.name,
         goalEntity.color.stringValue(),

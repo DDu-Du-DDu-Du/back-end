@@ -37,7 +37,7 @@ public class StatsController implements StatsControllerDoc {
   private final CollectGoalDetailStatsUseCase collectGoalDetailStatsUseCase;
 
   /**
-   * 월별 뚜두 완료율 조회 API (달성 뚜두 수 / 생성 뚜두 수)
+   * 월별 투두 완료율 조회 API (달성 투두 수 / 생성 투두 수)
    */
   @GetMapping("/completion/monthly")
   public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
@@ -62,7 +62,7 @@ public class StatsController implements StatsControllerDoc {
   }
 
   /**
-   * 주간 뚜두 완료율 조회 API
+   * 주간 투두 완료율 조회 API
    */
   @Deprecated
   @GetMapping("/completion/weekly")

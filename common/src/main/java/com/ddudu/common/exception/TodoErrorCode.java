@@ -29,7 +29,7 @@ public enum TodoErrorCode implements ErrorCode {
   ZERO_REMINDER(2019, "미리알림 입력값이 없습니다."),
   NEGATIVE_REMINDER_INPUT_EXISTS(2020, "미리알림을 입력값 중 음수가 포함되어 있습니다."),
   UNABLE_TO_GET_REMINDER(2021, "미리알림 시간을 알 수 없는 상태입니다."),
-  UNABLE_TO_POSTPONE_COMPLETED_DDUDU(2022, "완료된 뚜두는 미루기 처리할 수 없습니다.");
+  UNABLE_TO_POSTPONE_COMPLETED_TODO(2022, "완료된 투두는 미루기 처리할 수 없습니다.");
 
   private final int code;
   private final String message;

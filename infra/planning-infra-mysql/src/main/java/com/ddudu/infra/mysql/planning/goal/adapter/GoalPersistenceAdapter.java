@@ -23,7 +23,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
     DeleteGoalPort {
 
   private final GoalRepository goalRepository;
-  private final TodoRepository dduduRepository;
+  private final TodoRepository todoRepository;
 
   @Override
   public Goal save(Goal goal) {
@@ -110,7 +110,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
 
   @Override
   public void deleteWithTodos(Goal goal) {
-    dduduRepository.deleteAllByGoalId(goal.getId());
+    todoRepository.deleteAllByGoalId(goal.getId());
     goalRepository.delete(GoalEntity.from(goal));
   }
 

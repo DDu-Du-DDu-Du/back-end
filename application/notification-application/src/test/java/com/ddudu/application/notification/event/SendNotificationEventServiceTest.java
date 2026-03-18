@@ -133,7 +133,7 @@ class SendNotificationEventServiceTest {
 
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
-        .withMessage(NotificationEventErrorCode.ORIGINAL_DDUDU_NOT_EXISTING.getCodeName());
+        .withMessage(NotificationEventErrorCode.ORIGINAL_TODO_NOT_EXISTING.getCodeName());
   }
 
   @Test

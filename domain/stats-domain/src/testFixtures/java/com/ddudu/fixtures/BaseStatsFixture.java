@@ -74,9 +74,9 @@ public final class BaseStatsFixture extends BaseFixture {
       LocalTime beginAt,
       LocalTime endAt
   ) {
-    Long dduduId = getRandomId();
+    Long todoId = getRandomId();
 
-    return createBaseStats(dduduId, goalId, status, isPostponed, scheduledOn, beginAt, endAt);
+    return createBaseStats(todoId, goalId, status, isPostponed, scheduledOn, beginAt, endAt);
   }
 
   public static List<BaseStats> createPostponedCompleteStats(Long goalId, int size) {
@@ -251,15 +251,15 @@ public final class BaseStatsFixture extends BaseFixture {
       TodoStatus status,
       LocalDate scheduledOn
   ) {
-    Long dduduId = getRandomId();
+    Long todoId = getRandomId();
     LocalTime beginAt = getPastTime();
     LocalTime endAt = getFutureTime();
 
-    return createBaseStats(dduduId, goalId, status, isPostponed, scheduledOn, beginAt, endAt);
+    return createBaseStats(todoId, goalId, status, isPostponed, scheduledOn, beginAt, endAt);
   }
 
   private static BaseStats createBaseStats(
-      Long dduduId,
+      Long todoId,
       Long goalId,
       TodoStatus status,
       boolean isPostponed,
@@ -268,7 +268,7 @@ public final class BaseStatsFixture extends BaseFixture {
       LocalTime endAt
   ) {
     return BaseStats.builder()
-        .dduduId(dduduId)
+        .todoId(todoId)
         .goalId(goalId)
         .goalName(goalId.toString())
         .goalColor(getRandomColor())

@@ -86,7 +86,7 @@ public final class TodoErrorExamples {
       }
       """;
 
-  public static final String TODO_UNABLE_TO_POSTPONE_COMPLETED_DDUDU = """
+  public static final String TODO_UNABLE_TO_POSTPONE_COMPLETED_TODO = """
       {
         "code": 2022,
         "message": "완료된 투두는 미루기 처리할 수 없습니다."

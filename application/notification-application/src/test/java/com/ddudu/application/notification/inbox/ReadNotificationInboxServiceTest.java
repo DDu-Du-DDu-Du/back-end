@@ -51,9 +51,9 @@ class ReadNotificationInboxServiceTest {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
-    Long dduduId = BaseFixture.getRandomId();
+    Long todoId = BaseFixture.getRandomId();
     NotificationEvent event = notificationEventCommandPort.save(
-        NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(user.getId(), dduduId)
+        NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(user.getId(), todoId)
     );
 
     notificationInbox = notificationInboxCommandPort.save(

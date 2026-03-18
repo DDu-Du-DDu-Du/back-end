@@ -9,11 +9,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Schema(description = "반복 뚜두 생성 요청")
+@Schema(description = "반복 투두 생성 요청")
 public record CreateRepeatTodoRequest(
     @Schema(
         name = "name",
-        description = "반복 뚜두명",
+        description = "반복 투두명",
         example = "물 한 컵 마시기"
     )
     @NotNull(message = "6001 BLANK_NAME")
@@ -24,7 +24,7 @@ public record CreateRepeatTodoRequest(
     String name,
     @Schema(
         name = "goalId",
-        description = "반복 뚜두를 생성할 목표 식별자",
+        description = "반복 투두를 생성할 목표 식별자",
         example = "1"
     )
     @NotNull(message = "6002 NULL_GOAL_VALUE")

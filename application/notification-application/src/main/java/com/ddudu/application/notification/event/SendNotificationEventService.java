@@ -70,7 +70,7 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
 
   private NotificationInbox createNotificationInbox(NotificationEvent notificationEvent) {
     return switch (notificationEvent.getTypeCode()) {
-      case DDUDU_REMINDER -> createTodoNotificationInbox(notificationEvent);
+      case TODO_REMINDER -> createTodoNotificationInbox(notificationEvent);
       default -> throw new NotImplementedException("not implemented yet.");
     };
   }
@@ -78,7 +78,7 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
   private NotificationInbox createTodoNotificationInbox(NotificationEvent notificationEvent) {
     Todo todo = todoLoaderPort.getTodoOrElseThrow(
         notificationEvent.getContextId(),
-        NotificationEventErrorCode.ORIGINAL_DDUDU_NOT_EXISTING.getCodeName()
+        NotificationEventErrorCode.ORIGINAL_TODO_NOT_EXISTING.getCodeName()
     );
     String title = todo.getName();
     String body = notificationEvent.getTodoBody(todo.getRemindDifference());

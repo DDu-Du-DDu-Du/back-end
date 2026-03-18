@@ -102,7 +102,7 @@ public class Todo {
     }
 
     checkArgument(!this.status.isCompleted(),
-        TodoErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
+        TodoErrorCode.UNABLE_TO_POSTPONE_COMPLETED_TODO.getCodeName());
 
     return builder
         .postponedAt(previousScheduledOn.atStartOfDay())

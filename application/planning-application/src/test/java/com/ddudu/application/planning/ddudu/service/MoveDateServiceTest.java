@@ -143,7 +143,7 @@ class MoveDateServiceTest {
     // then
     Assertions.assertThatIllegalArgumentException()
         .isThrownBy(moveDate)
-        .withMessage(TodoErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
+        .withMessage(TodoErrorCode.UNABLE_TO_POSTPONE_COMPLETED_TODO.getCodeName());
   }
 
   @Test

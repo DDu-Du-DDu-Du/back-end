@@ -22,7 +22,7 @@ public class RepeatTodoPersistenceAdapter implements SaveRepeatTodoPort, RepeatT
     UpdateRepeatTodoPort, DeleteRepeatTodoPort {
 
   private final RepeatTodoRepository repeatTodoRepository;
-  private final TodoRepository dduduRepository;
+  private final TodoRepository todoRepository;
 
   @Override
   public RepeatTodo save(RepeatTodo repeatTodo) {
@@ -68,13 +68,13 @@ public class RepeatTodoPersistenceAdapter implements SaveRepeatTodoPort, RepeatT
 
   @Override
   public void deleteWithTodos(RepeatTodo repeatTodo) {
-    dduduRepository.deleteAllByRepeatTodoId(repeatTodo.getId());
+    todoRepository.deleteAllByRepeatTodoId(repeatTodo.getId());
     repeatTodoRepository.delete(RepeatTodoEntity.from(repeatTodo));
   }
 
   @Override
   public void deleteAllWithTodosByGoal(Goal goal) {
-    dduduRepository.deleteAllByGoalId(goal.getId());
+    todoRepository.deleteAllByGoalId(goal.getId());
     repeatTodoRepository.deleteAllByGoal(goal.getId());
   }
 

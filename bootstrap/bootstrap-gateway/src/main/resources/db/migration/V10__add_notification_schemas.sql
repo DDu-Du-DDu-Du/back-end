@@ -1,8 +1,8 @@
 -- Drop previous draft notification schema
 DROP TABLE IF EXISTS notifications;
 
--- 뚜두에 미리알림 정보 추가
-ALTER TABLE ddudus
+-- 투두에 미리알림 정보 추가
+ALTER TABLE todos
     ADD remind_at TIMESTAMP NULL;
 
 -- DAILY BRIEFING LOG

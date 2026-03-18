@@ -41,7 +41,7 @@ public class GetDailyTodosByGoalService implements GetDailyTodosByGoalUseCase {
     Relationship relationship = Relationship.getRelationship(loginUser, user);
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
-    // 3. 뚜두 조회
+    // 3. 투두 조회
     TodoList todos = new TodoList(todoLoaderPort.getDailyTodos(
         date,
         user.getId(),

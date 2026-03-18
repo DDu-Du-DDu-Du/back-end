@@ -53,7 +53,7 @@ class RemoveNotificationEventServiceTest {
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
   LocalDateTime willFireAt;
   NotificationEvent notificationEvent;
 
@@ -62,10 +62,10 @@ class RemoveNotificationEventServiceTest {
     willFireAt = NotificationEventFixture.getFutureDateTime(10, TimeUnit.DAYS);
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
     notificationEvent = NotificationEventFixture.createValidTodoEventWithUserAndContext(
         user.getId(),
-        ddudu.getId(),
+        todo.getId(),
         willFireAt
     );
   }
@@ -77,13 +77,13 @@ class RemoveNotificationEventServiceTest {
 
     NotificationEventRemoveEvent removeEvent = NotificationEventRemoveEvent.builder()
         .userId(user.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
-        .contextId(ddudu.getId())
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
+        .contextId(todo.getId())
         .build();
     boolean expected = !notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
 
     // when
@@ -92,8 +92,8 @@ class RemoveNotificationEventServiceTest {
     // then
     boolean actual = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
 
     assertThat(actual).isEqualTo(expected);
@@ -105,12 +105,12 @@ class RemoveNotificationEventServiceTest {
     long invalidId = NotificationEventFixture.getRandomId();
     NotificationEventRemoveEvent removeEvent = NotificationEventRemoveEvent.builder()
         .userId(user.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
         .contextId(invalidId)
         .build();
     boolean expected = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
+        NotificationEventTypeCode.TODO_REMINDER,
         invalidId
     );
 
@@ -120,7 +120,7 @@ class RemoveNotificationEventServiceTest {
     // then
     boolean actual = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
+        NotificationEventTypeCode.TODO_REMINDER,
         invalidId
     );
 
@@ -133,18 +133,18 @@ class RemoveNotificationEventServiceTest {
     notificationEvent = notificationEventCommandPort.save(
         NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(
             user.getId(),
-            ddudu.getId()
+            todo.getId()
         )
     );
     NotificationEventRemoveEvent removeEvent = NotificationEventRemoveEvent.builder()
         .userId(user.getId())
-        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
-        .contextId(ddudu.getId())
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
+        .contextId(todo.getId())
         .build();
     boolean expected = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
 
     // when
@@ -153,8 +153,8 @@ class RemoveNotificationEventServiceTest {
     // then
     boolean actual = notificationEventLoaderPort.existsByContext(
         user.getId(),
-        NotificationEventTypeCode.DDUDU_REMINDER,
-        ddudu.getId()
+        NotificationEventTypeCode.TODO_REMINDER,
+        todo.getId()
     );
 
     assertThat(actual).isEqualTo(expected);

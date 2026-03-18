@@ -20,7 +20,7 @@ class TodoStatusTest {
 
     // when
     assertThatRuntimeException().isThrownBy(create)
-        .withMessage(StatsErrorCode.INVALID_DDUDU_STATUS.getCodeName());
+        .withMessage(StatsErrorCode.INVALID_TODO_STATUS.getCodeName());
   }
 
 }

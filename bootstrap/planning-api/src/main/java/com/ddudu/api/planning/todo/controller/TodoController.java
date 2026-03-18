@@ -74,7 +74,7 @@ public class TodoController implements TodoControllerDoc {
   private final CancelReminderUseCase cancelReminderUseCase;
 
   /**
-   * 뚜두 생성 API
+   * 투두 생성 API
    */
   @PostMapping
   public ResponseEntity<IdResponse> create(
@@ -92,7 +92,7 @@ public class TodoController implements TodoControllerDoc {
   }
 
   /**
-   * 일별 뚜두 리스트 조회 API (목표별로 그룹화)
+   * 일별 투두 리스트 조회 API (목표별로 그룹화)
    */
   @GetMapping("/daily/list")
   public ResponseEntity<List<GoalGroupedTodos>> getDailyList(
@@ -132,7 +132,7 @@ public class TodoController implements TodoControllerDoc {
   }
 
   /**
-   * 뚜두 검색 API
+   * 투두 검색 API
    */
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<ScrollResponse<SimpleTodoSearchDto>> getList(
@@ -146,7 +146,7 @@ public class TodoController implements TodoControllerDoc {
   }
 
   /**
-   * 뚜두 상세 조회 API
+   * 투두 상세 조회 API
    */
   @Override
   @GetMapping("/{id}")
@@ -193,7 +193,7 @@ public class TodoController implements TodoControllerDoc {
   }
 
   /**
-   * 뚜두 기간(시작 시간, 종료 시간) 설정 API
+   * 투두 기간(시작 시간, 종료 시간) 설정 API
    */
   @PutMapping("/{id}/period")
   public ResponseEntity<Void> setUpPeriod(
@@ -211,7 +211,7 @@ public class TodoController implements TodoControllerDoc {
   }
 
   /**
-   * 뚜두명 변경 API
+   * 투두명 변경 API
    */
   @PutMapping("/{id}/name")
   public ResponseEntity<IdResponse> changeName(
@@ -228,7 +228,7 @@ public class TodoController implements TodoControllerDoc {
   }
 
   /**
-   * 뚜두 수정 API
+   * 투두 수정 API
    */
   @PutMapping("/{id}")
   public ResponseEntity<IdResponse> update(
@@ -245,7 +245,7 @@ public class TodoController implements TodoControllerDoc {
   }
 
   /**
-   * 뚜두 날짜 변경 API
+   * 투두 날짜 변경 API
    */
   @PutMapping("/{id}/date")
   public ResponseEntity<Void> moveDate(
@@ -264,7 +264,7 @@ public class TodoController implements TodoControllerDoc {
   }
 
   /**
-   * 뚜두 상태 변경 API (진행 중 or 완료)
+   * 투두 상태 변경 API (진행 중 or 완료)
    */
   @PatchMapping("/{id}/status")
   public ResponseEntity<Void> updateStatus(
@@ -299,7 +299,7 @@ public class TodoController implements TodoControllerDoc {
   }
 
   /**
-   * 뚜두 삭제 API
+   * 투두 삭제 API
    */
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(

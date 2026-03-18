@@ -32,7 +32,7 @@ public class UpdateRepeatTodoService implements UpdateRepeatTodoUseCase {
   public Long update(Long loginId, Long id, UpdateRepeatTodoRequest request) {
     RepeatTodo repeatTodo = repeatTodoLoaderPort.getOrElseThrow(
         id,
-        RepeatTodoErrorCode.REPEAT_DDUDU_NOT_EXIST.getCodeName()
+        RepeatTodoErrorCode.REPEAT_TODO_NOT_EXIST.getCodeName()
     );
     Goal goal = goalLoaderPort.getGoalOrElseThrow(
         repeatTodo.getGoalId(),
