@@ -11,7 +11,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "template_ddudus")
+@Table(name = "template_todos")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TemplateTodoEntity extends BaseEntity {
 

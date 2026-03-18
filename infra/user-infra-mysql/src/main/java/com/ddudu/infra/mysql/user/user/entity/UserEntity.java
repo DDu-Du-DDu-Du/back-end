@@ -96,7 +96,7 @@ public class UserEntity extends BaseEntity {
   private boolean templateNotification;
 
   @Column(
-      name = "ddudu_notification",
+      name = "todo_notification",
       nullable = false
   )
   private boolean dduduNotification;

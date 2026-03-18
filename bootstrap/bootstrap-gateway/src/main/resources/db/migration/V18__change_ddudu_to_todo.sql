@@ -15,6 +15,12 @@ ALTER TABLE ddudus
 
 RENAME TABLE repeat_ddudus TO repeat_todos;
 
+ALTER TABLE repeat_todos
+    DROP FOREIGN KEY fk_repeat_ddudus_goal_id;
+
+ALTER TABLE repeat_todos
+    ADD CONSTRAINT fk_repeat_todos_goal_id FOREIGN KEY (goal_id) REFERENCES goals(id);
+
 ALTER TABLE ddudus
     ADD CONSTRAINT fk_todo_repeat_todo_id FOREIGN KEY (repeat_todo_id) REFERENCES repeat_todos(id);
 
