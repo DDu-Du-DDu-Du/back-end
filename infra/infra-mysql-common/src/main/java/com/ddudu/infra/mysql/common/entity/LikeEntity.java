@@ -32,9 +32,9 @@ public class LikeEntity extends BaseEntity {
   private Long userId;
 
   @Column(
-      name = "ddudu_id",
+      name = "todo_id",
       nullable = false
   )
-  private Long dduduId;
+  private Long todoId;
 
 }

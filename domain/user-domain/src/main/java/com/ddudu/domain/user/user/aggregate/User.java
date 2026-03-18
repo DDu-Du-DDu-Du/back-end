@@ -57,7 +57,7 @@ public class User {
       Options options,
       Boolean allowingFollowsAfterApproval,
       Boolean templateNotification,
-      Boolean dduduNotification
+      Boolean todoNotification
   ) {
     validate(nickname, username, introduction, profileImageUrl);
 
@@ -69,7 +69,7 @@ public class User {
     this.status = Objects.isNull(status) ? UserStatus.ACTIVE : status;
     this.profileImageUrl = profileImageUrl;
     this.options = Objects.isNull(options)
-        ? buildOptions(allowingFollowsAfterApproval, templateNotification, dduduNotification)
+        ? buildOptions(allowingFollowsAfterApproval, templateNotification, todoNotification)
         : options;
     this.authProviders = Objects.isNull(authProviders) ? Collections.emptyList() : authProviders;
   }
@@ -82,8 +82,8 @@ public class User {
     return this.options.isTemplateNotification();
   }
 
-  public boolean isNotifyingDdudu() {
-    return this.options.isDduduNotification();
+  public boolean isNotifyingTodo() {
+    return this.options.isTodoNotification();
   }
 
   public WeekStartDay getWeekStartDay() {
@@ -163,7 +163,7 @@ public class User {
     Options updatedOptions = Options.builder()
         .allowingFollowsAfterApproval(this.isAllowingFollowsAfterApproval())
         .templateNotification(this.isNotifyingTemplate())
-        .dduduNotification(this.isNotifyingDdudu())
+        .todoNotification(this.isNotifyingTodo())
         .display(DisplayOptions.builder()
             .weekStartDay(WeekStartDay.get(weekStartDay))
             .darkMode(isDarkMode)
@@ -255,11 +255,11 @@ public class User {
   private Options buildOptions(
       Boolean allowingFollowsAfterApproval,
       Boolean templateNotification,
-      Boolean dduduNotification
+      Boolean todoNotification
   ) {
     return Options.builder()
         .allowingFollowsAfterApproval(allowingFollowsAfterApproval)
-        .dduduNotification(dduduNotification)
+        .todoNotification(todoNotification)
         .templateNotification(templateNotification)
         .build();
   }

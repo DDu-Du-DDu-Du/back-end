@@ -96,10 +96,10 @@ public class UserEntity extends BaseEntity {
   private boolean templateNotification;
 
   @Column(
-      name = "ddudu_notification",
+      name = "todo_notification",
       nullable = false
   )
-  private boolean dduduNotification;
+  private boolean todoNotification;
 
   @Column(
       name = "week_start_day",
@@ -181,7 +181,7 @@ public class UserEntity extends BaseEntity {
         .profileImageUrl(user.getProfileImageUrl())
         .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
         .templateNotification(user.isNotifyingTemplate())
-        .dduduNotification(user.isNotifyingDdudu())
+        .todoNotification(user.isNotifyingTodo())
         .weekStartDay(user.getWeekStartDay())
         .darkMode(user.isDarkMode())
         .activeCalendar(user.isActiveCalendar())
@@ -205,7 +205,7 @@ public class UserEntity extends BaseEntity {
     this.status = user.getStatus();
     this.allowingFollowsAfterApproval = user.isAllowingFollowsAfterApproval();
     this.templateNotification = user.isNotifyingTemplate();
-    this.dduduNotification = user.isNotifyingDdudu();
+    this.todoNotification = user.isNotifyingTodo();
     this.weekStartDay = user.getWeekStartDay();
     this.darkMode = user.isDarkMode();
     this.activeCalendar = user.isActiveCalendar();
@@ -245,7 +245,7 @@ public class UserEntity extends BaseEntity {
     return Options.builder()
         .allowingFollowsAfterApproval(allowingFollowsAfterApproval)
         .templateNotification(templateNotification)
-        .dduduNotification(dduduNotification)
+        .todoNotification(todoNotification)
         .display(buildDisplayOptions())
         .menuActivation(buildMenuActivationOptions())
         .appConnection(buildAppConnectionOptions())

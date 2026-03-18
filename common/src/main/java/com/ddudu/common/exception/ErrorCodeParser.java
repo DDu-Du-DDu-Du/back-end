@@ -18,11 +18,11 @@ public class ErrorCodeParser {
 
     return switch (codeValue / 1000) {
       case 1 -> UserErrorCode.valueOf(name);
-      case 2 -> DduduErrorCode.valueOf(name);
+      case 2 -> TodoErrorCode.valueOf(name);
       case 3 -> GoalErrorCode.valueOf(name);
       case 4 -> PeriodGoalErrorCode.valueOf(name);
       case 5 -> AuthErrorCode.valueOf(name);
-      case 6 -> RepeatDduduErrorCode.valueOf(name);
+      case 6 -> RepeatTodoErrorCode.valueOf(name);
       case 7 -> LikeErrorCode.valueOf(name);
       case 8 -> FollowingErrorCode.valueOf(name);
       case 9 ->

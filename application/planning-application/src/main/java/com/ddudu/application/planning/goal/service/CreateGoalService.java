@@ -1,14 +1,14 @@
 package com.ddudu.application.planning.goal.service;
 
 import com.ddudu.application.common.dto.goal.request.CreateGoalRequest;
-import com.ddudu.application.common.dto.goal.request.CreateRepeatDduduRequestWithoutGoal;
+import com.ddudu.application.common.dto.goal.request.CreateRepeatTodoRequestWithoutGoal;
 import com.ddudu.application.common.dto.goal.response.GoalIdResponse;
-import com.ddudu.application.common.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.common.dto.repeattodo.request.CreateRepeatTodoRequest;
 import com.ddudu.application.common.port.goal.in.CreateGoalUseCase;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
-import com.ddudu.application.planning.repeatddudu.service.CreateRepeatDduduService;
+import com.ddudu.application.planning.repeattodo.service.CreateRepeatTodoService;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
@@ -26,7 +26,7 @@ public class CreateGoalService implements CreateGoalUseCase {
   private final UserLoaderPort userLoaderPort;
   private final GoalLoaderPort goalLoaderPort;
   private final GoalDomainService goalDomainService;
-  private final CreateRepeatDduduService createRepeatDduduService;
+  private final CreateRepeatTodoService createRepeatTodoService;
   private final SaveGoalPort saveGoalPort;
 
   @Override
@@ -48,32 +48,32 @@ public class CreateGoalService implements CreateGoalUseCase {
 
     Goal goal = saveGoalPort.save(goalDomainService.create(user.getId(), command));
 
-    // 3. 반복 뚜두 생성 후 저장
-    // TODO: 반복 뚜두 생성 부분을 비동기로 변경
-    request.repeatDdudus()
-        .forEach(repeatDduduRequest -> createRepeatDduduService.create(
+    // 3. 반복 투두 생성 후 저장
+    // TODO: 반복 투두 생성 부분을 비동기로 변경
+    request.repeatTodos()
+        .forEach(repeatTodoRequest -> createRepeatTodoService.create(
             userId,
-            toCreateRepeatDduduRequest(repeatDduduRequest, goal)
+            toCreateRepeatTodoRequest(repeatTodoRequest, goal)
         ));
 
     return GoalIdResponse.from(goal);
   }
 
-  private CreateRepeatDduduRequest toCreateRepeatDduduRequest(
-      CreateRepeatDduduRequestWithoutGoal repeatDduduRequest,
+  private CreateRepeatTodoRequest toCreateRepeatTodoRequest(
+      CreateRepeatTodoRequestWithoutGoal repeatTodoRequest,
       Goal goal
   ) {
-    return new CreateRepeatDduduRequest(
-        repeatDduduRequest.name(),
+    return new CreateRepeatTodoRequest(
+        repeatTodoRequest.name(),
         goal.getId(),
-        repeatDduduRequest.repeatType(),
-        repeatDduduRequest.repeatDaysOfWeek(),
-        repeatDduduRequest.repeatDaysOfMonth(),
-        repeatDduduRequest.lastDayOfMonth(),
-        repeatDduduRequest.startDate(),
-        repeatDduduRequest.endDate(),
-        repeatDduduRequest.beginAt(),
-        repeatDduduRequest.endAt()
+        repeatTodoRequest.repeatType(),
+        repeatTodoRequest.repeatDaysOfWeek(),
+        repeatTodoRequest.repeatDaysOfMonth(),
+        repeatTodoRequest.lastDayOfMonth(),
+        repeatTodoRequest.startDate(),
+        repeatTodoRequest.endDate(),
+        repeatTodoRequest.beginAt(),
+        repeatTodoRequest.endAt()
     );
   }
 

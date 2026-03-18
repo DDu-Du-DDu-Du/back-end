@@ -209,7 +209,7 @@ class UserTest {
       // then
       assertThat(user.isAllowingFollowsAfterApproval()).isFalse();
       assertThat(user.isNotifyingTemplate()).isTrue();
-      assertThat(user.isNotifyingDdudu()).isTrue();
+      assertThat(user.isNotifyingTodo()).isTrue();
       assertThat(user.getWeekStartDay().name()).isEqualTo("SUN");
       assertThat(user.isDarkMode()).isFalse();
       assertThat(user.isActiveCalendar()).isTrue();

@@ -8,7 +8,7 @@ import com.ddudu.application.common.dto.notification.response.NotificationInboxS
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationInboxCommandPort;
@@ -16,11 +16,11 @@ import com.ddudu.application.common.port.notification.out.NotificationInboxLoade
 import com.ddudu.common.exception.NotificationInboxErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.BaseFixture;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.NotificationEventFixture;
 import com.ddudu.fixture.NotificationInboxFixture;
@@ -54,7 +54,7 @@ class NotificationInboxSearchServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
   NotificationEventCommandPort notificationEventCommandPort;
@@ -77,15 +77,15 @@ class NotificationInboxSearchServiceTest {
     Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
 
     for (int i = 0; i < size + 1; i++) {
-      Ddudu ddudu = saveDduduPort.save(DduduFixture.createDduduWithReminderFor(
+      Todo todo = saveTodoPort.save(TodoFixture.createTodoWithReminderFor(
           user.getId(),
           goal.getId(),
           remindAt
       ));
       NotificationEvent notificationEvent = notificationEventCommandPort.save(
-          NotificationEventFixture.createFiredDduduEventNowWithUserAndContext(
+          NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(
               user.getId(),
-              ddudu.getId()
+              todo.getId()
           )
       );
 
@@ -93,7 +93,7 @@ class NotificationInboxSearchServiceTest {
           NotificationInboxFixture.createNotReadInboxSelfWithContextAndContent(
               notificationEvent.getId(),
               user.getId(),
-              NotificationEventTypeCode.DDUDU_REMINDER,
+              NotificationEventTypeCode.TODO_REMINDER,
               BaseFixture.getRandomId(),
               BaseFixture.getRandomSentenceWithMax(50),
               BaseFixture.getRandomSentenceWithMax(200)

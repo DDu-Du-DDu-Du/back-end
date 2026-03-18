@@ -7,7 +7,7 @@ import com.ddudu.application.common.port.goal.out.UpdateGoalPort;
 import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.infra.mysql.planning.ddudu.repository.DduduRepository;
+import com.ddudu.infra.mysql.planning.todo.repository.TodoRepository;
 import com.ddudu.infra.mysql.planning.goal.entity.GoalEntity;
 import com.ddudu.infra.mysql.planning.goal.repository.GoalRepository;
 import com.google.common.collect.Lists;
@@ -23,7 +23,7 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
     DeleteGoalPort {
 
   private final GoalRepository goalRepository;
-  private final DduduRepository dduduRepository;
+  private final TodoRepository todoRepository;
 
   @Override
   public Goal save(Goal goal) {
@@ -109,8 +109,8 @@ public class GoalPersistenceAdapter implements SaveGoalPort, GoalLoaderPort, Upd
   }
 
   @Override
-  public void deleteWithDdudus(Goal goal) {
-    dduduRepository.deleteAllByGoalId(goal.getId());
+  public void deleteWithTodos(Goal goal) {
+    todoRepository.deleteAllByGoalId(goal.getId());
     goalRepository.delete(GoalEntity.from(goal));
   }
 

@@ -3,7 +3,7 @@ package com.ddudu.aggregate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatRuntimeException;
 
-import com.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.aggregate.enums.TodoStatus;
 import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.common.util.AmPmType;
 import com.ddudu.fixtures.BaseStatsFixture;
@@ -150,7 +150,7 @@ class MonthlyStatsTest {
   }
 
   @Nested
-  class 뚜두_달성도_테스트 {
+  class 투두_달성도_테스트 {
 
     @BeforeEach
     void setUp() {
@@ -193,7 +193,7 @@ class MonthlyStatsTest {
   }
 
   @Nested
-  class 뚜두_지속도_테스트 {
+  class 투두_지속도_테스트 {
 
     @BeforeEach
     void setUp() {
@@ -237,7 +237,7 @@ class MonthlyStatsTest {
   }
 
   @Nested
-  class 미룬_뚜두_테스트 {
+  class 미룬_투두_테스트 {
 
     @BeforeEach
     void setUp() {
@@ -279,7 +279,7 @@ class MonthlyStatsTest {
   }
 
   @Nested
-  class 뚜두_재달성률_테스트 {
+  class 투두_재달성률_테스트 {
 
     @BeforeEach
     void setUp() {
@@ -480,7 +480,7 @@ class MonthlyStatsTest {
           BaseStatsFixture.createRandomWithGoalAndPostponedAndStatusAndScheduled(
               goalId,
               false,
-              DduduStatus.UNCOMPLETED,
+              TodoStatus.UNCOMPLETED,
               wednesday
           )
       );

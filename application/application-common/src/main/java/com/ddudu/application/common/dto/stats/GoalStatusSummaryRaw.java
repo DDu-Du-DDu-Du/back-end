@@ -1,10 +1,10 @@
 package com.ddudu.application.common.dto.stats;
 
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 
 public record GoalStatusSummaryRaw(
-    Long dduduId,
-    DduduStatus status
+    Long todoId,
+    TodoStatus status
 ) {
 
 }

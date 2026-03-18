@@ -2,7 +2,7 @@ package com.ddudu.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.aggregate.enums.TodoStatus;
 import com.ddudu.fixtures.BaseStatsFixture;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -34,7 +34,7 @@ class BaseStatsTest {
     @Test
     void 상태가_COMPLETE면_true를_반환한다() {
       // given
-      BaseStats stat = BaseStatsFixture.createRandomWithGoalAndStatus(goalId, DduduStatus.COMPLETE);
+      BaseStats stat = BaseStatsFixture.createRandomWithGoalAndStatus(goalId, TodoStatus.COMPLETE);
 
       // when
       boolean actual = stat.isCompleted();
@@ -48,7 +48,7 @@ class BaseStatsTest {
       // given
       BaseStats stat = BaseStatsFixture.createRandomWithGoalAndStatus(
           goalId,
-          DduduStatus.UNCOMPLETED
+          TodoStatus.UNCOMPLETED
       );
 
       // when

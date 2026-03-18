@@ -4,13 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.StatsErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
@@ -42,7 +42,7 @@ class CollectMonthlyStatsReportTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   User user;
   List<Goal> goals;
@@ -58,25 +58,25 @@ class CollectMonthlyStatsReportTest {
     LocalDate lastMonth = LocalDate.now()
         .minusMonths(1);
 
-    goals.forEach(goal -> saveDduduPort.saveAll(
-        DduduFixture.createDifferentDdudusWithGoal(
+    goals.forEach(goal -> saveTodoPort.saveAll(
+        TodoFixture.createDifferentTodosWithGoal(
             goal, completedCountPerGoal,
             uncompletedCountPerGoal
         )));
 
     for (int i = 0; i < completedCountPerGoal; i++) {
-      goals.forEach(goal -> saveDduduPort.save(
-          DduduFixture.createRandomDduduWithStatusAndSchedule(
-              goal, DduduStatus.COMPLETE,
+      goals.forEach(goal -> saveTodoPort.save(
+          TodoFixture.createRandomTodoWithStatusAndSchedule(
+              goal, TodoStatus.COMPLETE,
               lastMonth
           )
       ));
     }
 
     for (int i = 0; i < uncompletedCountPerGoal; i++) {
-      goals.forEach(goal -> saveDduduPort.save(
-          DduduFixture.createRandomDduduWithStatusAndSchedule(
-              goal, DduduStatus.UNCOMPLETED,
+      goals.forEach(goal -> saveTodoPort.save(
+          TodoFixture.createRandomTodoWithStatusAndSchedule(
+              goal, TodoStatus.UNCOMPLETED,
               lastMonth
           )
       ));
@@ -84,7 +84,7 @@ class CollectMonthlyStatsReportTest {
   }
 
   @Test
-  void 이번달_뚜두_통합_통계를_낸다() {
+  void 이번달_투두_통합_통계를_낸다() {
     // given
     YearMonth thisMonth = YearMonth.now();
 
@@ -104,7 +104,7 @@ class CollectMonthlyStatsReportTest {
   }
 
   @Test
-  void 요청의_날짜가_없으면_이번달의_뚜두_통계를_낸다() {
+  void 요청의_날짜가_없으면_이번달의_투두_통계를_낸다() {
     // given
     YearMonth thisMonth = YearMonth.now();
 
@@ -126,7 +126,7 @@ class CollectMonthlyStatsReportTest {
   }
 
   @Test
-  void 지난달_뚜두가_없어도_통계는_0으로_계산된다() {
+  void 지난달_투두가_없어도_통계는_0으로_계산된다() {
     // given
     YearMonth lastMonth = YearMonth.now()
         .minusMonths(1);
@@ -143,7 +143,7 @@ class CollectMonthlyStatsReportTest {
   }
 
   @Test
-  void 로그인_사용자가_없으면_월_달성_뚜두_수_통계를_실패한다() {
+  void 로그인_사용자가_없으면_월_달성_투두_수_통계를_실패한다() {
     // given
     long invalidId = GoalFixture.getRandomId();
     YearMonth thisMonth = YearMonth.now();

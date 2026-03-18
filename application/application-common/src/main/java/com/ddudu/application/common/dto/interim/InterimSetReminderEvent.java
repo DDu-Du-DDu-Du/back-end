@@ -1,7 +1,7 @@
 package com.ddudu.application.common.dto.interim;
 
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import java.time.LocalDateTime;
 import lombok.Builder;
 
@@ -13,12 +13,12 @@ public record InterimSetReminderEvent(
     LocalDateTime willFireAt
 ) implements InterimNotificationEvent {
 
-  public static InterimSetReminderEvent from(Long userId, Ddudu ddudu) {
+  public static InterimSetReminderEvent from(Long userId, Todo todo) {
     return InterimSetReminderEvent.builder()
         .userId(userId)
-        .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
-        .contextId(ddudu.getId())
-        .willFireAt(ddudu.getRemindAt())
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
+        .contextId(todo.getId())
+        .willFireAt(todo.getRemindAt())
         .build();
   }
 

@@ -1,4 +1,4 @@
-package com.ddudu.infra.mysql.planning.repeatddudu.converter;
+package com.ddudu.infra.mysql.planning.repeattodo.converter;
 
 class RepeatInfoEntityConverterTest {
 

@@ -246,20 +246,20 @@ class NotificationEventTest {
   }
 
   @Nested
-  class 뚜두_미리알림_내용_테스트 {
+  class 투두_미리알림_내용_테스트 {
 
     NotificationEvent notificationEvent;
 
     @BeforeEach
     void setUp() {
-      notificationEvent = NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+      notificationEvent = NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
           userId,
           contextId
       );
     }
 
     @Test
-    void 뚜두_미리알림_n일_전_알림_내용을_생성한다() {
+    void 투두_미리알림_n일_전_알림_내용을_생성한다() {
       // given
       int n = NotificationEventFixture.getRandomInt(1, 100);
       LocalDateTime remindAt = notificationEvent.getWillFireAt()
@@ -267,14 +267,14 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "일");
     }
 
     @Test
-    void 뚜두_미리알림_n시간_전_알림_내용을_생성한다() {
+    void 투두_미리알림_n시간_전_알림_내용을_생성한다() {
       // given
       int n = NotificationEventFixture.getRandomInt(1, 23);
       LocalDateTime remindAt = notificationEvent.getWillFireAt()
@@ -282,14 +282,14 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "시간");
     }
 
     @Test
-    void 뚜두_미리알림_n일_m시간_전_알림_내용을_생성한다() {
+    void 투두_미리알림_n일_m시간_전_알림_내용을_생성한다() {
       // given
       int n = NotificationEventFixture.getRandomInt(1, 100);
       int m = NotificationEventFixture.getRandomInt(1, 23);
@@ -299,14 +299,14 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "일 " + m + "시간");
     }
 
     @Test
-    void 뚜두_미리알림_n일_m분_전_알림_내용을_생성한다() {
+    void 투두_미리알림_n일_m분_전_알림_내용을_생성한다() {
       // given
       int n = NotificationEventFixture.getRandomInt(1, 100);
       int m = NotificationEventFixture.getRandomInt(1, 59);
@@ -316,14 +316,14 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "일 " + m + "분");
     }
 
     @Test
-    void 뚜두_미리알림_n시간_m분_전_알림_내용을_생성한다() {
+    void 투두_미리알림_n시간_m분_전_알림_내용을_생성한다() {
       // given
       int n = NotificationEventFixture.getRandomInt(1, 23);
       int m = NotificationEventFixture.getRandomInt(1, 59);
@@ -333,14 +333,14 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "시간 " + m + "분");
     }
 
     @Test
-    void 뚜두_미리알림_n일_m시간_l분_전_알림_내용을_생성한다() {
+    void 투두_미리알림_n일_m시간_l분_전_알림_내용을_생성한다() {
       // given
       int n = NotificationEventFixture.getRandomInt(1, 100);
       int m = NotificationEventFixture.getRandomInt(1, 23);
@@ -352,7 +352,7 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "일 " + m + "시간 " + l + "분");

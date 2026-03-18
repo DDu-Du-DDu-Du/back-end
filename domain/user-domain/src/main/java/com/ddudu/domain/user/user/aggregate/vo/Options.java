@@ -9,7 +9,7 @@ public class Options {
 
   private final boolean allowingFollowsAfterApproval;
   private final boolean templateNotification;
-  private final boolean dduduNotification;
+  private final boolean todoNotification;
   private final DisplayOptions display;
   private final MenuActivationOptions menuActivation;
   private final AppConnectionOptions appConnection;
@@ -18,7 +18,7 @@ public class Options {
   private Options(
       Boolean allowingFollowsAfterApproval,
       Boolean templateNotification,
-      Boolean dduduNotification,
+      Boolean todoNotification,
       DisplayOptions display,
       MenuActivationOptions menuActivation,
       AppConnectionOptions appConnection
@@ -26,7 +26,7 @@ public class Options {
     this.allowingFollowsAfterApproval =
         Objects.nonNull(allowingFollowsAfterApproval) && allowingFollowsAfterApproval;
     this.templateNotification = Objects.isNull(templateNotification) || templateNotification;
-    this.dduduNotification = Objects.isNull(dduduNotification) || dduduNotification;
+    this.todoNotification = Objects.isNull(todoNotification) || todoNotification;
     this.display = createDisplay(display);
     this.menuActivation = createMenuActivation(menuActivation);
     this.appConnection = createAppConnection(appConnection);

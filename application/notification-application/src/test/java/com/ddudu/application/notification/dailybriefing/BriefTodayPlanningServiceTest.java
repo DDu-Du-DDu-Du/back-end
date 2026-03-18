@@ -5,15 +5,15 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.common.dto.notification.response.DailyBriefingResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.out.DailyBriefingCommandPort;
 import com.ddudu.common.exception.DailyBriefingLogErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.DailyBriefingLogFixture;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
@@ -41,7 +41,7 @@ class BriefTodayPlanningServiceTest {
   DailyBriefingCommandPort dailyBriefingCommandPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
   SaveGoalPort saveGoalPort;
@@ -51,28 +51,28 @@ class BriefTodayPlanningServiceTest {
 
   User user;
   int dduduCount;
-  List<Ddudu> ddudus;
+  List<Todo> ddudus;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     ddudus = new ArrayList<>();
-    dduduCount = DduduFixture.getRandomInt(1, 10);
+    dduduCount = TodoFixture.getRandomInt(1, 10);
 
     for (int i = 0; i < dduduCount; i++) {
-      ddudus.add(DduduFixture.createRandomDduduWithSchedule(
+      ddudus.add(TodoFixture.createRandomTodoWithSchedule(
           user.getId(),
           goal.getId(),
           LocalDate.now()
       ));
     }
 
-    saveDduduPort.saveAll(ddudus);
+    saveTodoPort.saveAll(ddudus);
   }
 
   @Test
-  void 오늘_처음_조회하는_경우_뚜두_개수와_함께_응답을_반환한다() {
+  void 오늘_처음_조회하는_경우_투두_개수와_함께_응답을_반환한다() {
     // given
 
     // when

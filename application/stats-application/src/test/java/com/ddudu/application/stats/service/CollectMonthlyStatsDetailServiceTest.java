@@ -8,23 +8,23 @@ import com.ddudu.application.common.dto.stats.AchievedDetailOverviewDto;
 import com.ddudu.application.common.dto.stats.DayOfWeekStatsDto;
 import com.ddudu.application.common.dto.stats.GenericCalendarStats;
 import com.ddudu.application.common.dto.stats.PostponedDetailOverviewDto;
-import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
+import com.ddudu.application.common.dto.stats.RepeatTodoStatsDto;
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
-import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
+import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.application.common.port.repeatddudu.out.SaveRepeatDduduPort;
+import com.ddudu.application.common.port.repeattodo.out.SaveRepeatTodoPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.common.exception.StatsErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.service.RepeatDduduDomainService;
+import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo;
+import com.ddudu.domain.planning.repeattodo.service.RepeatTodoDomainService;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.RepeatDduduFixture;
+import com.ddudu.fixture.RepeatTodoFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
 import com.ddudu.fixtures.MonthlyStatsFixture;
 import java.time.DayOfWeek;
@@ -63,13 +63,13 @@ class CollectMonthlyStatsDetailServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
-  SaveRepeatDduduPort saveRepeatDduduPort;
+  SaveRepeatTodoPort saveRepeatTodoPort;
 
   @Autowired
-  RepeatDduduDomainService repeatDduduDomainService;
+  RepeatTodoDomainService repeatTodoDomainService;
 
   User user;
   Goal goal;
@@ -109,9 +109,9 @@ class CollectMonthlyStatsDetailServiceTest {
 
       @BeforeEach
       void setUp() {
-        size = DduduFixture.getRandomInt(1, 100);
+        size = TodoFixture.getRandomInt(1, 100);
 
-        saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(goal, size));
+        saveTodoPort.saveAll(TodoFixture.createMultipleTodosWithGoal(goal, size));
       }
 
       @Test
@@ -202,9 +202,9 @@ class CollectMonthlyStatsDetailServiceTest {
 
       @BeforeEach
       void setUp() {
-        size = DduduFixture.getRandomInt(1, 100);
+        size = TodoFixture.getRandomInt(1, 100);
 
-        saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(goal, size));
+        saveTodoPort.saveAll(TodoFixture.createMultipleTodosWithGoal(goal, size));
       }
 
       @Test
@@ -250,33 +250,33 @@ class CollectMonthlyStatsDetailServiceTest {
     }
 
     @Nested
-    class 반복뚜두통계_테스트 {
+    class 반복투두통계_테스트 {
 
-      int repeatDduduSize;
-      Map<Long, Integer> repeatDdudus;
+      int repeatTodoSize;
+      Map<Long, Integer> repeatTodos;
 
       @BeforeEach
       void setUpRepeat() {
-        repeatDduduSize = MonthlyStatsFixture.getRandomInt(1, 10);
-        repeatDdudus = new HashMap<>();
+        repeatTodoSize = MonthlyStatsFixture.getRandomInt(1, 10);
+        repeatTodos = new HashMap<>();
         LocalDate from = thisMonth.atDay(1);
         LocalDate to = thisMonth.atEndOfMonth();
 
-        for (int i = 0; i < repeatDduduSize; i++) {
-          RepeatDdudu repeatDdudu = saveRepeatDduduPort.save(
-              RepeatDduduFixture.createRepeatDduduWithGoal(goal, from, to)
+        for (int i = 0; i < repeatTodoSize; i++) {
+          RepeatTodo repeatTodo = saveRepeatTodoPort.save(
+              RepeatTodoFixture.createRepeatTodoWithGoal(goal, from, to)
           );
-          List<Ddudu> ddudus = saveDduduPort.saveAll(repeatDduduDomainService.createRepeatedDdudus(
+          List<Todo> ddudus = saveTodoPort.saveAll(repeatTodoDomainService.createRepeatedTodos(
               user.getId(),
-              repeatDdudu
+              repeatTodo
           ));
 
-          repeatDdudus.put(repeatDdudu.getId(), ddudus.size());
+          repeatTodos.put(repeatTodo.getId(), ddudus.size());
         }
       }
 
       @Test
-      void 이번_달_반복뚜두_통계를_반환한다() {
+      void 이번_달_반복투두_통계를_반환한다() {
         // given
 
         // when
@@ -288,11 +288,11 @@ class CollectMonthlyStatsDetailServiceTest {
         );
 
         // then
-        List<RepeatDduduStatsDto> actual = response.repeatDduduStats();
+        List<RepeatTodoStatsDto> actual = response.repeatTodoStats();
 
-        assertThat(actual).hasSize(repeatDduduSize);
-        assertThat(actual).allMatch(stats -> repeatDdudus.containsKey(stats.repeatDduduId())
-            && stats.totalCount() == repeatDdudus.get(stats.repeatDduduId()));
+        assertThat(actual).hasSize(repeatTodoSize);
+        assertThat(actual).allMatch(stats -> repeatTodos.containsKey(stats.repeatTodoId())
+            && stats.totalCount() == repeatTodos.get(stats.repeatTodoId()));
       }
 
       @Test
@@ -309,7 +309,7 @@ class CollectMonthlyStatsDetailServiceTest {
         );
 
         // then
-        assertThat(response.repeatDduduStats()).isEmpty();
+        assertThat(response.repeatTodoStats()).isEmpty();
       }
 
     }
@@ -323,9 +323,9 @@ class CollectMonthlyStatsDetailServiceTest {
       @BeforeEach
       void setUpCalendar() {
         nextMonth = thisMonth.plusMonths(1);
-        size = DduduFixture.getRandomInt(1, 100);
+        size = TodoFixture.getRandomInt(1, 100);
 
-        saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(goal, size));
+        saveTodoPort.saveAll(TodoFixture.createMultipleTodosWithGoal(goal, size));
       }
 
       @Test
@@ -341,7 +341,7 @@ class CollectMonthlyStatsDetailServiceTest {
         );
 
         // then
-        GenericCalendarStats<DduduCompletionResponse> actual = response.calendarStats();
+        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
 
         assertThat(actual.isAvailable()).isTrue();
         assertThat(actual.stats()).isNotNull();
@@ -360,7 +360,7 @@ class CollectMonthlyStatsDetailServiceTest {
         );
 
         // then
-        GenericCalendarStats<DduduCompletionResponse> actual = response.calendarStats();
+        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
 
         assertThat(actual.isAvailable()).isFalse();
         assertThat(actual.stats()).isEmpty();
@@ -404,19 +404,19 @@ class CollectMonthlyStatsDetailServiceTest {
         totalPostponed = MonthlyStatsFixture.getRandomInt(1, totalCount);
         totalNotPostponed = totalCount - totalPostponed;
         reattained = MonthlyStatsFixture.getRandomInt(0, totalPostponed);
-        List<Ddudu> postponed = DduduFixture.createReattainedDdudus(
+        List<Todo> postponed = TodoFixture.createReattainedTodos(
             goal,
             reattained,
             totalPostponed
         );
-        List<Ddudu> notPostponed = DduduFixture.createDdudusWithPostponedFlag(
+        List<Todo> notPostponed = TodoFixture.createTodosWithPostponedFlag(
             goal,
             0,
             totalNotPostponed
         );
 
-        saveDduduPort.saveAll(postponed);
-        saveDduduPort.saveAll(notPostponed);
+        saveTodoPort.saveAll(postponed);
+        saveTodoPort.saveAll(notPostponed);
       }
 
       @Test
@@ -514,21 +514,21 @@ class CollectMonthlyStatsDetailServiceTest {
         LocalDate inRangeDate = nextMonth.atDay(10);
         LocalDate outRangeDate = thisMonth.atDay(10);
 
-        Ddudu included = DduduFixture.getDduduBuilder()
+        Todo included = TodoFixture.getTodoBuilder()
             .goalId(goal.getId())
             .userId(user.getId())
             .scheduledOn(outRangeDate)
             .postponedAt(inRangeDate.atStartOfDay())
             .build();
-        Ddudu excluded = DduduFixture.getDduduBuilder()
+        Todo excluded = TodoFixture.getTodoBuilder()
             .goalId(goal.getId())
             .userId(user.getId())
             .scheduledOn(inRangeDate)
             .postponedAt(LocalDateTime.of(outRangeDate, LocalDateTime.now().toLocalTime()))
             .build();
 
-        saveDduduPort.save(included);
-        saveDduduPort.save(excluded);
+        saveTodoPort.save(included);
+        saveTodoPort.save(excluded);
 
         // when
         PostponedStatsDetailResponse response =
@@ -554,10 +554,10 @@ class CollectMonthlyStatsDetailServiceTest {
 
       @BeforeEach
       void setUp() {
-        size = DduduFixture.getRandomInt(1, 100);
-        int reattained = DduduFixture.getRandomInt(0, size);
+        size = TodoFixture.getRandomInt(1, 100);
+        int reattained = TodoFixture.getRandomInt(0, size);
 
-        saveDduduPort.saveAll(DduduFixture.createReattainedDdudus(goal, reattained, size));
+        saveTodoPort.saveAll(TodoFixture.createReattainedTodos(goal, reattained, size));
       }
 
       @Test
@@ -611,10 +611,10 @@ class CollectMonthlyStatsDetailServiceTest {
       @BeforeEach
       void setUp() {
         nextMonth = thisMonth.plusMonths(1);
-        size = DduduFixture.getRandomInt(1, 50);
-        int reattained = DduduFixture.getRandomInt(0, size);
+        size = TodoFixture.getRandomInt(1, 50);
+        int reattained = TodoFixture.getRandomInt(0, size);
 
-        saveDduduPort.saveAll(DduduFixture.createReattainedDdudus(goal, reattained, size));
+        saveTodoPort.saveAll(TodoFixture.createReattainedTodos(goal, reattained, size));
       }
 
       @Test
@@ -630,7 +630,7 @@ class CollectMonthlyStatsDetailServiceTest {
         );
 
         // then
-        GenericCalendarStats<DduduCompletionResponse> actual = response.calendarStats();
+        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
 
         assertThat(actual.isAvailable()).isTrue();
         assertThat(actual.stats()).isNotNull();
@@ -649,7 +649,7 @@ class CollectMonthlyStatsDetailServiceTest {
         );
 
         // then
-        GenericCalendarStats<DduduCompletionResponse> actual = response.calendarStats();
+        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
 
         assertThat(actual.isAvailable()).isFalse();
         assertThat(actual.stats()).isEmpty();
@@ -669,7 +669,7 @@ class CollectMonthlyStatsDetailServiceTest {
         );
 
         // then
-        GenericCalendarStats<DduduCompletionResponse> actual = response.calendarStats();
+        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
 
         assertThat(actual.isAvailable()).isTrue();
         assertThat(actual.stats()).isEmpty();

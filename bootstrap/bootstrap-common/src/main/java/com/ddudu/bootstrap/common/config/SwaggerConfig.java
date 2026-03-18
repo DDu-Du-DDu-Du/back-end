@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
     servers = @Server(url = "/"),
-    info = @Info(title = "뚜두뚜두 API"),
+    info = @Info(title = "투두투두 API"),
     security = @SecurityRequirement(name = "카카오 토큰 로그인")
 )
 @SecuritySchemes(

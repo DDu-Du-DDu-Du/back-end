@@ -1,4 +1,4 @@
-package com.ddudu.domain.planning.repeatddudu.aggregate.vo;
+package com.ddudu.domain.planning.repeattodo.aggregate.vo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class RepeatInfoTest {
 
   @Test
-  void 일_반복_뚜두_정보를_생성한다() {
+  void 일_반복_투두_정보를_생성한다() {
     // given
 
     // when
@@ -24,7 +24,7 @@ class RepeatInfoTest {
   }
 
   @Test
-  void 주_반복_뚜두_정보를_생성한다() {
+  void 주_반복_투두_정보를_생성한다() {
     // given
     List<String> repeatDaysOfWeek = List.of("월", "화");
 
@@ -36,7 +36,7 @@ class RepeatInfoTest {
   }
 
   @Test
-  void 월_반복_뚜두_정보를_쌩성한다() {
+  void 월_반복_투두_정보를_쌩성한다() {
     // given
     List<Integer> repeatDaysOfMonth = List.of(1, 10, 20);
     Boolean lastDayOfMonth = true;

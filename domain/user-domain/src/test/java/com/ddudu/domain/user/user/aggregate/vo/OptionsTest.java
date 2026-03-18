@@ -19,13 +19,13 @@ class OptionsTest {
       // given
       boolean allowFollowsAfterApproval = true;
       boolean templateNotification = false;
-      boolean dduduNotification = false;
+      boolean todoNotification = false;
 
       // when
       Options actual = Options.builder()
           .allowingFollowsAfterApproval(allowFollowsAfterApproval)
           .templateNotification(templateNotification)
-          .dduduNotification(dduduNotification)
+          .todoNotification(todoNotification)
           .display(DisplayOptions.builder()
               .weekStartDay(WeekStartDay.MON)
               .darkMode(true)
@@ -56,7 +56,7 @@ class OptionsTest {
       // then
       assertThat(actual.isAllowingFollowsAfterApproval()).isTrue();
       assertThat(actual.isTemplateNotification()).isFalse();
-      assertThat(actual.isDduduNotification()).isFalse();
+      assertThat(actual.isTodoNotification()).isFalse();
       assertThat(actual.getDisplay().getWeekStartDay()).isEqualTo(WeekStartDay.MON);
       assertThat(actual.getDisplay().isDarkMode()).isTrue();
       assertThat(actual.getMenuActivation().getCalendar().isActive()).isFalse();
@@ -77,7 +77,7 @@ class OptionsTest {
       // then
       assertThat(actual.isAllowingFollowsAfterApproval()).isFalse();
       assertThat(actual.isTemplateNotification()).isTrue();
-      assertThat(actual.isDduduNotification()).isTrue();
+      assertThat(actual.isTodoNotification()).isTrue();
       assertThat(actual.getDisplay().getWeekStartDay()).isEqualTo(WeekStartDay.SUN);
       assertThat(actual.getDisplay().isDarkMode()).isFalse();
       assertThat(actual.getMenuActivation().getCalendar().isActive()).isTrue();

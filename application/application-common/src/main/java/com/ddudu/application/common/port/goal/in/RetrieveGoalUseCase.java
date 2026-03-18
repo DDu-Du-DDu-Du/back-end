@@ -1,9 +1,9 @@
 package com.ddudu.application.common.port.goal.in;
 
-import com.ddudu.application.common.dto.goal.response.GoalWithRepeatDduduResponse;
+import com.ddudu.application.common.dto.goal.response.GoalWithRepeatTodoResponse;
 
 public interface RetrieveGoalUseCase {
 
-  GoalWithRepeatDduduResponse getById(Long userId, Long id);
+  GoalWithRepeatTodoResponse getById(Long userId, Long id);
 
 }

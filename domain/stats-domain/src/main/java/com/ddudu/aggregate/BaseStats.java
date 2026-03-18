@@ -1,6 +1,6 @@
 package com.ddudu.aggregate;
 
-import com.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.aggregate.enums.TodoStatus;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -18,11 +18,11 @@ import lombok.RequiredArgsConstructor;
 public class BaseStats {
 
   @EqualsAndHashCode.Include
-  private final Long dduduId;
+  private final Long todoId;
   private final Long goalId;
   private final String goalName;
   private final String goalColor;
-  private final DduduStatus status;
+  private final TodoStatus status;
   private final boolean isPostponed;
   private final LocalDate scheduledOn;
   private final LocalTime beginAt;

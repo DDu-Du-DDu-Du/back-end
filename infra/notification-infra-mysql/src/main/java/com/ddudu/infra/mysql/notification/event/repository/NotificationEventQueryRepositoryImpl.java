@@ -23,7 +23,9 @@ public class NotificationEventQueryRepositoryImpl implements NotificationEventQu
   private final JPAQueryFactory jpaQueryFactory;
 
   @Override
-  public Map<Long, List<ReminderScheduleTargetDto>> findAllDduduRemindersScheduledOn(LocalDate date) {
+  public Map<Long, List<ReminderScheduleTargetDto>> findAllTodoRemindersScheduledOn(
+      LocalDate date
+  ) {
     LocalDateTime startOfDay = date.atStartOfDay();
     LocalDateTime endOfDay = startOfDay.plusDays(1)
         .minusNanos(1);
@@ -34,7 +36,7 @@ public class NotificationEventQueryRepositoryImpl implements NotificationEventQu
             endOfDay
         )
     ).and(notificationEventEntity.firedAt.isNull())
-        .and(notificationEventEntity.typeCode.eq(NotificationEventTypeCode.DDUDU_REMINDER));
+        .and(notificationEventEntity.typeCode.eq(NotificationEventTypeCode.TODO_REMINDER));
 
     return jpaQueryFactory
         .from(notificationEventEntity)

@@ -4,6 +4,6 @@ import com.ddudu.domain.planning.goal.aggregate.Goal;
 
 public interface DeleteGoalPort {
 
-  void deleteWithDdudus(Goal goal);
+  void deleteWithTodos(Goal goal);
 
 }

@@ -19,7 +19,7 @@ public record CreateGoalRequest(
     )
     String color,
     String privacyType,
-    List<CreateRepeatDduduRequestWithoutGoal> repeatDdudus
+    List<CreateRepeatTodoRequestWithoutGoal> repeatTodos
 ) {
 
   public CreateGoalCommand toCommand() {

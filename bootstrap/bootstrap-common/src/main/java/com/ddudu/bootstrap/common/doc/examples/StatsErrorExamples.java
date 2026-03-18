@@ -2,10 +2,10 @@ package com.ddudu.bootstrap.common.doc.examples;
 
 public final class StatsErrorExamples {
 
-  public static final String STATS_INVALID_DDUDU_STATS = """
+  public static final String STATS_INVALID_TODO_STATS = """
       {
         "code": 9001,
-        "message": "유효한 뚜두 상태가 아닙니다."
+        "message": "유효한 투두 상태가 아닙니다."
       }
       """;
 

@@ -1,21 +1,21 @@
-package com.ddudu.application.planning.repeatddudu.service;
+package com.ddudu.application.planning.repeattodo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.repeatddudu.request.CreateRepeatDduduRequest;
+import com.ddudu.application.common.dto.repeattodo.request.CreateRepeatTodoRequest;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
+import com.ddudu.application.common.port.repeattodo.out.RepeatTodoLoaderPort;
+import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.common.exception.GoalErrorCode;
-import com.ddudu.common.exception.RepeatDduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.exception.RepeatTodoErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
+import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo;
+import com.ddudu.domain.planning.repeattodo.aggregate.enums.RepeatType;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.RepeatDduduFixture;
+import com.ddudu.fixture.RepeatTodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -35,16 +35,16 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class CreateRepeatDduduServiceTest {
+class CreateRepeatTodoServiceTest {
 
   @Autowired
-  CreateRepeatDduduService createRepeatDduduService;
+  CreateRepeatTodoService createRepeatTodoService;
 
   @Autowired
-  RepeatDduduLoaderPort repeatDduduLoaderPort;
+  RepeatTodoLoaderPort repeatTodoLoaderPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort dduduLoaderPort;
 
   @Autowired
   SignUpPort signUpPort;
@@ -61,26 +61,26 @@ class CreateRepeatDduduServiceTest {
   List<String> repeatDaysOfWeek;
   List<Integer> repeatDaysOfMonth;
   Boolean lastDayOfMonth;
-  CreateRepeatDduduRequest request;
+  CreateRepeatTodoRequest request;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    name = RepeatDduduFixture.getRandomSentenceWithMax(50);
+    name = RepeatTodoFixture.getRandomSentenceWithMax(50);
     startDate = LocalDate.now();
     endDate = LocalDate.now()
         .plusMonths(1);
-    repeatType = RepeatDduduFixture.getRandomRepeatType();
-    repeatDaysOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek();
-    repeatDaysOfMonth = RepeatDduduFixture.getRandomRepeatDaysOfMonth(
+    repeatType = RepeatTodoFixture.getRandomRepeatType();
+    repeatDaysOfWeek = RepeatTodoFixture.getRandomRepeatDaysOfWeek();
+    repeatDaysOfMonth = RepeatTodoFixture.getRandomRepeatDaysOfMonth(
         startDate.getDayOfMonth(),
         YearMonth.now()
             .atEndOfMonth()
             .getDayOfMonth()
     );
     lastDayOfMonth = true;
-    request = new CreateRepeatDduduRequest(
+    request = new CreateRepeatTodoRequest(
         name,
         goal.getId(),
         repeatType.name(),
@@ -95,15 +95,15 @@ class CreateRepeatDduduServiceTest {
   }
 
   @Test
-  void 반복_뚜두_생성에_성공한다() {
+  void 반복_투두_생성에_성공한다() {
     // when
-    Long repeatDduduId = createRepeatDduduService.create(user.getId(), request);
+    Long repeatTodoId = createRepeatTodoService.create(user.getId(), request);
 
     // then
-    RepeatDdudu repeatDdudu = repeatDduduLoaderPort.getOptionalRepeatDdudu(repeatDduduId)
+    RepeatTodo repeatTodo = repeatTodoLoaderPort.getOptionalRepeatTodo(repeatTodoId)
         .get();
 
-    assertThat(repeatDdudu)
+    assertThat(repeatTodo)
         .hasFieldOrPropertyWithValue("name", name)
         .hasFieldOrPropertyWithValue("goalId", goal.getId())
         .hasFieldOrPropertyWithValue("repeatType", repeatType)
@@ -112,16 +112,16 @@ class CreateRepeatDduduServiceTest {
   }
 
   @Test
-  void 반복_뚜두_생성_시_뚜두도_함께_생성된다() {
+  void 반복_투두_생성_시_투두도_함께_생성된다() {
     // given
 
     // when
-    Long repeatDduduId = createRepeatDduduService.create(user.getId(), request);
+    Long repeatTodoId = createRepeatTodoService.create(user.getId(), request);
 
     // then
-    RepeatDdudu repeatDdudu = repeatDduduLoaderPort.getOptionalRepeatDdudu(repeatDduduId)
+    RepeatTodo repeatTodo = repeatTodoLoaderPort.getOptionalRepeatTodo(repeatTodoId)
         .get();
-    List<Ddudu> ddudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudu);
+    List<Todo> ddudus = dduduLoaderPort.getRepeatedTodos(repeatTodo);
 
     Assertions.assertThat(ddudus)
         .isNotEmpty();
@@ -131,7 +131,7 @@ class CreateRepeatDduduServiceTest {
   void 목표_아이디가_유효하지_않으면_예외가_발생한다() {
     // given
     Long invalidGoalId = GoalFixture.getRandomId();
-    CreateRepeatDduduRequest request = new CreateRepeatDduduRequest(
+    CreateRepeatTodoRequest request = new CreateRepeatTodoRequest(
         name,
         invalidGoalId,
         repeatType.name(),
@@ -145,12 +145,12 @@ class CreateRepeatDduduServiceTest {
     );
 
     // when
-    ThrowingCallable create = () -> createRepeatDduduService.create(user.getId(), request);
+    ThrowingCallable create = () -> createRepeatTodoService.create(user.getId(), request);
 
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(create)
-        .withMessage(RepeatDduduErrorCode.INVALID_GOAL.getCodeName());
+        .withMessage(RepeatTodoErrorCode.INVALID_GOAL.getCodeName());
   }
 
   @Test
@@ -159,7 +159,7 @@ class CreateRepeatDduduServiceTest {
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
     // when
-    ThrowingCallable create = () -> createRepeatDduduService.create(anotherUser.getId(), request);
+    ThrowingCallable create = () -> createRepeatTodoService.create(anotherUser.getId(), request);
 
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(SecurityException.class)

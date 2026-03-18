@@ -1,19 +1,19 @@
-package com.ddudu.application.planning.ddudu.service;
+package com.ddudu.application.planning.todo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.ddudu.request.RepeatAnotherDayRequest;
-import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
+import com.ddudu.application.common.dto.todo.request.RepeatAnotherDayRequest;
+import com.ddudu.application.common.dto.todo.response.RepeatAnotherDayResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
+import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
+import com.ddudu.common.exception.TodoErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
 import java.util.MissingResourceException;
@@ -42,24 +42,24 @@ class RepeatServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   User user;
   Goal goal;
-  Ddudu ddudu;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
   }
 
   @Test
-  void 뚜두_다른_날_반복하기를_성공한다() {
+  void 투두_다른_날_반복하기를_성공한다() {
     // given
     LocalDate tomorrow = LocalDate.now()
         .plusDays(1);
@@ -68,21 +68,21 @@ class RepeatServiceTest {
     // when
     RepeatAnotherDayResponse response = repeatService.repeatOnAnotherDay(
         user.getId(),
-        ddudu.getId(),
+        todo.getId(),
         request
     );
 
     // then
-    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(response.id(), "not found");
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(response.id(), "not found");
 
     assertThat(actual.getScheduledOn()).isEqualTo(tomorrow);
-    assertThat(actual).isNotEqualTo(ddudu);
+    assertThat(actual).isNotEqualTo(todo);
   }
 
   @Test
-  void 뚜두가_없으면_다른_날_반복하기를_실패한다() {
+  void 투두가_없으면_다른_날_반복하기를_실패한다() {
     // given
-    long invalidId = DduduFixture.getRandomId();
+    long invalidId = TodoFixture.getRandomId();
     LocalDate tomorrow = LocalDate.now()
         .plusDays(1);
     RepeatAnotherDayRequest request = new RepeatAnotherDayRequest(tomorrow);
@@ -97,7 +97,7 @@ class RepeatServiceTest {
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(repeat)
-        .withMessage(DduduErrorCode.ID_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
 }

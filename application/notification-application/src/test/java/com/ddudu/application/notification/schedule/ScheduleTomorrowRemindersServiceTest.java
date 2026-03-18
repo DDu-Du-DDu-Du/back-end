@@ -57,7 +57,7 @@ class ScheduleTomorrowRemindersServiceTest {
     NotificationEvent tomorrowMorningReminder = notificationEventCommandPort.save(
         NotificationEventFixture.createValidEventWithUserAndContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
+            NotificationEventTypeCode.TODO_REMINDER,
             UserFixture.getRandomId(),
             tomorrowMorning
         )
@@ -65,7 +65,7 @@ class ScheduleTomorrowRemindersServiceTest {
     NotificationEvent tomorrowAfternoonReminder = notificationEventCommandPort.save(
         NotificationEventFixture.createValidEventWithUserAndContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
+            NotificationEventTypeCode.TODO_REMINDER,
             UserFixture.getRandomId(),
             tomorrowAfternoon
         )
@@ -90,7 +90,7 @@ class ScheduleTomorrowRemindersServiceTest {
     NotificationEvent userReminder = notificationEventCommandPort.save(
         NotificationEventFixture.createValidEventWithUserAndContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
+            NotificationEventTypeCode.TODO_REMINDER,
             UserFixture.getRandomId(),
             tomorrowMorning
         )
@@ -98,7 +98,7 @@ class ScheduleTomorrowRemindersServiceTest {
     NotificationEvent otherUserReminder = notificationEventCommandPort.save(
         NotificationEventFixture.createValidEventWithUserAndContext(
             other.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
+            NotificationEventTypeCode.TODO_REMINDER,
             UserFixture.getRandomId(),
             tomorrowAfternoon
         )
@@ -125,7 +125,7 @@ class ScheduleTomorrowRemindersServiceTest {
     notificationEventCommandPort.save(
         NotificationEventFixture.createValidEventWithUserAndContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
+            NotificationEventTypeCode.TODO_REMINDER,
             UserFixture.getRandomId(),
             today
         )
@@ -133,7 +133,7 @@ class ScheduleTomorrowRemindersServiceTest {
     notificationEventCommandPort.save(
         NotificationEventFixture.createValidEventWithUserAndContext(
             user.getId(),
-            NotificationEventTypeCode.DDUDU_REMINDER,
+            NotificationEventTypeCode.TODO_REMINDER,
             UserFixture.getRandomId(),
             dayAfterTomorrow
         )

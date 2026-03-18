@@ -1,7 +1,7 @@
-package com.ddudu.domain.planning.repeatddudu.aggregate.vo;
+package com.ddudu.domain.planning.repeattodo.aggregate.vo;
 
-import com.ddudu.common.exception.RepeatDduduErrorCode;
-import com.ddudu.fixture.RepeatDduduFixture;
+import com.ddudu.common.exception.RepeatTodoErrorCode;
+import com.ddudu.fixture.RepeatTodoFixture;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -19,11 +19,11 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 class RepeatPatternTest {
 
   @Nested
-  class 반복_뚜두_패턴_생성_테스트 {
+  class 반복_투두_패턴_생성_테스트 {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void 위클리_반복_뚜두의_경우_반복_요일이_없으면_생성을_실패한다(List<String> repeatDaysOfWeek) {
+    void 위클리_반복_투두의_경우_반복_요일이_없으면_생성을_실패한다(List<String> repeatDaysOfWeek) {
       // given
 
       // when
@@ -32,12 +32,12 @@ class RepeatPatternTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK.getCodeName());
+          .withMessage(RepeatTodoErrorCode.NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK.getCodeName());
     }
 
     @ParameterizedTest
     @NullAndEmptySource
-    void 먼슬리_반복_뚜두의_경우_반복_날짜가_없으면_생성을_실패한다(List<Integer> repeatDaysOfMonth) {
+    void 먼슬리_반복_투두의_경우_반복_날짜가_없으면_생성을_실패한다(List<Integer> repeatDaysOfMonth) {
       // given
 
       // when
@@ -46,7 +46,7 @@ class RepeatPatternTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH.getCodeName());
+          .withMessage(RepeatTodoErrorCode.NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH.getCodeName());
     }
 
   }
@@ -66,9 +66,9 @@ class RepeatPatternTest {
     }
 
     @Test
-    void 데일리_반복_뚜두의_반복_날짜_리스트_조회에_성공한다() {
+    void 데일리_반복_투두의_반복_날짜_리스트_조회에_성공한다() {
       // given
-      RepeatPattern dailyPattern = RepeatDduduFixture.createDailyRepeatPattern();
+      RepeatPattern dailyPattern = RepeatTodoFixture.createDailyRepeatPattern();
 
       // when
       List<LocalDate> repeatDates = dailyPattern.calculateRepeatDates(startDate, endDate);
@@ -79,10 +79,10 @@ class RepeatPatternTest {
     }
 
     @Test
-    void 위클리_반복_뚜두의_반복_날짜_리스트_조회에_성공한다() {
+    void 위클리_반복_투두의_반복_날짜_리스트_조회에_성공한다() {
       // given
-      List<String> repeatDaysOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek(1);
-      RepeatPattern weeklyPattern = RepeatDduduFixture.createWeeklyRepeatPattern(repeatDaysOfWeek);
+      List<String> repeatDaysOfWeek = RepeatTodoFixture.getRandomRepeatDaysOfWeek(1);
+      RepeatPattern weeklyPattern = RepeatTodoFixture.createWeeklyRepeatPattern(repeatDaysOfWeek);
 
       // when
       List<LocalDate> repeatDates = weeklyPattern.calculateRepeatDates(startDate, endDate);
@@ -102,7 +102,7 @@ class RepeatPatternTest {
       LocalDate start = LocalDate.of(2024, 1, 31);
       LocalDate end = LocalDate.of(2024, 2, 29);
       List<String> repeatDaysOfWeek = List.of("THURSDAY");
-      RepeatPattern weeklyPattern = RepeatDduduFixture.createWeeklyRepeatPattern(repeatDaysOfWeek);
+      RepeatPattern weeklyPattern = RepeatTodoFixture.createWeeklyRepeatPattern(repeatDaysOfWeek);
 
       // when
       List<LocalDate> repeatDates = weeklyPattern.calculateRepeatDates(start, end);
@@ -117,9 +117,9 @@ class RepeatPatternTest {
     }
 
     @Test
-    void 먼슬리_반복_뚜두의_반복_날짜_리스트_조회에_성공한() {
+    void 먼슬리_반복_투두의_반복_날짜_리스트_조회에_성공한() {
       // given
-      RepeatPattern monthlyPattern = RepeatDduduFixture.createMonthlyRepeatPattern(List.of(), true);
+      RepeatPattern monthlyPattern = RepeatTodoFixture.createMonthlyRepeatPattern(List.of(), true);
 
       // when
       List<LocalDate> repeatDates = monthlyPattern.calculateRepeatDates(startDate, endDate);

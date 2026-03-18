@@ -1,18 +1,18 @@
-package com.ddudu.application.planning.ddudu.service;
+package com.ddudu.application.planning.todo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
+import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
+import com.ddudu.common.exception.TodoErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.util.MissingResourceException;
 import org.assertj.core.api.AssertionsForClassTypes;
@@ -34,7 +34,7 @@ class SwitchStatusServiceTest {
   SwitchStatusService switchStatusService;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   @Autowired
   SignUpPort signUpPort;
@@ -43,47 +43,47 @@ class SwitchStatusServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   User user;
   Goal goal;
-  Ddudu ddudu;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
   }
 
   @Test
   void 할_일_상태_업데이트를_성공한다() {
     // given
-    DduduStatus beforeUpdated = ddudu.getStatus();
+    TodoStatus beforeUpdated = todo.getStatus();
 
     // when
-    switchStatusService.switchStatus(user.getId(), ddudu.getId());
+    switchStatusService.switchStatus(user.getId(), todo.getId());
 
     // then
-    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "할 일이 존재하지 않습니다.");
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(todo.getId(), "할 일이 존재하지 않습니다.");
     assertThat(actual.getStatus()).isNotEqualTo(beforeUpdated);
   }
 
   @Test
   void 아이디가_존재하지_않아_할_일_상태_업데이트를_실패한다() {
     // given
-    Long invalidDduduId = DduduFixture.getRandomId();
+    Long invalidTodoId = TodoFixture.getRandomId();
 
     // when
     ThrowingCallable switchStatus = () -> switchStatusService.switchStatus(
         user.getId(),
-        invalidDduduId
+        invalidTodoId
     );
 
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(switchStatus)
-        .withMessage(DduduErrorCode.ID_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -94,13 +94,13 @@ class SwitchStatusServiceTest {
     // when
     ThrowingCallable updateStatus = () -> switchStatusService.switchStatus(
         anotherUserId,
-        ddudu.getId()
+        todo.getId()
     );
 
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(SecurityException.class)
         .isThrownBy(updateStatus)
-        .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+        .withMessage(TodoErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
 }

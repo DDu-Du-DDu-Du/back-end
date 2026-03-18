@@ -1,13 +1,13 @@
-package com.ddudu.domain.planning.repeatddudu.aggregate;
+package com.ddudu.domain.planning.repeattodo.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.common.exception.RepeatDduduErrorCode;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu.RepeatDduduBuilder;
-import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
-import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
+import com.ddudu.common.exception.RepeatTodoErrorCode;
+import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo.RepeatTodoBuilder;
+import com.ddudu.domain.planning.repeattodo.aggregate.enums.RepeatType;
+import com.ddudu.domain.planning.repeattodo.aggregate.vo.RepeatPattern;
 import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.RepeatDduduFixture;
+import com.ddudu.fixture.RepeatTodoFixture;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.assertj.core.api.Assertions;
@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class RepeatDduduTest {
+class RepeatTodoTest {
 
   Long goalId;
 
@@ -42,18 +42,18 @@ class RepeatDduduTest {
 
     @BeforeEach
     void setUp() {
-      name = RepeatDduduFixture.getRandomSentenceWithMax(50);
+      name = RepeatTodoFixture.getRandomSentenceWithMax(50);
       startDate = LocalDate.now();
       endDate = LocalDate.now()
           .plusMonths(1);
-      repeatType = RepeatDduduFixture.getRandomRepeatType();
-      repeatPattern = RepeatDduduFixture.createRandomRepeatPattern(repeatType);
+      repeatType = RepeatTodoFixture.getRandomRepeatType();
+      repeatPattern = RepeatTodoFixture.createRandomRepeatPattern(repeatType);
     }
 
     @Test
-    void 반복_뚜두_생성을_성공한다() {
+    void 반복_투두_생성을_성공한다() {
       // when
-      RepeatDdudu repeatDdudu = RepeatDdudu.builder()
+      RepeatTodo repeatTodo = RepeatTodo.builder()
           .goalId(goalId)
           .name(name)
           .repeatType(repeatType)
@@ -63,8 +63,8 @@ class RepeatDduduTest {
           .build();
 
       // then
-      assertThat(repeatDdudu).isNotNull();
-      assertThat(repeatDdudu)
+      assertThat(repeatTodo).isNotNull();
+      assertThat(repeatTodo)
           .hasFieldOrPropertyWithValue("goalId", goalId)
           .hasFieldOrPropertyWithValue("name", name)
           .hasFieldOrPropertyWithValue("repeatType", repeatType)
@@ -77,7 +77,7 @@ class RepeatDduduTest {
     @ValueSource(strings = " ")
     void 이름이_빈_값이면_생성을_실패한다(String blankName) {
       // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
+      RepeatTodoBuilder builder = RepeatTodo.builder()
           .goalId(goalId)
           .name(blankName)
           .repeatType(repeatType)
@@ -91,14 +91,14 @@ class RepeatDduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.BLANK_NAME.getCodeName());
+          .withMessage(RepeatTodoErrorCode.BLANK_NAME.getCodeName());
     }
 
     @Test
     void 이름이_50자를_넘으면_생성을_실패한다() {
       // given
-      String over50 = RepeatDduduFixture.getRandomSentence(51, 100);
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
+      String over50 = RepeatTodoFixture.getRandomSentence(51, 100);
+      RepeatTodoBuilder builder = RepeatTodo.builder()
           .goalId(goalId)
           .name(over50)
           .repeatType(repeatType)
@@ -112,13 +112,13 @@ class RepeatDduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+          .withMessage(RepeatTodoErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
     }
 
     @Test
     void 목표가_없으면_생성을_실패한다() {
       // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
+      RepeatTodoBuilder builder = RepeatTodo.builder()
           .name(name)
           .repeatType(repeatType)
           .repeatPattern(repeatPattern)
@@ -131,13 +131,13 @@ class RepeatDduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+          .withMessage(RepeatTodoErrorCode.NULL_GOAL_VALUE.getCodeName());
     }
 
     @Test
     void 반복_유형이_없으면_생성을_실패한다() {
       // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
+      RepeatTodoBuilder builder = RepeatTodo.builder()
           .goalId(goalId)
           .name(name)
           .repeatPattern(repeatPattern)
@@ -150,13 +150,13 @@ class RepeatDduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.NULL_REPEAT_TYPE.getCodeName());
+          .withMessage(RepeatTodoErrorCode.NULL_REPEAT_TYPE.getCodeName());
     }
 
     @Test
     void 시작_날짜가_없으면_생성을_실패한다() {
       // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
+      RepeatTodoBuilder builder = RepeatTodo.builder()
           .goalId(goalId)
           .name(name)
           .repeatType(repeatType)
@@ -169,13 +169,13 @@ class RepeatDduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.NULL_START_DATE.getCodeName());
+          .withMessage(RepeatTodoErrorCode.NULL_START_DATE.getCodeName());
     }
 
     @Test
     void 종료_날짜가_없으면_생성을_실패한다() {
       // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
+      RepeatTodoBuilder builder = RepeatTodo.builder()
           .goalId(goalId)
           .name(name)
           .repeatType(repeatType)
@@ -188,13 +188,13 @@ class RepeatDduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.NULL_END_DATE.getCodeName());
+          .withMessage(RepeatTodoErrorCode.NULL_END_DATE.getCodeName());
     }
 
     @Test
     void 시작_날짜가_종료_날짜보다_뒤면_생성을_실패한다() {
       // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
+      RepeatTodoBuilder builder = RepeatTodo.builder()
           .goalId(goalId)
           .name(name)
           .repeatType(repeatType)
@@ -208,13 +208,13 @@ class RepeatDduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.UNABLE_TO_END_BEFORE_START.getCodeName());
+          .withMessage(RepeatTodoErrorCode.UNABLE_TO_END_BEFORE_START.getCodeName());
     }
 
     @Test
     void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
       // given
-      RepeatDduduBuilder builder = RepeatDdudu.builder()
+      RepeatTodoBuilder builder = RepeatTodo.builder()
           .goalId(goalId)
           .name(name)
           .repeatType(repeatType)
@@ -231,7 +231,7 @@ class RepeatDduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(RepeatDduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
+          .withMessage(RepeatTodoErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
     }
 
   }

@@ -1,21 +1,21 @@
-package com.ddudu.application.planning.ddudu.service;
+package com.ddudu.application.planning.todo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
-import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
+import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
+import com.ddudu.common.exception.TodoErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.NotificationEventFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -45,10 +45,10 @@ class CancelReminderServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   @Autowired
   NotificationEventLoaderPort notificationEventLoaderPort;
@@ -58,38 +58,38 @@ class CancelReminderServiceTest {
 
   User user;
   Goal goal;
-  Ddudu ddudu;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     LocalTime beginAt = LocalTime.MAX;
-    ddudu = DduduFixture.createRandomDduduWithGoalAndTime(
+    todo = TodoFixture.createRandomTodoWithGoalAndTime(
         goal,
         beginAt,
         null
     );
-    ddudu = ddudu.moveDate(LocalDate.now()
+    todo = todo.moveDate(LocalDate.now()
         .plusDays(1));
-    ddudu = saveDduduPort.save(ddudu.setReminder(0, 0, 10));
+    todo = saveTodoPort.save(todo.setReminder(0, 0, 10));
   }
 
   @Test
   void 미리알림_취소를_성공한다() {
     // given
-    NotificationEvent event = NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+    NotificationEvent event = NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
         user.getId(),
-        ddudu.getId()
+        todo.getId()
     );
 
     notificationEventCommandPort.save(event);
 
     // when
-    cancelReminderService.cancel(user.getId(), ddudu.getId());
+    cancelReminderService.cancel(user.getId(), todo.getId());
 
     // then
-    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(todo.getId(), "not found");
 
     assertThat(actual.getRemindAt()).isNull();
   }
@@ -100,18 +100,18 @@ class CancelReminderServiceTest {
     long invalidId = UserFixture.getRandomId();
 
     // when
-    ThrowingCallable cancel = () -> cancelReminderService.cancel(invalidId, ddudu.getId());
+    ThrowingCallable cancel = () -> cancelReminderService.cancel(invalidId, todo.getId());
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(cancel)
-        .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
   }
 
   @Test
-  void 존재하지_않는_뚜두는_미리알림_취소에_실패한다() {
+  void 존재하지_않는_투두는_미리알림_취소에_실패한다() {
     // given
-    long invalidId = DduduFixture.getRandomId();
+    long invalidId = TodoFixture.getRandomId();
 
     // when
     ThrowingCallable cancel = () -> cancelReminderService.cancel(user.getId(), invalidId);
@@ -119,7 +119,7 @@ class CancelReminderServiceTest {
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(cancel)
-        .withMessage(DduduErrorCode.ID_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -128,12 +128,12 @@ class CancelReminderServiceTest {
     User another = signUpPort.save(UserFixture.createRandomUserWithId());
 
     // when
-    ThrowingCallable cancel = () -> cancelReminderService.cancel(another.getId(), ddudu.getId());
+    ThrowingCallable cancel = () -> cancelReminderService.cancel(another.getId(), todo.getId());
 
     // then
     Assertions.assertThatExceptionOfType(SecurityException.class)
         .isThrownBy(cancel)
-        .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+        .withMessage(TodoErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
 }

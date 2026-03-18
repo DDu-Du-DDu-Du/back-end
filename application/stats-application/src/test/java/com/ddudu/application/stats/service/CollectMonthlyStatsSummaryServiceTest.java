@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ddudu.application.common.dto.stats.GoalMonthlyStatsSummary;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.StatsErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import com.ddudu.fixtures.MonthlyStatsFixture;
@@ -49,7 +49,7 @@ class CollectMonthlyStatsSummaryServiceTest {
   private SaveGoalPort saveGoalPort;
 
   @Autowired
-  private SaveDduduPort saveDduduPort;
+  private SaveTodoPort saveTodoPort;
 
   private User user;
   private List<Goal> goals;
@@ -66,11 +66,11 @@ class CollectMonthlyStatsSummaryServiceTest {
       creationCounts = new ArrayList<>();
 
       for (int i = 0; i < goals.size(); i++) {
-        creationCounts.add(DduduFixture.getRandomInt(1, 100));
+        creationCounts.add(TodoFixture.getRandomInt(1, 100));
       }
 
       Iterator<Integer> countIterator = creationCounts.iterator();
-      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(
+      goals.forEach(goal -> saveTodoPort.saveAll(TodoFixture.createMultipleTodosWithGoal(
           goal,
           countIterator.next()
       )));
@@ -79,7 +79,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 이번_달_월별_목표들의_뚜두_생성_수_통계를_내림차순으로_낸다() {
+    void 이번_달_월별_목표들의_투두_생성_수_통계를_내림차순으로_낸다() {
       // given
       YearMonth thisMonth = YearMonth.now();
 
@@ -99,7 +99,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 목표에_해당_달_생성_뚜두가_없으면_통계에서_제외한다() {
+    void 목표에_해당_달_생성_투두가_없으면_통계에서_제외한다() {
       // given
       YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
@@ -143,15 +143,15 @@ class CollectMonthlyStatsSummaryServiceTest {
       user = signUpPort.save(UserFixture.createRandomUserWithId());
       goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user.getId(), 5));
 
-      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createDifferentDdudusWithGoal(
+      goals.forEach(goal -> saveTodoPort.saveAll(TodoFixture.createDifferentTodosWithGoal(
           goal,
-          DduduFixture.getRandomInt(1, 10),
-          DduduFixture.getRandomInt(1, 10)
+          TodoFixture.getRandomInt(1, 10),
+          TodoFixture.getRandomInt(1, 10)
       )));
     }
 
     @Test
-    void 이번_달_목표별_뚜두_달성_수_통계를_반환한다() {
+    void 이번_달_목표별_투두_달성_수_통계를_반환한다() {
       // given
       YearMonth thisMonth = YearMonth.now();
 
@@ -169,7 +169,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 목표에_해당_달의_뚜두_데이터가_없으면_통계에_포함되지_않는다() {
+    void 목표에_해당_달의_투두_데이터가_없으면_통계에_포함되지_않는다() {
       // given
       YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
@@ -218,7 +218,7 @@ class CollectMonthlyStatsSummaryServiceTest {
       }
 
       Iterator<Integer> iterator = expectedSustenanceCounts.iterator();
-      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createConsecutiveCompletedDdudus(
+      goals.forEach(goal -> saveTodoPort.saveAll(TodoFixture.createConsecutiveCompletedTodos(
           goal,
           iterator.next()
       )));
@@ -227,7 +227,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 이번_달_지속한_뚜두_수_통계를_내림차순으로_반환한다() {
+    void 이번_달_지속한_투두_수_통계를_내림차순으로_반환한다() {
       // given
       YearMonth thisMonth = YearMonth.now();
 
@@ -248,7 +248,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 목표에_해당_월_지속한_뚜두가_없으면_통계에서_제외한다() {
+    void 목표에_해당_월_지속한_투두가_없으면_통계에서_제외한다() {
       // given
       YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
@@ -292,14 +292,14 @@ class CollectMonthlyStatsSummaryServiceTest {
       expectedPostponedCounts = new ArrayList<>();
 
       for (int i = 0; i < goals.size(); i++) {
-        expectedPostponedCounts.add(DduduFixture.getRandomInt(0, 100));
+        expectedPostponedCounts.add(TodoFixture.getRandomInt(0, 100));
       }
 
       Iterator<Integer> iterator = expectedPostponedCounts.iterator();
-      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createDdudusWithPostponedFlag(
+      goals.forEach(goal -> saveTodoPort.saveAll(TodoFixture.createTodosWithPostponedFlag(
           goal,
           iterator.next(),
-          DduduFixture.getRandomInt(1, 100)
+          TodoFixture.getRandomInt(1, 100)
       )));
 
       expectedPostponedCounts.sort(Comparator.reverseOrder());
@@ -327,15 +327,15 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 미루기_뚜두가_없는_달이면_통계는_비어있다() {
+    void 미루기_투두가_없는_달이면_통계는_비어있다() {
       // given
-      YearMonth noDduduMonth = YearMonth.now().minusMonths(2);
+      YearMonth noTodoMonth = YearMonth.now().minusMonths(2);
 
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
           null,
-          noDduduMonth
+          noTodoMonth
       );
 
       // then
@@ -356,10 +356,10 @@ class CollectMonthlyStatsSummaryServiceTest {
       expectedReattainmentCounts = new ArrayList<>();
 
       for (int i = 0; i < goals.size(); i++) {
-        int totalPostponedCount = DduduFixture.getRandomInt(1, 100);
+        int totalPostponedCount = TodoFixture.getRandomInt(1, 100);
         int reattainedCount = MonthlyStatsFixture.getRandomInt(1, totalPostponedCount);
 
-        saveDduduPort.saveAll(DduduFixture.createReattainedDdudus(
+        saveTodoPort.saveAll(TodoFixture.createReattainedTodos(
             goals.get(i),
             reattainedCount,
             totalPostponedCount
@@ -393,7 +393,7 @@ class CollectMonthlyStatsSummaryServiceTest {
     }
 
     @Test
-    void 목표에_해당_월_뚜두가_없으면_통계에서_제외한다() {
+    void 목표에_해당_월_투두가_없으면_통계에서_제외한다() {
       // given
       YearMonth lastMonth = YearMonth.now().minusMonths(1);
 
@@ -417,11 +417,11 @@ class CollectMonthlyStatsSummaryServiceTest {
     User targetUser = signUpPort.save(UserFixture.createRandomUserWithId());
     Goal targetGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(targetUser.getId()));
 
-    saveDduduPort.saveAll(List.of(
-        DduduFixture.createRandomDduduWithReference(targetGoal.getId(), targetUser.getId(), true,
-            DduduStatus.COMPLETE),
-        DduduFixture.createRandomDduduWithReference(targetGoal.getId(), targetUser.getId(), false,
-            DduduStatus.UNCOMPLETED)
+    saveTodoPort.saveAll(List.of(
+        TodoFixture.createRandomTodoWithReference(targetGoal.getId(), targetUser.getId(), true,
+            TodoStatus.COMPLETE),
+        TodoFixture.createRandomTodoWithReference(targetGoal.getId(), targetUser.getId(), false,
+            TodoStatus.UNCOMPLETED)
     ));
 
     // when
