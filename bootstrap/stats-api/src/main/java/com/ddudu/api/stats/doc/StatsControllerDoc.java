@@ -28,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 )
 public interface StatsControllerDoc {
 
-  @Operation(summary = "주간 뚜두 완료도 조회")
+  @Operation(summary = "주간 투두 완료도 조회")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -70,7 +70,7 @@ public interface StatsControllerDoc {
       {
           @Parameter(
               name = "userId",
-              description = "조회할 뚜두의 사용자 식별자 (기본값: 로그인한 사용자)",
+              description = "조회할 투두의 사용자 식별자 (기본값: 로그인한 사용자)",
               in = ParameterIn.QUERY
           ),
           @Parameter(
@@ -85,7 +85,7 @@ public interface StatsControllerDoc {
       Long loginId, Long userId, LocalDate date
   );
 
-  @Operation(summary = "월간 뚜두 완료도 조회")
+  @Operation(summary = "월간 투두 완료도 조회")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -127,7 +127,7 @@ public interface StatsControllerDoc {
       {
           @Parameter(
               name = "userId",
-              description = "조회할 뚜두의 사용자 식별자 (기본값: 로그인한 사용자)",
+              description = "조회할 투두의 사용자 식별자 (기본값: 로그인한 사용자)",
               in = ParameterIn.QUERY
           ),
           @Parameter(
@@ -141,7 +141,7 @@ public interface StatsControllerDoc {
       Long loginId, Long userId, YearMonth yearMonth
   );
 
-  @Operation(summary = "월별 통합 뚜두 통계 리포트")
+  @Operation(summary = "월별 통합 투두 통계 리포트")
   @ApiResponses(
       {
           @ApiResponse(
@@ -176,8 +176,8 @@ public interface StatsControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "9001",
-                      description = "서버 내부 문제로 뚜두 상태 파싱에 실패한 경우",
-                      value = StatsErrorExamples.STATS_INVALID_DDUDU_STATS
+                      description = "서버 내부 문제로 투두 상태 파싱에 실패한 경우",
+                      value = StatsErrorExamples.STATS_INVALID_TODO_STATS
                   )
               )
           )
@@ -191,7 +191,7 @@ public interface StatsControllerDoc {
   )
   ResponseEntity<MonthlyStatsReportResponse> collectReport(Long loginId, YearMonth yearMonth);
 
-  @Operation(summary = "월별 목표들의 뚜두 통계 요약")
+  @Operation(summary = "월별 목표들의 투두 통계 요약")
   @ApiResponses(
       {
           @ApiResponse(
@@ -227,17 +227,17 @@ public interface StatsControllerDoc {
                   examples = {
                       @ExampleObject(
                           name = "9001",
-                          description = "서버 내부 문제로 뚜두 상태 파싱에 실패한 경우",
-                          value = StatsErrorExamples.STATS_INVALID_DDUDU_STATS
+                          description = "서버 내부 문제로 투두 상태 파싱에 실패한 경우",
+                          value = StatsErrorExamples.STATS_INVALID_TODO_STATS
                       ),
                       @ExampleObject(
                           name = "9004",
-                          description = "서버 내부 문제로 뚜두 데이터가 없는 월의 통계 시도할 경우",
+                          description = "서버 내부 문제로 투두 데이터가 없는 월의 통계 시도할 경우",
                           value = StatsErrorExamples.STATS_MONTHLY_STATS_EMPTY
                       ),
                       @ExampleObject(
                           name = "9005",
-                          description = "서버 내부 문제로 월의 통계 시도 시 다른 월의 뚜두가 포함될 경우",
+                          description = "서버 내부 문제로 월의 통계 시도 시 다른 월의 투두가 포함될 경우",
                           value = StatsErrorExamples.STATS_MONTHLY_MONTHLY_STATS_NOT_GROUPED_BY_GOAL
                       )
                   }
@@ -263,7 +263,7 @@ public interface StatsControllerDoc {
       YearMonth yearMonth
   );
 
-  @Operation(summary = "월별 뚜두 달성 중심 상세 통계")
+  @Operation(summary = "월별 투두 달성 중심 상세 통계")
   @ApiResponses(
       {
           @ApiResponse(
@@ -341,7 +341,7 @@ public interface StatsControllerDoc {
       YearMonth toMonth
   );
 
-  @Operation(summary = "월별 뚜두 미루기 중심 상세 통계")
+  @Operation(summary = "월별 투두 미루기 중심 상세 통계")
   @ApiResponses(
       {
           @ApiResponse(

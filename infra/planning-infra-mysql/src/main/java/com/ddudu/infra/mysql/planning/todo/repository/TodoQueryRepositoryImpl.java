@@ -1,6 +1,6 @@
 package com.ddudu.infra.mysql.planning.todo.repository;
 
-import static com.ddudu.infra.mysql.planning.todo.entity.QTodoEntity.dduduEntity;
+import static com.ddudu.infra.mysql.planning.todo.entity.QTodoEntity.todoEntity;
 import static com.ddudu.infra.mysql.planning.goal.entity.QGoalEntity.goalEntity;
 import static com.ddudu.infra.mysql.planning.repeattodo.entity.QRepeatTodoEntity.repeatTodoEntity;
 
@@ -56,13 +56,13 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
       Long userId
   ) {
     return jpaQueryFactory
-        .selectFrom(dduduEntity)
+        .selectFrom(todoEntity)
         .join(goalEntity)
-        .on(dduduEntity.goalId.eq(goalEntity.id))
+        .on(todoEntity.goalId.eq(goalEntity.id))
         .where(
-            dduduEntity.beginAt.goe(LocalTime.from(startDate)),
-            dduduEntity.beginAt.lt(LocalTime.from(endDate)),
-            dduduEntity.userId.eq(userId)
+            todoEntity.beginAt.goe(LocalTime.from(startDate)),
+            todoEntity.beginAt.lt(LocalTime.from(endDate)),
+            todoEntity.userId.eq(userId)
         )
         .fetch();
   }
@@ -76,31 +76,31 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
       List<PrivacyType> privacyTypes,
       boolean isAchieved
   ) {
-    BooleanBuilder condition = new BooleanBuilder(dduduEntity.userId.eq(userId));
+    BooleanBuilder condition = new BooleanBuilder(todoEntity.userId.eq(userId));
 
     if (Objects.nonNull(goalId)) {
-      condition.and(dduduEntity.goalId.eq(goalId));
+      condition.and(todoEntity.goalId.eq(goalId));
     }
 
     if (!isAchieved) {
-      condition.and(dduduEntity.postponedAt.isNotNull())
-          .and(dduduEntity.postponedAt.between(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX)));
+      condition.and(todoEntity.postponedAt.isNotNull())
+          .and(todoEntity.postponedAt.between(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX)));
     }
 
     condition.and(privacyTypesIn(privacyTypes));
 
     if (isAchieved) {
-      condition.and(dduduEntity.scheduledOn.between(startDate, endDate));
+      condition.and(todoEntity.scheduledOn.between(startDate, endDate));
     }
 
     return jpaQueryFactory
         .select(projectCompletion())
-        .from(dduduEntity)
+        .from(todoEntity)
         .join(goalEntity)
-        .on(dduduEntity.goalId.eq(goalEntity.id))
+        .on(todoEntity.goalId.eq(goalEntity.id))
         .where(condition)
-        .groupBy(dduduEntity.scheduledOn)
-        .orderBy(dduduEntity.scheduledOn.asc())
+        .groupBy(todoEntity.scheduledOn)
+        .orderBy(todoEntity.scheduledOn.asc())
         .fetch();
   }
 
@@ -115,19 +115,19 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
     BooleanExpression cursorFilter = getCursorFilter(request.getOrder(), request.getCursor());
     Predicate openness = getOpenness(isMine, isFollower);
     BooleanBuilder condition = new BooleanBuilder(cursorFilter)
-        .and(dduduEntity.userId.eq(userId))
+        .and(todoEntity.userId.eq(userId))
         .and(openness);
 
     if (StringUtils.isNotBlank(query)) {
-      condition.and(dduduEntity.name.containsIgnoreCase(query));
+      condition.and(todoEntity.name.containsIgnoreCase(query));
     }
 
     OrderSpecifier<?> order = decideOrder(request.getOrder());
 
     return jpaQueryFactory.select(projectTodoCursor(request.getOrder()))
-        .from(dduduEntity)
+        .from(todoEntity)
         .where(condition)
-        .orderBy(order, dduduEntity.id.desc())
+        .orderBy(order, todoEntity.id.desc())
         .limit(request.getSize() + 1)
         .fetch();
   }
@@ -139,12 +139,12 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
       List<PrivacyType> accessiblePrivacyTypes
   ) {
     return jpaQueryFactory
-        .selectFrom(dduduEntity)
+        .selectFrom(todoEntity)
         .join(goalEntity)
-        .on(dduduEntity.goalId.eq(goalEntity.id))
+        .on(todoEntity.goalId.eq(goalEntity.id))
         .where(
             scheduledOnEq(date),
-            dduduEntity.userId.eq(userId),
+            todoEntity.userId.eq(userId),
             privacyTypesIn(accessiblePrivacyTypes)
         )
         .fetch();
@@ -153,8 +153,8 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
   @Override
   public void deleteAllByGoalId(Long goalId) {
     jpaQueryFactory
-        .delete(dduduEntity)
-        .where(dduduEntity.goalId.eq(goalId))
+        .delete(todoEntity)
+        .where(todoEntity.goalId.eq(goalId))
         .execute();
 
     entityManager.flush();
@@ -164,10 +164,10 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
   @Override
   public void deleteAllByRepeatTodoId(Long repeatTodoId) {
     jpaQueryFactory
-        .delete(dduduEntity)
+        .delete(todoEntity)
         .where(
-            dduduEntity.repeatTodoId.eq(repeatTodoId),
-            dduduEntity.status.eq(TodoStatus.UNCOMPLETED)
+            todoEntity.repeatTodoId.eq(repeatTodoId),
+            todoEntity.status.eq(TodoStatus.UNCOMPLETED)
         )
         .execute();
 
@@ -183,21 +183,21 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
       LocalDate to
   ) {
     BooleanBuilder condition = new BooleanBuilder(goalEntity.userId.eq(userId))
-        .and(dduduEntity.scheduledOn.between(from, to));
+        .and(todoEntity.scheduledOn.between(from, to));
 
     if (Objects.nonNull(goalId)) {
-      condition.and(dduduEntity.goalId.eq(goalId));
+      condition.and(todoEntity.goalId.eq(goalId));
     }
 
     return jpaQueryFactory
         .select(projectionStatsBase())
-        .from(dduduEntity)
+        .from(todoEntity)
         .join(goalEntity)
-        .on(dduduEntity.goalId.eq(goalEntity.id))
+        .on(todoEntity.goalId.eq(goalEntity.id))
         .where(condition)
         .orderBy(
-            dduduEntity.scheduledOn.yearMonth()
-                .asc(), dduduEntity.scheduledOn.asc(), dduduEntity.status.asc()
+            todoEntity.scheduledOn.yearMonth()
+                .asc(), todoEntity.scheduledOn.asc(), todoEntity.status.asc()
         )
         .fetch();
   }
@@ -210,22 +210,22 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
       LocalDate to
   ) {
     BooleanBuilder condition = new BooleanBuilder(goalEntity.userId.eq(userId))
-        .and(dduduEntity.postponedAt.isNotNull())
-        .and(dduduEntity.postponedAt.between(from.atStartOfDay(), to.atTime(LocalTime.MAX)));
+        .and(todoEntity.postponedAt.isNotNull())
+        .and(todoEntity.postponedAt.between(from.atStartOfDay(), to.atTime(LocalTime.MAX)));
 
     if (Objects.nonNull(goalId)) {
-      condition.and(dduduEntity.goalId.eq(goalId));
+      condition.and(todoEntity.goalId.eq(goalId));
     }
 
     return jpaQueryFactory
         .select(projectionStatsBase())
-        .from(dduduEntity)
+        .from(todoEntity)
         .join(goalEntity)
-        .on(dduduEntity.goalId.eq(goalEntity.id))
+        .on(todoEntity.goalId.eq(goalEntity.id))
         .where(condition)
         .orderBy(
-            dduduEntity.scheduledOn.yearMonth()
-                .asc(), dduduEntity.scheduledOn.asc(), dduduEntity.status.asc()
+            todoEntity.scheduledOn.yearMonth()
+                .asc(), todoEntity.scheduledOn.asc(), todoEntity.status.asc()
         )
         .fetch();
   }
@@ -237,25 +237,25 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
       LocalDate from,
       LocalDate to
   ) {
-    NumberExpression<Integer> totalCount = dduduEntity.count()
+    NumberExpression<Integer> totalCount = todoEntity.count()
         .intValue();
     NumberTemplate<Integer> completedCount = Expressions.numberTemplate(
         Integer.class,
         "SUM(CASE WHEN {0} = {1} THEN 1 ELSE 0 END)",
-        dduduEntity.status,
+        todoEntity.status,
         TodoStatus.COMPLETE
     );
-    BooleanBuilder condition = new BooleanBuilder(dduduEntity.goalId.eq(goalId))
-        .and(dduduEntity.userId.eq(userId))
-        .and(dduduEntity.scheduledOn.between(from, to));
+    BooleanBuilder condition = new BooleanBuilder(todoEntity.goalId.eq(goalId))
+        .and(todoEntity.userId.eq(userId))
+        .and(todoEntity.scheduledOn.between(from, to));
 
     return jpaQueryFactory
         .select(projectRepeatTodoStats(completedCount, totalCount))
-        .from(dduduEntity)
+        .from(todoEntity)
         .join(repeatTodoEntity)
-        .on(repeatTodoEntity.id.eq(dduduEntity.repeatTodoId))
+        .on(repeatTodoEntity.id.eq(todoEntity.repeatTodoId))
         .where(condition)
-        .groupBy(dduduEntity.repeatTodoId)
+        .groupBy(todoEntity.repeatTodoId)
         .orderBy(completedCount.desc(), totalCount.desc())
         .fetch();
   }
@@ -265,12 +265,12 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
   public List<GoalStatusSummaryRaw> findGoalStatuses(Long userId, Long goalId) {
     return jpaQueryFactory
         .select(projectGoalStatusSummary())
-        .from(dduduEntity)
+        .from(todoEntity)
         .join(goalEntity)
-        .on(dduduEntity.goalId.eq(goalEntity.id))
+        .on(todoEntity.goalId.eq(goalEntity.id))
         .where(
-            dduduEntity.userId.eq(userId),
-            dduduEntity.goalId.eq(goalId),
+            todoEntity.userId.eq(userId),
+            todoEntity.goalId.eq(goalId),
             goalEntity.userId.eq(userId)
         )
         .fetch();
@@ -279,8 +279,8 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
   @Override
   public int countTodayByUserId(Long userId) {
     return jpaQueryFactory.select(Wildcard.countAsInt)
-        .from(dduduEntity)
-        .where(dduduEntity.userId.eq(userId), dduduEntity.scheduledOn.eq(LocalDate.now()))
+        .from(todoEntity)
+        .where(todoEntity.userId.eq(userId), todoEntity.scheduledOn.eq(LocalDate.now()))
         .fetchOne();
   }
 
@@ -307,7 +307,7 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
 
     long idCursor = Long.parseLong(cursor);
 
-    return idCursor > 0 ? dduduEntity.id.lt(idCursor) : null;
+    return idCursor > 0 ? todoEntity.id.lt(idCursor) : null;
   }
 
   private OrderSpecifier<?> decideOrder(OrderType orderType) {
@@ -325,17 +325,17 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
   private ConstructorExpression<SimpleTodoSearchDto> projectSimpleTodo() {
     return Projections.constructor(
         SimpleTodoSearchDto.class,
-        dduduEntity.id,
-        dduduEntity.name,
-        dduduEntity.scheduledOn,
-        dduduEntity.postponedAt
+        todoEntity.id,
+        todoEntity.name,
+        todoEntity.scheduledOn,
+        todoEntity.postponedAt
     );
   }
 
   private StringExpression getCursor(OrderType orderType) {
     validateOrderType(orderType);
 
-    return dduduEntity.id.stringValue();
+    return todoEntity.id.stringValue();
   }
 
   private void validateOrderType(OrderType orderType) {
@@ -348,8 +348,8 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
   private ConstructorExpression<GoalStatusSummaryRaw> projectGoalStatusSummary() {
     return Projections.constructor(
         GoalStatusSummaryRaw.class,
-        dduduEntity.id,
-        dduduEntity.status
+        todoEntity.id,
+        todoEntity.status
     );
   }
 
@@ -358,33 +358,33 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
   }
 
   private BooleanExpression scheduledOnEq(LocalDate date) {
-    return dduduEntity.scheduledOn.eq(date);
+    return todoEntity.scheduledOn.eq(date);
   }
 
   private ConstructorExpression<TodoCompletionResponse> projectCompletion() {
     NumberTemplate<Integer> totalTodosTemplate = Expressions.numberTemplate(
         Integer.class,
         "COUNT({0})",
-        dduduEntity.id
+        todoEntity.id
     );
     NumberTemplate<Integer> completedTodosTemplate = Expressions.numberTemplate(
         Integer.class,
         "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
-        dduduEntity.status,
+        todoEntity.status,
         TodoStatus.COMPLETE,
-        dduduEntity.id
+        todoEntity.id
     );
     NumberTemplate<Integer> uncompletedTodosTemplate = Expressions.numberTemplate(
         Integer.class,
         "COUNT(DISTINCT CASE WHEN {0} = {1} THEN {2} END)",
-        dduduEntity.status,
+        todoEntity.status,
         TodoStatus.UNCOMPLETED,
-        dduduEntity.id
+        todoEntity.id
     );
 
     return Projections.constructor(
         TodoCompletionResponse.class,
-        dduduEntity.scheduledOn,
+        todoEntity.scheduledOn,
         totalTodosTemplate,
         completedTodosTemplate,
         uncompletedTodosTemplate
@@ -393,7 +393,7 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
 
   private ConstructorExpression<BaseStats> projectionStatsBase() {
     Expression<com.ddudu.aggregate.enums.TodoStatus> status = ExpressionUtils.as(
-        dduduEntity.status.when(TodoStatus.COMPLETE)
+        todoEntity.status.when(TodoStatus.COMPLETE)
             .then(com.ddudu.aggregate.enums.TodoStatus.COMPLETE)
             .otherwise(com.ddudu.aggregate.enums.TodoStatus.UNCOMPLETED),
         "status"
@@ -401,15 +401,15 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
 
     return Projections.constructor(
         BaseStats.class,
-        dduduEntity.id.as("dduduId"),
+        todoEntity.id.as("dduduId"),
         goalEntity.id,
         goalEntity.name,
         goalEntity.color.stringValue(),
         status,
-        dduduEntity.postponedAt.isNotNull(),
-        dduduEntity.scheduledOn,
-        dduduEntity.beginAt,
-        dduduEntity.endAt
+        todoEntity.postponedAt.isNotNull(),
+        todoEntity.scheduledOn,
+        todoEntity.beginAt,
+        todoEntity.endAt
     );
   }
 
@@ -419,7 +419,7 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
   ) {
     return Projections.constructor(
         RepeatTodoStatsDto.class,
-        dduduEntity.repeatTodoId,
+        todoEntity.repeatTodoId,
         repeatTodoEntity.name,
         completedCount,
         totalCount

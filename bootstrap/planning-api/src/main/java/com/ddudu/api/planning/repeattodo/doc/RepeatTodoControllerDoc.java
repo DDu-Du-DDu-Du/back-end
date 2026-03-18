@@ -18,11 +18,11 @@ import org.springframework.http.ResponseEntity;
 
 @Tag(
     name = "Repeat Todo",
-    description = "반복 뚜두 관련 API"
+    description = "반복 투두 관련 API"
 )
 public interface RepeatTodoControllerDoc {
 
-  @Operation(summary = "반복 뚜두 생성")
+  @Operation(summary = "반복 투두 생성")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -37,55 +37,55 @@ public interface RepeatTodoControllerDoc {
                   examples = {
                       @ExampleObject(
                           name = "6001",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_BLANK_NAME
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_BLANK_NAME
                       ),
                       @ExampleObject(
                           name = "6006",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_EXCESSIVE_NAME_LENGTH
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_EXCESSIVE_NAME_LENGTH
                       ),
                       @ExampleObject(
                           name = "6002",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_GOAL_VALUE
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_GOAL_VALUE
                       ),
                       @ExampleObject(
                           name = "6003",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_REPEAT_TYPE
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_REPEAT_TYPE
                       ),
                       @ExampleObject(
                           name = "6009",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_INVALID_REPEAT_TYPE
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_INVALID_REPEAT_TYPE
                       ),
                       @ExampleObject(
                           name = "6004",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_START_DATE
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_START_DATE
                       ),
                       @ExampleObject(
                           name = "6005",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_END_DATE
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_END_DATE
                       ),
                       @ExampleObject(
                           name = "6007",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_UNABLE_TO_END_BEFORE_START
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_UNABLE_TO_END_BEFORE_START
                       ),
                       @ExampleObject(
                           name = "6008",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_UNABLE_TO_FINISH_BEFORE_BEGIN
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_UNABLE_TO_FINISH_BEFORE_BEGIN
                       ),
                       @ExampleObject(
                           name = "6010",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_INVALID_DAY_OF_WEEK
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_INVALID_DAY_OF_WEEK
                       ),
                       @ExampleObject(
                           name = "6011",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH
                       ),
                       @ExampleObject(
                           name = "6012",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK
                       ),
                       @ExampleObject(
                           name = "6013",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_LAST_DAY
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_LAST_DAY
                       )
                   }
               )
@@ -118,7 +118,7 @@ public interface RepeatTodoControllerDoc {
                   examples = @ExampleObject(
                       name = "6014",
                       description = "목표 아이디가 유효하지 않은 경우",
-                      value = RepeatTodoErrorExamples.REPEAT_DDUDU_INVALID_GOAL
+                      value = RepeatTodoErrorExamples.REPEAT_TODO_INVALID_GOAL
                   )
               )
           )
@@ -127,7 +127,7 @@ public interface RepeatTodoControllerDoc {
   ResponseEntity<IdResponse> create(Long loginId, CreateRepeatTodoRequest request);
 
 
-  @Operation(summary = "반복 뚜두 수정")
+  @Operation(summary = "반복 투두 수정")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -142,51 +142,51 @@ public interface RepeatTodoControllerDoc {
                   examples = {
                       @ExampleObject(
                           name = "6001",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_BLANK_NAME
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_BLANK_NAME
                       ),
                       @ExampleObject(
                           name = "6006",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_EXCESSIVE_NAME_LENGTH
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_EXCESSIVE_NAME_LENGTH
                       ),
                       @ExampleObject(
                           name = "6003",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_REPEAT_TYPE
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_REPEAT_TYPE
                       ),
                       @ExampleObject(
                           name = "6009",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_INVALID_REPEAT_TYPE
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_INVALID_REPEAT_TYPE
                       ),
                       @ExampleObject(
                           name = "6004",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_START_DATE
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_START_DATE
                       ),
                       @ExampleObject(
                           name = "6005",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_END_DATE
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_END_DATE
                       ),
                       @ExampleObject(
                           name = "6007",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_UNABLE_TO_END_BEFORE_START
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_UNABLE_TO_END_BEFORE_START
                       ),
                       @ExampleObject(
                           name = "6008",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_UNABLE_TO_FINISH_BEFORE_BEGIN
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_UNABLE_TO_FINISH_BEFORE_BEGIN
                       ),
                       @ExampleObject(
                           name = "6010",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_INVALID_DAY_OF_WEEK
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_INVALID_DAY_OF_WEEK
                       ),
                       @ExampleObject(
                           name = "6011",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH
                       ),
                       @ExampleObject(
                           name = "6012",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK
                       ),
                       @ExampleObject(
                           name = "6013",
-                          value = RepeatTodoErrorExamples.REPEAT_DDUDU_NULL_LAST_DAY
+                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_LAST_DAY
                       )
                   }
               )
@@ -218,8 +218,8 @@ public interface RepeatTodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "6015",
-                      description = "반복 뚜두 아이디가 유효하지 않은 경우",
-                      value = RepeatTodoErrorExamples.REPEAT_DDUDU_NOT_EXIST
+                      description = "반복 투두 아이디가 유효하지 않은 경우",
+                      value = RepeatTodoErrorExamples.REPEAT_TODO_NOT_EXIST
                   )
               )
           )
@@ -227,14 +227,14 @@ public interface RepeatTodoControllerDoc {
   )
   @Parameter(
       name = "id",
-      description = "변경할 반복 뚜두 식별자",
+      description = "변경할 반복 투두 식별자",
       in = ParameterIn.PATH
   )
   ResponseEntity<IdResponse> update(Long loginId, Long id, UpdateRepeatTodoRequest request);
 
   @Operation(
-      summary = "반복 뚜두 삭제",
-      description = "반복 뚜두 삭제 시 하위 뚜두도 함께 삭제 됩니다."
+      summary = "반복 투두 삭제",
+      description = "반복 투두 삭제 시 하위 투두도 함께 삭제 됩니다."
   )
   @ApiResponses(
       value = {
@@ -270,8 +270,8 @@ public interface RepeatTodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "6015",
-                      description = "반복 뚜두 아이디가 유효하지 않은 경우",
-                      value = RepeatTodoErrorExamples.REPEAT_DDUDU_NOT_EXIST
+                      description = "반복 투두 아이디가 유효하지 않은 경우",
+                      value = RepeatTodoErrorExamples.REPEAT_TODO_NOT_EXIST
                   )
               )
           )
@@ -279,7 +279,7 @@ public interface RepeatTodoControllerDoc {
   )
   @Parameter(
       name = "id",
-      description = "삭제할 반복 뚜두 식별자",
+      description = "삭제할 반복 투두 식별자",
       in = ParameterIn.PATH
   )
   ResponseEntity<Void> delete(Long loginId, Long id);

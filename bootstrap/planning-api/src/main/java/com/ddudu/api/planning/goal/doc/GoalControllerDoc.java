@@ -336,7 +336,7 @@ public interface GoalControllerDoc {
 
   @Operation(
       summary = "목표 삭제",
-      description = "목표 삭제 시 하위 뚜두도 함께 삭제 됩니다."
+      description = "목표 삭제 시 하위 투두도 함께 삭제 됩니다."
   )
   @ApiResponses(
       value = {

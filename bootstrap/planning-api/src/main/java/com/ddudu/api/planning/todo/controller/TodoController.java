@@ -1,38 +1,38 @@
-package com.ddudu.api.planning.ddudu.controller;
+package com.ddudu.api.planning.todo.controller;
 
 import static java.util.Objects.isNull;
 
-import com.ddudu.api.planning.ddudu.doc.TodoControllerDoc;
+import com.ddudu.api.planning.todo.doc.TodoControllerDoc;
 import com.ddudu.application.common.dto.IdResponse;
-import com.ddudu.application.common.dto.ddudu.GoalGroupedTodos;
-import com.ddudu.application.common.dto.ddudu.SimpleTodoSearchDto;
-import com.ddudu.application.common.dto.ddudu.request.ChangeNameRequest;
-import com.ddudu.application.common.dto.ddudu.request.CreateTodoRequest;
-import com.ddudu.application.common.dto.ddudu.request.TodoSearchRequest;
-import com.ddudu.application.common.dto.ddudu.request.MoveDateRequest;
-import com.ddudu.application.common.dto.ddudu.request.PeriodSetupRequest;
-import com.ddudu.application.common.dto.ddudu.request.RepeatAnotherDayRequest;
-import com.ddudu.application.common.dto.ddudu.request.SetReminderRequest;
-import com.ddudu.application.common.dto.ddudu.request.UpdateTodoRequest;
-import com.ddudu.application.common.dto.ddudu.response.BasicTodoResponse;
-import com.ddudu.application.common.dto.ddudu.response.TodoDetailResponse;
-import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
-import com.ddudu.application.common.dto.ddudu.response.TimetableResponse;
+import com.ddudu.application.common.dto.todo.GoalGroupedTodos;
+import com.ddudu.application.common.dto.todo.SimpleTodoSearchDto;
+import com.ddudu.application.common.dto.todo.request.ChangeNameRequest;
+import com.ddudu.application.common.dto.todo.request.CreateTodoRequest;
+import com.ddudu.application.common.dto.todo.request.TodoSearchRequest;
+import com.ddudu.application.common.dto.todo.request.MoveDateRequest;
+import com.ddudu.application.common.dto.todo.request.PeriodSetupRequest;
+import com.ddudu.application.common.dto.todo.request.RepeatAnotherDayRequest;
+import com.ddudu.application.common.dto.todo.request.SetReminderRequest;
+import com.ddudu.application.common.dto.todo.request.UpdateTodoRequest;
+import com.ddudu.application.common.dto.todo.response.BasicTodoResponse;
+import com.ddudu.application.common.dto.todo.response.TodoDetailResponse;
+import com.ddudu.application.common.dto.todo.response.RepeatAnotherDayResponse;
+import com.ddudu.application.common.dto.todo.response.TimetableResponse;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
-import com.ddudu.application.common.port.ddudu.in.CancelReminderUseCase;
-import com.ddudu.application.common.port.ddudu.in.ChangeNameUseCase;
-import com.ddudu.application.common.port.ddudu.in.CreateTodoUseCase;
-import com.ddudu.application.common.port.ddudu.in.TodoSearchUseCase;
-import com.ddudu.application.common.port.ddudu.in.DeleteTodoUseCase;
-import com.ddudu.application.common.port.ddudu.in.GetDailyTodosByGoalUseCase;
-import com.ddudu.application.common.port.ddudu.in.GetTimetableUseCase;
-import com.ddudu.application.common.port.ddudu.in.MoveDateUseCase;
-import com.ddudu.application.common.port.ddudu.in.PeriodSetupUseCase;
-import com.ddudu.application.common.port.ddudu.in.RepeatUseCase;
-import com.ddudu.application.common.port.ddudu.in.RetrieveTodoUseCase;
-import com.ddudu.application.common.port.ddudu.in.SetReminderUseCase;
-import com.ddudu.application.common.port.ddudu.in.SwitchStatusUseCase;
-import com.ddudu.application.common.port.ddudu.in.UpdateTodoUseCase;
+import com.ddudu.application.common.port.todo.in.CancelReminderUseCase;
+import com.ddudu.application.common.port.todo.in.ChangeNameUseCase;
+import com.ddudu.application.common.port.todo.in.CreateTodoUseCase;
+import com.ddudu.application.common.port.todo.in.TodoSearchUseCase;
+import com.ddudu.application.common.port.todo.in.DeleteTodoUseCase;
+import com.ddudu.application.common.port.todo.in.GetDailyTodosByGoalUseCase;
+import com.ddudu.application.common.port.todo.in.GetTimetableUseCase;
+import com.ddudu.application.common.port.todo.in.MoveDateUseCase;
+import com.ddudu.application.common.port.todo.in.PeriodSetupUseCase;
+import com.ddudu.application.common.port.todo.in.RepeatUseCase;
+import com.ddudu.application.common.port.todo.in.RetrieveTodoUseCase;
+import com.ddudu.application.common.port.todo.in.SetReminderUseCase;
+import com.ddudu.application.common.port.todo.in.SwitchStatusUseCase;
+import com.ddudu.application.common.port.todo.in.UpdateTodoUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -54,14 +54,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/ddudus")
+@RequestMapping("/api/todos")
 @RequiredArgsConstructor
 public class TodoController implements TodoControllerDoc {
 
   private final CreateTodoUseCase createTodoUseCase;
   private final GetDailyTodosByGoalUseCase getDailyTodosByGoalUseCase;
   private final GetTimetableUseCase getTimetableUseCase;
-  private final TodoSearchUseCase dduduSearchUseCase;
+  private final TodoSearchUseCase todoSearchUseCase;
   private final RetrieveTodoUseCase retrieveTodoUseCase;
   private final PeriodSetupUseCase periodSetupUseCase;
   private final MoveDateUseCase moveDateUseCase;
@@ -85,7 +85,7 @@ public class TodoController implements TodoControllerDoc {
       CreateTodoRequest request
   ) {
     BasicTodoResponse response = createTodoUseCase.create(loginId, request);
-    URI uri = URI.create("/api/ddudus/" + response.id());
+    URI uri = URI.create("/api/todos/" + response.id());
 
     return ResponseEntity.created(uri)
         .body(new IdResponse(response.id()));
@@ -140,7 +140,7 @@ public class TodoController implements TodoControllerDoc {
       Long loginId,
       TodoSearchRequest request
   ) {
-    ScrollResponse<SimpleTodoSearchDto> response = dduduSearchUseCase.search(loginId, request);
+    ScrollResponse<SimpleTodoSearchDto> response = todoSearchUseCase.search(loginId, request);
 
     return ResponseEntity.ok(response);
   }
@@ -292,7 +292,7 @@ public class TodoController implements TodoControllerDoc {
       RepeatAnotherDayRequest request
   ) {
     RepeatAnotherDayResponse response = repeatUseCase.repeatOnAnotherDay(loginId, id, request);
-    URI uri = URI.create("/api/ddudus/" + response.id());
+    URI uri = URI.create("/api/todos/" + response.id());
 
     return ResponseEntity.created(uri)
         .body(response);

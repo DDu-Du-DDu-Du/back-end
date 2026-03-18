@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/repeat-ddudus")
+@RequestMapping("/api/repeat-todos")
 @RequiredArgsConstructor
 public class RepeatTodoController implements RepeatTodoControllerDoc {
 
@@ -38,7 +38,7 @@ public class RepeatTodoController implements RepeatTodoControllerDoc {
       CreateRepeatTodoRequest request
   ) {
     Long id = createRepeatTodoUseCase.create(loginId, request);
-    URI uri = URI.create("/api/repeat-ddudus/" + id);
+    URI uri = URI.create("/api/repeat-todos/" + id);
 
     return ResponseEntity.created(uri)
         .body(new IdResponse(id));

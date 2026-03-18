@@ -1,19 +1,19 @@
-package com.ddudu.api.planning.ddudu.doc;
+package com.ddudu.api.planning.todo.doc;
 
 import com.ddudu.application.common.dto.IdResponse;
-import com.ddudu.application.common.dto.ddudu.GoalGroupedTodos;
-import com.ddudu.application.common.dto.ddudu.SimpleTodoSearchDto;
-import com.ddudu.application.common.dto.ddudu.request.ChangeNameRequest;
-import com.ddudu.application.common.dto.ddudu.request.CreateTodoRequest;
-import com.ddudu.application.common.dto.ddudu.request.TodoSearchRequest;
-import com.ddudu.application.common.dto.ddudu.request.MoveDateRequest;
-import com.ddudu.application.common.dto.ddudu.request.PeriodSetupRequest;
-import com.ddudu.application.common.dto.ddudu.request.RepeatAnotherDayRequest;
-import com.ddudu.application.common.dto.ddudu.request.SetReminderRequest;
-import com.ddudu.application.common.dto.ddudu.request.UpdateTodoRequest;
-import com.ddudu.application.common.dto.ddudu.response.TodoDetailResponse;
-import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
-import com.ddudu.application.common.dto.ddudu.response.TimetableResponse;
+import com.ddudu.application.common.dto.todo.GoalGroupedTodos;
+import com.ddudu.application.common.dto.todo.SimpleTodoSearchDto;
+import com.ddudu.application.common.dto.todo.request.ChangeNameRequest;
+import com.ddudu.application.common.dto.todo.request.CreateTodoRequest;
+import com.ddudu.application.common.dto.todo.request.TodoSearchRequest;
+import com.ddudu.application.common.dto.todo.request.MoveDateRequest;
+import com.ddudu.application.common.dto.todo.request.PeriodSetupRequest;
+import com.ddudu.application.common.dto.todo.request.RepeatAnotherDayRequest;
+import com.ddudu.application.common.dto.todo.request.SetReminderRequest;
+import com.ddudu.application.common.dto.todo.request.UpdateTodoRequest;
+import com.ddudu.application.common.dto.todo.response.TodoDetailResponse;
+import com.ddudu.application.common.dto.todo.response.RepeatAnotherDayResponse;
+import com.ddudu.application.common.dto.todo.response.TimetableResponse;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.TodoErrorExamples;
@@ -33,11 +33,11 @@ import org.springframework.http.ResponseEntity;
 
 @Tag(
     name = "Todo",
-    description = "뚜두 관련 API"
+    description = "투두 관련 API"
 )
 public interface TodoControllerDoc {
 
-  @Operation(summary = "뚜두 생성")
+  @Operation(summary = "투두 생성")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -52,23 +52,23 @@ public interface TodoControllerDoc {
                   examples = {
                       @ExampleObject(
                           name = "2001",
-                          value = TodoErrorExamples.DDUDU_NULL_GOAL_VALUE
+                          value = TodoErrorExamples.TODO_NULL_GOAL_VALUE
                       ),
                       @ExampleObject(
                           name = "2014",
-                          value = TodoErrorExamples.DDUDU_NEGATIVE_OR_ZERO_GOAL_ID
+                          value = TodoErrorExamples.TODO_NEGATIVE_OR_ZERO_GOAL_ID
                       ),
                       @ExampleObject(
                           name = "2002",
-                          value = TodoErrorExamples.DDUDU_BLANK_NAME
+                          value = TodoErrorExamples.TODO_BLANK_NAME
                       ),
                       @ExampleObject(
                           name = "2003",
-                          value = TodoErrorExamples.DDUDU_EXCESSIVE_NAME_LENGTH
+                          value = TodoErrorExamples.TODO_EXCESSIVE_NAME_LENGTH
                       ),
                       @ExampleObject(
                           name = "2015",
-                          value = TodoErrorExamples.DDUDU_NULL_SCHEDULED_DATE
+                          value = TodoErrorExamples.TODO_NULL_SCHEDULED_DATE
                       ),
                   }
               )
@@ -90,7 +90,7 @@ public interface TodoControllerDoc {
                   examples = @ExampleObject(
                       name = "3009",
                       description = "해당 목표에 권한이 없는 사용자인 경우",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           ),
@@ -102,12 +102,12 @@ public interface TodoControllerDoc {
                       @ExampleObject(
                           name = "2008",
                           description = "로그인 사용자 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_LOGIN_USER_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2005",
                           description = "목표 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_GOAL_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_GOAL_NOT_EXISTING
                       )
                   }
               )
@@ -116,7 +116,7 @@ public interface TodoControllerDoc {
   )
   ResponseEntity<IdResponse> create(Long loginId, CreateTodoRequest request);
 
-  @Operation(summary = "뚜두 상세 조회")
+  @Operation(summary = "투두 상세 조회")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -140,8 +140,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           ),
@@ -152,18 +152,18 @@ public interface TodoControllerDoc {
                   examples = {
                       @ExampleObject(
                           name = "2004",
-                          description = "존재하지 않는 뚜두인 경우",
-                          value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                          description = "존재하지 않는 투두인 경우",
+                          value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2008",
                           description = "로그인 사용자 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_LOGIN_USER_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2006",
                           description = "타겟 사용자 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_USER_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_USER_NOT_EXISTING
                       )
                   }
               )
@@ -173,8 +173,8 @@ public interface TodoControllerDoc {
   ResponseEntity<TodoDetailResponse> getById(Long loginId, Long id);
 
   @Operation(
-      summary = "일간 뚜두 리스트 조회",
-      description = "목표별로 그룹화된 일간 뚜두 리스트 조회 API"
+      summary = "일간 투두 리스트 조회",
+      description = "목표별로 그룹화된 일간 투두 리스트 조회 API"
   )
   @ApiResponses(
       value = {
@@ -201,12 +201,12 @@ public interface TodoControllerDoc {
                       @ExampleObject(
                           name = "2008",
                           description = "로그인 사용자 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_LOGIN_USER_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2006",
                           description = "타겟 사용자 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_USER_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_USER_NOT_EXISTING
                       )
                   }
               )
@@ -217,7 +217,7 @@ public interface TodoControllerDoc {
       {
           @Parameter(
               name = "userId",
-              description = "조회할 뚜두의 사용자 식별자 (기본값: 로그인한 사용자)",
+              description = "조회할 투두의 사용자 식별자 (기본값: 로그인한 사용자)",
               in = ParameterIn.QUERY
           ),
           @Parameter(
@@ -231,7 +231,7 @@ public interface TodoControllerDoc {
 
   @Operation(
       summary = "일간 타임테이블 조회",
-      description = "시간별로 그룹화된 일간 뚜두 리스트(타임 테이블) 조회 API"
+      description = "시간별로 그룹화된 일간 투두 리스트(타임 테이블) 조회 API"
   )
   @ApiResponses(
       value = {
@@ -258,12 +258,12 @@ public interface TodoControllerDoc {
                       @ExampleObject(
                           name = "2008",
                           description = "로그인 사용자 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_LOGIN_USER_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2006",
                           description = "타겟 사용자 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_USER_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_USER_NOT_EXISTING
                       )
                   }
               )
@@ -274,7 +274,7 @@ public interface TodoControllerDoc {
       {
           @Parameter(
               name = "userId",
-              description = "조회할 뚜두의 사용자 식별자 (기본값: 로그인한 사용자)",
+              description = "조회할 투두의 사용자 식별자 (기본값: 로그인한 사용자)",
               in = ParameterIn.QUERY
           ),
           @Parameter(
@@ -286,7 +286,7 @@ public interface TodoControllerDoc {
   )
   ResponseEntity<TimetableResponse> getDailyTimetable(Long loginId, Long userId, LocalDate date);
 
-  @Operation(summary = "뚜두 이름(내용) 변경")
+  @Operation(summary = "투두 이름(내용) 변경")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -296,17 +296,17 @@ public interface TodoControllerDoc {
           ),
           @ApiResponse(
               responseCode = "400",
-              description = "뚜두 이름(내용) 변경 실패",
+              description = "투두 이름(내용) 변경 실패",
               content = @Content(
                   examples = {
                       @ExampleObject(
                           name = "2002",
-                          value = TodoErrorExamples.DDUDU_BLANK_NAME
+                          value = TodoErrorExamples.TODO_BLANK_NAME
                       ),
                       @ExampleObject(
                           name = "2003",
                           description = "변경할 이름이 50자가 넘는 경우",
-                          value = TodoErrorExamples.DDUDU_EXCESSIVE_NAME_LENGTH
+                          value = TodoErrorExamples.TODO_EXCESSIVE_NAME_LENGTH
                       )
                   }
               )
@@ -327,8 +327,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           ),
@@ -338,8 +338,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
-                      description = "존재하지 않는 뚜두인 경우",
-                      value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                      description = "존재하지 않는 투두인 경우",
+                      value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                   )
               )
           )
@@ -351,12 +351,12 @@ public interface TodoControllerDoc {
   )
   @Parameter(
       name = "id",
-      description = "변경할 뚜두 식별자",
+      description = "변경할 투두 식별자",
       in = ParameterIn.PATH
   )
   ResponseEntity<IdResponse> changeName(Long loginId, Long id, ChangeNameRequest request);
 
-  @Operation(summary = "뚜두 상태 변경")
+  @Operation(summary = "투두 상태 변경")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -380,8 +380,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           ),
@@ -391,8 +391,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
-                      description = "존재하지 않는 뚜두인 경우",
-                      value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                      description = "존재하지 않는 투두인 경우",
+                      value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                   )
               )
           )
@@ -400,12 +400,12 @@ public interface TodoControllerDoc {
   )
   @Parameter(
       name = "id",
-      description = "변경할 뚜두 식별자",
+      description = "변경할 투두 식별자",
       in = ParameterIn.PATH
   )
   ResponseEntity<Void> updateStatus(Long loginId, Long id);
 
-  @Operation(summary = "뚜두 삭제")
+  @Operation(summary = "투두 삭제")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -429,8 +429,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           ),
@@ -440,8 +440,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
-                      description = "존재하지 않는 뚜두인 경우",
-                      value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                      description = "존재하지 않는 투두인 경우",
+                      value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                   )
               )
           )
@@ -449,12 +449,12 @@ public interface TodoControllerDoc {
   )
   @Parameter(
       name = "id",
-      description = "삭제할 뚜두 식별자",
+      description = "삭제할 투두 식별자",
       in = ParameterIn.PATH
   )
   ResponseEntity<Void> delete(Long loginId, Long id);
 
-  @Operation(summary = "뚜두 시작/종료시간 설정")
+  @Operation(summary = "투두 시작/종료시간 설정")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -468,7 +468,7 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2010",
-                      value = TodoErrorExamples.DDUDU_UNABLE_TO_FINISH_BEFORE_BEGIN
+                      value = TodoErrorExamples.TODO_UNABLE_TO_FINISH_BEFORE_BEGIN
                   )
               )
           ),
@@ -488,8 +488,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
-                      description = "존재하지 않는 뚜두인 경우",
-                      value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                      description = "존재하지 않는 투두인 경우",
+                      value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                   )
               )
           ),
@@ -499,8 +499,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           )
@@ -508,7 +508,7 @@ public interface TodoControllerDoc {
   )
   ResponseEntity<Void> setUpPeriod(Long loginId, Long id, PeriodSetupRequest request);
 
-  @Operation(summary = "뚜두 날짜 변경")
+  @Operation(summary = "투두 날짜 변경")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -523,15 +523,15 @@ public interface TodoControllerDoc {
                   examples = {
                       @ExampleObject(
                           name = "2011",
-                          value = TodoErrorExamples.DDUDU_NULL_DATE_TO_MOVE
+                          value = TodoErrorExamples.TODO_NULL_DATE_TO_MOVE
                       ),
                       @ExampleObject(
                           name = "2012",
-                          value = TodoErrorExamples.DDUDU_SHOULD_POSTPONE_UNTIL_FUTURE
+                          value = TodoErrorExamples.TODO_SHOULD_POSTPONE_UNTIL_FUTURE
                       ),
                       @ExampleObject(
                           name = "2022",
-                          value = TodoErrorExamples.DDUDU_UNABLE_TO_POSTPONE_COMPLETED_DDUDU
+                          value = TodoErrorExamples.TODO_UNABLE_TO_POSTPONE_COMPLETED_DDUDU
                       )
                   }
               )
@@ -552,8 +552,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
-                      description = "존재하지 않는 뚜두인 경우",
-                      value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                      description = "존재하지 않는 투두인 경우",
+                      value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                   )
               )
           ),
@@ -563,8 +563,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           )
@@ -572,7 +572,7 @@ public interface TodoControllerDoc {
   )
   ResponseEntity<Void> moveDate(Long loginId, Long id, MoveDateRequest request);
 
-  @Operation(summary = "뚜두 다른 날 반복하기")
+  @Operation(summary = "투두 다른 날 반복하기")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -586,7 +586,7 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2013",
-                      value = TodoErrorExamples.DDUDU_UNABLE_TO_REPRODUCE_ON_SAME_DATE
+                      value = TodoErrorExamples.TODO_UNABLE_TO_REPRODUCE_ON_SAME_DATE
                   )
               )
           ),
@@ -606,8 +606,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
-                      description = "존재하지 않는 뚜두인 경우",
-                      value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                      description = "존재하지 않는 투두인 경우",
+                      value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                   )
               )
           ),
@@ -617,8 +617,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           )
@@ -630,7 +630,7 @@ public interface TodoControllerDoc {
       RepeatAnotherDayRequest request
   );
 
-  @Operation(summary = "뚜두 검색")
+  @Operation(summary = "투두 검색")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -670,11 +670,11 @@ public interface TodoControllerDoc {
                   examples = {
                       @ExampleObject(
                           name = "2008",
-                          value = TodoErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_LOGIN_USER_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2004",
-                          value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2017",
@@ -711,14 +711,14 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           )
       }
   )
-  ResponseEntity<Void> setReminder(Long loginId, Long dduduId, SetReminderRequest request);
+  ResponseEntity<Void> setReminder(Long loginId, Long todoId, SetReminderRequest request);
 
   @Operation(summary = "미리알림 취소")
   @ApiResponses(
@@ -743,8 +743,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           ),
@@ -754,8 +754,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2004",
-                      description = "존재하지 않는 뚜두인 경우",
-                      value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                      description = "존재하지 않는 투두인 경우",
+                      value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                   )
               )
           )
@@ -763,7 +763,7 @@ public interface TodoControllerDoc {
   )
   ResponseEntity<Void> cancelReminder(Long loginId, Long id);
 
-  @Operation(summary = "뚜두 수정")
+  @Operation(summary = "투두 수정")
   @ApiResponses(
       value = {
           @ApiResponse(
@@ -787,8 +787,8 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = @ExampleObject(
                       name = "2007",
-                      description = "해당 뚜두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.DDUDU_INVALID_AUTHORITY
+                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
+                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
                   )
               )
           ),
@@ -799,18 +799,18 @@ public interface TodoControllerDoc {
                   examples = {
                       @ExampleObject(
                           name = "2004",
-                          description = "존재하지 않는 뚜두인 경우",
-                          value = TodoErrorExamples.DDUDU_ID_NOT_EXISTING
+                          description = "존재하지 않는 투두인 경우",
+                          value = TodoErrorExamples.TODO_ID_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2005",
                           description = "목표 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_GOAL_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_GOAL_NOT_EXISTING
                       ),
                       @ExampleObject(
                           name = "2008",
                           description = "로그인 사용자 아이디가 유효하지 않는 경우",
-                          value = TodoErrorExamples.DDUDU_LOGIN_USER_NOT_EXISTING
+                          value = TodoErrorExamples.TODO_LOGIN_USER_NOT_EXISTING
                       )
                   }
               )
@@ -819,7 +819,7 @@ public interface TodoControllerDoc {
   )
   @Parameter(
       name = "id",
-      description = "수정할 뚜두 식별자",
+      description = "수정할 투두 식별자",
       in = ParameterIn.PATH
   )
   ResponseEntity<IdResponse> update(Long loginId, Long id, UpdateTodoRequest request);
