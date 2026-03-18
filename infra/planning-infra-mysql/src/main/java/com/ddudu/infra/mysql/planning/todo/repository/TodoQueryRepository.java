@@ -1,11 +1,11 @@
 package com.ddudu.infra.mysql.planning.todo.repository;
 
 import com.ddudu.aggregate.BaseStats;
-import com.ddudu.application.common.dto.todo.TodoCursorDto;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.common.dto.stats.GoalStatusSummaryRaw;
 import com.ddudu.application.common.dto.stats.RepeatTodoStatsDto;
 import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
+import com.ddudu.application.common.dto.todo.TodoCursorDto;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.infra.mysql.planning.todo.entity.TodoEntity;
 import java.time.LocalDate;

@@ -1,19 +1,19 @@
 package com.ddudu.infra.mysql.planning.todo.repository;
 
-import static com.ddudu.infra.mysql.planning.todo.entity.QTodoEntity.todoEntity;
 import static com.ddudu.infra.mysql.planning.goal.entity.QGoalEntity.goalEntity;
 import static com.ddudu.infra.mysql.planning.repeattodo.entity.QRepeatTodoEntity.repeatTodoEntity;
+import static com.ddudu.infra.mysql.planning.todo.entity.QTodoEntity.todoEntity;
 
 import com.ddudu.aggregate.BaseStats;
-import com.ddudu.application.common.dto.todo.TodoCursorDto;
-import com.ddudu.application.common.dto.todo.SimpleTodoSearchDto;
 import com.ddudu.application.common.dto.scroll.OrderType;
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.common.dto.stats.GoalStatusSummaryRaw;
 import com.ddudu.application.common.dto.stats.RepeatTodoStatsDto;
 import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
-import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
+import com.ddudu.application.common.dto.todo.SimpleTodoSearchDto;
+import com.ddudu.application.common.dto.todo.TodoCursorDto;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.infra.mysql.planning.todo.entity.TodoEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ConstructorExpression;
@@ -84,7 +84,12 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
 
     if (!isAchieved) {
       condition.and(todoEntity.postponedAt.isNotNull())
-          .and(todoEntity.postponedAt.between(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX)));
+          .and(
+              todoEntity.postponedAt.between(
+                  startDate.atStartOfDay(),
+                  endDate.atTime(LocalTime.MAX)
+              )
+          );
     }
 
     condition.and(privacyTypesIn(privacyTypes));

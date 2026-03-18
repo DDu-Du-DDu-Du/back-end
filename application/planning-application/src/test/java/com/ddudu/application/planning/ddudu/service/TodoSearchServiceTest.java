@@ -2,19 +2,19 @@ package com.ddudu.application.planning.todo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.dto.todo.SimpleTodoSearchDto;
 import com.ddudu.application.common.dto.todo.request.TodoSearchRequest;
-import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
-import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
+import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.common.exception.TodoErrorCode;
-import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.util.List;
 import java.util.MissingResourceException;

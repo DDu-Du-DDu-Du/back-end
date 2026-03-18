@@ -1,20 +1,20 @@
 package com.ddudu.api.planning.todo.doc;
 
 import com.ddudu.application.common.dto.IdResponse;
+import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.dto.todo.GoalGroupedTodos;
 import com.ddudu.application.common.dto.todo.SimpleTodoSearchDto;
 import com.ddudu.application.common.dto.todo.request.ChangeNameRequest;
 import com.ddudu.application.common.dto.todo.request.CreateTodoRequest;
-import com.ddudu.application.common.dto.todo.request.TodoSearchRequest;
 import com.ddudu.application.common.dto.todo.request.MoveDateRequest;
 import com.ddudu.application.common.dto.todo.request.PeriodSetupRequest;
 import com.ddudu.application.common.dto.todo.request.RepeatAnotherDayRequest;
 import com.ddudu.application.common.dto.todo.request.SetReminderRequest;
+import com.ddudu.application.common.dto.todo.request.TodoSearchRequest;
 import com.ddudu.application.common.dto.todo.request.UpdateTodoRequest;
-import com.ddudu.application.common.dto.todo.response.TodoDetailResponse;
 import com.ddudu.application.common.dto.todo.response.RepeatAnotherDayResponse;
 import com.ddudu.application.common.dto.todo.response.TimetableResponse;
-import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.common.dto.todo.response.TodoDetailResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.TodoErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;

@@ -4,11 +4,11 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
 
-import com.ddudu.application.common.dto.todo.TodoForTimetable;
 import com.ddudu.application.common.dto.todo.GoalGroupedTodos;
 import com.ddudu.application.common.dto.todo.TimeGroupedTodos;
-import com.ddudu.domain.planning.todo.aggregate.Todo;
+import com.ddudu.application.common.dto.todo.TodoForTimetable;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;

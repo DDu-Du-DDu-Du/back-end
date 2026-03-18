@@ -1,10 +1,10 @@
 package com.ddudu.application.planning.repeattodo.service;
 
 import com.ddudu.application.common.dto.repeattodo.request.CreateRepeatTodoRequest;
-import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.repeattodo.in.CreateRepeatTodoUseCase;
 import com.ddudu.application.common.port.repeattodo.out.SaveRepeatTodoPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.RepeatTodoErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;

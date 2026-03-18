@@ -1,7 +1,7 @@
 package com.ddudu.application.common.dto.todo;
 
-import com.ddudu.application.common.dto.todo.response.BasicTodoResponse;
 import com.ddudu.application.common.dto.goal.response.BasicGoalResponse;
+import com.ddudu.application.common.dto.todo.response.BasicTodoResponse;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import java.util.List;
 import lombok.Builder;

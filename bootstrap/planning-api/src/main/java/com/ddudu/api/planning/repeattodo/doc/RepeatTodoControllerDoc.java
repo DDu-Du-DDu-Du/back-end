@@ -77,11 +77,15 @@ public interface RepeatTodoControllerDoc {
                       ),
                       @ExampleObject(
                           name = "6011",
-                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH
+                          value =
+                              RepeatTodoErrorExamples
+                                  .REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH
                       ),
                       @ExampleObject(
                           name = "6012",
-                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK
+                          value =
+                              RepeatTodoErrorExamples
+                                  .REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK
                       ),
                       @ExampleObject(
                           name = "6013",
@@ -178,11 +182,15 @@ public interface RepeatTodoControllerDoc {
                       ),
                       @ExampleObject(
                           name = "6011",
-                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH
+                          value =
+                              RepeatTodoErrorExamples
+                                  .REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DATES_OF_MONTH
                       ),
                       @ExampleObject(
                           name = "6012",
-                          value = RepeatTodoErrorExamples.REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK
+                          value =
+                              RepeatTodoErrorExamples
+                                  .REPEAT_TODO_NULL_OR_EMPTY_REPEAT_DAYS_OF_WEEK
                       ),
                       @ExampleObject(
                           name = "6013",

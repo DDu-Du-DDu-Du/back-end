@@ -2,10 +2,10 @@ package com.ddudu.domain.planning.repeattodo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo;
 import com.ddudu.domain.planning.repeattodo.aggregate.enums.RepeatType;
 import com.ddudu.domain.planning.repeattodo.dto.CreateRepeatTodoCommand;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.RepeatTodoFixture;
 import java.time.LocalDate;

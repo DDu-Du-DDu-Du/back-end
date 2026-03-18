@@ -1,10 +1,10 @@
 package com.ddudu.fixture;
 
-import com.ddudu.domain.planning.todo.aggregate.Todo;
-import com.ddudu.domain.planning.todo.aggregate.Todo.TodoBuilder;
-import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo;
+import com.ddudu.domain.planning.todo.aggregate.Todo.TodoBuilder;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
