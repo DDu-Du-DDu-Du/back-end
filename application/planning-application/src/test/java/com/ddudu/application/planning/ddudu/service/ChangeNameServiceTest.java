@@ -44,21 +44,21 @@ class ChangeNameServiceTest {
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
   ChangeNameRequest request;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
     request = new ChangeNameRequest(TodoFixture.getRandomSentenceWithMax(50));
   }
 
   @Test
   void 투두의_이름을_변경한다() {
     // when
-    BasicTodoResponse actual = changeNameService.change(user.getId(), ddudu.getId(), request);
+    BasicTodoResponse actual = changeNameService.change(user.getId(), todo.getId(), request);
 
     // then
     assertThat(actual.name()).isEqualTo(request.name());
@@ -72,7 +72,7 @@ class ChangeNameServiceTest {
     // when
     ThrowingCallable changeName = () -> changeNameService.change(
         user.getId(),
-        ddudu.getId(),
+        todo.getId(),
         request
     );
 
@@ -104,7 +104,7 @@ class ChangeNameServiceTest {
     // when
     ThrowingCallable changeName = () -> changeNameService.change(
         anotherUser.getId(),
-        ddudu.getId(),
+        todo.getId(),
         request
     );
 

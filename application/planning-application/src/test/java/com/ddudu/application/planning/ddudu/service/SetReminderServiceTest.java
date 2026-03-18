@@ -46,11 +46,11 @@ class SetReminderServiceTest {
   SaveTodoPort saveTodoPort;
 
   @Autowired
-  TodoLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
@@ -62,7 +62,7 @@ class SetReminderServiceTest {
         beginAt,
         null
     );
-    ddudu = saveTodoPort.save(temp.moveDate(LocalDate.now()
+    todo = saveTodoPort.save(temp.moveDate(LocalDate.now()
         .plusDays(1)));
   }
 
@@ -72,12 +72,12 @@ class SetReminderServiceTest {
     SetReminderRequest request = new SetReminderRequest(0, 0, 30);
 
     // when
-    setReminderService.setReminder(user.getId(), ddudu.getId(), request);
+    setReminderService.setReminder(user.getId(), todo.getId(), request);
 
     // then
-    Todo actualTodo = dduduLoaderPort.getTodoOrElseThrow(ddudu.getId(), "not found");
-    LocalDateTime expected = ddudu.getScheduledOn()
-        .atTime(ddudu.getBeginAt())
+    Todo actualTodo = todoLoaderPort.getTodoOrElseThrow(todo.getId(), "not found");
+    LocalDateTime expected = todo.getScheduledOn()
+        .atTime(todo.getBeginAt())
         .minusHours(request.hours())
         .minusMinutes(request.minutes());
 
@@ -93,7 +93,7 @@ class SetReminderServiceTest {
     // when
     ThrowingCallable setReminder = () -> setReminderService.setReminder(
         invalidId,
-        ddudu.getId(),
+        todo.getId(),
         request
     );
 
@@ -131,7 +131,7 @@ class SetReminderServiceTest {
     // when
     ThrowingCallable setReminder = () -> setReminderService.setReminder(
         another.getId(),
-        ddudu.getId(),
+        todo.getId(),
         request
     );
 

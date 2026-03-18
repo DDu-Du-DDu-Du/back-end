@@ -57,7 +57,7 @@ class GetDailyTodosByGoalServiceTest {
     // given
     Goal goal = saveGoalPort.save(
         GoalFixture.createRandomGoalWithUserAndPrivacyType(user.getId(), PrivacyType.PRIVATE));
-    Todo ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    Todo todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
 
     LocalDate date = LocalDate.now();
 
@@ -75,9 +75,9 @@ class GetDailyTodosByGoalServiceTest {
     GoalGroupedTodos firstElement = responses.get(0);
     assertThat(firstElement.goal()).extracting("id")
         .isEqualTo(goal.getId());
-    assertThat(firstElement.ddudus()).extracting("id")
-        .containsExactly(ddudu.getId());
-    assertThat(firstElement.ddudus().get(0)
+    assertThat(firstElement.todos()).extracting("id")
+        .containsExactly(todo.getId());
+    assertThat(firstElement.todos().get(0)
         .postponedAt()).isNull();
   }
 
@@ -98,7 +98,7 @@ class GetDailyTodosByGoalServiceTest {
 
     // then
     assertThat(responses.get(0)
-        .ddudus().get(0)
+        .todos().get(0)
         .postponedAt()).isNotNull();
   }
 

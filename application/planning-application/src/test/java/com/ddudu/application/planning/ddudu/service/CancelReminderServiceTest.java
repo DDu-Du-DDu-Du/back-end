@@ -48,7 +48,7 @@ class CancelReminderServiceTest {
   SaveTodoPort saveTodoPort;
 
   @Autowired
-  TodoLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   @Autowired
   NotificationEventLoaderPort notificationEventLoaderPort;
@@ -58,21 +58,21 @@ class CancelReminderServiceTest {
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     LocalTime beginAt = LocalTime.MAX;
-    ddudu = TodoFixture.createRandomTodoWithGoalAndTime(
+    todo = TodoFixture.createRandomTodoWithGoalAndTime(
         goal,
         beginAt,
         null
     );
-    ddudu = ddudu.moveDate(LocalDate.now()
+    todo = todo.moveDate(LocalDate.now()
         .plusDays(1));
-    ddudu = saveTodoPort.save(ddudu.setReminder(0, 0, 10));
+    todo = saveTodoPort.save(todo.setReminder(0, 0, 10));
   }
 
   @Test
@@ -80,16 +80,16 @@ class CancelReminderServiceTest {
     // given
     NotificationEvent event = NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
         user.getId(),
-        ddudu.getId()
+        todo.getId()
     );
 
     notificationEventCommandPort.save(event);
 
     // when
-    cancelReminderService.cancel(user.getId(), ddudu.getId());
+    cancelReminderService.cancel(user.getId(), todo.getId());
 
     // then
-    Todo actual = dduduLoaderPort.getTodoOrElseThrow(ddudu.getId(), "not found");
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(todo.getId(), "not found");
 
     assertThat(actual.getRemindAt()).isNull();
   }
@@ -100,7 +100,7 @@ class CancelReminderServiceTest {
     long invalidId = UserFixture.getRandomId();
 
     // when
-    ThrowingCallable cancel = () -> cancelReminderService.cancel(invalidId, ddudu.getId());
+    ThrowingCallable cancel = () -> cancelReminderService.cancel(invalidId, todo.getId());
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
@@ -128,7 +128,7 @@ class CancelReminderServiceTest {
     User another = signUpPort.save(UserFixture.createRandomUserWithId());
 
     // when
-    ThrowingCallable cancel = () -> cancelReminderService.cancel(another.getId(), ddudu.getId());
+    ThrowingCallable cancel = () -> cancelReminderService.cancel(another.getId(), todo.getId());
 
     // then
     Assertions.assertThatExceptionOfType(SecurityException.class)

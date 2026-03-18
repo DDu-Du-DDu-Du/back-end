@@ -37,7 +37,7 @@ class CreateTodoServiceTest {
   CreateTodoService createTodoService;
 
   @Autowired
-  TodoLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   @Autowired
   SignUpPort signUpPort;
@@ -80,7 +80,7 @@ class CreateTodoServiceTest {
     BasicTodoResponse response = createTodoService.create(user.getId(), request);
 
     // then
-    Todo actual = dduduLoaderPort.getTodoOrElseThrow(
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(
         response.id(),
         "할 일이 생성되지 않았습니다."
     );
@@ -122,7 +122,7 @@ class CreateTodoServiceTest {
     BasicTodoResponse response = createTodoService.create(user.getId(), request);
 
     // then
-    Todo actual = dduduLoaderPort.getTodoOrElseThrow(
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(
         response.id(),
         "할 일이 생성되지 않았습니다."
     );

@@ -44,33 +44,33 @@ class RetrieveTodoServiceTest {
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
   }
 
   @Test
   void ID를_통해_투두를_조회할_수_있다() {
     // when
-    TodoDetailResponse actual = retrieveTodoService.findById(user.getId(), ddudu.getId());
+    TodoDetailResponse actual = retrieveTodoService.findById(user.getId(), todo.getId());
 
     // then
     assertThat(actual)
-        .hasFieldOrPropertyWithValue("id", ddudu.getId())
-        .hasFieldOrPropertyWithValue("name", ddudu.getName())
-        .hasFieldOrPropertyWithValue("memo", ddudu.getMemo())
-        .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
-        .hasFieldOrPropertyWithValue("goalId", ddudu.getGoalId())
-        .hasFieldOrPropertyWithValue("repeatTodoId", ddudu.getRepeatTodoId())
-        .hasFieldOrPropertyWithValue("scheduledOn", ddudu.getScheduledOn())
-        .hasFieldOrPropertyWithValue("beginAt", ddudu.getBeginAt())
-        .hasFieldOrPropertyWithValue("endAt", ddudu.getEndAt())
-        .hasFieldOrPropertyWithValue("postponedAt", ddudu.getPostponedAt())
-        .hasFieldOrPropertyWithValue("remindAt", ddudu.getRemindAt());
+        .hasFieldOrPropertyWithValue("id", todo.getId())
+        .hasFieldOrPropertyWithValue("name", todo.getName())
+        .hasFieldOrPropertyWithValue("memo", todo.getMemo())
+        .hasFieldOrPropertyWithValue("status", todo.getStatus())
+        .hasFieldOrPropertyWithValue("goalId", todo.getGoalId())
+        .hasFieldOrPropertyWithValue("repeatTodoId", todo.getRepeatTodoId())
+        .hasFieldOrPropertyWithValue("scheduledOn", todo.getScheduledOn())
+        .hasFieldOrPropertyWithValue("beginAt", todo.getBeginAt())
+        .hasFieldOrPropertyWithValue("endAt", todo.getEndAt())
+        .hasFieldOrPropertyWithValue("postponedAt", todo.getPostponedAt())
+        .hasFieldOrPropertyWithValue("remindAt", todo.getRemindAt());
 
   }
 
@@ -113,7 +113,7 @@ class RetrieveTodoServiceTest {
     // when
     ThrowingCallable callable = () -> retrieveTodoService.findById(
         anotherUser.getId(),
-        ddudu.getId()
+        todo.getId()
     );
 
     // then

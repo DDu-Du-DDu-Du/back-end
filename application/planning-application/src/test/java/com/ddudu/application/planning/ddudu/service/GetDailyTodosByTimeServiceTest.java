@@ -63,7 +63,7 @@ class GetDailyTodosByTimeServiceTest {
         user.getId(),
         PrivacyType.PRIVATE
     ));
-    Todo ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoalAndTime(
+    Todo todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoalAndTime(
         goal,
         beginAt,
         endAt
@@ -81,18 +81,18 @@ class GetDailyTodosByTimeServiceTest {
         .beginAt();
     TodoForTimetable firstOfEarliestTime = response.timetable()
         .get(0)
-        .ddudus()
+        .todos()
         .get(0);
 
     AssertionsForClassTypes.assertThat(countOfTime)
         .isEqualTo(1);
     AssertionsForClassTypes.assertThat(earliestTime)
         .isEqualTo(beginAt);
-    assertThat(firstOfEarliestTime.id()).isEqualTo(ddudu.getId());
+    assertThat(firstOfEarliestTime.id()).isEqualTo(todo.getId());
     assertThat(firstOfEarliestTime.postponedAt()).isNull();
     assertThat(response.unassignedTodos()
         .get(0)
-        .ddudus()
+        .todos()
         .size()).isEqualTo(0);
   }
 
@@ -103,7 +103,7 @@ class GetDailyTodosByTimeServiceTest {
         user.getId(),
         PrivacyType.PRIVATE
     ));
-    Todo ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    Todo todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
     LocalDate date = LocalDate.now();
 
     // when
@@ -112,16 +112,16 @@ class GetDailyTodosByTimeServiceTest {
     // then
     assertThat(response.unassignedTodos()
         .get(0)
-        .ddudus()
+        .todos()
         .size()).isEqualTo(1);
     assertThat(response.unassignedTodos()
         .get(0)
-        .ddudus()
+        .todos()
         .get(0)
-        .id()).isEqualTo(ddudu.getId());
+        .id()).isEqualTo(todo.getId());
     assertThat(response.unassignedTodos()
         .get(0)
-        .ddudus()
+        .todos()
         .get(0)
         .postponedAt()).isNull();
   }
@@ -147,7 +147,7 @@ class GetDailyTodosByTimeServiceTest {
     // then
     assertThat(response.unassignedTodos()
         .get(0)
-        .ddudus()
+        .todos()
         .get(0)
         .postponedAt()).isNotNull();
   }
@@ -183,7 +183,7 @@ class GetDailyTodosByTimeServiceTest {
         .size();
     TodoForTimetable firstOfEarliestTime = response.timetable()
         .get(0)
-        .ddudus()
+        .todos()
         .get(0);
 
     AssertionsForClassTypes.assertThat(countOfTime)

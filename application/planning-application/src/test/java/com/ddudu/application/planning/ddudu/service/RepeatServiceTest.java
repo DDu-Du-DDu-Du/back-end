@@ -45,17 +45,17 @@ class RepeatServiceTest {
   SaveTodoPort saveTodoPort;
 
   @Autowired
-  TodoLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
   }
 
   @Test
@@ -68,15 +68,15 @@ class RepeatServiceTest {
     // when
     RepeatAnotherDayResponse response = repeatService.repeatOnAnotherDay(
         user.getId(),
-        ddudu.getId(),
+        todo.getId(),
         request
     );
 
     // then
-    Todo actual = dduduLoaderPort.getTodoOrElseThrow(response.id(), "not found");
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(response.id(), "not found");
 
     assertThat(actual.getScheduledOn()).isEqualTo(tomorrow);
-    assertThat(actual).isNotEqualTo(ddudu);
+    assertThat(actual).isNotEqualTo(todo);
   }
 
   @Test

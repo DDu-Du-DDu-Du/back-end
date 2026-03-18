@@ -46,14 +46,14 @@ class UpdateTodoServiceTest {
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
   UpdateTodoRequest request;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
     request = new UpdateTodoRequest(
         goal.getId(),
         TodoFixture.getRandomSentenceWithMax(50),
@@ -74,12 +74,12 @@ class UpdateTodoServiceTest {
     // when
     BasicTodoResponse actual = updateTodoService.update(
         user.getId(),
-        ddudu.getId(),
+        todo.getId(),
         request
     );
 
     // then
-    assertThat(actual.id()).isEqualTo(ddudu.getId());
+    assertThat(actual.id()).isEqualTo(todo.getId());
     assertThat(actual.name()).isEqualTo(request.name());
   }
 
@@ -91,7 +91,7 @@ class UpdateTodoServiceTest {
     // when
     ThrowingCallable update = () -> updateTodoService.update(
         invalidUserId,
-        ddudu.getId(),
+        todo.getId(),
         request
     );
 
@@ -127,7 +127,7 @@ class UpdateTodoServiceTest {
     // when
     ThrowingCallable update = () -> updateTodoService.update(
         anotherUser.getId(),
-        ddudu.getId(),
+        todo.getId(),
         request
     );
 

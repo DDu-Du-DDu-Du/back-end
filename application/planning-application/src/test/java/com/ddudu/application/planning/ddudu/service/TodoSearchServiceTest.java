@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 class TodoSearchServiceTest {
 
   @Autowired
-  TodoSearchService dduduSearchService;
+  TodoSearchService todoSearchService;
 
   @Autowired
   SignUpPort signUpPort;
@@ -43,7 +43,7 @@ class TodoSearchServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  TodoLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   @Autowired
   SaveTodoPort saveTodoPort;
@@ -51,7 +51,7 @@ class TodoSearchServiceTest {
   User user;
   Goal goal;
   int size;
-  List<Todo> ddudus;
+  List<Todo> todos;
   Long latestId;
 
   @BeforeEach
@@ -59,8 +59,8 @@ class TodoSearchServiceTest {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     size = TodoFixture.getRandomInt(10, 100);
-    ddudus = saveTodoPort.saveAll(TodoFixture.createMultipleTodosWithGoal(goal, size + 1));
-    latestId = ddudus.get(size)
+    todos = saveTodoPort.saveAll(TodoFixture.createMultipleTodosWithGoal(goal, size + 1));
+    latestId = todos.get(size)
         .getId();
   }
 
@@ -70,7 +70,7 @@ class TodoSearchServiceTest {
     TodoSearchRequest request = new TodoSearchRequest(null, null, size, null);
 
     // when
-    ScrollResponse<SimpleTodoSearchDto> response = dduduSearchService.search(
+    ScrollResponse<SimpleTodoSearchDto> response = todoSearchService.search(
         user.getId(),
         request
     );
@@ -93,7 +93,7 @@ class TodoSearchServiceTest {
     int defaultSize = 10;
 
     // when
-    ScrollResponse<SimpleTodoSearchDto> response = dduduSearchService.search(
+    ScrollResponse<SimpleTodoSearchDto> response = todoSearchService.search(
         user.getId(),
         request
     );
@@ -117,7 +117,7 @@ class TodoSearchServiceTest {
     TodoSearchRequest request = new TodoSearchRequest(null, nextCursor, expectedSize, null);
 
     // when
-    ScrollResponse<SimpleTodoSearchDto> response = dduduSearchService.search(
+    ScrollResponse<SimpleTodoSearchDto> response = todoSearchService.search(
         user.getId(),
         request
     );
@@ -137,7 +137,7 @@ class TodoSearchServiceTest {
   void 검색어_조회를_성공한다() {
     // given
     Todo postponedTodo = saveTodoPort.save(
-        TodoFixture.createTodoWithScheduleAndPostponedFlag(goal, true, ddudus.get(0)
+        TodoFixture.createTodoWithScheduleAndPostponedFlag(goal, true, todos.get(0)
             .getScheduledOn())
     );
     TodoSearchRequest request = new TodoSearchRequest(
@@ -148,7 +148,7 @@ class TodoSearchServiceTest {
     );
 
     // when
-    ScrollResponse<SimpleTodoSearchDto> response = dduduSearchService.search(
+    ScrollResponse<SimpleTodoSearchDto> response = todoSearchService.search(
         user.getId(),
         request
     );
@@ -169,7 +169,7 @@ class TodoSearchServiceTest {
     TodoSearchRequest request = new TodoSearchRequest(null, null, size, null);
 
     // when
-    ThrowingCallable search = () -> dduduSearchService.search(invalidId, request);
+    ThrowingCallable search = () -> todoSearchService.search(invalidId, request);
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)

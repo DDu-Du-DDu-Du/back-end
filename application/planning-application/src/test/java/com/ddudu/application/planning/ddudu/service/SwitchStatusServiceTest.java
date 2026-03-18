@@ -34,7 +34,7 @@ class SwitchStatusServiceTest {
   SwitchStatusService switchStatusService;
 
   @Autowired
-  TodoLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   @Autowired
   SignUpPort signUpPort;
@@ -47,25 +47,25 @@ class SwitchStatusServiceTest {
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
   }
 
   @Test
   void 할_일_상태_업데이트를_성공한다() {
     // given
-    TodoStatus beforeUpdated = ddudu.getStatus();
+    TodoStatus beforeUpdated = todo.getStatus();
 
     // when
-    switchStatusService.switchStatus(user.getId(), ddudu.getId());
+    switchStatusService.switchStatus(user.getId(), todo.getId());
 
     // then
-    Todo actual = dduduLoaderPort.getTodoOrElseThrow(ddudu.getId(), "할 일이 존재하지 않습니다.");
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(todo.getId(), "할 일이 존재하지 않습니다.");
     assertThat(actual.getStatus()).isNotEqualTo(beforeUpdated);
   }
 
@@ -94,7 +94,7 @@ class SwitchStatusServiceTest {
     // when
     ThrowingCallable updateStatus = () -> switchStatusService.switchStatus(
         anotherUserId,
-        ddudu.getId()
+        todo.getId()
     );
 
     // then

@@ -45,18 +45,18 @@ class MoveDateServiceTest {
   SaveTodoPort saveTodoPort;
 
   @Autowired
-  TodoLoaderPort dduduLoaderPort;
+  TodoLoaderPort todoLoaderPort;
 
   User user;
   Goal goal;
-  Todo ddudu;
+  Todo todo;
   LocalDate tomorrow;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
     tomorrow = LocalDate.now()
         .plusDays(1);
   }
@@ -64,14 +64,14 @@ class MoveDateServiceTest {
   @Test
   void 투두를_미루기_한다() {
     // given
-    final LocalDate previousScheduledOn = ddudu.getScheduledOn();
+    final LocalDate previousScheduledOn = todo.getScheduledOn();
     MoveDateRequest request = new MoveDateRequest(tomorrow, true);
 
     // when
-    moveDateService.moveDate(user.getId(), ddudu.getId(), request);
+    moveDateService.moveDate(user.getId(), todo.getId(), request);
 
     // then
-    Todo actual = dduduLoaderPort.getTodoOrElseThrow(ddudu.getId(), "not found");
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(todo.getId(), "not found");
 
     assertThat(actual.getScheduledOn()).isEqualTo(tomorrow);
     assertThat(actual.isPostponed()).isTrue();
@@ -94,7 +94,7 @@ class MoveDateServiceTest {
     moveDateService.moveDate(user.getId(), pastTodo.getId(), request);
 
     // then
-    Todo actual = dduduLoaderPort.getTodoOrElseThrow(pastTodo.getId(), "not found");
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(pastTodo.getId(), "not found");
 
     assertThat(actual.getScheduledOn()).isEqualTo(LocalDate.now());
   }
@@ -122,7 +122,7 @@ class MoveDateServiceTest {
     moveDateService.moveDate(user.getId(), pastTodo.getId(), request);
 
     // then
-    Todo actual = dduduLoaderPort.getTodoOrElseThrow(pastTodo.getId(), "not found");
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(pastTodo.getId(), "not found");
 
     assertThat(actual.getScheduledOn()).isEqualTo(yesterday);
   }

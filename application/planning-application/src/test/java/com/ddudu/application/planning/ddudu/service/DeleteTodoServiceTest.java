@@ -1,12 +1,14 @@
 package com.ddudu.application.planning.ddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
-import com.ddudu.application.common.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
 import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
+import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.common.exception.TodoErrorCode;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
@@ -14,8 +16,6 @@ import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
-import java.time.LocalTime;
-import java.util.MissingResourceException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,10 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class TodoPeriodSetupServiceTest {
+class DeleteTodoServiceTest {
 
   @Autowired
-  PeriodSetupService dduduPeriodSetupService;
+  DeleteTodoService deleteTodoService;
 
   @Autowired
   SignUpPort signUpPort;
@@ -41,55 +41,60 @@ class TodoPeriodSetupServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
+  TodoLoaderPort todoLoaderPort;
+
+  @Autowired
   SaveTodoPort saveTodoPort;
 
   @Autowired
-  TodoLoaderPort dduduLoaderPort;
+  NotificationEventLoaderPort notificationEventLoaderPort;
+
+  @Autowired
+  NotificationEventCommandPort notificationEventCommandPort;
 
   User user;
-  Todo ddudu;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
   }
 
   @Test
-  void 투두_시작_및_종료시간을_설정한다() {
-    // given
-    LocalTime now = LocalTime.now();
-    PeriodSetupRequest request = new PeriodSetupRequest(now, LocalTime.MAX);
-
+  void 투두를_삭제_할_수_있다() {
     // when
-    dduduPeriodSetupService.setUpPeriod(user.getId(), ddudu.getId(), request);
+    deleteTodoService.delete(user.getId(), todo.getId());
 
     // then
-    Todo actual = dduduLoaderPort.getTodoOrElseThrow(ddudu.getId(), "not found");
-
-    assertThat(actual.getBeginAt()).isEqualTo(now);
-    assertThat(actual.getEndAt()).isEqualTo(LocalTime.MAX);
+    assertThat(todoLoaderPort.getOptionalTodo(todo.getId())).isEmpty();
   }
 
   @Test
-  void 투두가_없으면_시간_설정을_실패한다() {
+  void 투두가_존재하지_않는_경우_예외가_발생하지_않는다() {
     // given
-    LocalTime now = LocalTime.now();
-    PeriodSetupRequest request = new PeriodSetupRequest(now, LocalTime.MAX);
-    long invalidId = TodoFixture.getRandomId();
+    Long invalidId = TodoFixture.getRandomId();
 
     // when
-    ThrowingCallable setUpPeriod = () -> dduduPeriodSetupService.setUpPeriod(
-        user.getId(),
-        invalidId,
-        request
-    );
+    ThrowingCallable delete = () -> deleteTodoService.delete(user.getId(), invalidId);
 
     // then
-    Assertions.assertThatExceptionOfType(MissingResourceException.class)
-        .isThrownBy(setUpPeriod)
-        .withMessage(TodoErrorCode.ID_NOT_EXISTING.getCodeName());
+    assertThatNoException().isThrownBy(delete);
+  }
+
+  @Test
+  void 로그인_사용자가_권한이_없는_경우_삭제에_실패한다() {
+    // given
+    User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
+
+    // when
+    ThrowingCallable delete = () -> deleteTodoService.delete(anotherUser.getId(), todo.getId());
+
+    // then
+    Assertions.assertThatExceptionOfType(SecurityException.class)
+        .isThrownBy(delete)
+        .withMessage(TodoErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
 }
