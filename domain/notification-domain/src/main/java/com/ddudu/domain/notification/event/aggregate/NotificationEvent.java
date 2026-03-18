@@ -69,7 +69,7 @@ public class NotificationEvent {
         .build();
   }
 
-  public String getDduduBody(Duration remindDifference) {
+  public String getTodoBody(Duration remindDifference) {
     long dayDifference = remindDifference.toDays();
     long hourDifference = remindDifference.minusDays(dayDifference)
         .toHours();

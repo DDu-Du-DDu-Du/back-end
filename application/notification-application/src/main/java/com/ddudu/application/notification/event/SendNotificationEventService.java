@@ -1,6 +1,6 @@
 package com.ddudu.application.notification.event;
 
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenLoaderPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
@@ -12,7 +12,7 @@ import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.domain.notification.device.aggregate.NotificationDeviceToken;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.NotificationInbox;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SendNotificationEventService implements SendNotificationEventUseCase {
 
   private final NotificationEventLoaderPort notificationEventLoaderPort;
-  private final DduduLoaderPort dduduLoaderPort;
+  private final TodoLoaderPort dduduLoaderPort;
   private final NotificationInboxCommandPort notificationInboxCommandPort;
   private final NotificationEventCommandPort notificationEventCommandPort;
   private final NotificationDeviceTokenLoaderPort notificationDeviceTokenLoaderPort;
@@ -70,18 +70,18 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
 
   private NotificationInbox createNotificationInbox(NotificationEvent notificationEvent) {
     return switch (notificationEvent.getTypeCode()) {
-      case DDUDU_REMINDER -> createDduduNotificationInbox(notificationEvent);
+      case DDUDU_REMINDER -> createTodoNotificationInbox(notificationEvent);
       default -> throw new NotImplementedException("not implemented yet.");
     };
   }
 
-  private NotificationInbox createDduduNotificationInbox(NotificationEvent notificationEvent) {
-    Ddudu ddudu = dduduLoaderPort.getDduduOrElseThrow(
+  private NotificationInbox createTodoNotificationInbox(NotificationEvent notificationEvent) {
+    Todo ddudu = dduduLoaderPort.getTodoOrElseThrow(
         notificationEvent.getContextId(),
         NotificationEventErrorCode.ORIGINAL_DDUDU_NOT_EXISTING.getCodeName()
     );
     String title = ddudu.getName();
-    String body = notificationEvent.getDduduBody(ddudu.getRemindDifference());
+    String body = notificationEvent.getTodoBody(ddudu.getRemindDifference());
 
     return buildNotificationInbox(notificationEvent, title, body);
   }

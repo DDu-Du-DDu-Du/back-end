@@ -1,7 +1,7 @@
 package com.ddudu.fixtures;
 
 import com.ddudu.aggregate.BaseStats;
-import com.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.aggregate.enums.TodoStatus;
 import com.ddudu.fixture.BaseFixture;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,7 +22,7 @@ public final class BaseStatsFixture extends BaseFixture {
 
     return createWithGoalStatusScheduledAndTimes(
         goalId,
-        DduduStatus.COMPLETE,
+        TodoStatus.COMPLETE,
         false,
         scheduledOn,
         beginAt,
@@ -36,7 +36,7 @@ public final class BaseStatsFixture extends BaseFixture {
 
     return createWithGoalStatusScheduledAndTimes(
         goalId,
-        DduduStatus.COMPLETE,
+        TodoStatus.COMPLETE,
         false,
         scheduledOn,
         beginAt,
@@ -47,7 +47,7 @@ public final class BaseStatsFixture extends BaseFixture {
   public static BaseStats createAcrossNoonBalancedStat(Long goalId, LocalDate scheduledOn) {
     return createWithGoalStatusScheduledAndTimes(
         goalId,
-        DduduStatus.COMPLETE,
+        TodoStatus.COMPLETE,
         false,
         scheduledOn,
         LocalTime.of(11, 0),
@@ -58,7 +58,7 @@ public final class BaseStatsFixture extends BaseFixture {
   public static BaseStats createNoonZeroStat(Long goalId, LocalDate scheduledOn) {
     return createWithGoalStatusScheduledAndTimes(
         goalId,
-        DduduStatus.COMPLETE,
+        TodoStatus.COMPLETE,
         false,
         scheduledOn,
         LocalTime.NOON,
@@ -68,7 +68,7 @@ public final class BaseStatsFixture extends BaseFixture {
 
   public static BaseStats createWithGoalStatusScheduledAndTimes(
       Long goalId,
-      DduduStatus status,
+      TodoStatus status,
       boolean isPostponed,
       LocalDate scheduledOn,
       LocalTime beginAt,
@@ -83,7 +83,7 @@ public final class BaseStatsFixture extends BaseFixture {
     List<BaseStats> stats = new ArrayList<>();
 
     for (int i = 0; i < size; i++) {
-      stats.add(createRandomWithGoalAndPostponedAndStatus(goalId, true, DduduStatus.COMPLETE));
+      stats.add(createRandomWithGoalAndPostponedAndStatus(goalId, true, TodoStatus.COMPLETE));
     }
 
     return stats;
@@ -93,7 +93,7 @@ public final class BaseStatsFixture extends BaseFixture {
     List<BaseStats> stats = new ArrayList<>();
 
     for (int i = 0; i < size; i++) {
-      stats.add(createRandomWithGoalAndPostponedAndStatus(goalId, true, DduduStatus.UNCOMPLETED));
+      stats.add(createRandomWithGoalAndPostponedAndStatus(goalId, true, TodoStatus.UNCOMPLETED));
     }
 
     return stats;
@@ -113,7 +113,7 @@ public final class BaseStatsFixture extends BaseFixture {
           createRandomWithGoalAndPostponedAndStatusAndScheduled(
               goalId,
               false,
-              DduduStatus.COMPLETE,
+              TodoStatus.COMPLETE,
               scheduledOn
           )
       );
@@ -184,14 +184,14 @@ public final class BaseStatsFixture extends BaseFixture {
   }
 
   public static BaseStats createRandomUncompletedWithGoal(Long goalId) {
-    return createRandomWithGoalAndStatus(goalId, DduduStatus.UNCOMPLETED);
+    return createRandomWithGoalAndStatus(goalId, TodoStatus.UNCOMPLETED);
   }
 
   public static BaseStats createRandomCompleteWithGoal(Long goalId) {
-    return createRandomWithGoalAndStatus(goalId, DduduStatus.COMPLETE);
+    return createRandomWithGoalAndStatus(goalId, TodoStatus.COMPLETE);
   }
 
-  public static BaseStats createRandomWithGoalAndStatus(Long goalId, DduduStatus status) {
+  public static BaseStats createRandomWithGoalAndStatus(Long goalId, TodoStatus status) {
     boolean isPostponed = faker.bool()
         .bool();
 
@@ -199,12 +199,12 @@ public final class BaseStatsFixture extends BaseFixture {
   }
 
   public static BaseStats createRandomWithGoalAndPostponed(Long goalId, boolean isPostponed) {
-    List<String> names = Arrays.stream(DduduStatus.values())
+    List<String> names = Arrays.stream(TodoStatus.values())
         .map(Enum::name)
         .toList();
-    int statusIndexMax = DduduStatus.values().length - 1;
+    int statusIndexMax = TodoStatus.values().length - 1;
     int randomIndex = getRandomInt(0, statusIndexMax);
-    DduduStatus status = DduduStatus.from(names.get(randomIndex));
+    TodoStatus status = TodoStatus.from(names.get(randomIndex));
 
     return createRandomWithGoalAndPostponedAndStatus(goalId, isPostponed, status);
   }
@@ -212,7 +212,7 @@ public final class BaseStatsFixture extends BaseFixture {
   public static BaseStats createRandomWithGoalAndPostponedAndStatus(
       Long goalId,
       boolean isPostponed,
-      DduduStatus status
+      TodoStatus status
   ) {
     YearMonth yearMonth = YearMonth.now();
 
@@ -227,7 +227,7 @@ public final class BaseStatsFixture extends BaseFixture {
   public static BaseStats createRandomWithGoalAndPostponedAndStatusInMonth(
       Long goalId,
       boolean isPostponed,
-      DduduStatus status,
+      TodoStatus status,
       YearMonth yearMonth
   ) {
     LocalDateTime from = yearMonth.atDay(1)
@@ -248,7 +248,7 @@ public final class BaseStatsFixture extends BaseFixture {
   public static BaseStats createRandomWithGoalAndPostponedAndStatusAndScheduled(
       Long goalId,
       boolean isPostponed,
-      DduduStatus status,
+      TodoStatus status,
       LocalDate scheduledOn
   ) {
     Long dduduId = getRandomId();
@@ -261,7 +261,7 @@ public final class BaseStatsFixture extends BaseFixture {
   private static BaseStats createBaseStats(
       Long dduduId,
       Long goalId,
-      DduduStatus status,
+      TodoStatus status,
       boolean isPostponed,
       LocalDate scheduledOn,
       LocalTime beginAt,

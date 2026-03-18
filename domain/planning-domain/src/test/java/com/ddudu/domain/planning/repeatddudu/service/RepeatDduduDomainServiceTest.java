@@ -1,13 +1,13 @@
-package com.ddudu.domain.planning.repeatddudu.service;
+package com.ddudu.domain.planning.repeattodo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
-import com.ddudu.domain.planning.repeatddudu.dto.CreateRepeatDduduCommand;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
+import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo;
+import com.ddudu.domain.planning.repeattodo.aggregate.enums.RepeatType;
+import com.ddudu.domain.planning.repeattodo.dto.CreateRepeatTodoCommand;
 import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.RepeatDduduFixture;
+import com.ddudu.fixture.RepeatTodoFixture;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -20,13 +20,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class RepeatDduduDomainServiceTest {
+class RepeatTodoDomainServiceTest {
 
-  static RepeatDduduDomainService repeatDduduDomainService;
+  static RepeatTodoDomainService repeatTodoDomainService;
 
   @BeforeAll
   static void setUp() {
-    repeatDduduDomainService = new RepeatDduduDomainService();
+    repeatTodoDomainService = new RepeatTodoDomainService();
   }
 
   @Nested
@@ -39,7 +39,7 @@ class RepeatDduduDomainServiceTest {
 
     @BeforeEach
     void setUp() {
-      name = RepeatDduduFixture.getRandomSentenceWithMax(50);
+      name = RepeatTodoFixture.getRandomSentenceWithMax(50);
       goalId = GoalFixture.getRandomId();
       startDate = LocalDate.now();
       endDate = LocalDate.now()
@@ -49,7 +49,7 @@ class RepeatDduduDomainServiceTest {
     @Test
     void 데일리_반복_투두를_생성한다() {
       // given
-      CreateRepeatDduduCommand command = new CreateRepeatDduduCommand(
+      CreateRepeatTodoCommand command = new CreateRepeatTodoCommand(
           name,
           goalId,
           RepeatType.DAILY.name(),
@@ -63,7 +63,7 @@ class RepeatDduduDomainServiceTest {
       );
 
       // when
-      RepeatDdudu actual = repeatDduduDomainService.create(null, command);
+      RepeatTodo actual = repeatTodoDomainService.create(null, command);
 
       // then
       assertThat(actual).extracting("name", "goalId", "repeatType", "startDate", "endDate")
@@ -73,11 +73,11 @@ class RepeatDduduDomainServiceTest {
     @Test
     void 위클리_반복_투두를_생성한다() {
       // given
-      CreateRepeatDduduCommand command = new CreateRepeatDduduCommand(
+      CreateRepeatTodoCommand command = new CreateRepeatTodoCommand(
           name,
           goalId,
           RepeatType.WEEKLY.name(),
-          RepeatDduduFixture.getRandomRepeatDaysOfWeek(),
+          RepeatTodoFixture.getRandomRepeatDaysOfWeek(),
           null,
           null,
           startDate,
@@ -87,7 +87,7 @@ class RepeatDduduDomainServiceTest {
       );
 
       // when
-      RepeatDdudu actual = repeatDduduDomainService.create(null, command);
+      RepeatTodo actual = repeatTodoDomainService.create(null, command);
 
       // then
       assertThat(actual).extracting("name", "goalId", "repeatType", "startDate", "endDate")
@@ -97,12 +97,12 @@ class RepeatDduduDomainServiceTest {
     @Test
     void 먼슬리_반복_투두를_생성한다() {
       // given
-      CreateRepeatDduduCommand command = new CreateRepeatDduduCommand(
+      CreateRepeatTodoCommand command = new CreateRepeatTodoCommand(
           name,
           goalId,
           RepeatType.MONTHLY.name(),
           null,
-          RepeatDduduFixture.getRandomRepeatDaysOfMonth(1),
+          RepeatTodoFixture.getRandomRepeatDaysOfMonth(1),
           true,
           startDate,
           endDate,
@@ -111,7 +111,7 @@ class RepeatDduduDomainServiceTest {
       );
 
       // when
-      RepeatDdudu actual = repeatDduduDomainService.create(goalId, command);
+      RepeatTodo actual = repeatTodoDomainService.create(goalId, command);
 
       // then
       assertThat(actual).extracting("name", "goalId", "repeatType", "startDate", "endDate")
@@ -132,7 +132,7 @@ class RepeatDduduDomainServiceTest {
     @BeforeEach
     void setUp() {
       userId = GoalFixture.getRandomId();
-      name = RepeatDduduFixture.getRandomSentenceWithMax(50);
+      name = RepeatTodoFixture.getRandomSentenceWithMax(50);
       goalId = GoalFixture.getRandomId();
       startDate = LocalDate.now();
       endDate = LocalDate.now()
@@ -142,15 +142,15 @@ class RepeatDduduDomainServiceTest {
     @Test
     void 데일리_반복_투두의_투두를_생성한다() {
       // given
-      RepeatDdudu dailyRepeatDdudu = RepeatDduduFixture.createRepeatDdudu(
+      RepeatTodo dailyRepeatTodo = RepeatTodoFixture.createRepeatTodo(
           RepeatType.DAILY,
-          RepeatDduduFixture.createDailyRepeatPattern(),
+          RepeatTodoFixture.createDailyRepeatPattern(),
           startDate,
           endDate
       );
 
       // when
-      List<Ddudu> ddudus = repeatDduduDomainService.createRepeatedDdudus(userId, dailyRepeatDdudu);
+      List<Todo> ddudus = repeatTodoDomainService.createRepeatedTodos(userId, dailyRepeatTodo);
 
       // then
       long expectedCount = ChronoUnit.DAYS.between(startDate, endDate) + 1;
@@ -158,7 +158,7 @@ class RepeatDduduDomainServiceTest {
       Assertions.assertThat(ddudus)
           .hasSize((int) expectedCount);
       ddudus.stream()
-          .map(Ddudu::getScheduledOn)
+          .map(Todo::getScheduledOn)
           .forEach(date -> Assertions.assertThat(date)
               .isBetween(startDate, endDate));
     }
@@ -166,20 +166,20 @@ class RepeatDduduDomainServiceTest {
     @Test
     void 위클리_반복_투두의_투두를_생성한다() {
       // given
-      List<String> repeatDayOfWeek = RepeatDduduFixture.getRandomRepeatDaysOfWeek(1);
-      RepeatDdudu weeklyRepeatDdudu = RepeatDduduFixture.createRepeatDdudu(
+      List<String> repeatDayOfWeek = RepeatTodoFixture.getRandomRepeatDaysOfWeek(1);
+      RepeatTodo weeklyRepeatTodo = RepeatTodoFixture.createRepeatTodo(
           RepeatType.WEEKLY,
-          RepeatDduduFixture.createWeeklyRepeatPattern(repeatDayOfWeek),
+          RepeatTodoFixture.createWeeklyRepeatPattern(repeatDayOfWeek),
           startDate,
           endDate
       );
 
       // when
-      List<Ddudu> ddudus = repeatDduduDomainService.createRepeatedDdudus(userId, weeklyRepeatDdudu);
+      List<Todo> ddudus = repeatTodoDomainService.createRepeatedTodos(userId, weeklyRepeatTodo);
 
       // then
       ddudus.stream()
-          .map(Ddudu::getScheduledOn)
+          .map(Todo::getScheduledOn)
           .forEach(date -> assertThat(date.getDayOfWeek()
               .name()).isEqualTo(repeatDayOfWeek.get(0)));
     }
@@ -187,23 +187,23 @@ class RepeatDduduDomainServiceTest {
     @Test
     void 먼슬리_반복_투두의_투두를_생성한다() {
       // given
-      int repeatDayOfMonth = RepeatDduduFixture.getRandomInt(1, 31);
-      RepeatDdudu monthlyRepeatDdudu = RepeatDduduFixture.createRepeatDdudu(
+      int repeatDayOfMonth = RepeatTodoFixture.getRandomInt(1, 31);
+      RepeatTodo monthlyRepeatTodo = RepeatTodoFixture.createRepeatTodo(
           RepeatType.MONTHLY,
-          RepeatDduduFixture.createMonthlyRepeatPattern(List.of(repeatDayOfMonth), true),
+          RepeatTodoFixture.createMonthlyRepeatPattern(List.of(repeatDayOfMonth), true),
           startDate,
           endDate
       );
 
       // when
-      List<Ddudu> ddudus = repeatDduduDomainService.createRepeatedDdudus(
+      List<Todo> ddudus = repeatTodoDomainService.createRepeatedTodos(
           userId,
-          monthlyRepeatDdudu
+          monthlyRepeatTodo
       );
 
       // then
       ddudus.stream()
-          .map(Ddudu::getScheduledOn)
+          .map(Todo::getScheduledOn)
           .forEach(date -> assertThat(date.getDayOfMonth())
               .isIn(repeatDayOfMonth, startDate.lengthOfMonth()));
     }

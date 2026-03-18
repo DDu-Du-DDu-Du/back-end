@@ -10,13 +10,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class DduduStatusTest {
+class TodoStatusTest {
 
   @ParameterizedTest
   @NullAndEmptySource
   void 통계를_위한_투두_상태는_항상_유효해야한다(String value) {
     // given
-    ThrowingCallable create = () -> DduduStatus.from(value);
+    ThrowingCallable create = () -> TodoStatus.from(value);
 
     // when
     assertThatRuntimeException().isThrownBy(create)

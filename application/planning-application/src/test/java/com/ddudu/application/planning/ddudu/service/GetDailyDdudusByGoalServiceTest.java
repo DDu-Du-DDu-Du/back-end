@@ -2,16 +2,16 @@ package com.ddudu.application.planning.ddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.ddudu.GoalGroupedDdudus;
+import com.ddudu.application.common.dto.ddudu.GoalGroupedTodos;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.exception.TodoErrorCode;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
@@ -31,10 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class GetDailyDdudusByGoalServiceTest {
+class GetDailyTodosByGoalServiceTest {
 
   @Autowired
-  GetDailyDdudusByGoalService getDailyDdudusByGoalService;
+  GetDailyTodosByGoalService getDailyTodosByGoalService;
 
   @Autowired
   SignUpPort signUpPort;
@@ -43,7 +43,7 @@ class GetDailyDdudusByGoalServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   User user;
 
@@ -57,12 +57,12 @@ class GetDailyDdudusByGoalServiceTest {
     // given
     Goal goal = saveGoalPort.save(
         GoalFixture.createRandomGoalWithUserAndPrivacyType(user.getId(), PrivacyType.PRIVATE));
-    Ddudu ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
+    Todo ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
 
     LocalDate date = LocalDate.now();
 
     // when
-    List<GoalGroupedDdudus> responses = getDailyDdudusByGoalService.get(
+    List<GoalGroupedTodos> responses = getDailyTodosByGoalService.get(
         user.getId(),
         user.getId(),
         date
@@ -72,7 +72,7 @@ class GetDailyDdudusByGoalServiceTest {
     Assertions.assertThat(responses)
         .hasSize(1);
 
-    GoalGroupedDdudus firstElement = responses.get(0);
+    GoalGroupedTodos firstElement = responses.get(0);
     assertThat(firstElement.goal()).extracting("id")
         .isEqualTo(goal.getId());
     assertThat(firstElement.ddudus()).extracting("id")
@@ -87,10 +87,10 @@ class GetDailyDdudusByGoalServiceTest {
     LocalDate date = LocalDate.now();
     Goal goal = saveGoalPort.save(
         GoalFixture.createRandomGoalWithUserAndPrivacyType(user.getId(), PrivacyType.PRIVATE));
-    saveDduduPort.save(DduduFixture.createDduduWithScheduleAndPostponedFlag(goal, true, date));
+    saveTodoPort.save(TodoFixture.createTodoWithScheduleAndPostponedFlag(goal, true, date));
 
     // when
-    List<GoalGroupedDdudus> responses = getDailyDdudusByGoalService.get(
+    List<GoalGroupedTodos> responses = getDailyTodosByGoalService.get(
         user.getId(),
         user.getId(),
         date
@@ -107,18 +107,18 @@ class GetDailyDdudusByGoalServiceTest {
     // given
     Goal publicGoal = saveGoalPort.save(
         GoalFixture.createRandomGoalWithUserAndPrivacyType(user.getId(), PrivacyType.PUBLIC));
-    saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(publicGoal));
+    saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(publicGoal));
 
     Goal privateGoal = saveGoalPort.save(
         GoalFixture.createRandomGoalWithUserAndPrivacyType(user.getId(), PrivacyType.PRIVATE));
-    saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(privateGoal));
+    saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(privateGoal));
 
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
     LocalDate date = LocalDate.now();
 
     // when
-    List<GoalGroupedDdudus> responses = getDailyDdudusByGoalService.get(
+    List<GoalGroupedTodos> responses = getDailyTodosByGoalService.get(
         anotherUser.getId(),
         user.getId(),
         date
@@ -140,7 +140,7 @@ class GetDailyDdudusByGoalServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    ThrowingCallable findAllByDate = () -> getDailyDdudusByGoalService.get(
+    ThrowingCallable findAllByDate = () -> getDailyTodosByGoalService.get(
         invalidLoginId,
         user.getId(),
         date
@@ -149,7 +149,7 @@ class GetDailyDdudusByGoalServiceTest {
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(findAllByDate)
-        .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -160,7 +160,7 @@ class GetDailyDdudusByGoalServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    ThrowingCallable findAllByDate = () -> getDailyDdudusByGoalService.get(
+    ThrowingCallable findAllByDate = () -> getDailyTodosByGoalService.get(
         loginUserId,
         invalidUserId,
         date
@@ -169,7 +169,7 @@ class GetDailyDdudusByGoalServiceTest {
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(findAllByDate)
-        .withMessage(DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
 }

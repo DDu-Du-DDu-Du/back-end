@@ -1,8 +1,8 @@
 package com.ddudu.application.stats.service;
 
-import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
-import com.ddudu.application.common.port.stats.out.DduduStatsPort;
+import com.ddudu.application.common.port.stats.out.TodoStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.StatsErrorCode;
@@ -25,11 +25,11 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
   private static final boolean IS_ACHIEVED = true;
 
   private final UserLoaderPort userLoaderPort;
-  private final DduduStatsPort dduduStatsPort;
+  private final TodoStatsPort dduduStatsPort;
 
   @Deprecated
   @Override
-  public List<DduduCompletionResponse> calculateWeekly(Long loginId, Long userId, LocalDate date) {
+  public List<TodoCompletionResponse> calculateWeekly(Long loginId, Long userId, LocalDate date) {
     LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(date);
     LocalDate afterOneWeek = firstDayOfWeek.plusDays(6);
 
@@ -37,7 +37,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
   }
 
   @Override
-  public List<DduduCompletionResponse> calculateMonthly(
+  public List<TodoCompletionResponse> calculateMonthly(
       Long loginId,
       Long userId,
       YearMonth yearMonth
@@ -51,7 +51,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
     return calculate(loginId, userId, firstDayOfMonth, endDate);
   }
 
-  private List<DduduCompletionResponse> calculate(
+  private List<TodoCompletionResponse> calculate(
       Long loginId,
       Long userId,
       LocalDate from,
@@ -70,7 +70,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
     return generateCompletions(from, to, loginUser, user);
   }
 
-  private List<DduduCompletionResponse> generateCompletions(
+  private List<TodoCompletionResponse> generateCompletions(
       LocalDate startDate,
       LocalDate endDate,
       User loginUser,
@@ -79,7 +79,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
     Relationship relationship = Relationship.getRelationship(loginUser, user);
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
-    return dduduStatsPort.calculateDdudusCompletion(
+    return dduduStatsPort.calculateTodosCompletion(
             startDate,
             endDate,
             user.getId(),

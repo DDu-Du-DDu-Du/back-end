@@ -3,19 +3,19 @@ package com.ddudu.application.planning.goal.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.goal.request.CreateGoalRequest;
-import com.ddudu.application.common.dto.goal.request.CreateRepeatDduduRequestWithoutGoal;
+import com.ddudu.application.common.dto.goal.request.CreateRepeatTodoRequestWithoutGoal;
 import com.ddudu.application.common.dto.goal.response.GoalIdResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
-import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
+import com.ddudu.application.common.port.repeattodo.out.RepeatTodoLoaderPort;
 import com.ddudu.common.exception.GoalErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.GoalStatus;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
+import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo;
+import com.ddudu.domain.planning.repeattodo.aggregate.enums.RepeatType;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
@@ -53,10 +53,10 @@ class CreateGoalServiceTest {
   GoalLoaderPort goalLoaderPort;
 
   @Autowired
-  RepeatDduduLoaderPort repeatDduduLoaderPort;
+  RepeatTodoLoaderPort repeatTodoLoaderPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort dduduLoaderPort;
 
   CreateGoalRequest request;
   Long userId;
@@ -183,8 +183,8 @@ class CreateGoalServiceTest {
         .with(DayOfWeek.MONDAY)
         .plusDays(7);
     LocalDate nextSunday = nextMonday.plusDays(6);
-    List<CreateRepeatDduduRequestWithoutGoal> requests = List.of(
-        new CreateRepeatDduduRequestWithoutGoal(
+    List<CreateRepeatTodoRequestWithoutGoal> requests = List.of(
+        new CreateRepeatTodoRequestWithoutGoal(
             "반복 투두",
             RepeatType.WEEKLY.name(),
             List.of(DayOfWeek.SUNDAY.name()),
@@ -205,15 +205,15 @@ class CreateGoalServiceTest {
     // then
     Goal goal = goalLoaderPort.getOptionalGoal(response.id())
         .get();
-    List<RepeatDdudu> repeatDdudus = repeatDduduLoaderPort.getAllByGoal(goal);
+    List<RepeatTodo> repeatTodos = repeatTodoLoaderPort.getAllByGoal(goal);
 
-    Assertions.assertThat(repeatDdudus)
+    Assertions.assertThat(repeatTodos)
         .hasSize(1);
-    assertThat(repeatDdudus.get(0))
+    assertThat(repeatTodos.get(0))
         .extracting("name", "repeatType", "startDate", "endDate")
         .containsExactly("반복 투두", RepeatType.WEEKLY, nextMonday, nextSunday);
 
-    List<Ddudu> ddudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudus.get(0));
+    List<Todo> ddudus = dduduLoaderPort.getRepeatedTodos(repeatTodos.get(0));
 
     Assertions.assertThat(ddudus)
         .hasSize(1);

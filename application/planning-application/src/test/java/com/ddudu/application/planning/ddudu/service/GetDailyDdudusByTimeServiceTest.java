@@ -2,17 +2,17 @@ package com.ddudu.application.planning.ddudu.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.ddudu.application.common.dto.ddudu.DduduForTimetable;
+import com.ddudu.application.common.dto.ddudu.TodoForTimetable;
 import com.ddudu.application.common.dto.ddudu.response.TimetableResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.exception.TodoErrorCode;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class GetDailyDdudusByTimeServiceTest {
+class GetDailyTodosByTimeServiceTest {
 
   @Autowired
   GetTimetableService getTimetableService;
@@ -43,7 +43,7 @@ class GetDailyDdudusByTimeServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   User user;
   LocalTime beginAt;
@@ -63,7 +63,7 @@ class GetDailyDdudusByTimeServiceTest {
         user.getId(),
         PrivacyType.PRIVATE
     ));
-    Ddudu ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoalAndTime(
+    Todo ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoalAndTime(
         goal,
         beginAt,
         endAt
@@ -79,7 +79,7 @@ class GetDailyDdudusByTimeServiceTest {
     LocalTime earliestTime = response.timetable()
         .get(0)
         .beginAt();
-    DduduForTimetable firstOfEarliestTime = response.timetable()
+    TodoForTimetable firstOfEarliestTime = response.timetable()
         .get(0)
         .ddudus()
         .get(0);
@@ -90,7 +90,7 @@ class GetDailyDdudusByTimeServiceTest {
         .isEqualTo(beginAt);
     assertThat(firstOfEarliestTime.id()).isEqualTo(ddudu.getId());
     assertThat(firstOfEarliestTime.postponedAt()).isNull();
-    assertThat(response.unassignedDdudus()
+    assertThat(response.unassignedTodos()
         .get(0)
         .ddudus()
         .size()).isEqualTo(0);
@@ -103,23 +103,23 @@ class GetDailyDdudusByTimeServiceTest {
         user.getId(),
         PrivacyType.PRIVATE
     ));
-    Ddudu ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
+    Todo ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
     LocalDate date = LocalDate.now();
 
     // when
     TimetableResponse response = getTimetableService.get(user.getId(), user.getId(), date);
 
     // then
-    assertThat(response.unassignedDdudus()
+    assertThat(response.unassignedTodos()
         .get(0)
         .ddudus()
         .size()).isEqualTo(1);
-    assertThat(response.unassignedDdudus()
+    assertThat(response.unassignedTodos()
         .get(0)
         .ddudus()
         .get(0)
         .id()).isEqualTo(ddudu.getId());
-    assertThat(response.unassignedDdudus()
+    assertThat(response.unassignedTodos()
         .get(0)
         .ddudus()
         .get(0)
@@ -133,8 +133,8 @@ class GetDailyDdudusByTimeServiceTest {
         user.getId(),
         PrivacyType.PRIVATE
     ));
-    saveDduduPort.save(
-        DduduFixture.createDduduWithScheduleAndPostponedFlag(goal, true, LocalDate.now())
+    saveTodoPort.save(
+        TodoFixture.createTodoWithScheduleAndPostponedFlag(goal, true, LocalDate.now())
     );
 
     // when
@@ -145,7 +145,7 @@ class GetDailyDdudusByTimeServiceTest {
     );
 
     // then
-    assertThat(response.unassignedDdudus()
+    assertThat(response.unassignedTodos()
         .get(0)
         .ddudus()
         .get(0)
@@ -159,7 +159,7 @@ class GetDailyDdudusByTimeServiceTest {
         user.getId(),
         PrivacyType.PUBLIC
     ));
-    Ddudu publicDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoalAndTime(
+    Todo publicTodo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoalAndTime(
         publicGoal,
         beginAt,
         endAt
@@ -169,7 +169,7 @@ class GetDailyDdudusByTimeServiceTest {
         PrivacyType.PRIVATE
     ));
 
-    saveDduduPort.save(DduduFixture.createRandomDduduWithGoalAndTime(privateGoal, beginAt, endAt));
+    saveTodoPort.save(TodoFixture.createRandomTodoWithGoalAndTime(privateGoal, beginAt, endAt));
 
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
@@ -181,14 +181,14 @@ class GetDailyDdudusByTimeServiceTest {
     // then
     int countOfTime = response.timetable()
         .size();
-    DduduForTimetable firstOfEarliestTime = response.timetable()
+    TodoForTimetable firstOfEarliestTime = response.timetable()
         .get(0)
         .ddudus()
         .get(0);
 
     AssertionsForClassTypes.assertThat(countOfTime)
         .isEqualTo(1);
-    assertThat(firstOfEarliestTime.id()).isEqualTo(publicDdudu.getId());
+    assertThat(firstOfEarliestTime.id()).isEqualTo(publicTodo.getId());
   }
 
   @Test
@@ -207,7 +207,7 @@ class GetDailyDdudusByTimeServiceTest {
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(findAllByDate)
-        .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -227,7 +227,7 @@ class GetDailyDdudusByTimeServiceTest {
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(findAllByDate)
-        .withMessage(DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
 }

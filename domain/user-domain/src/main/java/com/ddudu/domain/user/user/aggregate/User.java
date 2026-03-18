@@ -82,7 +82,7 @@ public class User {
     return this.options.isTemplateNotification();
   }
 
-  public boolean isNotifyingDdudu() {
+  public boolean isNotifyingTodo() {
     return this.options.isDduduNotification();
   }
 
@@ -163,7 +163,7 @@ public class User {
     Options updatedOptions = Options.builder()
         .allowingFollowsAfterApproval(this.isAllowingFollowsAfterApproval())
         .templateNotification(this.isNotifyingTemplate())
-        .dduduNotification(this.isNotifyingDdudu())
+        .dduduNotification(this.isNotifyingTodo())
         .display(DisplayOptions.builder()
             .weekStartDay(WeekStartDay.get(weekStartDay))
             .darkMode(isDarkMode)

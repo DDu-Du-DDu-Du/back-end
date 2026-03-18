@@ -10,7 +10,7 @@ import com.ddudu.application.common.port.stats.out.GoalDetailStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.StatsErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class CollectGoalDetailStatsService implements CollectGoalDetailStatsUseC
 
     int totalCount = statuses.size();
     int completedCount = (int) statuses.stream()
-        .filter(summary -> summary.status() == DduduStatus.COMPLETE)
+        .filter(summary -> summary.status() == TodoStatus.COMPLETE)
         .count();
     int completeRate = totalCount == 0 ? 0 : (int) Math.round(completedCount * 100.0 / totalCount);
 

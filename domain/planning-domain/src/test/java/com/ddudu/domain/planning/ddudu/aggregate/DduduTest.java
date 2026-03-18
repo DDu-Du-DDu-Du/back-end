@@ -1,12 +1,12 @@
-package com.ddudu.domain.planning.ddudu.aggregate;
+package com.ddudu.domain.planning.todo.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu.DduduBuilder;
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.common.exception.TodoErrorCode;
+import com.ddudu.domain.planning.todo.aggregate.Todo.TodoBuilder;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
+import com.ddudu.fixture.TodoFixture;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,15 +25,15 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class DduduTest {
+class TodoTest {
 
   Long goalId;
   Long userId;
 
   @BeforeEach
   void setUp() {
-    goalId = DduduFixture.getRandomId();
-    userId = DduduFixture.getRandomId();
+    goalId = TodoFixture.getRandomId();
+    userId = TodoFixture.getRandomId();
   }
 
   @Nested
@@ -43,7 +43,7 @@ class DduduTest {
 
     @BeforeEach
     void setUp() {
-      name = DduduFixture.getRandomSentenceWithMax(50);
+      name = TodoFixture.getRandomSentenceWithMax(50);
     }
 
     @Test
@@ -51,16 +51,16 @@ class DduduTest {
       // given
 
       // when
-      Ddudu ddudu = Ddudu.builder()
+      Todo todo = Todo.builder()
           .goalId(goalId)
           .userId(userId)
           .name(name)
-          .status(DduduStatus.COMPLETE)
+          .status(TodoStatus.COMPLETE)
           .isPostponed(true)
           .build();
 
       // then
-      assertThat(ddudu).isNotNull();
+      assertThat(todo).isNotNull();
     }
 
     @Test
@@ -68,16 +68,16 @@ class DduduTest {
       // given
 
       // when
-      Ddudu ddudu = Ddudu.builder()
+      Todo todo = Todo.builder()
           .goalId(goalId)
           .userId(userId)
           .name(name)
           .build();
 
       // then
-      assertThat(ddudu.getStatus()).isEqualTo(DduduStatus.UNCOMPLETED);
-      assertThat(ddudu.isPostponed()).isFalse();
-      assertThat(ddudu.getScheduledOn()).isEqualTo(LocalDate.now());
+      assertThat(todo.getStatus()).isEqualTo(TodoStatus.UNCOMPLETED);
+      assertThat(todo.isPostponed()).isFalse();
+      assertThat(todo.getScheduledOn()).isEqualTo(LocalDate.now());
     }
 
     @ParameterizedTest
@@ -85,7 +85,7 @@ class DduduTest {
     @ValueSource(strings = " ")
     void 이름이_빈_값이면_생성을_실패한다(String blankName) {
       // given
-      DduduBuilder builder = Ddudu.builder()
+      TodoBuilder builder = Todo.builder()
           .goalId(goalId)
           .userId(userId)
           .name(blankName);
@@ -96,14 +96,14 @@ class DduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(DduduErrorCode.BLANK_NAME.getCodeName());
+          .withMessage(TodoErrorCode.BLANK_NAME.getCodeName());
     }
 
     @Test
     void 이름이_50자를_넘으면_생성을_실패한다() {
       // given
-      String over50 = DduduFixture.getRandomSentence(51, 100);
-      DduduBuilder builder = Ddudu.builder()
+      String over50 = TodoFixture.getRandomSentence(51, 100);
+      TodoBuilder builder = Todo.builder()
           .goalId(goalId)
           .userId(userId)
           .name(over50);
@@ -114,16 +114,16 @@ class DduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+          .withMessage(TodoErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
     }
 
     @Test
     void 메모가_2000자_이하면_생성을_성공한다() {
       // given
-      String validMemo = DduduFixture.createValidMemo();
+      String validMemo = TodoFixture.createValidMemo();
 
       // when
-      Ddudu ddudu = Ddudu.builder()
+      Todo todo = Todo.builder()
           .goalId(goalId)
           .userId(userId)
           .name(name)
@@ -131,14 +131,14 @@ class DduduTest {
           .build();
 
       // then
-      assertThat(ddudu.getMemo()).isEqualTo(validMemo);
+      assertThat(todo.getMemo()).isEqualTo(validMemo);
     }
 
     @Test
     void 메모가_2000자를_넘으면_생성을_실패한다() {
       // given
-      String overLengthMemo = DduduFixture.createOverLengthMemo();
-      DduduBuilder builder = Ddudu.builder()
+      String overLengthMemo = TodoFixture.createOverLengthMemo();
+      TodoBuilder builder = Todo.builder()
           .goalId(goalId)
           .userId(userId)
           .name(name)
@@ -150,13 +150,13 @@ class DduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(DduduErrorCode.EXCESSIVE_MEMO_LENGTH.getCodeName());
+          .withMessage(TodoErrorCode.EXCESSIVE_MEMO_LENGTH.getCodeName());
     }
 
     @Test
     void 목표가_없으면_생성을_실패한다() {
       // given
-      DduduBuilder builder = Ddudu.builder()
+      TodoBuilder builder = Todo.builder()
           .userId(userId)
           .name(name);
 
@@ -166,13 +166,13 @@ class DduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(DduduErrorCode.NULL_GOAL_VALUE.getCodeName());
+          .withMessage(TodoErrorCode.NULL_GOAL_VALUE.getCodeName());
     }
 
     @Test
     void 사용자가_없으면_생성을_실패한다() {
       // given
-      DduduBuilder builder = Ddudu.builder()
+      TodoBuilder builder = Todo.builder()
           .goalId(goalId)
           .name(name);
 
@@ -182,13 +182,13 @@ class DduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(DduduErrorCode.NULL_USER.getCodeName());
+          .withMessage(TodoErrorCode.NULL_USER.getCodeName());
     }
 
     @Test
     void 시작_시간이_종료_시간보다_뒤면_생성을_실패한다() {
       // given
-      DduduBuilder builder = Ddudu.builder()
+      TodoBuilder builder = Todo.builder()
           .goalId(goalId)
           .userId(userId)
           .name(name)
@@ -202,7 +202,7 @@ class DduduTest {
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(create)
-          .withMessage(DduduErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
+          .withMessage(TodoErrorCode.UNABLE_TO_FINISH_BEFORE_BEGIN.getCodeName());
     }
 
   }
@@ -212,19 +212,19 @@ class DduduTest {
 
     Long userId;
     Long goalId;
-    Ddudu ddudu;
+    Todo todo;
 
     @BeforeEach
     void setUp() {
-      userId = DduduFixture.getRandomId();
-      goalId = DduduFixture.getRandomId();
-      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId, false, null);
+      userId = TodoFixture.getRandomId();
+      goalId = TodoFixture.getRandomId();
+      todo = TodoFixture.createRandomTodoWithReference(goalId, userId, false, null);
     }
 
     @Nested
     class 미리알림_설정_테스트 {
 
-      Ddudu futureDdudu;
+      Todo futureTodo;
       LocalTime beginAt;
       int days;
       int hours;
@@ -232,19 +232,19 @@ class DduduTest {
 
       @BeforeEach
       void setUp() {
-        LocalDate futureDate = DduduFixture.getFutureDate(10);
-        beginAt = DduduFixture.getFutureTime();
-        Ddudu beforeTimeSet = DduduFixture.createRandomDduduWithSchedule(
+        LocalDate futureDate = TodoFixture.getFutureDate(10);
+        beginAt = TodoFixture.getFutureTime();
+        Todo beforeTimeSet = TodoFixture.createRandomTodoWithSchedule(
             userId,
             goalId,
             futureDate
         );
-        futureDdudu = beforeTimeSet.setUpPeriod(beginAt, null);
+        futureTodo = beforeTimeSet.setUpPeriod(beginAt, null);
         int dayDifference = (int) ChronoUnit.DAYS.between(LocalDate.now(), futureDate);
         int hourDifference = (int) ChronoUnit.HOURS.between(LocalTime.now(), beginAt);
-        days = DduduFixture.getRandomInt(0, Math.max(dayDifference - 1, 0));
-        hours = DduduFixture.getRandomInt(0, Math.max(hourDifference - 1, 0));
-        minutes = DduduFixture.getRandomInt(1, 59);
+        days = TodoFixture.getRandomInt(0, Math.max(dayDifference - 1, 0));
+        hours = TodoFixture.getRandomInt(0, Math.max(hourDifference - 1, 0));
+        minutes = TodoFixture.getRandomInt(1, 59);
       }
 
       @Test
@@ -252,11 +252,11 @@ class DduduTest {
         // given
 
         // when
-        Ddudu updated = futureDdudu.setReminder(days, hours, minutes);
+        Todo updated = futureTodo.setReminder(days, hours, minutes);
 
         // then
         LocalDateTime actual = updated.getRemindAt();
-        LocalDateTime expected = futureDdudu.getScheduledOn()
+        LocalDateTime expected = futureTodo.getScheduledOn()
             .atTime(beginAt)
             .minusDays(days)
             .minusHours(hours)
@@ -268,12 +268,12 @@ class DduduTest {
       @Test
       void 미리알림_입력값이_음수면_미리알림_설정을_실패한다() {
         // given
-        int negativeDays = DduduFixture.getRandomNegative();
-        int negativeHours = DduduFixture.getRandomNegative();
-        int negativeMins = DduduFixture.getRandomNegative();
+        int negativeDays = TodoFixture.getRandomNegative();
+        int negativeHours = TodoFixture.getRandomNegative();
+        int negativeMins = TodoFixture.getRandomNegative();
 
         // when
-        ThrowingCallable setReminder = () -> futureDdudu.setReminder(
+        ThrowingCallable setReminder = () -> futureTodo.setReminder(
             negativeDays,
             negativeHours,
             negativeMins
@@ -282,13 +282,13 @@ class DduduTest {
         // then
         Assertions.assertThatIllegalArgumentException()
             .isThrownBy(setReminder)
-            .withMessage(DduduErrorCode.NEGATIVE_REMINDER_INPUT_EXISTS.getCodeName());
+            .withMessage(TodoErrorCode.NEGATIVE_REMINDER_INPUT_EXISTS.getCodeName());
       }
 
       @Test
       void 시작_시간이_없으면_미리알림_설정을_실패한다() {
         // given
-        Ddudu noTime = DduduFixture.createRandomDduduWithSchedule(userId, goalId, LocalDate.now());
+        Todo noTime = TodoFixture.createRandomTodoWithSchedule(userId, goalId, LocalDate.now());
 
         // when
         ThrowingCallable setReminder = () -> noTime.setReminder(0, 1, 0);
@@ -296,7 +296,7 @@ class DduduTest {
         // then
         Assertions.assertThatIllegalArgumentException()
             .isThrownBy(setReminder)
-            .withMessage(DduduErrorCode.BEGIN_AT_REQUIRED_FOR_REMINDER.getCodeName());
+            .withMessage(TodoErrorCode.BEGIN_AT_REQUIRED_FOR_REMINDER.getCodeName());
       }
 
       @Test
@@ -304,24 +304,24 @@ class DduduTest {
         // given
 
         // when
-        ThrowingCallable setReminder = () -> futureDdudu.setReminder(0, 0, 0);
+        ThrowingCallable setReminder = () -> futureTodo.setReminder(0, 0, 0);
 
         // then
         Assertions.assertThatIllegalArgumentException()
             .isThrownBy(setReminder)
-            .withMessage(DduduErrorCode.ZERO_REMINDER.getCodeName());
+            .withMessage(TodoErrorCode.ZERO_REMINDER.getCodeName());
       }
 
       @Test
       void 미리알림_시간이_현재보다_이전이면_설정을_실패한다() {
         // given
         // keep begin time close to now to ensure reminder before now
-        Ddudu todayDdudu = DduduFixture.createRandomDduduWithSchedule(
+        Todo todayTodo = TodoFixture.createRandomTodoWithSchedule(
             userId,
             goalId,
             LocalDate.now()
         );
-        Ddudu urgent = todayDdudu.setUpPeriod(LocalTime.now(), null);
+        Todo urgent = todayTodo.setUpPeriod(LocalTime.now(), null);
 
         // when
         ThrowingCallable setReminder = () -> urgent.setReminder(0, 0, 15);
@@ -329,7 +329,7 @@ class DduduTest {
         // then
         Assertions.assertThatIllegalArgumentException()
             .isThrownBy(setReminder)
-            .withMessage(DduduErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName());
+            .withMessage(TodoErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName());
       }
 
       @Test
@@ -337,7 +337,7 @@ class DduduTest {
         // given
         LocalDate futureDate = LocalDate.now().plusDays(2);
         LocalTime beginAt = LocalTime.of(23, 30);
-        Ddudu withReminder = DduduFixture.createRandomDduduWithSchedule(userId, goalId, futureDate)
+        Todo withReminder = TodoFixture.createRandomTodoWithSchedule(userId, goalId, futureDate)
             .setUpPeriod(beginAt, null)
             .setReminder(0, 0, 15);
 
@@ -351,7 +351,7 @@ class DduduTest {
       @Test
       void 미리알림이_없으면_hasReminder가_false를_반환한다() {
         // given
-        Ddudu withoutReminder = DduduFixture.createRandomDduduWithReference(
+        Todo withoutReminder = TodoFixture.createRandomTodoWithReference(
             goalId,
             userId,
             false,
@@ -371,12 +371,12 @@ class DduduTest {
         LocalDate futureDate = LocalDate.now()
             .plusDays(2);
         LocalTime beginAt = LocalTime.of(23, 30);
-        Ddudu scheduled = DduduFixture.createRandomDduduWithSchedule(userId, goalId, futureDate)
+        Todo scheduled = TodoFixture.createRandomTodoWithSchedule(userId, goalId, futureDate)
             .setUpPeriod(beginAt, null);
-        Ddudu withReminder = scheduled.setReminder(0, 0, 15);
+        Todo withReminder = scheduled.setReminder(0, 0, 15);
 
         // when
-        Ddudu canceled = withReminder.cancelReminder();
+        Todo canceled = withReminder.cancelReminder();
 
         // then
         assertThat(canceled.getRemindAt()).isNull();
@@ -392,7 +392,7 @@ class DduduTest {
         // given
 
         // when
-        ThrowingCallable check = () -> ddudu.validateDduduCreator(userId);
+        ThrowingCallable check = () -> todo.validateTodoCreator(userId);
 
         // then
         Assertions.assertThatNoException()
@@ -402,15 +402,15 @@ class DduduTest {
       @Test
       void 사용자의_아이디가_다르면_권한_확인을_실패한다() {
         // given
-        long wrongUserId = DduduFixture.getRandomId();
+        long wrongUserId = TodoFixture.getRandomId();
 
         // when
-        ThrowingCallable check = () -> ddudu.validateDduduCreator(wrongUserId);
+        ThrowingCallable check = () -> todo.validateTodoCreator(wrongUserId);
 
         // then
         Assertions.assertThatExceptionOfType(SecurityException.class)
             .isThrownBy(check)
-            .withMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+            .withMessage(TodoErrorCode.INVALID_AUTHORITY.getCodeName());
       }
 
     }
@@ -424,16 +424,16 @@ class DduduTest {
         LocalTime now = LocalTime.now();
 
         // when
-        Ddudu actual = ddudu.setUpPeriod(now, LocalTime.MAX);
+        Todo actual = todo.setUpPeriod(now, LocalTime.MAX);
 
         // then
         assertThat(actual)
-            .hasFieldOrPropertyWithValue("id", ddudu.getId())
-            .hasFieldOrPropertyWithValue("userId", ddudu.getUserId())
-            .hasFieldOrPropertyWithValue("name", ddudu.getName())
-            .hasFieldOrPropertyWithValue("postponedAt", ddudu.getPostponedAt())
-            .hasFieldOrPropertyWithValue("status", ddudu.getStatus())
-            .hasFieldOrPropertyWithValue("goalId", ddudu.getGoalId())
+            .hasFieldOrPropertyWithValue("id", todo.getId())
+            .hasFieldOrPropertyWithValue("userId", todo.getUserId())
+            .hasFieldOrPropertyWithValue("name", todo.getName())
+            .hasFieldOrPropertyWithValue("postponedAt", todo.getPostponedAt())
+            .hasFieldOrPropertyWithValue("status", todo.getStatus())
+            .hasFieldOrPropertyWithValue("goalId", todo.getGoalId())
             .hasFieldOrPropertyWithValue("beginAt", now)
             .hasFieldOrPropertyWithValue("endAt", LocalTime.MAX);
       }
@@ -442,10 +442,10 @@ class DduduTest {
       void 시작_시간만_설정할_수_있다() {
         // given
         LocalTime now = LocalTime.now();
-        LocalTime expectedEndTime = ddudu.getEndAt();
+        LocalTime expectedEndTime = todo.getEndAt();
 
         // when
-        Ddudu actual = ddudu.setUpPeriod(now, null);
+        Todo actual = todo.setUpPeriod(now, null);
 
         // then
         assertThat(actual.getBeginAt()).isEqualTo(now);
@@ -456,10 +456,10 @@ class DduduTest {
       void 종료_시간만_설정할_수_있다() {
         // given
         LocalTime now = LocalTime.now();
-        LocalTime expectedBeginAt = ddudu.getBeginAt();
+        LocalTime expectedBeginAt = todo.getBeginAt();
 
         // when
-        Ddudu actual = ddudu.setUpPeriod(null, now);
+        Todo actual = todo.setUpPeriod(null, now);
 
         // then
         assertThat(actual.getBeginAt()).isEqualTo(expectedBeginAt);
@@ -477,27 +477,27 @@ class DduduTest {
         LocalDate newDate = LocalDate.now()
             .plusDays(1);
 
-        ddudu = ddudu.switchStatus(); // 완료 상태로 변경
-        assertThat(ddudu.getStatus()).isEqualTo(DduduStatus.COMPLETE);
+        todo = todo.switchStatus(); // 완료 상태로 변경
+        assertThat(todo.getStatus()).isEqualTo(TodoStatus.COMPLETE);
 
         // when
-        ThrowingCallable moveDate = () -> ddudu.moveDate(newDate, true);
+        ThrowingCallable moveDate = () -> todo.moveDate(newDate, true);
 
         // then
         Assertions.assertThatIllegalArgumentException()
             .isThrownBy(moveDate)
-            .withMessage(DduduErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
+            .withMessage(TodoErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
       }
 
       @Test
       void 완료_하지_않은_투두의_날짜를_기존_날짜_이후로_변경하면_미루기_상태가_된다() {
         // given
-        LocalDate previousScheduledOn = ddudu.getScheduledOn();
+        LocalDate previousScheduledOn = todo.getScheduledOn();
         LocalDate newDate = LocalDate.now()
             .plusDays(1);
 
         // when
-        Ddudu actual = ddudu.moveDate(newDate, true);
+        Todo actual = todo.moveDate(newDate, true);
 
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);
@@ -511,7 +511,7 @@ class DduduTest {
         LocalDate newDate = LocalDate.now().plusDays(1);
 
         // when
-        Ddudu actual = ddudu.moveDate(newDate, false);
+        Todo actual = todo.moveDate(newDate, false);
 
         // then
         assertThat(actual.getScheduledOn()).isEqualTo(newDate);
@@ -523,20 +523,20 @@ class DduduTest {
         // given
 
         // when
-        ThrowingCallable moveDate = () -> ddudu.moveDate(null);
+        ThrowingCallable moveDate = () -> todo.moveDate(null);
 
         // then
         Assertions.assertThatIllegalArgumentException()
             .isThrownBy(moveDate)
-            .withMessage(DduduErrorCode.NULL_DATE_TO_MOVE.getCodeName());
+            .withMessage(TodoErrorCode.NULL_DATE_TO_MOVE.getCodeName());
       }
 
       @Test
       void postponedAt이_존재하면_isPostponed는_true를_반환한다() {
         // given
-        Ddudu postponedDdudu = DduduFixture.createRandomDduduWithReference(
+        Todo postponedTodo = TodoFixture.createRandomTodoWithReference(
             goalId, userId, true, null);
-        Ddudu actual = postponedDdudu;
+        Todo actual = postponedTodo;
 
         // then
         assertThat(actual.isPostponed()).isTrue();
@@ -547,7 +547,7 @@ class DduduTest {
         // given
 
         // when
-        Ddudu actual = ddudu;
+        Todo actual = todo;
 
         // then
         assertThat(actual.isPostponed()).isFalse();
@@ -561,27 +561,27 @@ class DduduTest {
       @Test
       void 미완료_투두는_완료_상태로_변경된다() {
         // given
-        DduduStatus before = ddudu.getStatus();
-        assertThat(before).isEqualTo(DduduStatus.UNCOMPLETED);
+        TodoStatus before = todo.getStatus();
+        assertThat(before).isEqualTo(TodoStatus.UNCOMPLETED);
 
         // when
-        Ddudu actual = ddudu.switchStatus();
+        Todo actual = todo.switchStatus();
 
         // then
-        assertThat(actual.getStatus()).isEqualTo(DduduStatus.COMPLETE);
+        assertThat(actual.getStatus()).isEqualTo(TodoStatus.COMPLETE);
       }
 
       @Test
       void 완료_투두는_미완료_상태로_변경된다() {
         // given
-        Ddudu completeDdudu = DduduFixture.createRandomDduduWithReference(
-            goalId, userId, false, DduduStatus.COMPLETE);
+        Todo completeTodo = TodoFixture.createRandomTodoWithReference(
+            goalId, userId, false, TodoStatus.COMPLETE);
 
         // when
-        Ddudu actual = completeDdudu.switchStatus();
+        Todo actual = completeTodo.switchStatus();
 
         // then
-        assertThat(actual.getStatus()).isEqualTo(DduduStatus.UNCOMPLETED);
+        assertThat(actual.getStatus()).isEqualTo(TodoStatus.UNCOMPLETED);
       }
 
     }
@@ -592,10 +592,10 @@ class DduduTest {
       @Test
       void 투두_이름_변경을_성공한다() {
         // given
-        String expected = DduduFixture.getRandomSentenceWithMax(50);
+        String expected = TodoFixture.getRandomSentenceWithMax(50);
 
         // when
-        Ddudu actual = ddudu.changeName(expected);
+        Todo actual = todo.changeName(expected);
 
         // then
         assertThat(actual.getName()).isEqualTo(expected);
@@ -604,15 +604,15 @@ class DduduTest {
       @Test
       void 이름이_50자를_넘으면_변경을_실패한다() {
         // given
-        String longName = DduduFixture.getRandomSentence(51, 100);
+        String longName = TodoFixture.getRandomSentence(51, 100);
 
         // when
-        ThrowingCallable changeName = () -> ddudu.changeName(longName);
+        ThrowingCallable changeName = () -> todo.changeName(longName);
 
         // then
         Assertions.assertThatIllegalArgumentException()
             .isThrownBy(changeName)
-            .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+            .withMessage(TodoErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
       }
 
     }
@@ -625,9 +625,9 @@ class DduduTest {
 
       @BeforeEach
       void setUp() {
-        scheduledAt = DduduFixture.getFutureDateTime(10, TimeUnit.DAYS);
-        remindAt = scheduledAt.minusDays(DduduFixture.getRandomInt(1, 8));
-        ddudu = DduduFixture.createDduduWithReminder(
+        scheduledAt = TodoFixture.getFutureDateTime(10, TimeUnit.DAYS);
+        remindAt = scheduledAt.minusDays(TodoFixture.getRandomInt(1, 8));
+        todo = TodoFixture.createTodoWithReminder(
             userId,
             goalId,
             scheduledAt.toLocalDate(),
@@ -642,7 +642,7 @@ class DduduTest {
         Duration expected = Duration.between(remindAt, scheduledAt);
 
         // when
-        Duration actual = ddudu.getRemindDifference();
+        Duration actual = todo.getRemindDifference();
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -651,7 +651,7 @@ class DduduTest {
       @Test
       void 투두_시작시간이_없으면_미리알림_시간차_계산을_실패한다() {
         // given
-        Ddudu dduduWithoutTime = DduduFixture.createRandomDduduWithSchedule(
+        Todo dduduWithoutTime = TodoFixture.createRandomTodoWithSchedule(
             userId,
             goalId,
             scheduledAt.toLocalDate()
@@ -662,13 +662,13 @@ class DduduTest {
 
         // then
         assertThatIllegalStateException().isThrownBy(getDifference)
-            .withMessage(DduduErrorCode.UNABLE_TO_GET_REMINDER.getCodeName());
+            .withMessage(TodoErrorCode.UNABLE_TO_GET_REMINDER.getCodeName());
       }
 
       @Test
       void 투두_미리알림_시간이_없으면_미리알림_시간차_계산을_실패한다() {
         // given
-        Ddudu dduduWithoutReminder = DduduFixture.createRandomDduduWithSchedule(
+        Todo dduduWithoutReminder = TodoFixture.createRandomTodoWithSchedule(
                 userId,
                 goalId,
                 scheduledAt.toLocalDate()
@@ -680,15 +680,15 @@ class DduduTest {
 
         // then
         assertThatIllegalStateException().isThrownBy(getDifference)
-            .withMessage(DduduErrorCode.UNABLE_TO_GET_REMINDER.getCodeName());
+            .withMessage(TodoErrorCode.UNABLE_TO_GET_REMINDER.getCodeName());
       }
 
       @Test
       void 투두_미리알림_시간이_시작시간보다_늦으면_시간차_계산을_실패한다() {
         // given
-        int futureReminderDays = DduduFixture.getRandomInt(1, 10);
+        int futureReminderDays = TodoFixture.getRandomInt(1, 10);
         LocalDateTime futureReminder = scheduledAt.plusDays(futureReminderDays);
-        ddudu = DduduFixture.createDduduWithReminder(
+        todo = TodoFixture.createTodoWithReminder(
             userId,
             goalId,
             scheduledAt.toLocalDate(),
@@ -697,11 +697,11 @@ class DduduTest {
         );
 
         // when
-        ThrowingCallable getDifference = ddudu::getRemindDifference;
+        ThrowingCallable getDifference = todo::getRemindDifference;
 
         // then
         assertThatIllegalStateException().isThrownBy(getDifference)
-            .withMessage(DduduErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName());
+            .withMessage(TodoErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName());
       }
 
     }
@@ -717,8 +717,8 @@ class DduduTest {
 
     @BeforeEach
     void setUp() {
-      userId = DduduFixture.getRandomId();
-      goalId = DduduFixture.getRandomId();
+      userId = TodoFixture.getRandomId();
+      goalId = TodoFixture.getRandomId();
     }
 
     @Test
@@ -727,7 +727,7 @@ class DduduTest {
       LocalDate scheduledOn = LocalDate.now().plusDays(2);
       LocalTime beginAt = LocalTime.of(10, 0);
       LocalDateTime remindAt = scheduledOn.atTime(beginAt).minusMinutes(30);
-      Ddudu ddudu = DduduFixture.createDduduWithReminder(
+      Todo todo = TodoFixture.createTodoWithReminder(
           userId,
           goalId,
           scheduledOn,
@@ -736,10 +736,10 @@ class DduduTest {
       );
 
       // when
-      Ddudu updated = ddudu.update(
+      Todo updated = todo.update(
           goalId,
-          DduduFixture.getRandomSentenceWithMax(50),
-          DduduFixture.createValidMemo(),
+          TodoFixture.getRandomSentenceWithMax(50),
+          TodoFixture.createValidMemo(),
           scheduledOn,
           beginAt,
           LocalTime.of(11, 0),
@@ -758,7 +758,7 @@ class DduduTest {
       LocalDate scheduledOn = LocalDate.now().plusDays(2);
       LocalTime beginAt = LocalTime.of(10, 0);
       LocalDateTime oldReminder = scheduledOn.atTime(beginAt).minusMinutes(30);
-      Ddudu ddudu = DduduFixture.createDduduWithReminder(
+      Todo todo = TodoFixture.createTodoWithReminder(
           userId,
           goalId,
           scheduledOn,
@@ -767,10 +767,10 @@ class DduduTest {
       );
 
       // when
-      Ddudu updated = ddudu.update(
+      Todo updated = todo.update(
           goalId,
-          DduduFixture.getRandomSentenceWithMax(50),
-          DduduFixture.createValidMemo(),
+          TodoFixture.getRandomSentenceWithMax(50),
+          TodoFixture.createValidMemo(),
           scheduledOn,
           beginAt,
           LocalTime.of(11, 0),
@@ -791,13 +791,13 @@ class DduduTest {
 
     Long userId;
     Long goalId;
-    Ddudu ddudu;
+    Todo todo;
 
     @BeforeEach
     void setUp() {
-      userId = DduduFixture.getRandomId();
-      goalId = DduduFixture.getRandomId();
-      ddudu = DduduFixture.createRandomDduduWithReference(goalId, userId, false, null);
+      userId = TodoFixture.getRandomId();
+      goalId = TodoFixture.getRandomId();
+      todo = TodoFixture.createRandomTodoWithReference(goalId, userId, false, null);
     }
 
     @Test
@@ -807,33 +807,33 @@ class DduduTest {
           .plusDays(1);
 
       // when
-      Ddudu replica = ddudu.reproduceOnDate(tomorrow);
+      Todo replica = todo.reproduceOnDate(tomorrow);
 
       // then
-      assertThat(replica).isNotEqualTo(ddudu);
+      assertThat(replica).isNotEqualTo(todo);
       assertThat(replica)
-          .hasFieldOrPropertyWithValue("goalId", ddudu.getGoalId())
-          .hasFieldOrPropertyWithValue("userId", ddudu.getUserId())
-          .hasFieldOrPropertyWithValue("name", ddudu.getName())
-          .hasFieldOrPropertyWithValue("status", DduduStatus.UNCOMPLETED)
+          .hasFieldOrPropertyWithValue("goalId", todo.getGoalId())
+          .hasFieldOrPropertyWithValue("userId", todo.getUserId())
+          .hasFieldOrPropertyWithValue("name", todo.getName())
+          .hasFieldOrPropertyWithValue("status", TodoStatus.UNCOMPLETED)
           .hasFieldOrPropertyWithValue("postponedAt", null)
           .hasFieldOrPropertyWithValue("scheduledOn", tomorrow)
-          .hasFieldOrPropertyWithValue("beginAt", ddudu.getBeginAt())
-          .hasFieldOrPropertyWithValue("endAt", ddudu.getEndAt());
+          .hasFieldOrPropertyWithValue("beginAt", todo.getBeginAt())
+          .hasFieldOrPropertyWithValue("endAt", todo.getEndAt());
     }
 
     @Test
     void 같은_날로_복제를_시도하면_실패한다() {
       // given
-      LocalDate newDate = ddudu.getScheduledOn();
+      LocalDate newDate = todo.getScheduledOn();
 
       // when
-      ThrowingCallable reproduce = () -> ddudu.reproduceOnDate(newDate);
+      ThrowingCallable reproduce = () -> todo.reproduceOnDate(newDate);
 
       // then
       Assertions.assertThatIllegalArgumentException()
           .isThrownBy(reproduce)
-          .withMessage(DduduErrorCode.UNABLE_TO_REPRODUCE_ON_SAME_DATE.getCodeName());
+          .withMessage(TodoErrorCode.UNABLE_TO_REPRODUCE_ON_SAME_DATE.getCodeName());
     }
 
   }

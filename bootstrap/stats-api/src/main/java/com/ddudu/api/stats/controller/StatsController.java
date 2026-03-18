@@ -2,7 +2,7 @@ package com.ddudu.api.stats.controller;
 
 import com.ddudu.api.stats.doc.StatsControllerDoc;
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
-import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.GoalDetailStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
@@ -40,7 +40,7 @@ public class StatsController implements StatsControllerDoc {
    * 월별 뚜두 완료율 조회 API (달성 뚜두 수 / 생성 뚜두 수)
    */
   @GetMapping("/completion/monthly")
-  public ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
+  public ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
       @Login
       Long loginId,
       @RequestParam(required = false)
@@ -52,7 +52,7 @@ public class StatsController implements StatsControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM")
       YearMonth yearMonth
   ) {
-    List<DduduCompletionResponse> response = calculateCompletionUseCase.calculateMonthly(
+    List<TodoCompletionResponse> response = calculateCompletionUseCase.calculateMonthly(
         loginId,
         userId,
         yearMonth
@@ -66,7 +66,7 @@ public class StatsController implements StatsControllerDoc {
    */
   @Deprecated
   @GetMapping("/completion/weekly")
-  public ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
+  public ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
       @Login
       Long loginId,
       @RequestParam(required = false)
@@ -75,7 +75,7 @@ public class StatsController implements StatsControllerDoc {
       @DateTimeFormat(pattern = "yyyy-MM-dd")
       LocalDate date
   ) {
-    List<DduduCompletionResponse> response = calculateCompletionUseCase.calculateWeekly(
+    List<TodoCompletionResponse> response = calculateCompletionUseCase.calculateWeekly(
         loginId,
         userId,
         date

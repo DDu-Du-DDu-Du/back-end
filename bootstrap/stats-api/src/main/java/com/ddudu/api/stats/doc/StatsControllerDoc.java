@@ -1,7 +1,7 @@
 package com.ddudu.api.stats.doc;
 
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
-import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.GoalDetailStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
@@ -81,7 +81,7 @@ public interface StatsControllerDoc {
       }
   )
   @Deprecated
-  ResponseEntity<List<DduduCompletionResponse>> getWeeklyCompletion(
+  ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
       Long loginId, Long userId, LocalDate date
   );
 
@@ -137,7 +137,7 @@ public interface StatsControllerDoc {
           )
       }
   )
-  ResponseEntity<List<DduduCompletionResponse>> getMonthlyCompletion(
+  ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
       Long loginId, Long userId, YearMonth yearMonth
   );
 

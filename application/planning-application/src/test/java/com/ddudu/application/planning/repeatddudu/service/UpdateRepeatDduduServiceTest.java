@@ -1,20 +1,20 @@
-package com.ddudu.application.planning.repeatddudu.service;
+package com.ddudu.application.planning.repeattodo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.repeatddudu.request.UpdateRepeatDduduRequest;
+import com.ddudu.application.common.dto.repeattodo.request.UpdateRepeatTodoRequest;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.DduduUpdatePort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.TodoUpdatePort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
-import com.ddudu.application.common.port.repeatddudu.out.SaveRepeatDduduPort;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.application.common.port.repeattodo.out.RepeatTodoLoaderPort;
+import com.ddudu.application.common.port.repeattodo.out.SaveRepeatTodoPort;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.aggregate.enums.RepeatType;
-import com.ddudu.domain.planning.repeatddudu.service.RepeatDduduDomainService;
+import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo;
+import com.ddudu.domain.planning.repeattodo.aggregate.enums.RepeatType;
+import com.ddudu.domain.planning.repeattodo.service.RepeatTodoDomainService;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
@@ -33,19 +33,19 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class UpdateRepeatDduduServiceTest {
+class UpdateRepeatTodoServiceTest {
 
   @Autowired
-  UpdateRepeatDduduService updateRepeatDduduService;
+  UpdateRepeatTodoService updateRepeatTodoService;
 
   @Autowired
-  RepeatDduduDomainService repeatDduduDomainService;
+  RepeatTodoDomainService repeatTodoDomainService;
 
   @Autowired
-  RepeatDduduLoaderPort repeatDduduLoaderPort;
+  RepeatTodoLoaderPort repeatTodoLoaderPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort dduduLoaderPort;
 
   @Autowired
   SaveGoalPort saveGoalPort;
@@ -54,24 +54,24 @@ class UpdateRepeatDduduServiceTest {
   SignUpPort signUpPort;
 
   @Autowired
-  SaveRepeatDduduPort saveRepeatDduduPort;
+  SaveRepeatTodoPort saveRepeatTodoPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
-  DduduUpdatePort dduduUpdatePort;
+  TodoUpdatePort dduduUpdatePort;
 
   User user;
   Goal goal;
   LocalDate nextMonday;
   LocalDate nextSunday;
-  RepeatDdudu repeatDdudu;
-  List<Ddudu> repeatedDdudus;
+  RepeatTodo repeatTodo;
+  List<Todo> repeatedTodos;
   String nameToUpdate;
   DayOfWeek originalRepeatDayOfWeek;
   DayOfWeek repeatDayOfWeekToUpdate;
-  UpdateRepeatDduduRequest request;
+  UpdateRepeatTodoRequest request;
 
   @BeforeEach
   void setUp() {
@@ -82,8 +82,8 @@ class UpdateRepeatDduduServiceTest {
         .plusDays(7);
     nextSunday = nextMonday.plusDays(6);
     originalRepeatDayOfWeek = DayOfWeek.MONDAY;
-    repeatDdudu = saveRepeatDduduPort.save(
-        RepeatDdudu.builder()
+    repeatTodo = saveRepeatTodoPort.save(
+        RepeatTodo.builder()
             .name("반복 투두")
             .repeatType(RepeatType.WEEKLY)
             .repeatPattern(RepeatType.WEEKLY.createRepeatPattern(
@@ -96,12 +96,12 @@ class UpdateRepeatDduduServiceTest {
             .endDate(nextSunday)
             .build()
     );
-    repeatedDdudus = saveDduduPort.saveAll(
-        repeatDduduDomainService.createRepeatedDdudus(user.getId(), repeatDdudu)
+    repeatedTodos = saveTodoPort.saveAll(
+        repeatTodoDomainService.createRepeatedTodos(user.getId(), repeatTodo)
     );
     repeatDayOfWeekToUpdate = DayOfWeek.TUESDAY;
     nameToUpdate = "수정된 반복 투두";
-    request = new UpdateRepeatDduduRequest(
+    request = new UpdateRepeatTodoRequest(
         nameToUpdate,
         RepeatType.WEEKLY.name(),
         List.of(repeatDayOfWeekToUpdate.name()),
@@ -117,21 +117,21 @@ class UpdateRepeatDduduServiceTest {
   @Test
   void 반복_투두를_업데이트_하면_연결된_투두들도_함께_업데이트된다() {
     // when
-    updateRepeatDduduService.update(user.getId(), repeatDdudu.getId(), request);
+    updateRepeatTodoService.update(user.getId(), repeatTodo.getId(), request);
 
     // then
-    RepeatDdudu updated = repeatDduduLoaderPort.getOptionalRepeatDdudu(repeatDdudu.getId())
+    RepeatTodo updated = repeatTodoLoaderPort.getOptionalRepeatTodo(repeatTodo.getId())
         .get();
     assertThat(updated.getName()).isEqualTo(nameToUpdate);
 
-    List<Ddudu> updatedDdudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudu);
+    List<Todo> updatedTodos = dduduLoaderPort.getRepeatedTodos(repeatTodo);
 
-    Assertions.assertThat(updatedDdudus)
+    Assertions.assertThat(updatedTodos)
         .hasSize(1);
-    Assertions.assertThat(updatedDdudus)
-        .extracting(Ddudu::getName)
+    Assertions.assertThat(updatedTodos)
+        .extracting(Todo::getName)
         .containsExactly(nameToUpdate);
-    assertThat(updatedDdudus.get(0)
+    assertThat(updatedTodos.get(0)
         .getScheduledOn()
         .getDayOfWeek())
         .isEqualTo(repeatDayOfWeekToUpdate);
@@ -140,18 +140,18 @@ class UpdateRepeatDduduServiceTest {
   @Test
   void 이미_완료된_반복_투두는_변경되지_않는다() {
     // given
-    dduduUpdatePort.update(repeatedDdudus.get(0)
+    dduduUpdatePort.update(repeatedTodos.get(0)
         .switchStatus());
 
     // when
-    updateRepeatDduduService.update(user.getId(), repeatDdudu.getId(), request);
+    updateRepeatTodoService.update(user.getId(), repeatTodo.getId(), request);
 
     // then
-    List<Ddudu> updatedDdudus = dduduLoaderPort.getRepeatedDdudus(repeatDdudu);
+    List<Todo> updatedTodos = dduduLoaderPort.getRepeatedTodos(repeatTodo);
 
-    Assertions.assertThat(updatedDdudus)
+    Assertions.assertThat(updatedTodos)
         .hasSize(2);
-    Assertions.assertThat(updatedDdudus)
+    Assertions.assertThat(updatedTodos)
         .extracting(ddudu -> ddudu.getScheduledOn()
             .getDayOfWeek())
         .containsExactlyInAnyOrder(originalRepeatDayOfWeek, repeatDayOfWeekToUpdate);

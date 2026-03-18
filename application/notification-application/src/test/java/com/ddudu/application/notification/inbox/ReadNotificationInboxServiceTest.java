@@ -53,7 +53,7 @@ class ReadNotificationInboxServiceTest {
 
     Long dduduId = BaseFixture.getRandomId();
     NotificationEvent event = notificationEventCommandPort.save(
-        NotificationEventFixture.createFiredDduduEventNowWithUserAndContext(user.getId(), dduduId)
+        NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(user.getId(), dduduId)
     );
 
     notificationInbox = notificationInboxCommandPort.save(

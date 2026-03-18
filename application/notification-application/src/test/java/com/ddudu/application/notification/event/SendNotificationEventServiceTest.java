@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenCommandPort;
@@ -13,10 +13,10 @@ import com.ddudu.application.common.port.notification.out.NotificationEventLoade
 import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.NotificationDeviceTokenFixture;
 import com.ddudu.fixture.NotificationEventFixture;
@@ -47,7 +47,7 @@ class SendNotificationEventServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
   NotificationEventCommandPort notificationEventCommandPort;
@@ -60,7 +60,7 @@ class SendNotificationEventServiceTest {
 
   User user;
   Goal goal;
-  Ddudu ddudu;
+  Todo ddudu;
   NotificationEvent notificationEvent;
 
   @BeforeEach
@@ -71,14 +71,14 @@ class SendNotificationEventServiceTest {
         .plusSeconds(1);
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveDduduPort.save(DduduFixture.createDduduWithReminder(
+    ddudu = saveTodoPort.save(TodoFixture.createTodoWithReminder(
         user.getId(),
         goal.getId(),
         scheduledAt.toLocalDate(),
         scheduledAt.toLocalTime(),
         remindAt
     ));
-    notificationEvent = NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+    notificationEvent = NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
         user.getId(),
         ddudu.getId()
     );
@@ -121,15 +121,15 @@ class SendNotificationEventServiceTest {
   void 알림_이벤트에_연동된_투두가_없는_경우_알림_발송을_실패한다() {
     // given
     long invalidId = NotificationEventFixture.getRandomId();
-    NotificationEvent eventWithInvalidDdudu = notificationEventCommandPort.save(
-        NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+    NotificationEvent eventWithInvalidTodo = notificationEventCommandPort.save(
+        NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
             user.getId(),
             invalidId
         )
     );
 
     // when
-    ThrowingCallable send = () -> sendNotificationEventUseCase.send(eventWithInvalidDdudu.getId());
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(eventWithInvalidTodo.getId());
 
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
@@ -146,7 +146,7 @@ class SendNotificationEventServiceTest {
         .plusSeconds(2);
     LocalDateTime remindAt = LocalDateTime.now()
         .plusSeconds(1);
-    Ddudu anotherDdudu = saveDduduPort.save(DduduFixture.createDduduWithReminder(
+    Todo anotherTodo = saveTodoPort.save(TodoFixture.createTodoWithReminder(
         anotherUser.getId(),
         anotherGoal.getId(),
         scheduledAt.toLocalDate(),
@@ -154,9 +154,9 @@ class SendNotificationEventServiceTest {
         remindAt
     ));
     NotificationEvent eventWithoutToken = notificationEventCommandPort.save(
-        NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+        NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
             anotherUser.getId(),
-            anotherDdudu.getId()
+            anotherTodo.getId()
         )
     );
 

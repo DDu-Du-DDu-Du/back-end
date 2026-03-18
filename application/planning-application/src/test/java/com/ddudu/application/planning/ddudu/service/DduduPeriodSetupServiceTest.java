@@ -4,14 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.ddudu.request.PeriodSetupRequest;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.exception.TodoErrorCode;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalTime;
@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class DduduPeriodSetupServiceTest {
+class TodoPeriodSetupServiceTest {
 
   @Autowired
   PeriodSetupService dduduPeriodSetupService;
@@ -41,19 +41,19 @@ class DduduPeriodSetupServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort dduduLoaderPort;
 
   User user;
-  Ddudu ddudu;
+  Todo ddudu;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
+    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
   }
 
   @Test
@@ -66,7 +66,7 @@ class DduduPeriodSetupServiceTest {
     dduduPeriodSetupService.setUpPeriod(user.getId(), ddudu.getId(), request);
 
     // then
-    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
+    Todo actual = dduduLoaderPort.getTodoOrElseThrow(ddudu.getId(), "not found");
 
     assertThat(actual.getBeginAt()).isEqualTo(now);
     assertThat(actual.getEndAt()).isEqualTo(LocalTime.MAX);
@@ -77,7 +77,7 @@ class DduduPeriodSetupServiceTest {
     // given
     LocalTime now = LocalTime.now();
     PeriodSetupRequest request = new PeriodSetupRequest(now, LocalTime.MAX);
-    long invalidId = DduduFixture.getRandomId();
+    long invalidId = TodoFixture.getRandomId();
 
     // when
     ThrowingCallable setUpPeriod = () -> dduduPeriodSetupService.setUpPeriod(
@@ -89,7 +89,7 @@ class DduduPeriodSetupServiceTest {
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(setUpPeriod)
-        .withMessage(DduduErrorCode.ID_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
 }

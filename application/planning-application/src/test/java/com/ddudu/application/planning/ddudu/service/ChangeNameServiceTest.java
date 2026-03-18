@@ -3,15 +3,15 @@ package com.ddudu.application.planning.ddudu.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.ddudu.request.ChangeNameRequest;
-import com.ddudu.application.common.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.common.dto.ddudu.response.BasicTodoResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.exception.TodoErrorCode;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.util.MissingResourceException;
@@ -40,25 +40,25 @@ class ChangeNameServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   User user;
   Goal goal;
-  Ddudu ddudu;
+  Todo ddudu;
   ChangeNameRequest request;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
-    request = new ChangeNameRequest(DduduFixture.getRandomSentenceWithMax(50));
+    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    request = new ChangeNameRequest(TodoFixture.getRandomSentenceWithMax(50));
   }
 
   @Test
   void 투두의_이름을_변경한다() {
     // when
-    BasicDduduResponse actual = changeNameService.change(user.getId(), ddudu.getId(), request);
+    BasicTodoResponse actual = changeNameService.change(user.getId(), ddudu.getId(), request);
 
     // then
     assertThat(actual.name()).isEqualTo(request.name());
@@ -67,7 +67,7 @@ class ChangeNameServiceTest {
   @Test
   void 변경할_이름이_50자가_넘으면_변경에_실패한다() {
     // given
-    request = new ChangeNameRequest(DduduFixture.getRandomSentence(51, 100));
+    request = new ChangeNameRequest(TodoFixture.getRandomSentence(51, 100));
 
     // when
     ThrowingCallable changeName = () -> changeNameService.change(
@@ -79,13 +79,13 @@ class ChangeNameServiceTest {
     // then
     Assertions.assertThatIllegalArgumentException()
         .isThrownBy(changeName)
-        .withMessage(DduduErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+        .withMessage(TodoErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
   }
 
   @Test
   void 존재하지_않는_투두인_경우_변경에_실패한다() {
     // given
-    Long invalidId = DduduFixture.getRandomId();
+    Long invalidId = TodoFixture.getRandomId();
 
     // when
     ThrowingCallable changeName = () -> changeNameService.change(user.getId(), invalidId, request);
@@ -93,7 +93,7 @@ class ChangeNameServiceTest {
     // then
     Assertions.assertThatThrownBy(changeName)
         .isInstanceOf(MissingResourceException.class)
-        .hasMessage(DduduErrorCode.ID_NOT_EXISTING.getCodeName());
+        .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -111,7 +111,7 @@ class ChangeNameServiceTest {
     // then
     Assertions.assertThatThrownBy(changeName)
         .isInstanceOf(SecurityException.class)
-        .hasMessage(DduduErrorCode.INVALID_AUTHORITY.getCodeName());
+        .hasMessage(TodoErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
 }

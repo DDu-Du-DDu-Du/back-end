@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import com.ddudu.common.exception.RepeatDduduErrorCode;
+import com.ddudu.common.exception.RepeatTodoErrorCode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
@@ -27,7 +27,7 @@ public final class DayOfWeekUtil {
   }
 
   public static DayOfWeek toDaysOfWeek(String dayOfWeek) {
-    checkArgument(nonNull(dayOfWeek), RepeatDduduErrorCode.INVALID_DAY_OF_WEEK.getCodeName());
+    checkArgument(nonNull(dayOfWeek), RepeatTodoErrorCode.INVALID_DAY_OF_WEEK.getCodeName());
     return dayOfWeekMap.get(dayOfWeek);
   }
 

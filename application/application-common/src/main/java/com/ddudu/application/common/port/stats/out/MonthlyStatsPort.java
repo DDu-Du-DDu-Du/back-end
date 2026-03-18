@@ -1,7 +1,7 @@
 package com.ddudu.application.common.port.stats.out;
 
 import com.ddudu.aggregate.MonthlyStats;
-import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
+import com.ddudu.application.common.dto.stats.RepeatTodoStatsDto;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -24,7 +24,7 @@ public interface MonthlyStatsPort {
       LocalDate to
   );
 
-  List<RepeatDduduStatsDto> countRepeatDdudu(
+  List<RepeatTodoStatsDto> countRepeatTodo(
       Long userId,
       Long goalId,
       LocalDate from,

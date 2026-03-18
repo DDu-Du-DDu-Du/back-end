@@ -1,6 +1,6 @@
 package com.ddudu.aggregate;
 
-import com.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.aggregate.enums.TodoStatus;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ public class BaseStats {
   private final Long goalId;
   private final String goalName;
   private final String goalColor;
-  private final DduduStatus status;
+  private final TodoStatus status;
   private final boolean isPostponed;
   private final LocalDate scheduledOn;
   private final LocalTime beginAt;

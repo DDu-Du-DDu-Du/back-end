@@ -7,6 +7,6 @@ import java.util.Map;
 
 public interface NotificationEventQueryRepository {
 
-  Map<Long, List<ReminderScheduleTargetDto>> findAllDduduRemindersScheduledOn(LocalDate date);
+  Map<Long, List<ReminderScheduleTargetDto>> findAllTodoRemindersScheduledOn(LocalDate date);
 
 }

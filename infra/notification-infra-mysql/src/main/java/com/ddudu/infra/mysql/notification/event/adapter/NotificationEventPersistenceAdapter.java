@@ -80,7 +80,7 @@ public class NotificationEventPersistenceAdapter implements NotificationEventLoa
 
   @Override
   public Map<Long, List<ReminderScheduleTargetDto>> getAllRemindersToFireOn(LocalDate date) {
-    return notificationEventRepository.findAllDduduRemindersScheduledOn(date);
+    return notificationEventRepository.findAllTodoRemindersScheduledOn(date);
   }
 
 }

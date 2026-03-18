@@ -26,7 +26,7 @@ public final class NotificationInboxFixture extends BaseFixture {
     );
   }
 
-  public static NotificationInbox createNotReadDduduReminderInboxWithContent(
+  public static NotificationInbox createNotReadTodoReminderInboxWithContent(
       Long eventId,
       Long userId,
       Long dduduId,

@@ -4,12 +4,12 @@ import com.ddudu.application.common.dto.ddudu.request.SetReminderRequest;
 import com.ddudu.application.common.dto.interim.InterimSetReminderEvent;
 import com.ddudu.application.common.dto.notification.event.NotificationEventSaveEvent;
 import com.ddudu.application.common.port.ddudu.in.SetReminderUseCase;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.DduduUpdatePort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.TodoUpdatePort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.exception.TodoErrorCode;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,8 +23,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class SetReminderService implements SetReminderUseCase {
 
   private final UserLoaderPort userLoaderPort;
-  private final DduduLoaderPort dduduLoaderPort;
-  private final DduduUpdatePort dduduUpdatePort;
+  private final TodoLoaderPort dduduLoaderPort;
+  private final TodoUpdatePort dduduUpdatePort;
   private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
@@ -32,17 +32,17 @@ public class SetReminderService implements SetReminderUseCase {
   public void setReminder(Long loginId, Long id, SetReminderRequest request) {
     User user = userLoaderPort.getUserOrElseThrow(
         loginId,
-        DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
+        TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
     );
-    Ddudu ddudu = dduduLoaderPort.getDduduOrElseThrow(
+    Todo ddudu = dduduLoaderPort.getTodoOrElseThrow(
         id,
-        DduduErrorCode.ID_NOT_EXISTING.getCodeName()
+        TodoErrorCode.ID_NOT_EXISTING.getCodeName()
     );
 
-    ddudu.validateDduduCreator(user.getId());
+    ddudu.validateTodoCreator(user.getId());
 
-    Ddudu dduduWithReminder = ddudu.setReminder(request.days(), request.hours(), request.minutes());
-    Ddudu updated = dduduUpdatePort.update(dduduWithReminder);
+    Todo dduduWithReminder = ddudu.setReminder(request.days(), request.hours(), request.minutes());
+    Todo updated = dduduUpdatePort.update(dduduWithReminder);
     InterimSetReminderEvent interimEvent = InterimSetReminderEvent.from(
         user.getId(),
         updated

@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ddudu.application.common.dto.stats.GoalMonthlyStatsSummary;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.StatsErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import com.ddudu.fixtures.MonthlyStatsFixture;
@@ -49,7 +49,7 @@ class CollectMonthlyStatsSummaryServiceTest {
   private SaveGoalPort saveGoalPort;
 
   @Autowired
-  private SaveDduduPort saveDduduPort;
+  private SaveTodoPort saveTodoPort;
 
   private User user;
   private List<Goal> goals;
@@ -66,11 +66,11 @@ class CollectMonthlyStatsSummaryServiceTest {
       creationCounts = new ArrayList<>();
 
       for (int i = 0; i < goals.size(); i++) {
-        creationCounts.add(DduduFixture.getRandomInt(1, 100));
+        creationCounts.add(TodoFixture.getRandomInt(1, 100));
       }
 
       Iterator<Integer> countIterator = creationCounts.iterator();
-      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(
+      goals.forEach(goal -> saveTodoPort.saveAll(TodoFixture.createMultipleTodosWithGoal(
           goal,
           countIterator.next()
       )));
@@ -143,10 +143,10 @@ class CollectMonthlyStatsSummaryServiceTest {
       user = signUpPort.save(UserFixture.createRandomUserWithId());
       goals = saveGoalPort.saveAll(GoalFixture.createRandomGoalsWithUser(user.getId(), 5));
 
-      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createDifferentDdudusWithGoal(
+      goals.forEach(goal -> saveTodoPort.saveAll(TodoFixture.createDifferentTodosWithGoal(
           goal,
-          DduduFixture.getRandomInt(1, 10),
-          DduduFixture.getRandomInt(1, 10)
+          TodoFixture.getRandomInt(1, 10),
+          TodoFixture.getRandomInt(1, 10)
       )));
     }
 
@@ -218,7 +218,7 @@ class CollectMonthlyStatsSummaryServiceTest {
       }
 
       Iterator<Integer> iterator = expectedSustenanceCounts.iterator();
-      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createConsecutiveCompletedDdudus(
+      goals.forEach(goal -> saveTodoPort.saveAll(TodoFixture.createConsecutiveCompletedTodos(
           goal,
           iterator.next()
       )));
@@ -292,14 +292,14 @@ class CollectMonthlyStatsSummaryServiceTest {
       expectedPostponedCounts = new ArrayList<>();
 
       for (int i = 0; i < goals.size(); i++) {
-        expectedPostponedCounts.add(DduduFixture.getRandomInt(0, 100));
+        expectedPostponedCounts.add(TodoFixture.getRandomInt(0, 100));
       }
 
       Iterator<Integer> iterator = expectedPostponedCounts.iterator();
-      goals.forEach(goal -> saveDduduPort.saveAll(DduduFixture.createDdudusWithPostponedFlag(
+      goals.forEach(goal -> saveTodoPort.saveAll(TodoFixture.createTodosWithPostponedFlag(
           goal,
           iterator.next(),
-          DduduFixture.getRandomInt(1, 100)
+          TodoFixture.getRandomInt(1, 100)
       )));
 
       expectedPostponedCounts.sort(Comparator.reverseOrder());
@@ -329,13 +329,13 @@ class CollectMonthlyStatsSummaryServiceTest {
     @Test
     void 미루기_투두가_없는_달이면_통계는_비어있다() {
       // given
-      YearMonth noDduduMonth = YearMonth.now().minusMonths(2);
+      YearMonth noTodoMonth = YearMonth.now().minusMonths(2);
 
       // when
       MonthlyStatsSummaryResponse response = collectMonthlyStatsSummaryService.collectSummary(
           user.getId(),
           null,
-          noDduduMonth
+          noTodoMonth
       );
 
       // then
@@ -356,10 +356,10 @@ class CollectMonthlyStatsSummaryServiceTest {
       expectedReattainmentCounts = new ArrayList<>();
 
       for (int i = 0; i < goals.size(); i++) {
-        int totalPostponedCount = DduduFixture.getRandomInt(1, 100);
+        int totalPostponedCount = TodoFixture.getRandomInt(1, 100);
         int reattainedCount = MonthlyStatsFixture.getRandomInt(1, totalPostponedCount);
 
-        saveDduduPort.saveAll(DduduFixture.createReattainedDdudus(
+        saveTodoPort.saveAll(TodoFixture.createReattainedTodos(
             goals.get(i),
             reattainedCount,
             totalPostponedCount
@@ -417,11 +417,11 @@ class CollectMonthlyStatsSummaryServiceTest {
     User targetUser = signUpPort.save(UserFixture.createRandomUserWithId());
     Goal targetGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(targetUser.getId()));
 
-    saveDduduPort.saveAll(List.of(
-        DduduFixture.createRandomDduduWithReference(targetGoal.getId(), targetUser.getId(), true,
-            DduduStatus.COMPLETE),
-        DduduFixture.createRandomDduduWithReference(targetGoal.getId(), targetUser.getId(), false,
-            DduduStatus.UNCOMPLETED)
+    saveTodoPort.saveAll(List.of(
+        TodoFixture.createRandomTodoWithReference(targetGoal.getId(), targetUser.getId(), true,
+            TodoStatus.COMPLETE),
+        TodoFixture.createRandomTodoWithReference(targetGoal.getId(), targetUser.getId(), false,
+            TodoStatus.UNCOMPLETED)
     ));
 
     // when

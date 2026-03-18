@@ -5,13 +5,13 @@ import com.ddudu.application.common.dto.stats.AchievedDetailOverviewDto;
 import com.ddudu.application.common.dto.stats.DayOfWeekStatsDto;
 import com.ddudu.application.common.dto.stats.GenericCalendarStats;
 import com.ddudu.application.common.dto.stats.PostponedDetailOverviewDto;
-import com.ddudu.application.common.dto.stats.RepeatDduduStatsDto;
+import com.ddudu.application.common.dto.stats.RepeatTodoStatsDto;
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
-import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsDetailUseCase;
-import com.ddudu.application.common.port.stats.out.DduduStatsPort;
+import com.ddudu.application.common.port.stats.out.TodoStatsPort;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
@@ -40,7 +40,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
   private final UserLoaderPort userLoaderPort;
   private final GoalLoaderPort goalLoaderPort;
   private final MonthlyStatsPort monthlyStatsPort;
-  private final DduduStatsPort dduduStatsPort;
+  private final TodoStatsPort dduduStatsPort;
 
   @Override
   public AchievedStatsDetailResponse collectAchievedDetail(
@@ -66,13 +66,13 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
     MonthlyStats reduced = collectStatsAtOnce(user.getId(), goal, fromMonth, to);
     AchievedDetailOverviewDto overview = createAchievedOverview(reduced);
     DayOfWeekStatsDto dayOfWeekStats = createDayOfWeekStats(reduced, IS_ACHIEVED);
-    List<RepeatDduduStatsDto> repeatDduduCounts = monthlyStatsPort.countRepeatDdudu(
+    List<RepeatTodoStatsDto> repeatTodoCounts = monthlyStatsPort.countRepeatTodo(
         user.getId(),
         goal.getId(),
         from,
         to
     );
-    GenericCalendarStats<DduduCompletionResponse> completions = getCalendarCompletions(
+    GenericCalendarStats<TodoCompletionResponse> completions = getCalendarCompletions(
         fromMonth,
         toMonth,
         from,
@@ -85,7 +85,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
     return AchievedStatsDetailResponse.builder()
         .overview(overview)
         .dayOfWeekStats(dayOfWeekStats)
-        .repeatDduduStats(repeatDduduCounts)
+        .repeatTodoStats(repeatTodoCounts)
         .goalId(goal.getId())
         .goalColor(goal.getColor())
         .calendarStats(completions)
@@ -116,7 +116,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
     MonthlyStats reduced = collectPostponedStatsAtOnce(user.getId(), goal, fromMonth, to);
     PostponedDetailOverviewDto overview = createPostponedOverview(reduced);
     DayOfWeekStatsDto dayOfWeekStats = createDayOfWeekStats(reduced, IS_POSTPONED);
-    GenericCalendarStats<DduduCompletionResponse> calendarStats = getCalendarCompletions(
+    GenericCalendarStats<TodoCompletionResponse> calendarStats = getCalendarCompletions(
         fromMonth,
         toMonth,
         from,
@@ -212,7 +212,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
         .toList();
   }
 
-  private GenericCalendarStats<DduduCompletionResponse> getCalendarCompletions(
+  private GenericCalendarStats<TodoCompletionResponse> getCalendarCompletions(
       YearMonth fromMonth,
       YearMonth toMonth,
       LocalDate from,
@@ -225,7 +225,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
       return GenericCalendarStats.from(false, Collections.emptyList());
     }
 
-    List<DduduCompletionResponse> completions = dduduStatsPort.calculateDdudusCompletion(
+    List<TodoCompletionResponse> completions = dduduStatsPort.calculateTodosCompletion(
         from,
         to,
         user.getId(),

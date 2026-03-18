@@ -4,15 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.GoalErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.util.Optional;
@@ -44,10 +44,10 @@ class DeleteGoalServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort dduduLoaderPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   Long userId;
   Goal goal;
@@ -74,14 +74,14 @@ class DeleteGoalServiceTest {
   @Test
   void 목표_삭제_시_해당_목표의_투두도_삭제된다() {
     //given
-    Ddudu ddudu = DduduFixture.createRandomDduduWithGoal(goal);
-    ddudu = saveDduduPort.save(ddudu);
+    Todo ddudu = TodoFixture.createRandomTodoWithGoal(goal);
+    ddudu = saveTodoPort.save(ddudu);
 
     //when
     deleteGoalService.delete(userId, goal.getId());
 
     //then
-    assertThat(dduduLoaderPort.getOptionalDdudu(ddudu.getId())).isEmpty();
+    assertThat(dduduLoaderPort.getOptionalTodo(ddudu.getId())).isEmpty();
   }
 
   @Test

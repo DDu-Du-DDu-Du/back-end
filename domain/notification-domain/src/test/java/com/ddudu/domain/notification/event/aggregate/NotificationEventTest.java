@@ -252,7 +252,7 @@ class NotificationEventTest {
 
     @BeforeEach
     void setUp() {
-      notificationEvent = NotificationEventFixture.createValidDduduEventNowWithUserAndContext(
+      notificationEvent = NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
           userId,
           contextId
       );
@@ -267,7 +267,7 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "일");
@@ -282,7 +282,7 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "시간");
@@ -299,7 +299,7 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "일 " + m + "시간");
@@ -316,7 +316,7 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "일 " + m + "분");
@@ -333,7 +333,7 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "시간 " + m + "분");
@@ -352,7 +352,7 @@ class NotificationEventTest {
       Duration difference = Duration.between(remindAt, notificationEvent.getWillFireAt());
 
       // when
-      String actual = notificationEvent.getDduduBody(difference);
+      String actual = notificationEvent.getTodoBody(difference);
 
       // then
       assertThat(actual).contains(n + "일 " + m + "시간 " + l + "분");

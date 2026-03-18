@@ -1,22 +1,22 @@
-package com.ddudu.application.planning.repeatddudu.service;
+package com.ddudu.application.planning.repeattodo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
-import com.ddudu.application.common.port.repeatddudu.out.SaveRepeatDduduPort;
+import com.ddudu.application.common.port.repeattodo.out.RepeatTodoLoaderPort;
+import com.ddudu.application.common.port.repeattodo.out.SaveRepeatTodoPort;
 import com.ddudu.common.exception.GoalErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
+import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.RepeatDduduFixture;
+import com.ddudu.fixture.RepeatTodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -32,48 +32,48 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class DeleteRepeatDduduServiceTest {
+class DeleteRepeatTodoServiceTest {
 
   @Autowired
-  DeleteRepeatDduduService deleteRepeatDduduService;
+  DeleteRepeatTodoService deleteRepeatTodoService;
 
   @Autowired
-  RepeatDduduLoaderPort repeatDduduLoaderPort;
+  RepeatTodoLoaderPort repeatTodoLoaderPort;
 
   @Autowired
   SignUpPort signUpPort;
 
   @Autowired
-  SaveRepeatDduduPort saveRepeatDduduPort;
+  SaveRepeatTodoPort saveRepeatTodoPort;
 
   @Autowired
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort dduduLoaderPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   Long userId;
-  RepeatDdudu repeatDdudu;
+  RepeatTodo repeatTodo;
 
   @BeforeEach
   void setUp() {
     User user = signUpPort.save(UserFixture.createRandomUserWithId());
     userId = user.getId();
     Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    repeatDdudu = saveRepeatDduduPort.save(RepeatDduduFixture.createDailyRepeatDduduWithGoal(goal));
+    repeatTodo = saveRepeatTodoPort.save(RepeatTodoFixture.createDailyRepeatTodoWithGoal(goal));
   }
 
   @Test
   void 반복투두를_삭제_할_수_있다() {
     // when
-    deleteRepeatDduduService.delete(userId, repeatDdudu.getId());
+    deleteRepeatTodoService.delete(userId, repeatTodo.getId());
 
     // then
-    Optional<RepeatDdudu> foundAfterDeleted = repeatDduduLoaderPort.getOptionalRepeatDdudu(
-        repeatDdudu.getId()
+    Optional<RepeatTodo> foundAfterDeleted = repeatTodoLoaderPort.getOptionalRepeatTodo(
+        repeatTodo.getId()
     );
     Assertions.assertThat(foundAfterDeleted)
         .isEmpty();
@@ -82,23 +82,23 @@ class DeleteRepeatDduduServiceTest {
   @Test
   void 반복투두_삭제_시_해당_반복투두의_투두도_삭제된다() {
     //given
-    Ddudu ddudu = DduduFixture.createRandomDduduWithRepeatDdudu(userId, repeatDdudu);
-    ddudu = saveDduduPort.save(ddudu);
+    Todo ddudu = TodoFixture.createRandomTodoWithRepeatTodo(userId, repeatTodo);
+    ddudu = saveTodoPort.save(ddudu);
 
     //when
-    deleteRepeatDduduService.delete(userId, repeatDdudu.getId());
+    deleteRepeatTodoService.delete(userId, repeatTodo.getId());
 
     //then
-    assertThat(dduduLoaderPort.getOptionalDdudu(ddudu.getId())).isEmpty();
+    assertThat(dduduLoaderPort.getOptionalTodo(ddudu.getId())).isEmpty();
   }
 
   @Test
   void 반복투두가_존재하지_않는_경우_예외가_발생하지_않는다() {
     // given
-    Long invalidId = RepeatDduduFixture.getRandomId();
+    Long invalidId = RepeatTodoFixture.getRandomId();
 
     // when / then
-    assertDoesNotThrow(() -> deleteRepeatDduduService.delete(userId, invalidId));
+    assertDoesNotThrow(() -> deleteRepeatTodoService.delete(userId, invalidId));
   }
 
   @Test
@@ -107,9 +107,9 @@ class DeleteRepeatDduduServiceTest {
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
     // when
-    ThrowingCallable delete = () -> deleteRepeatDduduService.delete(
+    ThrowingCallable delete = () -> deleteRepeatTodoService.delete(
         anotherUser.getId(),
-        repeatDdudu.getId()
+        repeatTodo.getId()
     );
 
     // then

@@ -4,15 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.ddudu.request.MoveDateRequest;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.common.exception.TodoErrorCode;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
@@ -42,21 +42,21 @@ class MoveDateServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort dduduLoaderPort;
 
   User user;
   Goal goal;
-  Ddudu ddudu;
+  Todo ddudu;
   LocalDate tomorrow;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
+    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
     tomorrow = LocalDate.now()
         .plusDays(1);
   }
@@ -71,7 +71,7 @@ class MoveDateServiceTest {
     moveDateService.moveDate(user.getId(), ddudu.getId(), request);
 
     // then
-    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(ddudu.getId(), "not found");
+    Todo actual = dduduLoaderPort.getTodoOrElseThrow(ddudu.getId(), "not found");
 
     assertThat(actual.getScheduledOn()).isEqualTo(tomorrow);
     assertThat(actual.isPostponed()).isTrue();
@@ -83,7 +83,7 @@ class MoveDateServiceTest {
     // given
     LocalDate yesterday = LocalDate.now()
         .minusDays(1);
-    Ddudu pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithSchedule(
+    Todo pastTodo = saveTodoPort.save(TodoFixture.createRandomTodoWithSchedule(
         user.getId(),
         goal.getId(),
         yesterday
@@ -91,10 +91,10 @@ class MoveDateServiceTest {
     MoveDateRequest request = new MoveDateRequest(LocalDate.now(), false);
 
     // when
-    moveDateService.moveDate(user.getId(), pastDdudu.getId(), request);
+    moveDateService.moveDate(user.getId(), pastTodo.getId(), request);
 
     // then
-    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(pastDdudu.getId(), "not found");
+    Todo actual = dduduLoaderPort.getTodoOrElseThrow(pastTodo.getId(), "not found");
 
     assertThat(actual.getScheduledOn()).isEqualTo(LocalDate.now());
   }
@@ -104,25 +104,25 @@ class MoveDateServiceTest {
     // given
     LocalDate twoDaysAgo = LocalDate.now()
         .minusDays(2);
-    Ddudu pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithSchedule(
+    Todo pastTodo = saveTodoPort.save(TodoFixture.createRandomTodoWithSchedule(
         user.getId(),
         goal.getId(),
         twoDaysAgo
     ));
     LocalDate yesterday = LocalDate.now()
         .minusDays(1);
-    pastDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithStatusAndSchedule(
+    pastTodo = saveTodoPort.save(TodoFixture.createRandomTodoWithStatusAndSchedule(
         goal,
-        DduduStatus.COMPLETE,
+        TodoStatus.COMPLETE,
         twoDaysAgo
     ));
     MoveDateRequest request = new MoveDateRequest(yesterday, false);
 
     // when
-    moveDateService.moveDate(user.getId(), pastDdudu.getId(), request);
+    moveDateService.moveDate(user.getId(), pastTodo.getId(), request);
 
     // then
-    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(pastDdudu.getId(), "not found");
+    Todo actual = dduduLoaderPort.getTodoOrElseThrow(pastTodo.getId(), "not found");
 
     assertThat(actual.getScheduledOn()).isEqualTo(yesterday);
   }
@@ -130,26 +130,26 @@ class MoveDateServiceTest {
   @Test
   void 완료된_투두에_미루기_요청을_하면_실패한다() {
     // given
-    Ddudu completedDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithStatus(
+    Todo completedTodo = saveTodoPort.save(TodoFixture.createRandomTodoWithStatus(
         goal,
-        DduduStatus.COMPLETE
+        TodoStatus.COMPLETE
     ));
     MoveDateRequest request = new MoveDateRequest(tomorrow, true);
 
     // when
-    ThrowingCallable moveDate = () -> moveDateService.moveDate(user.getId(), completedDdudu.getId(),
+    ThrowingCallable moveDate = () -> moveDateService.moveDate(user.getId(), completedTodo.getId(),
         request);
 
     // then
     Assertions.assertThatIllegalArgumentException()
         .isThrownBy(moveDate)
-        .withMessage(DduduErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
+        .withMessage(TodoErrorCode.UNABLE_TO_POSTPONE_COMPLETED_DDUDU.getCodeName());
   }
 
   @Test
   void 투두가_존재하지_않으면_날짜_변경을_실패한다() {
     // given
-    long invalidId = DduduFixture.getRandomId();
+    long invalidId = TodoFixture.getRandomId();
     MoveDateRequest request = new MoveDateRequest(tomorrow, true);
 
     // when
@@ -158,7 +158,7 @@ class MoveDateServiceTest {
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(moveDate)
-        .withMessage(DduduErrorCode.ID_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.ID_NOT_EXISTING.getCodeName());
   }
 
 }

@@ -4,15 +4,15 @@ import static com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType.PRIVATE
 import static com.ddudu.domain.planning.goal.aggregate.enums.PrivacyType.PUBLIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.stats.response.DduduCompletionResponse;
+import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.StatsErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
@@ -42,15 +42,15 @@ class CalculateCompletionServiceTest {
   @Autowired
   SaveGoalPort saveGoalPort;
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   LocalDate today;
   YearMonth thisMonth;
   User user;
   Goal privateGoal;
   Goal publicGoal;
-  Ddudu privateDdudu;
-  Ddudu publicDdudu;
+  Todo privateTodo;
+  Todo publicTodo;
 
   @BeforeEach
   void setUp() {
@@ -65,15 +65,15 @@ class CalculateCompletionServiceTest {
         user.getId(),
         PUBLIC
     ));
-    privateDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(privateGoal));
-    publicDdudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(publicGoal));
+    privateTodo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(privateGoal));
+    publicTodo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(publicGoal));
   }
 
   @Test
   void 자신의_주간_할_일_달성률_조회를_성공한다() {
     // given
     // when
-    List<DduduCompletionResponse> responses = calculateCompletionService.calculateWeekly(
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateWeekly(
         user.getId(),
         user.getId(),
         today
@@ -92,7 +92,7 @@ class CalculateCompletionServiceTest {
     // given
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
     // when
-    List<DduduCompletionResponse> responses = calculateCompletionService.calculateWeekly(
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateWeekly(
         anotherUser.getId(),
         user.getId(),
         today
@@ -111,7 +111,7 @@ class CalculateCompletionServiceTest {
     // given
 
     // when
-    List<DduduCompletionResponse> responses = calculateCompletionService.calculateMonthly(
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateMonthly(
         user.getId(),
         user.getId(),
         thisMonth
@@ -131,7 +131,7 @@ class CalculateCompletionServiceTest {
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
     // when
-    List<DduduCompletionResponse> responses = calculateCompletionService.calculateMonthly(
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateMonthly(
         anotherUser.getId(),
         user.getId(),
         thisMonth
@@ -150,7 +150,7 @@ class CalculateCompletionServiceTest {
     // given
 
     // when
-    List<DduduCompletionResponse> responses = calculateCompletionService.calculateMonthly(
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateMonthly(
         user.getId(),
         null,
         thisMonth

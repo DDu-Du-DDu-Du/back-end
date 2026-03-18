@@ -11,7 +11,7 @@ public record PostponedStatsDetailResponse(
     String goalColor,
     PostponedDetailOverviewDto overview,
     DayOfWeekStatsDto dayOfWeekStats,
-    GenericCalendarStats<DduduCompletionResponse> calendarStats
+    GenericCalendarStats<TodoCompletionResponse> calendarStats
 ) {
 
 }

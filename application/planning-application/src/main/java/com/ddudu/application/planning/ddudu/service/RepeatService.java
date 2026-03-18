@@ -3,10 +3,10 @@ package com.ddudu.application.planning.ddudu.service;
 import com.ddudu.application.common.dto.ddudu.request.RepeatAnotherDayRequest;
 import com.ddudu.application.common.dto.ddudu.response.RepeatAnotherDayResponse;
 import com.ddudu.application.common.port.ddudu.in.RepeatUseCase;
-import com.ddudu.application.common.port.ddudu.out.RepeatDduduPort;
+import com.ddudu.application.common.port.ddudu.out.RepeatTodoPort;
 import com.ddudu.common.annotation.UseCase;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.exception.TodoErrorCode;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RepeatService implements RepeatUseCase {
 
-  private final RepeatDduduPort repeatDduduPort;
+  private final RepeatTodoPort repeatTodoPort;
 
   @Override
   public RepeatAnotherDayResponse repeatOnAnotherDay(
@@ -23,17 +23,17 @@ public class RepeatService implements RepeatUseCase {
       Long dduduId,
       RepeatAnotherDayRequest request
   ) {
-    Ddudu ddudu = repeatDduduPort.getDduduOrElseThrow(
+    Todo ddudu = repeatTodoPort.getTodoOrElseThrow(
         dduduId,
-        DduduErrorCode.ID_NOT_EXISTING.getCodeName()
+        TodoErrorCode.ID_NOT_EXISTING.getCodeName()
     );
 
-    ddudu.validateDduduCreator(loginId);
+    ddudu.validateTodoCreator(loginId);
 
-    Ddudu replica = ddudu.reproduceOnDate(request.repeatOn());
-    Ddudu repeatedDdudu = repeatDduduPort.save(replica);
+    Todo replica = ddudu.reproduceOnDate(request.repeatOn());
+    Todo repeatedTodo = repeatTodoPort.save(replica);
 
-    return new RepeatAnotherDayResponse(repeatedDdudu.getId());
+    return new RepeatAnotherDayResponse(repeatedTodo.getId());
   }
 
 }

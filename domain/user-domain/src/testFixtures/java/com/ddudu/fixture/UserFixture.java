@@ -179,7 +179,7 @@ public class UserFixture extends BaseFixture {
     return Options.builder()
         .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
         .templateNotification(user.isNotifyingTemplate())
-        .dduduNotification(user.isNotifyingDdudu())
+        .dduduNotification(user.isNotifyingTodo())
         .display(DisplayOptions.builder()
             .weekStartDay(user.getWeekStartDay())
             .darkMode(user.isDarkMode())

@@ -2,18 +2,18 @@ package com.ddudu.application.planning.ddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.ddudu.SimpleDduduSearchDto;
-import com.ddudu.application.common.dto.ddudu.request.DduduSearchRequest;
+import com.ddudu.application.common.dto.ddudu.SimpleTodoSearchDto;
+import com.ddudu.application.common.dto.ddudu.request.TodoSearchRequest;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.common.exception.TodoErrorCode;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.util.List;
@@ -31,10 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class DduduSearchServiceTest {
+class TodoSearchServiceTest {
 
   @Autowired
-  DduduSearchService dduduSearchService;
+  TodoSearchService dduduSearchService;
 
   @Autowired
   SignUpPort signUpPort;
@@ -43,23 +43,23 @@ class DduduSearchServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort dduduLoaderPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   User user;
   Goal goal;
   int size;
-  List<Ddudu> ddudus;
+  List<Todo> ddudus;
   Long latestId;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    size = DduduFixture.getRandomInt(10, 100);
-    ddudus = saveDduduPort.saveAll(DduduFixture.createMultipleDdudusWithGoal(goal, size + 1));
+    size = TodoFixture.getRandomInt(10, 100);
+    ddudus = saveTodoPort.saveAll(TodoFixture.createMultipleTodosWithGoal(goal, size + 1));
     latestId = ddudus.get(size)
         .getId();
   }
@@ -67,10 +67,10 @@ class DduduSearchServiceTest {
   @Test
   void 투두_최신순_목록_조회를_성공한다() {
     // given
-    DduduSearchRequest request = new DduduSearchRequest(null, null, size, null);
+    TodoSearchRequest request = new TodoSearchRequest(null, null, size, null);
 
     // when
-    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchService.search(
+    ScrollResponse<SimpleTodoSearchDto> response = dduduSearchService.search(
         user.getId(),
         request
     );
@@ -89,11 +89,11 @@ class DduduSearchServiceTest {
   @Test
   void 기본_10개의_투두_목록_조회를_성공한다() {
     // given
-    DduduSearchRequest request = new DduduSearchRequest(null, null, null, null);
+    TodoSearchRequest request = new TodoSearchRequest(null, null, null, null);
     int defaultSize = 10;
 
     // when
-    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchService.search(
+    ScrollResponse<SimpleTodoSearchDto> response = dduduSearchService.search(
         user.getId(),
         request
     );
@@ -114,10 +114,10 @@ class DduduSearchServiceTest {
     // given
     int expectedSize = 5;
     String nextCursor = String.valueOf(latestId - expectedSize + 1);
-    DduduSearchRequest request = new DduduSearchRequest(null, nextCursor, expectedSize, null);
+    TodoSearchRequest request = new TodoSearchRequest(null, nextCursor, expectedSize, null);
 
     // when
-    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchService.search(
+    ScrollResponse<SimpleTodoSearchDto> response = dduduSearchService.search(
         user.getId(),
         request
     );
@@ -136,19 +136,19 @@ class DduduSearchServiceTest {
   @Test
   void 검색어_조회를_성공한다() {
     // given
-    Ddudu postponedDdudu = saveDduduPort.save(
-        DduduFixture.createDduduWithScheduleAndPostponedFlag(goal, true, ddudus.get(0)
+    Todo postponedTodo = saveTodoPort.save(
+        TodoFixture.createTodoWithScheduleAndPostponedFlag(goal, true, ddudus.get(0)
             .getScheduledOn())
     );
-    DduduSearchRequest request = new DduduSearchRequest(
+    TodoSearchRequest request = new TodoSearchRequest(
         null,
         null,
         size,
-        postponedDdudu.getName()
+        postponedTodo.getName()
     );
 
     // when
-    ScrollResponse<SimpleDduduSearchDto> response = dduduSearchService.search(
+    ScrollResponse<SimpleTodoSearchDto> response = dduduSearchService.search(
         user.getId(),
         request
     );
@@ -165,8 +165,8 @@ class DduduSearchServiceTest {
   @Test
   void 사용자가_없으면_조회를_실패한다() {
     // given
-    long invalidId = DduduFixture.getRandomId();
-    DduduSearchRequest request = new DduduSearchRequest(null, null, size, null);
+    long invalidId = TodoFixture.getRandomId();
+    TodoSearchRequest request = new TodoSearchRequest(null, null, size, null);
 
     // when
     ThrowingCallable search = () -> dduduSearchService.search(invalidId, request);
@@ -174,7 +174,7 @@ class DduduSearchServiceTest {
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(search)
-        .withMessage(DduduErrorCode.USER_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.USER_NOT_EXISTING.getCodeName());
   }
 
 }

@@ -2,18 +2,18 @@ package com.ddudu.application.planning.ddudu.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.ddudu.request.CreateDduduRequest;
-import com.ddudu.application.common.dto.ddudu.response.BasicDduduResponse;
+import com.ddudu.application.common.dto.ddudu.request.CreateTodoRequest;
+import com.ddudu.application.common.dto.ddudu.response.BasicTodoResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.common.exception.DduduErrorCode;
+import com.ddudu.common.exception.TodoErrorCode;
 import com.ddudu.common.exception.GoalErrorCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
-import com.ddudu.domain.planning.ddudu.aggregate.enums.DduduStatus;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
@@ -31,13 +31,13 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class CreateDduduServiceTest {
+class CreateTodoServiceTest {
 
   @Autowired
-  CreateDduduService createDduduService;
+  CreateTodoService createTodoService;
 
   @Autowired
-  DduduLoaderPort dduduLoaderPort;
+  TodoLoaderPort dduduLoaderPort;
 
   @Autowired
   SignUpPort signUpPort;
@@ -55,16 +55,16 @@ class CreateDduduServiceTest {
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    name = DduduFixture.getRandomSentenceWithMax(50);
+    name = TodoFixture.getRandomSentenceWithMax(50);
     scheduledOn = LocalDate.now();
-    memo = DduduFixture.createValidMemo();
+    memo = TodoFixture.createValidMemo();
   }
 
 
   @Test
   void 할_일_생성에_성공한다() {
     // given
-    CreateDduduRequest request = new CreateDduduRequest(
+    CreateTodoRequest request = new CreateTodoRequest(
         goal.getId(),
         name,
         memo,
@@ -77,10 +77,10 @@ class CreateDduduServiceTest {
     );
 
     // when
-    BasicDduduResponse response = createDduduService.create(user.getId(), request);
+    BasicTodoResponse response = createTodoService.create(user.getId(), request);
 
     // then
-    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(
+    Todo actual = dduduLoaderPort.getTodoOrElseThrow(
         response.id(),
         "할 일이 생성되지 않았습니다."
     );
@@ -99,14 +99,14 @@ class CreateDduduServiceTest {
             scheduledOn,
             goal.getId(),
             user.getId(),
-            DduduStatus.UNCOMPLETED,
+            TodoStatus.UNCOMPLETED,
             null);
   }
 
   @Test
   void 날짜를_설정하지_않은_경우_기본값이_적용된다() {
     // given
-    CreateDduduRequest request = new CreateDduduRequest(
+    CreateTodoRequest request = new CreateTodoRequest(
         goal.getId(),
         name,
         memo,
@@ -119,10 +119,10 @@ class CreateDduduServiceTest {
     );
 
     // when
-    BasicDduduResponse response = createDduduService.create(user.getId(), request);
+    BasicTodoResponse response = createTodoService.create(user.getId(), request);
 
     // then
-    Ddudu actual = dduduLoaderPort.getDduduOrElseThrow(
+    Todo actual = dduduLoaderPort.getTodoOrElseThrow(
         response.id(),
         "할 일이 생성되지 않았습니다."
     );
@@ -133,7 +133,7 @@ class CreateDduduServiceTest {
   void 사용자_아이디가_유효하지_않으면_예외가_발생한다() {
     // give
     Long invalidUserId = UserFixture.getRandomId();
-    CreateDduduRequest request = new CreateDduduRequest(
+    CreateTodoRequest request = new CreateTodoRequest(
         goal.getId(),
         name,
         memo,
@@ -146,19 +146,19 @@ class CreateDduduServiceTest {
     );
 
     // when
-    ThrowingCallable create = () -> createDduduService.create(invalidUserId, request);
+    ThrowingCallable create = () -> createTodoService.create(invalidUserId, request);
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(create)
-        .withMessage(DduduErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
   }
 
   @Test
   void 목표_아이디가_유효하지_않으면_예외가_발생한다() {
     // given
     Long invalidGoalId = GoalFixture.getRandomId();
-    CreateDduduRequest request = new CreateDduduRequest(
+    CreateTodoRequest request = new CreateTodoRequest(
         invalidGoalId,
         name,
         memo,
@@ -171,12 +171,12 @@ class CreateDduduServiceTest {
     );
 
     // when
-    ThrowingCallable create = () -> createDduduService.create(user.getId(), request);
+    ThrowingCallable create = () -> createTodoService.create(user.getId(), request);
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
         .isThrownBy(create)
-        .withMessage(DduduErrorCode.GOAL_NOT_EXISTING.getCodeName());
+        .withMessage(TodoErrorCode.GOAL_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -188,7 +188,7 @@ class CreateDduduServiceTest {
             anotherUser.getId()
         )
     );
-    CreateDduduRequest request = new CreateDduduRequest(
+    CreateTodoRequest request = new CreateTodoRequest(
         goalOfAnotherUser.getId(),
         name,
         memo,
@@ -201,7 +201,7 @@ class CreateDduduServiceTest {
     );
 
     // when
-    ThrowingCallable create = () -> createDduduService.create(user.getId(), request);
+    ThrowingCallable create = () -> createTodoService.create(user.getId(), request);
 
     // then
     Assertions.assertThatExceptionOfType(SecurityException.class)

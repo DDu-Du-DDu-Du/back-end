@@ -1,4 +1,4 @@
-package com.ddudu.domain.planning.repeatddudu.aggregate.vo;
+package com.ddudu.domain.planning.repeattodo.aggregate.vo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

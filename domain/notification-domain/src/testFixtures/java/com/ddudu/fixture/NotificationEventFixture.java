@@ -10,27 +10,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NotificationEventFixture extends BaseFixture {
 
-  public static NotificationEvent createFiredDduduEventNowWithUserAndContext(
+  public static NotificationEvent createFiredTodoEventNowWithUserAndContext(
       Long receiverId,
       Long dduduId
   ) {
     LocalDateTime nearNow = LocalDateTime.now()
         .plusSeconds(10);
 
-    return createFiredDduduEventWithUserAndContext(receiverId, dduduId, nearNow);
+    return createFiredTodoEventWithUserAndContext(receiverId, dduduId, nearNow);
   }
 
-  public static NotificationEvent createValidDduduEventNowWithUserAndContext(
+  public static NotificationEvent createValidTodoEventNowWithUserAndContext(
       Long receiverId,
       Long dduduId
   ) {
     LocalDateTime nearNow = LocalDateTime.now()
         .plusSeconds(10);
 
-    return createValidDduduEventWithUserAndContext(receiverId, dduduId, nearNow);
+    return createValidTodoEventWithUserAndContext(receiverId, dduduId, nearNow);
   }
 
-  public static NotificationEvent createFiredDduduEventWithUserAndContext(
+  public static NotificationEvent createFiredTodoEventWithUserAndContext(
       Long receiverId,
       Long dduduId,
       LocalDateTime willFireAt
@@ -43,7 +43,7 @@ public final class NotificationEventFixture extends BaseFixture {
     );
   }
 
-  public static NotificationEvent createValidDduduEventWithUserAndContext(
+  public static NotificationEvent createValidTodoEventWithUserAndContext(
       Long receiverId,
       Long dduduId,
       LocalDateTime willFireAt

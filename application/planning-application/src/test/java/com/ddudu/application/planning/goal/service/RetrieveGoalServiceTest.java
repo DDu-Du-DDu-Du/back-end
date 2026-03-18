@@ -2,19 +2,19 @@ package com.ddudu.application.planning.goal.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ddudu.application.common.dto.goal.response.GoalWithRepeatDduduResponse;
-import com.ddudu.application.common.dto.repeatddudu.RepeatDduduDto;
+import com.ddudu.application.common.dto.goal.response.GoalWithRepeatTodoResponse;
+import com.ddudu.application.common.dto.repeattodo.RepeatTodoDto;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
-import com.ddudu.application.common.port.repeatddudu.out.RepeatDduduLoaderPort;
-import com.ddudu.application.common.port.repeatddudu.out.SaveRepeatDduduPort;
+import com.ddudu.application.common.port.repeattodo.out.RepeatTodoLoaderPort;
+import com.ddudu.application.common.port.repeattodo.out.SaveRepeatTodoPort;
 import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
-import com.ddudu.domain.planning.repeatddudu.aggregate.RepeatDdudu;
-import com.ddudu.domain.planning.repeatddudu.aggregate.vo.RepeatPattern;
+import com.ddudu.domain.planning.repeattodo.aggregate.RepeatTodo;
+import com.ddudu.domain.planning.repeattodo.aggregate.vo.RepeatPattern;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.GoalFixture;
-import com.ddudu.fixture.RepeatDduduFixture;
+import com.ddudu.fixture.RepeatTodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
 import java.util.MissingResourceException;
@@ -43,10 +43,10 @@ class RetrieveGoalServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveRepeatDduduPort saveRepeatDduduPort;
+  SaveRepeatTodoPort saveRepeatTodoPort;
 
   @Autowired
-  RepeatDduduLoaderPort repeatDduduLoaderPort;
+  RepeatTodoLoaderPort repeatTodoLoaderPort;
 
   Long userId;
   Goal goal;
@@ -61,7 +61,7 @@ class RetrieveGoalServiceTest {
   @Test
   void ID를_통해_목표를_조회_할_수_있다() {
     // when
-    GoalWithRepeatDduduResponse actual = retrieveGoalService.getById(userId, goal.getId());
+    GoalWithRepeatTodoResponse actual = retrieveGoalService.getById(userId, goal.getId());
 
     // then
     assertThat(actual).extracting("id", "name", "status", "color", "privacyType", "priority")
@@ -81,35 +81,35 @@ class RetrieveGoalServiceTest {
     LocalDate startDate = LocalDate.now();
     LocalDate endDate = LocalDate.now()
         .plusMonths(1);
-    RepeatDdudu repeatDdudu = RepeatDduduFixture.createRepeatDduduWithGoal(
+    RepeatTodo repeatTodo = RepeatTodoFixture.createRepeatTodoWithGoal(
         goal,
         startDate,
         endDate
     );
 
-    saveRepeatDduduPort.save(repeatDdudu);
+    saveRepeatTodoPort.save(repeatTodo);
 
     // when
-    GoalWithRepeatDduduResponse response = retrieveGoalService.getById(userId, goal.getId());
+    GoalWithRepeatTodoResponse response = retrieveGoalService.getById(userId, goal.getId());
 
     // then
-    RepeatDduduDto first = response.repeatDdudus()
+    RepeatTodoDto first = response.repeatTodos()
         .get(0);
-    RepeatDdudu actual = repeatDduduLoaderPort.getOptionalRepeatDdudu(first.id())
+    RepeatTodo actual = repeatTodoLoaderPort.getOptionalRepeatTodo(first.id())
         .get();
 
-    assertThat(first.repeatType()).isEqualTo(repeatDdudu.getRepeatType());
+    assertThat(first.repeatType()).isEqualTo(repeatTodo.getRepeatType());
 
     assertThat(actual).extracting("name", "repeatType", "startDate", "endDate")
         .containsExactly(
-            repeatDdudu.getName(),
-            repeatDdudu.getRepeatType(),
-            repeatDdudu.getStartDate(),
-            repeatDdudu.getEndDate()
+            repeatTodo.getName(),
+            repeatTodo.getRepeatType(),
+            repeatTodo.getStartDate(),
+            repeatTodo.getEndDate()
         );
 
     RepeatPattern actualPattern = actual.getRepeatPattern();
-    RepeatPattern expectedPattern = repeatDdudu.getRepeatPattern();
+    RepeatPattern expectedPattern = repeatTodo.getRepeatPattern();
 
     assertThat(actualPattern).isInstanceOf(expectedPattern.getClass());
   }

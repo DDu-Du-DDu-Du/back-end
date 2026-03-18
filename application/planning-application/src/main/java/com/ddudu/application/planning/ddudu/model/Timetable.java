@@ -4,10 +4,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
 
-import com.ddudu.application.common.dto.ddudu.DduduForTimetable;
-import com.ddudu.application.common.dto.ddudu.GoalGroupedDdudus;
-import com.ddudu.application.common.dto.ddudu.TimeGroupedDdudus;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.application.common.dto.ddudu.TodoForTimetable;
+import com.ddudu.application.common.dto.ddudu.GoalGroupedTodos;
+import com.ddudu.application.common.dto.ddudu.TimeGroupedTodos;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -17,37 +17,37 @@ import java.util.stream.Collectors;
 
 public class Timetable {
 
-  private final Map<Integer, List<Ddudu>> timetable;
-  private final DduduList unassignedDdudus;
+  private final Map<Integer, List<Todo>> timetable;
+  private final TodoList unassignedTodos;
 
-  public Timetable(List<Ddudu> ddudus) {
+  public Timetable(List<Todo> ddudus) {
     checkArgument(nonNull(ddudus));
 
-    Map<Boolean, List<Ddudu>> split = ddudus.stream()
-        .collect(groupingBy((Ddudu::hasStartTime)));
+    Map<Boolean, List<Todo>> split = ddudus.stream()
+        .collect(groupingBy((Todo::hasStartTime)));
 
-    List<Ddudu> assignedDdudus = split.getOrDefault(true, new ArrayList<>());
-    timetable = assignedDdudus.stream()
-        .collect(groupingBy(Ddudu::getBeginHour));
-    unassignedDdudus = new DduduList(split.getOrDefault(false, new ArrayList<>()));
+    List<Todo> assignedTodos = split.getOrDefault(true, new ArrayList<>());
+    timetable = assignedTodos.stream()
+        .collect(groupingBy(Todo::getBeginHour));
+    unassignedTodos = new TodoList(split.getOrDefault(false, new ArrayList<>()));
   }
 
-  public List<TimeGroupedDdudus> getTimeGroupedDdudus(List<Goal> goals) {
+  public List<TimeGroupedTodos> getTimeGroupedTodos(List<Goal> goals) {
     Map<Long, String> goalColorMap = mapGoalsToColors(goals);
 
     return timetable.entrySet()
         .stream()
         .map(entry ->
-            TimeGroupedDdudus.of(
+            TimeGroupedTodos.of(
                 LocalTime.of(entry.getKey(), 0),
-                toDduduForTimetableList(entry.getValue(), goalColorMap)
+                toTodoForTimetableList(entry.getValue(), goalColorMap)
             )
         )
         .toList();
   }
 
-  public List<GoalGroupedDdudus> getUnassignedDdudusWithGoal(List<Goal> goals) {
-    return unassignedDdudus.getDdudusWithGoal(goals);
+  public List<GoalGroupedTodos> getUnassignedTodosWithGoal(List<Goal> goals) {
+    return unassignedTodos.getTodosWithGoal(goals);
   }
 
   private Map<Long, String> mapGoalsToColors(List<Goal> goals) {
@@ -55,11 +55,11 @@ public class Timetable {
         .collect(Collectors.toMap(Goal::getId, Goal::getColor));
   }
 
-  private List<DduduForTimetable> toDduduForTimetableList(
-      List<Ddudu> ddudus, Map<Long, String> goalColorMap
+  private List<TodoForTimetable> toTodoForTimetableList(
+      List<Todo> ddudus, Map<Long, String> goalColorMap
   ) {
     return ddudus.stream()
-        .map((ddudu) -> DduduForTimetable.of(ddudu, goalColorMap.get(ddudu.getGoalId())))
+        .map((ddudu) -> TodoForTimetable.of(ddudu, goalColorMap.get(ddudu.getGoalId())))
         .toList();
   }
 

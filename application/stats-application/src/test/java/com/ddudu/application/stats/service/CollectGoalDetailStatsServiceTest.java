@@ -5,12 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ddudu.application.common.dto.stats.response.GoalDetailStatsSummaryResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.common.exception.StatsErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.UserFixture;
 import java.util.MissingResourceException;
@@ -38,7 +38,7 @@ class CollectGoalDetailStatsServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   User user;
   Goal goal;
@@ -52,7 +52,7 @@ class CollectGoalDetailStatsServiceTest {
   @Test
   void 목표_상세_통계_요약을_성공한다() {
     // given
-    saveDduduPort.saveAll(DduduFixture.createDifferentDdudusWithGoal(goal, 3, 2));
+    saveTodoPort.saveAll(TodoFixture.createDifferentTodosWithGoal(goal, 3, 2));
 
     // when
     GoalDetailStatsSummaryResponse response = collectGoalDetailStatsService.collectDetail(

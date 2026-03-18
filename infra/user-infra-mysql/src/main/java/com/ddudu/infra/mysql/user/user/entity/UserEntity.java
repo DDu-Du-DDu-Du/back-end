@@ -181,7 +181,7 @@ public class UserEntity extends BaseEntity {
         .profileImageUrl(user.getProfileImageUrl())
         .allowingFollowsAfterApproval(user.isAllowingFollowsAfterApproval())
         .templateNotification(user.isNotifyingTemplate())
-        .dduduNotification(user.isNotifyingDdudu())
+        .dduduNotification(user.isNotifyingTodo())
         .weekStartDay(user.getWeekStartDay())
         .darkMode(user.isDarkMode())
         .activeCalendar(user.isActiveCalendar())
@@ -205,7 +205,7 @@ public class UserEntity extends BaseEntity {
     this.status = user.getStatus();
     this.allowingFollowsAfterApproval = user.isAllowingFollowsAfterApproval();
     this.templateNotification = user.isNotifyingTemplate();
-    this.dduduNotification = user.isNotifyingDdudu();
+    this.dduduNotification = user.isNotifyingTodo();
     this.weekStartDay = user.getWeekStartDay();
     this.darkMode = user.isDarkMode();
     this.activeCalendar = user.isActiveCalendar();

@@ -1,18 +1,18 @@
 package com.ddudu.application.common.dto.ddudu.response;
 
-import com.ddudu.application.common.dto.ddudu.GoalGroupedDdudus;
-import com.ddudu.application.common.dto.ddudu.TimeGroupedDdudus;
+import com.ddudu.application.common.dto.ddudu.GoalGroupedTodos;
+import com.ddudu.application.common.dto.ddudu.TimeGroupedTodos;
 import java.util.List;
 
 public record TimetableResponse(
-    List<TimeGroupedDdudus> timetable,
-    List<GoalGroupedDdudus> unassignedDdudus
+    List<TimeGroupedTodos> timetable,
+    List<GoalGroupedTodos> unassignedTodos
 ) {
 
   public static TimetableResponse of(
-      List<TimeGroupedDdudus> timetable, List<GoalGroupedDdudus> unassignedDdudus
+      List<TimeGroupedTodos> timetable, List<GoalGroupedTodos> unassignedTodos
   ) {
-    return new TimetableResponse(timetable, unassignedDdudus);
+    return new TimetableResponse(timetable, unassignedTodos);
   }
 
 }

@@ -4,17 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.notification.event.NotificationEventRemoveEvent;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.ddudu.out.SaveDduduPort;
+import com.ddudu.application.common.port.ddudu.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.in.RemoveNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
-import com.ddudu.domain.planning.ddudu.aggregate.Ddudu;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.DduduFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.NotificationEventFixture;
 import com.ddudu.fixture.UserFixture;
@@ -43,7 +43,7 @@ class RemoveNotificationEventServiceTest {
   SaveGoalPort saveGoalPort;
 
   @Autowired
-  SaveDduduPort saveDduduPort;
+  SaveTodoPort saveTodoPort;
 
   @Autowired
   NotificationEventCommandPort notificationEventCommandPort;
@@ -53,7 +53,7 @@ class RemoveNotificationEventServiceTest {
 
   User user;
   Goal goal;
-  Ddudu ddudu;
+  Todo ddudu;
   LocalDateTime willFireAt;
   NotificationEvent notificationEvent;
 
@@ -62,8 +62,8 @@ class RemoveNotificationEventServiceTest {
     willFireAt = NotificationEventFixture.getFutureDateTime(10, TimeUnit.DAYS);
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    ddudu = saveDduduPort.save(DduduFixture.createRandomDduduWithGoal(goal));
-    notificationEvent = NotificationEventFixture.createValidDduduEventWithUserAndContext(
+    ddudu = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    notificationEvent = NotificationEventFixture.createValidTodoEventWithUserAndContext(
         user.getId(),
         ddudu.getId(),
         willFireAt
@@ -131,7 +131,7 @@ class RemoveNotificationEventServiceTest {
   void 알림이_이미_발송됐으면_삭제하지_않는다() {
     // given
     notificationEvent = notificationEventCommandPort.save(
-        NotificationEventFixture.createFiredDduduEventNowWithUserAndContext(
+        NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(
             user.getId(),
             ddudu.getId()
         )

@@ -2,7 +2,7 @@ package com.ddudu.application.notification.dailybriefing;
 
 import com.ddudu.application.common.dto.notification.DailyBriefingDto;
 import com.ddudu.application.common.dto.notification.response.DailyBriefingResponse;
-import com.ddudu.application.common.port.ddudu.out.DduduLoaderPort;
+import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
 import com.ddudu.application.common.port.notification.in.BriefTodayPlanningUseCase;
 import com.ddudu.application.common.port.notification.out.DailyBriefingCommandPort;
 import com.ddudu.application.common.port.notification.out.DailyBriefingLoaderPort;
@@ -22,7 +22,7 @@ public class BriefTodayPlanningService implements BriefTodayPlanningUseCase {
   private final UserLoaderPort userLoaderPort;
   private final DailyBriefingLoaderPort dailyBriefingLoaderPort;
   private final DailyBriefingCommandPort dailyBriefingCommandPort;
-  private final DduduLoaderPort dduduLoaderPort;
+  private final TodoLoaderPort dduduLoaderPort;
 
   @Override
   public DailyBriefingResponse getDailyBriefing(Long loginId) {
@@ -37,7 +37,7 @@ public class BriefTodayPlanningService implements BriefTodayPlanningUseCase {
       return DailyBriefingResponse.notFirst();
     }
 
-    int count = dduduLoaderPort.countTodayDdudu(user.getId());
+    int count = dduduLoaderPort.countTodayTodo(user.getId());
     DailyBriefingLog dailyBriefingLog = DailyBriefingLog.builder()
         .userId(user.getId())
         .build();
