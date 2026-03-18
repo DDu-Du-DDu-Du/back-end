@@ -13,12 +13,12 @@ public record InterimSetReminderEvent(
     LocalDateTime willFireAt
 ) implements InterimNotificationEvent {
 
-  public static InterimSetReminderEvent from(Long userId, Todo ddudu) {
+  public static InterimSetReminderEvent from(Long userId, Todo todo) {
     return InterimSetReminderEvent.builder()
         .userId(userId)
         .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
-        .contextId(ddudu.getId())
-        .willFireAt(ddudu.getRemindAt())
+        .contextId(todo.getId())
+        .willFireAt(todo.getRemindAt())
         .build();
   }
 

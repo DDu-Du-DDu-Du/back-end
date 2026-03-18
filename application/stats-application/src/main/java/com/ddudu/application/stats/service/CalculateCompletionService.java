@@ -25,7 +25,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
   private static final boolean IS_ACHIEVED = true;
 
   private final UserLoaderPort userLoaderPort;
-  private final TodoStatsPort dduduStatsPort;
+  private final TodoStatsPort todoStatsPort;
 
   @Deprecated
   @Override
@@ -79,7 +79,7 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
     Relationship relationship = Relationship.getRelationship(loginUser, user);
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
-    return dduduStatsPort.calculateTodosCompletion(
+    return todoStatsPort.calculateTodosCompletion(
             startDate,
             endDate,
             user.getId(),

@@ -40,7 +40,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
   private final UserLoaderPort userLoaderPort;
   private final GoalLoaderPort goalLoaderPort;
   private final MonthlyStatsPort monthlyStatsPort;
-  private final TodoStatsPort dduduStatsPort;
+  private final TodoStatsPort todoStatsPort;
 
   @Override
   public AchievedStatsDetailResponse collectAchievedDetail(
@@ -225,7 +225,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
       return GenericCalendarStats.from(false, Collections.emptyList());
     }
 
-    List<TodoCompletionResponse> completions = dduduStatsPort.calculateTodosCompletion(
+    List<TodoCompletionResponse> completions = todoStatsPort.calculateTodosCompletion(
         from,
         to,
         user.getId(),

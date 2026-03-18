@@ -13,11 +13,11 @@ public record InterimCancelReminderEvent(
     LocalDateTime willFireAt
 ) implements InterimNotificationEvent {
 
-  public static InterimCancelReminderEvent from(Long userId, Todo ddudu) {
+  public static InterimCancelReminderEvent from(Long userId, Todo todo) {
     return InterimCancelReminderEvent.builder()
         .userId(userId)
         .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
-        .contextId(ddudu.getId())
+        .contextId(todo.getId())
         .build();
   }
 

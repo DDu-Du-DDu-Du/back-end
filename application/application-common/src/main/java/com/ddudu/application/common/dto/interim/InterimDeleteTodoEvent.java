@@ -13,11 +13,11 @@ public record InterimDeleteTodoEvent(
     LocalDateTime willFireAt
 ) implements InterimNotificationEvent {
 
-  public static InterimDeleteTodoEvent from(Long userId, Todo ddudu) {
+  public static InterimDeleteTodoEvent from(Long userId, Todo todo) {
     return InterimDeleteTodoEvent.builder()
         .userId(userId)
         .typeCode(NotificationEventTypeCode.DDUDU_REMINDER)
-        .contextId(ddudu.getId())
+        .contextId(todo.getId())
         .build();
   }
 

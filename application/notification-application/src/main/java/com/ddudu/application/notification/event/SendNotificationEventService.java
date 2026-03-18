@@ -1,6 +1,6 @@
 package com.ddudu.application.notification.event;
 
-import com.ddudu.application.common.port.ddudu.out.TodoLoaderPort;
+import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenLoaderPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SendNotificationEventService implements SendNotificationEventUseCase {
 
   private final NotificationEventLoaderPort notificationEventLoaderPort;
-  private final TodoLoaderPort dduduLoaderPort;
+  private final TodoLoaderPort todoLoaderPort;
   private final NotificationInboxCommandPort notificationInboxCommandPort;
   private final NotificationEventCommandPort notificationEventCommandPort;
   private final NotificationDeviceTokenLoaderPort notificationDeviceTokenLoaderPort;
@@ -76,12 +76,12 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
   }
 
   private NotificationInbox createTodoNotificationInbox(NotificationEvent notificationEvent) {
-    Todo ddudu = dduduLoaderPort.getTodoOrElseThrow(
+    Todo todo = todoLoaderPort.getTodoOrElseThrow(
         notificationEvent.getContextId(),
         NotificationEventErrorCode.ORIGINAL_DDUDU_NOT_EXISTING.getCodeName()
     );
-    String title = ddudu.getName();
-    String body = notificationEvent.getTodoBody(ddudu.getRemindDifference());
+    String title = todo.getName();
+    String body = notificationEvent.getTodoBody(todo.getRemindDifference());
 
     return buildNotificationInbox(notificationEvent, title, body);
   }
