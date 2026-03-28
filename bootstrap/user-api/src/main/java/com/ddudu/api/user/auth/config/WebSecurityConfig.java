@@ -36,12 +36,12 @@ public class WebSecurityConfig {
   private static final String ANNOUNCEMENTS_PATH = "/api/announcements";
   private static final String ANNOUNCEMENT_DETAIL_PATH = "/api/announcements/*";
   private static final String LOGIN_PATH = "/api/auth/login/**";
+  private static final String TOKEN_PATH = "/api/auth/token";
 
   @Bean
   public SecurityFilterChain restFilterChain(
       HttpSecurity http,
       JwtConverter jwtConverter,
-      IgnoreBearerAuthenticationFilter ignoreBearerAuthenticationFilter,
       AuthenticationEntryPoint bearerTokenAuthenticationEntryPointWrapper
   )
       throws Exception {
@@ -65,7 +65,6 @@ public class WebSecurityConfig {
             )
             .authenticationEntryPoint(bearerTokenAuthenticationEntryPointWrapper)
         )
-        .addFilterBefore(ignoreBearerAuthenticationFilter, BearerTokenAuthenticationFilter.class)
         .build();
   }
 
@@ -78,9 +77,11 @@ public class WebSecurityConfig {
 
   private RequestMatcher excludedApiRequestMatcher() {
     return new OrRequestMatcher(
+        new AntPathRequestMatcher(ALL_RESOURCES, HttpMethod.OPTIONS.name()),
         new AntPathRequestMatcher(ANNOUNCEMENTS_PATH, HttpMethod.GET.name()),
         new AntPathRequestMatcher(ANNOUNCEMENT_DETAIL_PATH, HttpMethod.GET.name()),
-        new AntPathRequestMatcher(LOGIN_PATH, HttpMethod.POST.name())
+        new AntPathRequestMatcher(LOGIN_PATH, HttpMethod.POST.name()),
+        new AntPathRequestMatcher(TOKEN_PATH, HttpMethod.POST.name())
     );
   }
 
