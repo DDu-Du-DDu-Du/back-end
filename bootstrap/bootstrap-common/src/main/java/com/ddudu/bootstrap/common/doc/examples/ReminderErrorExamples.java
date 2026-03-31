@@ -51,8 +51,14 @@ public final class ReminderErrorExamples {
       }
       """;
 
+  public static final String REMINDER_ALREADY_REMINDED = """
+      {
+        "code": 2111,
+        "message": "이미 발송된 미리알림은 취소할 수 없습니다."
+      }
+      """;
+
   private ReminderErrorExamples() {
   }
 
 }
-

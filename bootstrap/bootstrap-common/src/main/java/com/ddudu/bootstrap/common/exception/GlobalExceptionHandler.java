@@ -3,6 +3,7 @@ package com.ddudu.bootstrap.common.exception;
 import com.ddudu.common.exception.DefaultErrorCode;
 import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ErrorCodeParser;
+import com.ddudu.common.exception.UnprocessableEntityException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Arrays;
 import java.util.List;
@@ -124,6 +125,21 @@ public class GlobalExceptionHandler {
     }
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(response);
+  }
+
+  @ExceptionHandler(UnprocessableEntityException.class)
+  public ResponseEntity<ErrorResponse> handleUnprocessableEntity(UnprocessableEntityException e) {
+    log.warn(e.getMessage(), e);
+
+    ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
+    ErrorResponse response = ErrorResponse.from(errorCode);
+
+    if (errorCode instanceof DefaultErrorCode) {
+      return handleUnexpected(response);
+    }
+
+    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
         .body(response);
   }
 

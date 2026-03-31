@@ -90,4 +90,55 @@ public interface ReminderControllerDoc {
   )
   ResponseEntity<IdResponse> create(Long loginId, CreateReminderRequest request);
 
+  @Operation(summary = "미리알림 취소")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "204",
+              description = "NO_CONTENT"
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2108",
+                      value = ReminderErrorExamples.REMINDER_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2106",
+                      value = ReminderErrorExamples.REMINDER_LOGIN_USER_NOT_EXISTING
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "422",
+              description = "UNPROCESSABLE_ENTITY",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2111",
+                      value = ReminderErrorExamples.REMINDER_ALREADY_REMINDED
+                  )
+              )
+          )
+      }
+  )
+  ResponseEntity<Void> cancel(Long loginId, Long id);
+
 }
