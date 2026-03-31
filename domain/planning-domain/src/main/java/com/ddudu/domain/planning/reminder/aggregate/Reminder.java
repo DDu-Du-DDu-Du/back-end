@@ -61,6 +61,18 @@ public class Reminder {
         .build();
   }
 
+  public Reminder update(LocalDateTime todoScheduledAt, LocalDateTime newRemindsAt) {
+    Reminder updated = Reminder.from(userId, todoId, newRemindsAt, todoScheduledAt);
+
+    return Reminder.builder()
+        .id(id)
+        .userId(updated.getUserId())
+        .todoId(updated.getTodoId())
+        .remindsAt(updated.getRemindsAt())
+        .remindedAt(remindedAt)
+        .build();
+  }
+
   public boolean isReminded() {
     return Objects.nonNull(remindedAt);
   }

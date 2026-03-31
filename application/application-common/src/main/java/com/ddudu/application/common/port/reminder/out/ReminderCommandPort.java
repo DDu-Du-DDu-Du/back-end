@@ -6,4 +6,6 @@ public interface ReminderCommandPort {
 
   Reminder save(Reminder reminder);
 
+  Reminder update(Reminder reminder);
+
 }

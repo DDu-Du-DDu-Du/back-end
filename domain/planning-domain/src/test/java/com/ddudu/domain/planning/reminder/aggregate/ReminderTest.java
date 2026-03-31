@@ -213,4 +213,67 @@ class ReminderTest {
         .withMessage(ReminderErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName());
   }
 
+  @Test
+  void Reminder_도메인_수정에_성공한다() {
+    // given
+    Reminder reminder = ReminderFixture.createValidReminder();
+    LocalDateTime scheduledAt = ReminderFixture.createValidTodoScheduledAt();
+    LocalDateTime newRemindsAt = ReminderFixture.createValidRemindsAtBefore(scheduledAt);
+
+    // when
+    Reminder updated = reminder.update(scheduledAt, newRemindsAt);
+
+    // then
+    assertThat(updated.getId()).isEqualTo(reminder.getId());
+    assertThat(updated.getUserId()).isEqualTo(reminder.getUserId());
+    assertThat(updated.getTodoId()).isEqualTo(reminder.getTodoId());
+    assertThat(updated.getRemindsAt()).isEqualTo(newRemindsAt);
+  }
+
+  @Test
+  void Reminder_도메인_수정_시_remindsAt이_없으면_실패한다() {
+    // given
+    Reminder reminder = ReminderFixture.createValidReminder();
+    LocalDateTime scheduledAt = ReminderFixture.createValidTodoScheduledAt();
+
+    // when
+    ThrowingCallable update = () -> reminder.update(scheduledAt, null);
+
+    // then
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(update)
+        .withMessage(ReminderErrorCode.NULL_REMINDS_AT.getCodeName());
+  }
+
+  @Test
+  void Reminder_도메인_수정_시_scheduledAt이_없으면_실패한다() {
+    // given
+    Reminder reminder = ReminderFixture.createValidReminder();
+    LocalDateTime newRemindsAt = ReminderFixture.getFutureDateTime(5, TimeUnit.DAYS);
+
+    // when
+    ThrowingCallable update = () -> reminder.update(null, newRemindsAt);
+
+    // then
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(update)
+        .withMessage(ReminderErrorCode.NULL_SCHEDULED_AT.getCodeName());
+  }
+
+  @Test
+  void Reminder_도메인_수정_시_remindsAt이_scheduledAt보다_늦으면_실패한다() {
+    // given
+    Reminder reminder = ReminderFixture.createValidReminder();
+    LocalDateTime scheduledAt = ReminderFixture.createValidTodoScheduledAt();
+    LocalDateTime invalidRemindsAt = scheduledAt.plusMinutes(1);
+
+    // when
+    ThrowingCallable update = () -> reminder.update(scheduledAt, invalidRemindsAt);
+
+    // then
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(update)
+        .withMessage(ReminderErrorCode.INVALID_REMINDS_AT.getCodeName());
+  }
+
 }

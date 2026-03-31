@@ -60,4 +60,11 @@ public class ReminderEntity extends BaseEntity {
         .build();
   }
 
+  public void update(Reminder reminder) {
+    this.userId = reminder.getUserId();
+    this.todoId = reminder.getTodoId();
+    this.remindsAt = reminder.getRemindsAt();
+    this.remindedAt = reminder.getRemindedAt();
+  }
+
 }

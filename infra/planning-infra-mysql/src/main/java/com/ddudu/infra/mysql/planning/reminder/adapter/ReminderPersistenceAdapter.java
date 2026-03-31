@@ -6,6 +6,7 @@ import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.infra.mysql.planning.reminder.entity.ReminderEntity;
 import com.ddudu.infra.mysql.planning.reminder.repository.ReminderRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +20,16 @@ public class ReminderPersistenceAdapter implements ReminderCommandPort, Reminder
   public Reminder save(Reminder reminder) {
     return reminderRepository.save(ReminderEntity.from(reminder))
         .toDomain();
+  }
+
+  @Override
+  public Reminder update(Reminder reminder) {
+    ReminderEntity reminderEntity = reminderRepository.findById(reminder.getId())
+        .orElseThrow(EntityNotFoundException::new);
+
+    reminderEntity.update(reminder);
+
+    return reminderEntity.toDomain();
   }
 
   @Override

@@ -18,6 +18,21 @@ public class ReminderFixture extends BaseFixture {
     return Reminder.from(userId, todoId, remindsAt, scheduledAt);
   }
 
+  public static Reminder createValidReminderWithIds(Long userId, Long todoId) {
+    LocalDateTime scheduledAt = getFutureDateTime(10, TimeUnit.DAYS);
+    LocalDateTime remindsAt = getRandomDateTimeBetween(scheduledAt.minusDays(1), scheduledAt);
+
+    return Reminder.from(userId, todoId, remindsAt, scheduledAt);
+  }
+
+  public static LocalDateTime createValidTodoScheduledAt() {
+    return getFutureDateTime(10, TimeUnit.DAYS);
+  }
+
+  public static LocalDateTime createValidRemindsAtBefore(LocalDateTime scheduledAt) {
+    return getRandomDateTimeBetween(scheduledAt.minusDays(1), scheduledAt);
+  }
+
   public static Reminder createReminderWithUserId(Long userId) {
     Long todoId = getRandomId();
     LocalDateTime scheduledAt = getFutureDateTime(10, TimeUnit.DAYS);
