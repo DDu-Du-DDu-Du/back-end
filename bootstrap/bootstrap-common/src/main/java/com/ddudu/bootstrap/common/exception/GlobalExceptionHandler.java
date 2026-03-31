@@ -3,7 +3,6 @@ package com.ddudu.bootstrap.common.exception;
 import com.ddudu.common.exception.DefaultErrorCode;
 import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ErrorCodeParser;
-import com.ddudu.common.exception.UnprocessableEntityException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import java.util.Arrays;
 import java.util.List;
@@ -128,8 +127,8 @@ public class GlobalExceptionHandler {
         .body(response);
   }
 
-  @ExceptionHandler(UnprocessableEntityException.class)
-  public ResponseEntity<ErrorResponse> handleUnprocessableEntity(UnprocessableEntityException e) {
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<ErrorResponse> handleUnprocessableEntity(IllegalStateException e) {
     log.warn(e.getMessage(), e);
 
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());

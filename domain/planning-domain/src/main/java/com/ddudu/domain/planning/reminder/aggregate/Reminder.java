@@ -65,6 +65,19 @@ public class Reminder {
     return Objects.nonNull(remindedAt);
   }
 
+
+  public void validateReminderCreator(Long userId) {
+    if (!this.userId.equals(userId)) {
+      throw new SecurityException(ReminderErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
+  }
+
+  public void validateCancelable() {
+    if (isReminded()) {
+      throw new IllegalStateException(ReminderErrorCode.ALREADY_REMINDED.getCodeName());
+    }
+  }
+
   public Duration getRemindDifference(LocalDateTime todoScheduledAt) {
     checkState(Objects.nonNull(remindsAt), ReminderErrorCode.UNABLE_TO_GET_REMINDER.getCodeName());
     checkState(

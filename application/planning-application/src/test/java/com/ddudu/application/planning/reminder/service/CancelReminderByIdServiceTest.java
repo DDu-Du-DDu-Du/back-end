@@ -6,13 +6,11 @@ import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.reminder.out.ReminderCommandPort;
 import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
 import com.ddudu.common.exception.ReminderErrorCode;
-import com.ddudu.common.exception.UnprocessableEntityException;
 import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.ReminderFixture;
 import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
-import java.time.LocalDateTime;
 import java.util.MissingResourceException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -87,26 +85,5 @@ class CancelReminderByIdServiceTest {
         .withMessage(ReminderErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
   }
 
-  @Test
-  void 이미_발송된_미리알림이면_실패한다() {
-    // given
-    Reminder remindedReminder = ReminderFixture.createReminderWithRemindedAt(LocalDateTime.now());
-    Reminder reminder = reminderCommandPort.save(
-        Reminder.builder()
-            .userId(user.getId())
-            .todoId(remindedReminder.getTodoId())
-            .remindsAt(remindedReminder.getRemindsAt())
-            .remindedAt(remindedReminder.getRemindedAt())
-            .build()
-    );
-
-    // when
-    ThrowingCallable cancel = () -> cancelReminderByIdService.cancel(user.getId(), reminder.getId());
-
-    // then
-    Assertions.assertThatExceptionOfType(UnprocessableEntityException.class)
-        .isThrownBy(cancel)
-        .withMessage(ReminderErrorCode.ALREADY_REMINDED.getCodeName());
-  }
 
 }

@@ -1,6 +1,7 @@
 package com.ddudu.application.common.dto.interim;
 
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
+import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -18,6 +19,14 @@ public record InterimCancelReminderEvent(
         .userId(userId)
         .typeCode(NotificationEventTypeCode.TODO_REMINDER)
         .contextId(todo.getId())
+        .build();
+  }
+
+  public static InterimCancelReminderEvent from(Long userId, Reminder reminder) {
+    return InterimCancelReminderEvent.builder()
+        .userId(userId)
+        .typeCode(NotificationEventTypeCode.TODO_REMINDER)
+        .contextId(reminder.getTodoId())
         .build();
   }
 

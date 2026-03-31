@@ -159,6 +159,35 @@ class ReminderTest {
   }
 
   @Test
+  void 미리알림_생성자가_아니면_검증에_실패한다() {
+    // given
+    Reminder reminder = ReminderFixture.createValidReminder();
+    Long invalidUserId = ReminderFixture.getRandomId();
+
+    // when
+    ThrowingCallable validate = () -> reminder.validateReminderCreator(invalidUserId);
+
+    // then
+    assertThatExceptionOfType(SecurityException.class)
+        .isThrownBy(validate)
+        .withMessage(ReminderErrorCode.INVALID_AUTHORITY.getCodeName());
+  }
+
+  @Test
+  void 이미_발송된_미리알림이면_취소_검증에_실패한다() {
+    // given
+    Reminder reminder = ReminderFixture.createReminderWithRemindedAt(LocalDateTime.now());
+
+    // when
+    ThrowingCallable validate = reminder::validateCancelable;
+
+    // then
+    assertThatExceptionOfType(IllegalStateException.class)
+        .isThrownBy(validate)
+        .withMessage(ReminderErrorCode.ALREADY_REMINDED.getCodeName());
+  }
+
+  @Test
   void 일정과_미리알림_시간차_확인에_성공한다() {
     // given
     LocalDateTime scheduledAt = ReminderFixture.getFutureDateTime(3, TimeUnit.DAYS);
