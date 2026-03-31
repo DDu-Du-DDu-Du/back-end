@@ -205,7 +205,7 @@ class RepeatTodoDomainServiceTest {
       ddudus.stream()
           .map(Todo::getScheduledOn)
           .forEach(date -> assertThat(date.getDayOfMonth())
-              .isIn(repeatDayOfMonth, startDate.lengthOfMonth()));
+              .isIn(repeatDayOfMonth, date.lengthOfMonth()));
     }
 
   }
