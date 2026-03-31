@@ -2,6 +2,7 @@ package com.ddudu.application.planning.reminder.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.ddudu.application.common.dto.interim.InterimSetReminderEvent;
 import com.ddudu.application.common.dto.reminder.request.CreateReminderRequest;
 import com.ddudu.application.common.dto.reminder.response.CreateReminderResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
@@ -107,7 +108,7 @@ class CreateReminderServiceTest {
     createReminderService.create(user.getId(), request);
 
     // then
-    assertThat(events.stream(com.ddudu.application.common.dto.interim.InterimSetReminderEvent.class))
+    assertThat(events.stream(InterimSetReminderEvent.class))
         .hasSize(1);
   }
 
