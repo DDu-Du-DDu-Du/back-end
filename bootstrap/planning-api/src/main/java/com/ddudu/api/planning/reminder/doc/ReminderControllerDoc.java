@@ -2,14 +2,17 @@ package com.ddudu.api.planning.reminder.doc;
 
 import com.ddudu.application.common.dto.IdResponse;
 import com.ddudu.application.common.dto.reminder.request.CreateReminderRequest;
+import com.ddudu.application.common.dto.reminder.response.RetrieveReminderResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.ReminderErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 @Tag(
@@ -89,5 +92,57 @@ public interface ReminderControllerDoc {
       }
   )
   ResponseEntity<IdResponse> create(Long loginId, CreateReminderRequest request);
+
+  @Operation(summary = "미리알림 조회")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2108",
+                      value = ReminderErrorExamples.REMINDER_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "2106",
+                          value = ReminderErrorExamples.REMINDER_LOGIN_USER_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "2107",
+                          value = ReminderErrorExamples.REMINDER_TODO_NOT_EXISTING
+                      )
+                  }
+              )
+          )
+      }
+  )
+  ResponseEntity<List<RetrieveReminderResponse>> retrieve(
+      Long loginId,
+      @Parameter(description = "조회할 투두 ID", required = true)
+      Long todoId
+  );
 
 }
