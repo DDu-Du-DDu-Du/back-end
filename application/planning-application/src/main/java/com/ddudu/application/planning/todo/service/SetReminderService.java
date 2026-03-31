@@ -58,5 +58,4 @@ public class SetReminderService implements SetReminderUseCase {
 
     applicationEventPublisher.publishEvent(saveEvent);
   }
-
 }

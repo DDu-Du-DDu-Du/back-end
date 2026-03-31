@@ -58,5 +58,4 @@ public class CancelReminderService implements CancelReminderUseCase {
 
     applicationEventPublisher.publishEvent(removeEvent);
   }
-
 }
