@@ -21,20 +21,19 @@ import java.time.LocalTime;
 import java.util.MissingResourceException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
+@RecordApplicationEvents
 @DisplayNameGeneration(ReplaceUnderscores.class)
 class CreateReminderServiceTest {
 
@@ -53,17 +52,9 @@ class CreateReminderServiceTest {
   @Autowired
   ReminderLoaderPort reminderLoaderPort;
 
-  @SpyBean
-  ApplicationEventPublisher applicationEventPublisher;
-
   User user;
   Goal goal;
   Todo todo;
-
-  @AfterEach
-  void tearDown() {
-    org.mockito.Mockito.reset(applicationEventPublisher);
-  }
 
   @BeforeEach
   void setUp() {
@@ -107,7 +98,7 @@ class CreateReminderServiceTest {
   }
 
   @Test
-  void Reminder_생성_후_이벤트를_발행한다() {
+  void Reminder_생성_후_이벤트를_발행한다(ApplicationEvents events) {
     // given
     LocalDateTime remindsAt = todo.getScheduledOn().atTime(todo.getBeginAt()).minusMinutes(10);
     CreateReminderRequest request = new CreateReminderRequest(todo.getId(), remindsAt);
@@ -116,14 +107,8 @@ class CreateReminderServiceTest {
     createReminderService.create(user.getId(), request);
 
     // then
-    ArgumentCaptor<Object> eventCaptor = ArgumentCaptor.forClass(Object.class);
-    org.mockito.Mockito.verify(applicationEventPublisher, org.mockito.Mockito.atLeastOnce())
-        .publishEvent(eventCaptor.capture());
-
-    boolean hasReminderEvent = eventCaptor.getAllValues()
-        .stream()
-        .anyMatch(event -> event.getClass().getSimpleName().equals("InterimSetReminderEvent"));
-    assertThat(hasReminderEvent).isTrue();
+    assertThat(events.stream(com.ddudu.application.common.dto.interim.InterimSetReminderEvent.class))
+        .hasSize(1);
   }
 
   @Test
