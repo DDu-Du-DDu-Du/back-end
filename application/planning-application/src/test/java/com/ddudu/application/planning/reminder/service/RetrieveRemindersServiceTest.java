@@ -71,11 +71,17 @@ class RetrieveRemindersServiceTest {
         Reminder.from(user.getId(), todo.getId(), scheduledAt.minusMinutes(10), scheduledAt)
     );
     Reminder second = reminderCommandPort.save(
-        Reminder.from(user.getId(), todo.getId(), scheduledAt.minusMinutes(5), scheduledAt.plusMinutes(1))
+        Reminder.from(
+            user.getId(),
+            todo.getId(),
+            scheduledAt.minusMinutes(5),
+            scheduledAt.plusMinutes(1)
+        )
     );
 
     // when
-    List<RetrieveReminderResponse> responses = retrieveRemindersService.retrieve(user.getId(), todo.getId());
+    List<RetrieveReminderResponse> responses =
+        retrieveRemindersService.retrieve(user.getId(), todo.getId());
 
     // then
     assertThat(responses).hasSize(2);
@@ -90,7 +96,8 @@ class RetrieveRemindersServiceTest {
     Long invalidLoginId = TodoFixture.getRandomId();
 
     // when
-    ThrowingCallable retrieve = () -> retrieveRemindersService.retrieve(invalidLoginId, todo.getId());
+    ThrowingCallable retrieve =
+        () -> retrieveRemindersService.retrieve(invalidLoginId, todo.getId());
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
@@ -104,7 +111,8 @@ class RetrieveRemindersServiceTest {
     Long invalidTodoId = TodoFixture.getRandomId();
 
     // when
-    ThrowingCallable retrieve = () -> retrieveRemindersService.retrieve(user.getId(), invalidTodoId);
+    ThrowingCallable retrieve =
+        () -> retrieveRemindersService.retrieve(user.getId(), invalidTodoId);
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
@@ -118,7 +126,8 @@ class RetrieveRemindersServiceTest {
     User otherUser = signUpPort.save(UserFixture.createRandomUserWithId());
 
     // when
-    ThrowingCallable retrieve = () -> retrieveRemindersService.retrieve(otherUser.getId(), todo.getId());
+    ThrowingCallable retrieve =
+        () -> retrieveRemindersService.retrieve(otherUser.getId(), todo.getId());
 
     // then
     Assertions.assertThatExceptionOfType(SecurityException.class)
