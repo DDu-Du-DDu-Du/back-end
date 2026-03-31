@@ -6,6 +6,7 @@ import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.infra.mysql.planning.reminder.entity.ReminderEntity;
 import com.ddudu.infra.mysql.planning.reminder.repository.ReminderRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,14 @@ public class ReminderPersistenceAdapter implements ReminderCommandPort, Reminder
   public Optional<Reminder> getOptionalReminder(Long id) {
     return reminderRepository.findById(id)
         .map(ReminderEntity::toDomain);
+  }
+
+  @Override
+  public List<Reminder> getRemindersByTodoId(Long todoId) {
+    return reminderRepository.findAllByTodoIdOrderByRemindsAtAsc(todoId)
+        .stream()
+        .map(ReminderEntity::toDomain)
+        .toList();
   }
 
 }
