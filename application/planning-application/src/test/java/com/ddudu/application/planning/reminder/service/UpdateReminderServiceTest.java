@@ -1,9 +1,9 @@
 package com.ddudu.application.planning.reminder.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 import com.ddudu.application.common.dto.interim.InterimSetReminderEvent;
 import com.ddudu.application.common.dto.reminder.request.UpdateReminderRequest;
@@ -34,7 +34,7 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +63,7 @@ class UpdateReminderServiceTest {
   @Autowired
   ReminderLoaderPort reminderLoaderPort;
 
-  @MockBean
+  @SpyBean
   TodoLoaderPort todoLoaderPort;
 
   User user;
@@ -79,8 +79,6 @@ class UpdateReminderServiceTest {
     reminder = reminderCommandPort.save(
         ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), todo.getId())
     );
-    when(todoLoaderPort.getTodoOrElseThrow(eq(todo.getId()), anyString()))
-        .thenReturn(todo);
   }
 
   @Test
@@ -155,14 +153,13 @@ class UpdateReminderServiceTest {
   @Test
   void 투두가_없으면_실패한다() {
     // given
-    when(todoLoaderPort.getTodoOrElseThrow(eq(todo.getId()), anyString()))
-        .thenThrow(
-            new MissingResourceException(
-                ReminderErrorCode.TODO_NOT_EXISTING.getCodeName(),
-                Todo.class.getName(),
-                String.valueOf(todo.getId())
-            )
-        );
+    doThrow(
+        new MissingResourceException(
+            ReminderErrorCode.TODO_NOT_EXISTING.getCodeName(),
+            Todo.class.getName(),
+            String.valueOf(todo.getId())
+        )
+    ).when(todoLoaderPort).getTodoOrElseThrow(eq(todo.getId()), anyString());
     UpdateReminderRequest request = new UpdateReminderRequest(LocalDateTime.now().plusDays(1));
 
     // when
