@@ -63,7 +63,9 @@ class CancelReminderByIdServiceTest {
   @Test
   void 미리알림_취소에_성공한다() {
     // given
-    Reminder reminder = reminderCommandPort.save(ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), todo.getId()));
+    Reminder reminder = reminderCommandPort.save(
+        ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), todo.getId())
+    );
 
     // when
     cancelReminderByIdService.cancel(user.getId(), reminder.getId());
@@ -88,10 +90,15 @@ class CancelReminderByIdServiceTest {
   void 로그인_사용자가_없으면_실패한다() {
     // given
     Long invalidLoginId = TodoFixture.getRandomId();
-    Reminder reminder = reminderCommandPort.save(ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), todo.getId()));
+    Reminder reminder = reminderCommandPort.save(
+        ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), todo.getId())
+    );
 
     // when
-    ThrowingCallable cancel = () -> cancelReminderByIdService.cancel(invalidLoginId, reminder.getId());
+    ThrowingCallable cancel = () -> cancelReminderByIdService.cancel(
+        invalidLoginId,
+        reminder.getId()
+    );
 
     // then
     Assertions.assertThatExceptionOfType(MissingResourceException.class)
