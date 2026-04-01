@@ -416,6 +416,42 @@ class TodoTest {
     }
 
     @Nested
+    class 일정_조회_테스트 {
+
+      @Test
+      void 시작시간과_일정일자가_있으면_일정_일시를_반환한다() {
+        // given
+        LocalDate scheduledOn = LocalDate.now().plusDays(1);
+        LocalTime beginAt = LocalTime.of(10, 30);
+        Todo scheduledTodo = TodoFixture.createRandomTodoWithSchedule(userId, goalId, scheduledOn)
+            .setUpPeriod(beginAt, null);
+
+        // when
+        LocalDateTime actual = scheduledTodo.getScheduleDatetime();
+
+        // then
+        assertThat(actual).isEqualTo(scheduledOn.atTime(beginAt));
+      }
+
+      @Test
+      void 시작시간이_없으면_일정_일시는_null을_반환한다() {
+        // given
+        Todo noBeginTimeTodo = TodoFixture.createRandomTodoWithSchedule(
+            userId,
+            goalId,
+            LocalDate.now().plusDays(1)
+        );
+
+        // when
+        LocalDateTime actual = noBeginTimeTodo.getScheduleDatetime();
+
+        // then
+        assertThat(actual).isNull();
+      }
+
+    }
+
+    @Nested
     class 기간_설정_테스트 {
 
       @Test

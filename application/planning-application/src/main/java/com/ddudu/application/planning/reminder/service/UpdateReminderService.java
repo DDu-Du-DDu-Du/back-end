@@ -12,9 +12,7 @@ import com.ddudu.common.exception.ReminderErrorCode;
 import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
-import java.time.LocalDateTime;
 import java.util.MissingResourceException;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,30 +48,13 @@ public class UpdateReminderService implements UpdateReminderUseCase {
         reminder.getTodoId(),
         ReminderErrorCode.TODO_NOT_EXISTING.getCodeName()
     );
-    validateTodoCreator(todo, user.getId());
+    todo.validateTodoCreator(user.getId());
 
-    LocalDateTime scheduledAt = resolveScheduledAt(todo);
-    Reminder updatedReminder = reminder.update(scheduledAt, request.remindsAt());
+    Reminder updatedReminder = reminder.update(todo.getScheduleDatetime(), request.remindsAt());
     Reminder saved = reminderCommandPort.update(updatedReminder);
 
     InterimSetReminderEvent event = InterimSetReminderEvent.from(user.getId(), saved);
     applicationEventPublisher.publishEvent(event);
-  }
-
-  private LocalDateTime resolveScheduledAt(Todo todo) {
-    if (Objects.isNull(todo.getBeginAt())) {
-      throw new IllegalArgumentException(ReminderErrorCode.NULL_SCHEDULED_AT.getCodeName());
-    }
-
-    return todo.getScheduledOn().atTime(todo.getBeginAt());
-  }
-
-  private void validateTodoCreator(Todo todo, Long userId) {
-    try {
-      todo.validateTodoCreator(userId);
-    } catch (SecurityException ignored) {
-      throw new SecurityException(ReminderErrorCode.INVALID_AUTHORITY.getCodeName());
-    }
   }
 
 }
