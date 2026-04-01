@@ -3,10 +3,12 @@ package com.ddudu.application.planning.todo.service;
 import com.ddudu.application.common.dto.interim.InterimCancelReminderEvent;
 import com.ddudu.application.common.dto.interim.InterimDeleteTodoEvent;
 import com.ddudu.application.common.dto.notification.event.NotificationEventRemoveEvent;
+import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
 import com.ddudu.application.common.port.todo.in.DeleteTodoUseCase;
 import com.ddudu.application.common.port.todo.out.DeleteTodoPort;
 import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.common.annotation.UseCase;
+import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class DeleteTodoService implements DeleteTodoUseCase {
 
   private final TodoLoaderPort todoLoaderPort;
+  private final ReminderLoaderPort reminderLoaderPort;
   private final DeleteTodoPort deleteTodoPort;
   private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -36,14 +39,13 @@ public class DeleteTodoService implements DeleteTodoUseCase {
     Todo todo = optionalTodo.get();
 
     todo.validateTodoCreator(loginId);
+
+    reminderLoaderPort.getRemindersByTodoId(todoId)
+        .forEach(reminder ->
+            applicationEventPublisher.publishEvent(InterimCancelReminderEvent.from(loginId, reminder))
+        );
+
     deleteTodoPort.delete(todo);
-
-    InterimCancelReminderEvent interimEvent = InterimCancelReminderEvent.from(
-        loginId,
-        todo
-    );
-
-    applicationEventPublisher.publishEvent(interimEvent);
   }
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

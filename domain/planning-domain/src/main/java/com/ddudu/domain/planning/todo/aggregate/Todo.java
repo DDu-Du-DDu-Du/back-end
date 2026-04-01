@@ -1,13 +1,11 @@
 package com.ddudu.domain.planning.todo.aggregate;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import com.ddudu.common.exception.TodoErrorCode;
 import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,7 +34,6 @@ public class Todo {
   private final LocalDate scheduledOn;
   private final LocalTime beginAt;
   private final LocalTime endAt;
-  private final LocalDateTime remindAt;
 
   @Builder
   private Todo(
@@ -52,11 +49,7 @@ public class Todo {
       String statusValue,
       LocalDate scheduledOn,
       LocalTime beginAt,
-      LocalTime endAt,
-      LocalDateTime remindAt,
-      Integer remindDays,
-      Integer remindHours,
-      Integer remindMinutes
+      LocalTime endAt
   ) {
     validate(goalId, userId, name, memo, beginAt, endAt);
 
@@ -71,7 +64,6 @@ public class Todo {
     this.scheduledOn = Objects.requireNonNullElse(scheduledOn, LocalDate.now());
     this.beginAt = beginAt;
     this.endAt = endAt;
-    this.remindAt = resolveReminder(remindAt, remindDays, remindHours, remindMinutes);
   }
 
   public void validateTodoCreator(Long userId) {
@@ -142,38 +134,20 @@ public class Todo {
       String memo,
       LocalDate scheduledOn,
       LocalTime beginAt,
-      LocalTime endAt,
-      Integer remindDays,
-      Integer remindHours,
-      Integer remindMinutes
+      LocalTime endAt
   ) {
-    TodoBuilder builder = getFullBuilder()
+    return getFullBuilder()
         .goalId(goalId)
         .name(name)
         .memo(memo)
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
-        .endAt(endAt);
-
-    if (isReminderInputEmpty(remindDays, remindHours, remindMinutes)) {
-      return builder.build();
-    }
-
-    return builder
-        .remindDays(remindDays)
-        .remindHours(remindHours)
-        .remindMinutes(remindMinutes)
-        .remindAt(null)
+        .endAt(endAt)
         .build();
   }
 
-
   public Long getRepeatTodoId() {
     return repeatTodoId;
-  }
-
-  public boolean hasStartTime() {
-    return nonNull(beginAt);
   }
 
   public int getBeginHour() {
@@ -184,8 +158,8 @@ public class Todo {
     return beginAt.getHour();
   }
 
-  public boolean hasReminder() {
-    return nonNull(remindAt);
+  public boolean hasStartTime() {
+    return nonNull(beginAt);
   }
 
   public LocalDateTime getScheduleDatetime() {
@@ -200,36 +174,6 @@ public class Todo {
     return nonNull(postponedAt);
   }
 
-  public Todo setReminder(int days, int hours, int minutes) {
-    LocalDateTime reminder = validateReminder(days, hours, minutes);
-
-    return getFullBuilder()
-        .remindAt(reminder)
-        .build();
-  }
-
-  public Todo cancelReminder() {
-    return getFullBuilder()
-        .remindAt(null)
-        .build();
-  }
-
-  public Duration getRemindDifference() {
-    checkState(
-        Objects.nonNull(beginAt) && Objects.nonNull(remindAt),
-        TodoErrorCode.UNABLE_TO_GET_REMINDER.getCodeName()
-    );
-
-    LocalDateTime scheduledAt = scheduledOn.atTime(beginAt);
-
-    checkState(
-        scheduledAt.isAfter(remindAt),
-        TodoErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName()
-    );
-
-    return Duration.between(remindAt, scheduledAt);
-  }
-
   private TodoBuilder getFullBuilder() {
     return Todo.builder()
         .id(this.id)
@@ -242,8 +186,7 @@ public class Todo {
         .scheduledOn(this.scheduledOn)
         .postponedAt(this.postponedAt)
         .beginAt(this.beginAt)
-        .endAt(this.endAt)
-        .remindAt(this.remindAt);
+        .endAt(this.endAt);
   }
 
   private LocalDateTime resolvePostponedAt(LocalDateTime postponedAt, Boolean isPostponed) {
@@ -305,67 +248,6 @@ public class Todo {
 
   private boolean isCreatedByUser(Long userId) {
     return Objects.equals(this.userId, userId);
-  }
-
-  private LocalDateTime resolveReminder(
-      LocalDateTime remindAt,
-      Integer remindDays,
-      Integer remindHours,
-      Integer remindMinutes
-  ) {
-    if (nonNull(remindAt)) {
-      return remindAt;
-    }
-
-    if (isReminderInputEmpty(remindDays, remindHours, remindMinutes)) {
-      return null;
-    }
-
-    return validateReminder(
-        Objects.requireNonNullElse(remindDays, 0),
-        Objects.requireNonNullElse(remindHours, 0),
-        Objects.requireNonNullElse(remindMinutes, 0)
-    );
-  }
-
-  private boolean isReminderInputEmpty(
-      Integer remindDays,
-      Integer remindHours,
-      Integer remindMinutes
-  ) {
-    return isNull(remindDays) && isNull(remindHours) && isNull(remindMinutes);
-  }
-
-  private LocalDateTime validateReminder(int days, int hours, int minutes) {
-    checkArgument(
-        days >= 0 && hours >= 0 && minutes >= 0,
-        TodoErrorCode.NEGATIVE_REMINDER_INPUT_EXISTS.getCodeName()
-    );
-    checkArgument(
-        hasStartTime(),
-        TodoErrorCode.BEGIN_AT_REQUIRED_FOR_REMINDER.getCodeName()
-    );
-
-    Duration offset = Duration.ofDays(days)
-        .plusHours(hours)
-        .plusMinutes(minutes);
-
-    checkArgument(
-        !offset.isZero(),
-        TodoErrorCode.ZERO_REMINDER.getCodeName()
-    );
-
-    LocalDateTime reminder = scheduledOn.atTime(beginAt)
-        .minusDays(days)
-        .minusHours(hours)
-        .minusMinutes(minutes);
-
-    checkArgument(
-        reminder.isAfter(LocalDateTime.now()),
-        TodoErrorCode.REMINDER_NOT_AFTER_NOW.getCodeName()
-    );
-
-    return reminder;
   }
 
 }

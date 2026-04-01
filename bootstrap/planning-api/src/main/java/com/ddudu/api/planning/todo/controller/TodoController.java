@@ -12,14 +12,12 @@ import com.ddudu.application.common.dto.todo.request.CreateTodoRequest;
 import com.ddudu.application.common.dto.todo.request.MoveDateRequest;
 import com.ddudu.application.common.dto.todo.request.PeriodSetupRequest;
 import com.ddudu.application.common.dto.todo.request.RepeatAnotherDayRequest;
-import com.ddudu.application.common.dto.todo.request.SetReminderRequest;
 import com.ddudu.application.common.dto.todo.request.TodoSearchRequest;
 import com.ddudu.application.common.dto.todo.request.UpdateTodoRequest;
 import com.ddudu.application.common.dto.todo.response.BasicTodoResponse;
 import com.ddudu.application.common.dto.todo.response.RepeatAnotherDayResponse;
 import com.ddudu.application.common.dto.todo.response.TimetableResponse;
 import com.ddudu.application.common.dto.todo.response.TodoDetailResponse;
-import com.ddudu.application.common.port.todo.in.CancelReminderUseCase;
 import com.ddudu.application.common.port.todo.in.ChangeNameUseCase;
 import com.ddudu.application.common.port.todo.in.CreateTodoUseCase;
 import com.ddudu.application.common.port.todo.in.DeleteTodoUseCase;
@@ -29,7 +27,6 @@ import com.ddudu.application.common.port.todo.in.MoveDateUseCase;
 import com.ddudu.application.common.port.todo.in.PeriodSetupUseCase;
 import com.ddudu.application.common.port.todo.in.RepeatUseCase;
 import com.ddudu.application.common.port.todo.in.RetrieveTodoUseCase;
-import com.ddudu.application.common.port.todo.in.SetReminderUseCase;
 import com.ddudu.application.common.port.todo.in.SwitchStatusUseCase;
 import com.ddudu.application.common.port.todo.in.TodoSearchUseCase;
 import com.ddudu.application.common.port.todo.in.UpdateTodoUseCase;
@@ -70,8 +67,6 @@ public class TodoController implements TodoControllerDoc {
   private final ChangeNameUseCase changeNameUseCase;
   private final UpdateTodoUseCase updateTodoUseCase;
   private final DeleteTodoUseCase deleteTodoUseCase;
-  private final SetReminderUseCase setReminderUseCase;
-  private final CancelReminderUseCase cancelReminderUseCase;
 
   /**
    * 투두 생성 API
@@ -159,37 +154,6 @@ public class TodoController implements TodoControllerDoc {
     TodoDetailResponse response = retrieveTodoUseCase.findById(loginId, id);
 
     return ResponseEntity.ok(response);
-  }
-
-  @Override
-  @PatchMapping("/{id}/reminder")
-  public ResponseEntity<Void> setReminder(
-      @Login
-      Long loginId,
-      @PathVariable("id")
-      Long id,
-      @RequestBody
-      @Valid
-      SetReminderRequest request
-  ) {
-    setReminderUseCase.setReminder(loginId, id, request);
-
-    return ResponseEntity.noContent()
-        .build();
-  }
-
-  @Override
-  @DeleteMapping("/{id}/reminder")
-  public ResponseEntity<Void> cancelReminder(
-      @Login
-      Long loginId,
-      @PathVariable("id")
-      Long id
-  ) {
-    cancelReminderUseCase.cancel(loginId, id);
-
-    return ResponseEntity.noContent()
-        .build();
   }
 
   /**

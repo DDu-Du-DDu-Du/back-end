@@ -9,7 +9,6 @@ import com.ddudu.application.common.dto.todo.request.CreateTodoRequest;
 import com.ddudu.application.common.dto.todo.request.MoveDateRequest;
 import com.ddudu.application.common.dto.todo.request.PeriodSetupRequest;
 import com.ddudu.application.common.dto.todo.request.RepeatAnotherDayRequest;
-import com.ddudu.application.common.dto.todo.request.SetReminderRequest;
 import com.ddudu.application.common.dto.todo.request.TodoSearchRequest;
 import com.ddudu.application.common.dto.todo.request.UpdateTodoRequest;
 import com.ddudu.application.common.dto.todo.response.RepeatAnotherDayResponse;
@@ -655,113 +654,6 @@ public interface TodoControllerDoc {
       @ParameterObject
       TodoSearchRequest request
   );
-
-  @Operation(summary = "미리알림 설정")
-  @ApiResponses(
-      {
-          @ApiResponse(
-              responseCode = "204",
-              description = "NO CONTENT"
-          ),
-          @ApiResponse(
-              responseCode = "400",
-              description = "BAD REQUEST",
-              content = @Content(
-                  examples = {
-                      @ExampleObject(
-                          name = "2008",
-                          value = TodoErrorExamples.TODO_LOGIN_USER_NOT_EXISTING
-                      ),
-                      @ExampleObject(
-                          name = "2004",
-                          value = TodoErrorExamples.TODO_ID_NOT_EXISTING
-                      ),
-                      @ExampleObject(
-                          name = "2017",
-                          value = TodoErrorExamples.BEGIN_AT_REQUIRED_FOR_REMINDER
-                      ),
-                      @ExampleObject(
-                          name = "2018",
-                          value = TodoErrorExamples.REMINDER_NOT_AFTER_NOW
-                      ),
-                      @ExampleObject(
-                          name = "2019",
-                          value = TodoErrorExamples.ZERO_REMINDER
-                      ),
-                      @ExampleObject(
-                          name = "2020",
-                          value = TodoErrorExamples.NEGATIVE_REMINDER_INPUT_EXISTS
-                      )
-                  }
-              )
-          ),
-          @ApiResponse(
-              responseCode = "401",
-              description = "UNAUTHORIZED",
-              content = @Content(
-                  examples = @ExampleObject(
-                      name = "5002",
-                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
-                  )
-              )
-          ),
-          @ApiResponse(
-              responseCode = "403",
-              description = "FORBIDDEN",
-              content = @Content(
-                  examples = @ExampleObject(
-                      name = "2007",
-                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
-                  )
-              )
-          )
-      }
-  )
-  ResponseEntity<Void> setReminder(Long loginId, Long todoId, SetReminderRequest request);
-
-  @Operation(summary = "미리알림 취소")
-  @ApiResponses(
-      {
-          @ApiResponse(
-              responseCode = "204",
-              description = "NO CONTENT"
-          ),
-          @ApiResponse(
-              responseCode = "401",
-              description = "UNAUTHORIZED",
-              content = @Content(
-                  examples = @ExampleObject(
-                      name = "5002",
-                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
-                  )
-              )
-          ),
-          @ApiResponse(
-              responseCode = "403",
-              description = "FORBIDDEN",
-              content = @Content(
-                  examples = @ExampleObject(
-                      name = "2007",
-                      description = "해당 투두에 대한 권한이 없는 경우 (본인만 가능)",
-                      value = TodoErrorExamples.TODO_INVALID_AUTHORITY
-                  )
-              )
-          ),
-          @ApiResponse(
-              responseCode = "404",
-              description = "NOT_FOUND",
-              content = @Content(
-                  examples = @ExampleObject(
-                      name = "2004",
-                      description = "존재하지 않는 투두인 경우",
-                      value = TodoErrorExamples.TODO_ID_NOT_EXISTING
-                  )
-              )
-          )
-      }
-  )
-  ResponseEntity<Void> cancelReminder(Long loginId, Long id);
 
   @Operation(summary = "투두 수정")
   @ApiResponses(

@@ -1,5 +1,6 @@
 package com.ddudu.application.notification.event;
 
+import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
 import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenLoaderPort;
@@ -12,6 +13,7 @@ import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.domain.notification.device.aggregate.NotificationDeviceToken;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.NotificationInbox;
+import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SendNotificationEventService implements SendNotificationEventUseCase {
 
   private final NotificationEventLoaderPort notificationEventLoaderPort;
+  private final ReminderLoaderPort reminderLoaderPort;
   private final TodoLoaderPort todoLoaderPort;
   private final NotificationInboxCommandPort notificationInboxCommandPort;
   private final NotificationEventCommandPort notificationEventCommandPort;
@@ -76,20 +79,27 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
   }
 
   private NotificationInbox createTodoNotificationInbox(NotificationEvent notificationEvent) {
+    Reminder reminder = reminderLoaderPort.getOptionalReminder(notificationEvent.getContextId())
+        .orElseThrow(() ->
+            new IllegalArgumentException(
+                NotificationEventErrorCode.ORIGINAL_TODO_NOT_EXISTING.getCodeName()
+            )
+        );
     Todo todo = todoLoaderPort.getTodoOrElseThrow(
-        notificationEvent.getContextId(),
+        reminder.getTodoId(),
         NotificationEventErrorCode.ORIGINAL_TODO_NOT_EXISTING.getCodeName()
     );
     String title = todo.getName();
-    String body = notificationEvent.getTodoBody(todo.getRemindDifference());
+    String body = notificationEvent.getTodoBody(reminder.getRemindDifference(todo.getScheduleDatetime()));
 
-    return buildNotificationInbox(notificationEvent, title, body);
+    return buildNotificationInbox(notificationEvent, title, body, reminder.getTodoId());
   }
 
   private NotificationInbox buildNotificationInbox(
       NotificationEvent notificationEvent,
       String title,
-      String body
+      String body,
+      Long contextId
   ) {
     return NotificationInbox.builder()
         .eventId(notificationEvent.getId())
@@ -98,7 +108,7 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
         .body(body)
         .senderId(notificationEvent.getSenderId())
         .userId(notificationEvent.getReceiverId())
-        .contextId(notificationEvent.getContextId())
+        .contextId(contextId)
         .build();
   }
 

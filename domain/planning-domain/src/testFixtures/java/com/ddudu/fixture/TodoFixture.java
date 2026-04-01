@@ -204,7 +204,6 @@ public class TodoFixture extends BaseFixture {
         .goalId(goalId)
         .scheduledOn(scheduleOn)
         .beginAt(beginAt)
-        .remindAt(remindAt)
         .build();
   }
 

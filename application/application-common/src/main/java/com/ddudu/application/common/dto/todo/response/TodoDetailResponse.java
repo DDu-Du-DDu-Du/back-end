@@ -1,5 +1,6 @@
 package com.ddudu.application.common.dto.todo.response;
 
+import com.ddudu.application.common.dto.reminder.response.RetrieveReminderResponse;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import lombok.Builder;
 
 @Schema(description = "투두 상세 응답")
@@ -69,10 +71,10 @@ public record TodoDetailResponse(
     )
     LocalTime endAt,
     LocalDateTime postponedAt,
-    LocalDateTime remindAt
+    List<RetrieveReminderResponse> reminders
 ) {
 
-  public static TodoDetailResponse from(Todo todo) {
+  public static TodoDetailResponse from(Todo todo, List<RetrieveReminderResponse> reminders) {
     return TodoDetailResponse.builder()
         .id(todo.getId())
         .beginAt(todo.getBeginAt())
@@ -81,7 +83,7 @@ public record TodoDetailResponse(
         .memo(todo.getMemo())
         .name(todo.getName())
         .postponedAt(todo.getPostponedAt())
-        .remindAt(todo.getRemindAt())
+        .reminders(reminders)
         .repeatTodoId(todo.getRepeatTodoId())
         .scheduledOn(todo.getScheduledOn())
         .status(todo.getStatus())
