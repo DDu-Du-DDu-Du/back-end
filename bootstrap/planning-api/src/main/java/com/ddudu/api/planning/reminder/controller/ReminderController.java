@@ -3,11 +3,13 @@ package com.ddudu.api.planning.reminder.controller;
 import com.ddudu.api.planning.reminder.doc.ReminderControllerDoc;
 import com.ddudu.application.common.dto.IdResponse;
 import com.ddudu.application.common.dto.reminder.request.CreateReminderRequest;
+import com.ddudu.application.common.dto.reminder.request.UpdateReminderRequest;
 import com.ddudu.application.common.dto.reminder.response.CreateReminderResponse;
 import com.ddudu.application.common.dto.reminder.response.RetrieveReminderResponse;
 import com.ddudu.application.common.port.reminder.in.CancelReminderByIdUseCase;
 import com.ddudu.application.common.port.reminder.in.CreateReminderUseCase;
 import com.ddudu.application.common.port.reminder.in.RetrieveRemindersUseCase;
+import com.ddudu.application.common.port.reminder.in.UpdateReminderUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +34,7 @@ public class ReminderController implements ReminderControllerDoc {
   private final CreateReminderUseCase createReminderUseCase;
   private final RetrieveRemindersUseCase retrieveRemindersUseCase;
   private final CancelReminderByIdUseCase cancelReminderByIdUseCase;
+  private final UpdateReminderUseCase updateReminderUseCase;
 
   @Override
   @PostMapping
@@ -70,6 +74,22 @@ public class ReminderController implements ReminderControllerDoc {
       Long id
   ) {
     cancelReminderByIdUseCase.cancel(loginId, id);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> update(
+      @Login
+      Long loginId,
+      @PathVariable
+      Long id,
+      @RequestBody
+      @Valid
+      UpdateReminderRequest request
+  ) {
+    updateReminderUseCase.update(loginId, id, request);
 
     return ResponseEntity.noContent().build();
   }

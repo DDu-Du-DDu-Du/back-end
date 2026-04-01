@@ -2,6 +2,7 @@ package com.ddudu.api.planning.reminder.doc;
 
 import com.ddudu.application.common.dto.IdResponse;
 import com.ddudu.application.common.dto.reminder.request.CreateReminderRequest;
+import com.ddudu.application.common.dto.reminder.request.UpdateReminderRequest;
 import com.ddudu.application.common.dto.reminder.response.RetrieveReminderResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.ReminderErrorExamples;
@@ -195,5 +196,76 @@ public interface ReminderControllerDoc {
       }
   )
   ResponseEntity<Void> cancel(Long loginId, Long id);
+
+  @Operation(summary = "미리알림 갱신")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "204",
+              description = "NO_CONTENT"
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "BAD_REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "2103",
+                          value = ReminderErrorExamples.REMINDER_NULL_REMINDS_AT
+                      ),
+                      @ExampleObject(
+                          name = "2104",
+                          value = ReminderErrorExamples.REMINDER_NULL_SCHEDULED_AT
+                      ),
+                      @ExampleObject(
+                          name = "2105",
+                          value = ReminderErrorExamples.REMINDER_INVALID_REMINDS_AT
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "403",
+              description = "FORBIDDEN",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "2108",
+                      value = ReminderErrorExamples.REMINDER_INVALID_AUTHORITY
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "2106",
+                          value = ReminderErrorExamples.REMINDER_LOGIN_USER_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "2107",
+                          value = ReminderErrorExamples.REMINDER_TODO_NOT_EXISTING
+                      ),
+                      @ExampleObject(
+                          name = "2112",
+                          value = ReminderErrorExamples.REMINDER_NOT_EXISTING
+                      )
+                  }
+              )
+          )
+      }
+  )
+  ResponseEntity<Void> update(Long loginId, Long id, UpdateReminderRequest request);
 
 }

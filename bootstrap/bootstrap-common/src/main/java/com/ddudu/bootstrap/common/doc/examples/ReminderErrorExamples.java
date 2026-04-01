@@ -58,6 +58,13 @@ public final class ReminderErrorExamples {
       }
       """;
 
+  public static final String REMINDER_NOT_EXISTING = """
+      {
+        "code": 2112,
+        "message": "미리알림 아이디가 존재하지 않습니다."
+      }
+      """;
+
   private ReminderErrorExamples() {
   }
 
