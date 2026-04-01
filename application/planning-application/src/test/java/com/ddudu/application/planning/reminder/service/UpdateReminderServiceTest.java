@@ -1,9 +1,9 @@
 package com.ddudu.application.planning.reminder.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 
 import com.ddudu.application.common.dto.interim.InterimSetReminderEvent;
 import com.ddudu.application.common.dto.reminder.request.UpdateReminderRequest;
