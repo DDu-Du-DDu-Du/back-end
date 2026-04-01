@@ -1,9 +1,6 @@
 package com.ddudu.application.planning.reminder.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 
 import com.ddudu.application.common.dto.interim.InterimSetReminderEvent;
 import com.ddudu.application.common.dto.reminder.request.UpdateReminderRequest;
@@ -11,8 +8,8 @@ import com.ddudu.application.common.port.auth.out.SignUpPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.reminder.out.ReminderCommandPort;
 import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
+import com.ddudu.application.common.port.todo.out.DeleteTodoPort;
 import com.ddudu.application.common.port.todo.out.SaveTodoPort;
-import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.common.exception.ReminderErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.reminder.aggregate.Reminder;
@@ -34,7 +31,6 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,13 +54,13 @@ class UpdateReminderServiceTest {
   SaveTodoPort saveTodoPort;
 
   @Autowired
+  DeleteTodoPort deleteTodoPort;
+
+  @Autowired
   ReminderCommandPort reminderCommandPort;
 
   @Autowired
   ReminderLoaderPort reminderLoaderPort;
-
-  @SpyBean
-  TodoLoaderPort todoLoaderPort;
 
   User user;
   Todo todo;
@@ -153,13 +149,7 @@ class UpdateReminderServiceTest {
   @Test
   void 투두가_없으면_실패한다() {
     // given
-    doThrow(
-        new MissingResourceException(
-            ReminderErrorCode.TODO_NOT_EXISTING.getCodeName(),
-            Todo.class.getName(),
-            String.valueOf(todo.getId())
-        )
-    ).when(todoLoaderPort).getTodoOrElseThrow(eq(todo.getId()), anyString());
+    deleteTodoPort.delete(todo);
     UpdateReminderRequest request = new UpdateReminderRequest(LocalDateTime.now().plusDays(1));
 
     // when
