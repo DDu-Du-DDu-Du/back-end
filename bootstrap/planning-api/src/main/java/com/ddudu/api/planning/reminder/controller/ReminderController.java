@@ -74,7 +74,5 @@ public class ReminderController implements ReminderControllerDoc {
     return ResponseEntity.noContent().build();
   }
 
-    return ResponseEntity.ok(response);
-  }
 
 }
