@@ -127,6 +127,21 @@ public class GlobalExceptionHandler {
         .body(response);
   }
 
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<ErrorResponse> handleUnprocessableEntity(IllegalStateException e) {
+    log.warn(e.getMessage(), e);
+
+    ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
+    ErrorResponse response = ErrorResponse.from(errorCode);
+
+    if (errorCode instanceof DefaultErrorCode) {
+      return handleUnexpected(response);
+    }
+
+    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+        .body(response);
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleUnknownException(Exception e) {
     log.error(e.getMessage(), e);

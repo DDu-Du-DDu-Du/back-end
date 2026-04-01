@@ -23,6 +23,11 @@ public class ReminderPersistenceAdapter implements ReminderCommandPort, Reminder
   }
 
   @Override
+  public void deleteById(Long id) {
+    reminderRepository.deleteById(id);
+  }
+
+  @Override
   public Optional<Reminder> getOptionalReminder(Long id) {
     return reminderRepository.findById(id)
         .map(ReminderEntity::toDomain);
