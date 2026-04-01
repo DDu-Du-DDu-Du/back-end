@@ -3,11 +3,16 @@ package com.ddudu.application.planning.reminder.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.reminder.out.ReminderCommandPort;
 import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.common.exception.ReminderErrorCode;
+import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.reminder.aggregate.Reminder;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
+import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.ReminderFixture;
 import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
@@ -34,22 +39,31 @@ class CancelReminderByIdServiceTest {
   SignUpPort signUpPort;
 
   @Autowired
+  SaveGoalPort saveGoalPort;
+
+  @Autowired
+  SaveTodoPort saveTodoPort;
+
+  @Autowired
   ReminderCommandPort reminderCommandPort;
 
   @Autowired
   ReminderLoaderPort reminderLoaderPort;
 
   User user;
+  Todo todo;
 
   @BeforeEach
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
+    Goal goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
   }
 
   @Test
   void 미리알림_취소에_성공한다() {
     // given
-    Reminder reminder = reminderCommandPort.save(ReminderFixture.createReminderWithUserId(user.getId()));
+    Reminder reminder = reminderCommandPort.save(ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), todo.getId()));
 
     // when
     cancelReminderByIdService.cancel(user.getId(), reminder.getId());
@@ -74,7 +88,7 @@ class CancelReminderByIdServiceTest {
   void 로그인_사용자가_없으면_실패한다() {
     // given
     Long invalidLoginId = TodoFixture.getRandomId();
-    Reminder reminder = reminderCommandPort.save(ReminderFixture.createReminderWithUserId(user.getId()));
+    Reminder reminder = reminderCommandPort.save(ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), todo.getId()));
 
     // when
     ThrowingCallable cancel = () -> cancelReminderByIdService.cancel(invalidLoginId, reminder.getId());
