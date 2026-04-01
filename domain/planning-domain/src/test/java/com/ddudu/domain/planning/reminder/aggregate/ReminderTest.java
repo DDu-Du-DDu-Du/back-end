@@ -135,6 +135,43 @@ class ReminderTest {
   }
 
   @Test
+  void Reminder_도메인_update_메서드로_미리알림_시간_수정에_성공한다() {
+    // given
+    Long userId = ReminderFixture.getRandomId();
+    Long todoId = ReminderFixture.getRandomId();
+    LocalDateTime scheduledAt = ReminderFixture.getFutureDateTime(5, TimeUnit.DAYS);
+    Reminder reminder = Reminder.from(userId, todoId, scheduledAt.minusHours(1), scheduledAt);
+    LocalDateTime newRemindsAt = scheduledAt.minusMinutes(20);
+
+    // when
+    Reminder updated = reminder.update(scheduledAt, newRemindsAt);
+
+    // then
+    assertThat(updated.getId()).isEqualTo(reminder.getId());
+    assertThat(updated.getUserId()).isEqualTo(reminder.getUserId());
+    assertThat(updated.getTodoId()).isEqualTo(reminder.getTodoId());
+    assertThat(updated.getRemindsAt()).isEqualTo(newRemindsAt);
+  }
+
+  @Test
+  void Reminder_도메인_update_메서드_실패_케이스는_팩토리_메서드와_동일하다() {
+    // given
+    Long userId = ReminderFixture.getRandomId();
+    Long todoId = ReminderFixture.getRandomId();
+    LocalDateTime scheduledAt = ReminderFixture.getFutureDateTime(5, TimeUnit.DAYS);
+    Reminder reminder = Reminder.from(userId, todoId, scheduledAt.minusHours(1), scheduledAt);
+    LocalDateTime invalidRemindsAt = scheduledAt.plusMinutes(1);
+
+    // when
+    ThrowingCallable update = () -> reminder.update(scheduledAt, invalidRemindsAt);
+
+    // then
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(update)
+        .withMessage(ReminderErrorCode.INVALID_REMINDS_AT.getCodeName());
+  }
+
+  @Test
   void remindedAt이_있으면_isReminded가_true를_반환한다() {
     // given
     Reminder reminder = ReminderFixture.createReminderWithRemindedAt(LocalDateTime.now());

@@ -188,6 +188,14 @@ public class Todo {
     return nonNull(remindAt);
   }
 
+  public LocalDateTime getScheduleDatetime() {
+    if (isNull(scheduledOn) || isNull(beginAt)) {
+      return null;
+    }
+
+    return scheduledOn.atTime(beginAt);
+  }
+
   public boolean isPostponed() {
     return nonNull(postponedAt);
   }
