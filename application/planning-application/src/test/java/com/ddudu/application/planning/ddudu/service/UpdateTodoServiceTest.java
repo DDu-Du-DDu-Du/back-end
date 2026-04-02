@@ -10,6 +10,7 @@ import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.reminder.out.ReminderCommandPort;
 import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
 import com.ddudu.application.common.port.todo.out.SaveTodoPort;
+import com.ddudu.common.exception.GoalErrorCode;
 import com.ddudu.common.exception.TodoErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
 import com.ddudu.domain.planning.reminder.aggregate.Reminder;
@@ -65,12 +66,21 @@ class UpdateTodoServiceTest {
   void setUp() {
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
-    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    LocalDate scheduledOn = LocalDate.now().plusDays(1);
+    todo = saveTodoPort.save(
+        TodoFixture.getTodoBuilder()
+            .goalId(goal.getId())
+            .userId(user.getId())
+            .scheduledOn(scheduledOn)
+            .beginAt(LocalTime.of(10, 0))
+            .endAt(LocalTime.of(11, 0))
+            .build()
+    );
     request = new UpdateTodoRequest(
         goal.getId(),
         TodoFixture.getRandomSentenceWithMax(50),
         TodoFixture.createValidMemo(),
-        LocalDate.now().plusDays(1),
+        scheduledOn,
         LocalTime.of(10, 0),
         LocalTime.of(11, 0),
         null
@@ -226,7 +236,7 @@ class UpdateTodoServiceTest {
     // then
     Assertions.assertThatThrownBy(update)
         .isInstanceOf(SecurityException.class)
-        .hasMessage(TodoErrorCode.INVALID_AUTHORITY.getCodeName());
+        .hasMessage(GoalErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
   @Test
