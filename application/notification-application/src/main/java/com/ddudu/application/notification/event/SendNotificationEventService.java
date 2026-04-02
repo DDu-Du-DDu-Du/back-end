@@ -1,21 +1,23 @@
 package com.ddudu.application.notification.event;
 
-import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
-import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenLoaderPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.application.common.port.notification.out.NotificationInboxCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationSendPort;
+import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
+import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.NotificationEventErrorCode;
+import com.ddudu.common.exception.ReminderErrorCode;
 import com.ddudu.domain.notification.device.aggregate.NotificationDeviceToken;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.NotificationInbox;
 import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import java.util.List;
+import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
@@ -52,7 +54,8 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
 
     log.debug("Notification event has been turned into inbox with ID {}", savedInbox.getId());
 
-    List<String> deviceTokens = notificationDeviceTokenLoaderPort.getAllTokensOfUser(savedInbox.getUserId())
+    List<String> deviceTokens = notificationDeviceTokenLoaderPort
+        .getAllTokensOfUser(savedInbox.getUserId())
         .stream()
         .map(NotificationDeviceToken::getToken)
         .toList();
@@ -81,8 +84,10 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
   private NotificationInbox createTodoNotificationInbox(NotificationEvent notificationEvent) {
     Reminder reminder = reminderLoaderPort.getOptionalReminder(notificationEvent.getContextId())
         .orElseThrow(() ->
-            new IllegalArgumentException(
-                NotificationEventErrorCode.ORIGINAL_TODO_NOT_EXISTING.getCodeName()
+            new MissingResourceException(
+                ReminderErrorCode.REMINDER_NOT_EXISTING.getCodeName(),
+                Reminder.class.getName(),
+                String.valueOf(notificationEvent.getContextId())
             )
         );
     Todo todo = todoLoaderPort.getTodoOrElseThrow(
@@ -90,7 +95,9 @@ public class SendNotificationEventService implements SendNotificationEventUseCas
         NotificationEventErrorCode.ORIGINAL_TODO_NOT_EXISTING.getCodeName()
     );
     String title = todo.getName();
-    String body = notificationEvent.getTodoBody(reminder.getRemindDifference(todo.getScheduleDatetime()));
+    String body = notificationEvent.getTodoBody(
+        reminder.getRemindDifference(todo.getScheduleDatetime())
+    );
 
     return buildNotificationInbox(notificationEvent, title, body, reminder.getTodoId());
   }
