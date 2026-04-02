@@ -4,22 +4,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
+import com.ddudu.application.common.port.reminder.out.ReminderCommandPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
-import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.reminder.aggregate.Reminder;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.NotificationDeviceTokenFixture;
 import com.ddudu.fixture.NotificationEventFixture;
+import com.ddudu.fixture.ReminderFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDateTime;
 import java.util.MissingResourceException;
@@ -58,9 +61,13 @@ class SendNotificationEventServiceTest {
   @Autowired
   NotificationDeviceTokenCommandPort notificationDeviceTokenCommandPort;
 
+  @Autowired
+  ReminderCommandPort reminderCommandPort;
+
   User user;
   Goal goal;
   Todo ddudu;
+  Reminder reminder;
   NotificationEvent notificationEvent;
 
   @BeforeEach
@@ -78,13 +85,18 @@ class SendNotificationEventServiceTest {
         scheduledAt.toLocalTime(),
         remindAt
     ));
+    reminder = reminderCommandPort.save(
+        ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), ddudu.getId())
+    );
     notificationEvent = NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
         user.getId(),
-        ddudu.getId()
+        reminder.getId()
     );
     notificationEvent = notificationEventCommandPort.save(notificationEvent);
 
-    notificationDeviceTokenCommandPort.save(NotificationDeviceTokenFixture.createWithUser(user.getId()));
+    notificationDeviceTokenCommandPort.save(
+        NotificationDeviceTokenFixture.createWithUser(user.getId())
+    );
   }
 
   @Test
@@ -121,10 +133,13 @@ class SendNotificationEventServiceTest {
   void 알림_이벤트에_연동된_투두가_없는_경우_알림_발송을_실패한다() {
     // given
     long invalidId = NotificationEventFixture.getRandomId();
+    Reminder orphanReminder = reminderCommandPort.save(
+        ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), invalidId)
+    );
     NotificationEvent eventWithInvalidTodo = notificationEventCommandPort.save(
         NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
             user.getId(),
-            invalidId
+            orphanReminder.getId()
         )
     );
 
@@ -153,10 +168,13 @@ class SendNotificationEventServiceTest {
         scheduledAt.toLocalTime(),
         remindAt
     ));
+    Reminder anotherReminder = reminderCommandPort.save(
+        ReminderFixture.createReminderWithUserIdAndTodoId(anotherUser.getId(), anotherTodo.getId())
+    );
     NotificationEvent eventWithoutToken = notificationEventCommandPort.save(
         NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
             anotherUser.getId(),
-            anotherTodo.getId()
+            anotherReminder.getId()
         )
     );
 
@@ -174,7 +192,7 @@ class SendNotificationEventServiceTest {
         NotificationEventFixture.createValidEventNowWithUserAndContext(
             user.getId(),
             NotificationEventTypeCode.TEMPLATE_COMMENT,
-            ddudu.getId()
+            reminder.getId()
         )
     );
 
