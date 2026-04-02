@@ -12,6 +12,7 @@ import com.ddudu.application.common.port.notification.out.NotificationEventLoade
 import com.ddudu.application.common.port.reminder.out.ReminderCommandPort;
 import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.common.exception.NotificationEventErrorCode;
+import com.ddudu.common.exception.ReminderErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
@@ -149,6 +150,26 @@ class SendNotificationEventServiceTest {
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
         .withMessage(NotificationEventErrorCode.ORIGINAL_TODO_NOT_EXISTING.getCodeName());
+  }
+
+  @Test
+  void 알림_이벤트에_연동된_리마인더가_없는_경우_알림_발송을_실패한다() {
+    // given
+    NotificationEvent eventWithInvalidReminder = notificationEventCommandPort.save(
+        NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
+            user.getId(),
+            NotificationEventFixture.getRandomId()
+        )
+    );
+
+    // when
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(
+        eventWithInvalidReminder.getId()
+    );
+
+    // then
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
+        .withMessage(ReminderErrorCode.REMINDER_NOT_EXISTING.getCodeName());
   }
 
   @Test
