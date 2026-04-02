@@ -19,9 +19,6 @@ import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.todo.service.TodoDomainService;
 import com.ddudu.domain.user.user.aggregate.User;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +27,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
@@ -85,7 +85,9 @@ public class UpdateTodoService implements UpdateTodoUseCase {
     reminderRequests.stream()
         .map(request -> upsertReminder(userId, todo, existingReminderMap, request))
         .forEach(savedReminder ->
-            applicationEventPublisher.publishEvent(InterimSetReminderEvent.from(userId, savedReminder))
+            applicationEventPublisher.publishEvent(
+                InterimSetReminderEvent.from(userId, savedReminder)
+            )
         );
 
     existingReminders.stream()

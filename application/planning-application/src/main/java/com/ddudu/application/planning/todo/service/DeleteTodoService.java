@@ -42,7 +42,9 @@ public class DeleteTodoService implements DeleteTodoUseCase {
 
     reminderLoaderPort.getRemindersByTodoId(todoId)
         .forEach(reminder ->
-            applicationEventPublisher.publishEvent(InterimCancelReminderEvent.from(loginId, reminder))
+            applicationEventPublisher.publishEvent(
+                InterimCancelReminderEvent.from(loginId, reminder)
+            )
         );
 
     deleteTodoPort.delete(todo);
