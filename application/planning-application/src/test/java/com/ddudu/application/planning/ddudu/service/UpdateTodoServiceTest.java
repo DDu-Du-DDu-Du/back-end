@@ -61,8 +61,6 @@ class UpdateTodoServiceTest {
         LocalDate.now().plusDays(1),
         LocalTime.of(10, 0),
         LocalTime.of(11, 0),
-        null,
-        null,
         null
     );
   }
