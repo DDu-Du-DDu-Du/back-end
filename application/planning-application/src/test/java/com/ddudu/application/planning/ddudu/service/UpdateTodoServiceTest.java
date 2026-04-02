@@ -199,4 +199,113 @@ class UpdateTodoServiceTest {
     assertThat(reminders.get(0).getRemindsAt()).isEqualTo(remindAt);
   }
 
+  @Test
+  void 목표_작성자가_아니면_수정에_실패한다() {
+    // given
+    User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
+    Goal anotherUserGoal = saveGoalPort.save(
+        GoalFixture.createRandomGoalWithUser(anotherUser.getId())
+    );
+    UpdateTodoRequest requestWithAnotherUsersGoal = new UpdateTodoRequest(
+        anotherUserGoal.getId(),
+        request.name(),
+        request.memo(),
+        request.scheduledOn(),
+        request.beginAt(),
+        request.endAt(),
+        request.reminders()
+    );
+
+    // when
+    ThrowingCallable update = () -> updateTodoService.update(
+        user.getId(),
+        todo.getId(),
+        requestWithAnotherUsersGoal
+    );
+
+    // then
+    Assertions.assertThatThrownBy(update)
+        .isInstanceOf(SecurityException.class)
+        .hasMessage(TodoErrorCode.INVALID_AUTHORITY.getCodeName());
+  }
+
+  @Test
+  void 기존_리마인더가_있으면_리마인더를_수정한다() {
+    // given
+    LocalDateTime existingRemindAt = LocalDateTime.of(
+        request.scheduledOn(),
+        request.beginAt()
+    ).minusHours(2);
+    Reminder savedReminder = reminderCommandPort.save(Reminder.from(
+        user.getId(),
+        todo.getId(),
+        existingRemindAt,
+        todo.getScheduleDatetime()
+    ));
+    LocalDateTime updatedRemindAt = LocalDateTime.of(
+        request.scheduledOn(),
+        request.beginAt()
+    ).minusHours(1);
+    UpdateTodoRequest requestWithExistingReminder = new UpdateTodoRequest(
+        request.goalId(),
+        request.name(),
+        request.memo(),
+        request.scheduledOn(),
+        request.beginAt(),
+        request.endAt(),
+        List.of(new UpdateTodoReminderRequest(savedReminder.getId(), updatedRemindAt))
+    );
+
+    // when
+    updateTodoService.update(user.getId(), todo.getId(), requestWithExistingReminder);
+
+    // then
+    List<Reminder> reminders = reminderLoaderPort.getRemindersByTodoId(todo.getId());
+    assertThat(reminders).hasSize(1);
+    assertThat(reminders.get(0).getId()).isEqualTo(savedReminder.getId());
+    assertThat(reminders.get(0).getRemindsAt()).isEqualTo(updatedRemindAt);
+  }
+
+  @Test
+  void 요청에서_제외된_기존_리마인더는_삭제한다() {
+    // given
+    LocalDateTime firstRemindAt = LocalDateTime.of(
+        request.scheduledOn(),
+        request.beginAt()
+    ).minusHours(2);
+    reminderCommandPort.save(Reminder.from(
+        user.getId(),
+        todo.getId(),
+        firstRemindAt,
+        todo.getScheduleDatetime()
+    ));
+    LocalDateTime secondRemindAt = LocalDateTime.of(
+        request.scheduledOn(),
+        request.beginAt()
+    ).minusMinutes(30);
+    Reminder secondReminder = reminderCommandPort.save(Reminder.from(
+        user.getId(),
+        todo.getId(),
+        secondRemindAt,
+        todo.getScheduleDatetime()
+    ));
+    UpdateTodoRequest requestKeepingOnlySecondReminder = new UpdateTodoRequest(
+        request.goalId(),
+        request.name(),
+        request.memo(),
+        request.scheduledOn(),
+        request.beginAt(),
+        request.endAt(),
+        List.of(new UpdateTodoReminderRequest(secondReminder.getId(), secondRemindAt))
+    );
+
+    // when
+    updateTodoService.update(user.getId(), todo.getId(), requestKeepingOnlySecondReminder);
+
+    // then
+    List<Reminder> reminders = reminderLoaderPort.getRemindersByTodoId(todo.getId());
+    assertThat(reminders).hasSize(1);
+    assertThat(reminders.get(0).getId()).isEqualTo(secondReminder.getId());
+  }
+
 }
