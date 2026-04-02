@@ -11,10 +11,7 @@ public record CreateTodoCommand(
     String memo,
     LocalDate scheduledOn,
     LocalTime beginAt,
-    LocalTime endAt,
-    Integer remindDays,
-    Integer remindHours,
-    Integer remindMinutes
+    LocalTime endAt
 ) {
 
 }

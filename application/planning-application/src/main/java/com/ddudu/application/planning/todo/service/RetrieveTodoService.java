@@ -1,6 +1,8 @@
 package com.ddudu.application.planning.todo.service;
 
+import com.ddudu.application.common.dto.reminder.response.RetrieveReminderResponse;
 import com.ddudu.application.common.dto.todo.response.TodoDetailResponse;
+import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
 import com.ddudu.application.common.port.todo.in.RetrieveTodoUseCase;
 import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.common.annotation.UseCase;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RetrieveTodoService implements RetrieveTodoUseCase {
 
   private final TodoLoaderPort todoLoaderPort;
+  private final ReminderLoaderPort reminderLoaderPort;
 
   @Override
   public TodoDetailResponse findById(Long loginId, Long id) {
@@ -25,7 +28,13 @@ public class RetrieveTodoService implements RetrieveTodoUseCase {
 
     todo.validateTodoCreator(loginId);
 
-    return TodoDetailResponse.from(todo);
+    return TodoDetailResponse.from(
+        todo,
+        reminderLoaderPort.getRemindersByTodoId(todo.getId())
+            .stream()
+            .map(RetrieveReminderResponse::from)
+            .toList()
+    );
   }
 
 }

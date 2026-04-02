@@ -2,9 +2,12 @@ package com.ddudu.application.planning.todo.service;
 
 import com.ddudu.application.common.dto.interim.InterimCancelReminderEvent;
 import com.ddudu.application.common.dto.interim.InterimSetReminderEvent;
+import com.ddudu.application.common.dto.todo.request.UpdateTodoReminderRequest;
 import com.ddudu.application.common.dto.todo.request.UpdateTodoRequest;
 import com.ddudu.application.common.dto.todo.response.BasicTodoResponse;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
+import com.ddudu.application.common.port.reminder.out.ReminderCommandPort;
+import com.ddudu.application.common.port.reminder.out.ReminderLoaderPort;
 import com.ddudu.application.common.port.todo.in.UpdateTodoUseCase;
 import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
 import com.ddudu.application.common.port.todo.out.TodoUpdatePort;
@@ -12,9 +15,18 @@ import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.TodoErrorCode;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.reminder.aggregate.Reminder;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.todo.service.TodoDomainService;
 import com.ddudu.domain.user.user.aggregate.User;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +40,8 @@ public class UpdateTodoService implements UpdateTodoUseCase {
   private final GoalLoaderPort goalLoaderPort;
   private final TodoLoaderPort todoLoaderPort;
   private final TodoUpdatePort todoUpdatePort;
+  private final ReminderLoaderPort reminderLoaderPort;
+  private final ReminderCommandPort reminderCommandPort;
   private final TodoDomainService todoDomainService;
   private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -52,17 +66,57 @@ public class UpdateTodoService implements UpdateTodoUseCase {
     Todo updatedTodo = todoDomainService.update(todo, request.toCommand());
     Todo saved = todoUpdatePort.update(updatedTodo);
 
-    if (todo.hasReminder()) {
-      InterimCancelReminderEvent cancelEvent = InterimCancelReminderEvent.from(user.getId(), todo);
-      applicationEventPublisher.publishEvent(cancelEvent);
-    }
-
-    if (saved.hasReminder()) {
-      InterimSetReminderEvent setEvent = InterimSetReminderEvent.from(user.getId(), saved);
-      applicationEventPublisher.publishEvent(setEvent);
-    }
+    replaceReminders(user.getId(), saved, request.reminders());
 
     return BasicTodoResponse.from(saved);
+  }
+
+  private void replaceReminders(Long userId, Todo todo, List<UpdateTodoReminderRequest> requests) {
+    List<Reminder> existingReminders = reminderLoaderPort.getRemindersByTodoId(todo.getId());
+    Map<Long, Reminder> existingReminderMap = existingReminders.stream()
+        .collect(Collectors.toMap(Reminder::getId, Function.identity()));
+    List<UpdateTodoReminderRequest> reminderRequests =
+        Objects.nonNull(requests) ? requests : Collections.emptyList();
+    Set<Long> requestedReminderIds = reminderRequests.stream()
+        .map(UpdateTodoReminderRequest::id)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toCollection(HashSet::new));
+
+    reminderRequests.stream()
+        .map(request -> upsertReminder(userId, todo, existingReminderMap, request))
+        .forEach(savedReminder ->
+            applicationEventPublisher.publishEvent(
+                InterimSetReminderEvent.from(userId, savedReminder)
+            )
+        );
+
+    existingReminders.stream()
+        .filter(reminder -> !requestedReminderIds.contains(reminder.getId()))
+        .forEach(reminder -> {
+          reminderCommandPort.deleteById(reminder.getId());
+          applicationEventPublisher.publishEvent(InterimCancelReminderEvent.from(userId, reminder));
+        });
+  }
+
+  private Reminder upsertReminder(
+      Long userId,
+      Todo todo,
+      Map<Long, Reminder> existingReminderMap,
+      UpdateTodoReminderRequest request
+  ) {
+    if (Objects.nonNull(request.id()) && existingReminderMap.containsKey(request.id())) {
+      Reminder target = existingReminderMap.get(request.id());
+      Reminder updated = target.update(todo.getScheduleDatetime(), request.remindsAt());
+      return reminderCommandPort.update(updated);
+    }
+
+    Reminder newReminder = Reminder.from(
+        userId,
+        todo.getId(),
+        request.remindsAt(),
+        todo.getScheduleDatetime()
+    );
+    return reminderCommandPort.save(newReminder);
   }
 
 }

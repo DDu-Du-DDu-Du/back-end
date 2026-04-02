@@ -4,22 +4,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.in.SendNotificationEventUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
+import com.ddudu.application.common.port.reminder.out.ReminderCommandPort;
+import com.ddudu.application.common.port.todo.out.DeleteTodoPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.common.exception.NotificationEventErrorCode;
+import com.ddudu.common.exception.ReminderErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
-import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.reminder.aggregate.Reminder;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.NotificationDeviceTokenFixture;
 import com.ddudu.fixture.NotificationEventFixture;
+import com.ddudu.fixture.ReminderFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDateTime;
 import java.util.MissingResourceException;
@@ -50,6 +55,9 @@ class SendNotificationEventServiceTest {
   SaveTodoPort saveTodoPort;
 
   @Autowired
+  DeleteTodoPort deleteTodoPort;
+
+  @Autowired
   NotificationEventCommandPort notificationEventCommandPort;
 
   @Autowired
@@ -58,17 +66,21 @@ class SendNotificationEventServiceTest {
   @Autowired
   NotificationDeviceTokenCommandPort notificationDeviceTokenCommandPort;
 
+  @Autowired
+  ReminderCommandPort reminderCommandPort;
+
   User user;
   Goal goal;
   Todo ddudu;
+  Reminder reminder;
   NotificationEvent notificationEvent;
 
   @BeforeEach
   void setUp() {
     LocalDateTime scheduledAt = LocalDateTime.now()
-        .plusSeconds(2);
+        .plusDays(1);
     LocalDateTime remindAt = LocalDateTime.now()
-        .plusSeconds(1);
+        .plusHours(23);
     user = signUpPort.save(UserFixture.createRandomUserWithId());
     goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
     ddudu = saveTodoPort.save(TodoFixture.createTodoWithReminder(
@@ -78,13 +90,22 @@ class SendNotificationEventServiceTest {
         scheduledAt.toLocalTime(),
         remindAt
     ));
+    reminder = reminderCommandPort.save(
+        ReminderFixture.createValidReminderWithUserIdAndTodoId(
+            user.getId(),
+            ddudu.getId(),
+            scheduledAt
+        )
+    );
     notificationEvent = NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
         user.getId(),
-        ddudu.getId()
+        reminder.getId()
     );
     notificationEvent = notificationEventCommandPort.save(notificationEvent);
 
-    notificationDeviceTokenCommandPort.save(NotificationDeviceTokenFixture.createWithUser(user.getId()));
+    notificationDeviceTokenCommandPort.save(
+        NotificationDeviceTokenFixture.createWithUser(user.getId())
+    );
   }
 
   @Test
@@ -120,20 +141,58 @@ class SendNotificationEventServiceTest {
   @Test
   void 알림_이벤트에_연동된_투두가_없는_경우_알림_발송을_실패한다() {
     // given
-    long invalidId = NotificationEventFixture.getRandomId();
-    NotificationEvent eventWithInvalidTodo = notificationEventCommandPort.save(
+    LocalDateTime scheduledAt = LocalDateTime.now()
+        .plusDays(1);
+    LocalDateTime remindAt = LocalDateTime.now()
+        .plusHours(23);
+    Todo deletedTodo = saveTodoPort.save(TodoFixture.createTodoWithReminder(
+        user.getId(),
+        goal.getId(),
+        scheduledAt.toLocalDate(),
+        scheduledAt.toLocalTime(),
+        remindAt
+    ));
+    Reminder reminderWithDeletedTodo = reminderCommandPort.save(
+        ReminderFixture.createValidReminderWithUserIdAndTodoId(
+            user.getId(),
+            deletedTodo.getId(),
+            scheduledAt
+        )
+    );
+    deleteTodoPort.delete(deletedTodo);
+    NotificationEvent eventWithDeletedTodo = notificationEventCommandPort.save(
         NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
             user.getId(),
-            invalidId
+            reminderWithDeletedTodo.getId()
         )
     );
 
     // when
-    ThrowingCallable send = () -> sendNotificationEventUseCase.send(eventWithInvalidTodo.getId());
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(eventWithDeletedTodo.getId());
 
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
         .withMessage(NotificationEventErrorCode.ORIGINAL_TODO_NOT_EXISTING.getCodeName());
+  }
+
+  @Test
+  void 알림_이벤트에_연동된_리마인더가_없는_경우_알림_발송을_실패한다() {
+    // given
+    NotificationEvent eventWithInvalidReminder = notificationEventCommandPort.save(
+        NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
+            user.getId(),
+            NotificationEventFixture.getRandomId()
+        )
+    );
+
+    // when
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(
+        eventWithInvalidReminder.getId()
+    );
+
+    // then
+    assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
+        .withMessage(ReminderErrorCode.REMINDER_NOT_EXISTING.getCodeName());
   }
 
   @Test
@@ -143,9 +202,9 @@ class SendNotificationEventServiceTest {
     User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
     Goal anotherGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(anotherUser.getId()));
     LocalDateTime scheduledAt = LocalDateTime.now()
-        .plusSeconds(2);
+        .plusDays(1);
     LocalDateTime remindAt = LocalDateTime.now()
-        .plusSeconds(1);
+        .plusHours(23);
     Todo anotherTodo = saveTodoPort.save(TodoFixture.createTodoWithReminder(
         anotherUser.getId(),
         anotherGoal.getId(),
@@ -153,10 +212,17 @@ class SendNotificationEventServiceTest {
         scheduledAt.toLocalTime(),
         remindAt
     ));
+    Reminder anotherReminder = reminderCommandPort.save(
+        ReminderFixture.createValidReminderWithUserIdAndTodoId(
+            anotherUser.getId(),
+            anotherTodo.getId(),
+            scheduledAt
+        )
+    );
     NotificationEvent eventWithoutToken = notificationEventCommandPort.save(
         NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
             anotherUser.getId(),
-            anotherTodo.getId()
+            anotherReminder.getId()
         )
     );
 
@@ -174,7 +240,7 @@ class SendNotificationEventServiceTest {
         NotificationEventFixture.createValidEventNowWithUserAndContext(
             user.getId(),
             NotificationEventTypeCode.TEMPLATE_COMMENT,
-            ddudu.getId()
+            reminder.getId()
         )
     );
 

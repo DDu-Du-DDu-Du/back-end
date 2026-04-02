@@ -4,10 +4,10 @@ import com.ddudu.domain.planning.todo.dto.UpdateTodoCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public record UpdateTodoRequest(
     @NotNull(message = "2001 NULL_GOAL_VALUE")
@@ -28,12 +28,7 @@ public record UpdateTodoRequest(
     LocalDate scheduledOn,
     LocalTime beginAt,
     LocalTime endAt,
-    @PositiveOrZero(message = "2020 NEGATIVE_REMINDER_INPUT_EXISTS")
-    Integer remindDays,
-    @PositiveOrZero(message = "2020 NEGATIVE_REMINDER_INPUT_EXISTS")
-    Integer remindHours,
-    @PositiveOrZero(message = "2020 NEGATIVE_REMINDER_INPUT_EXISTS")
-    Integer remindMinutes
+    List<UpdateTodoReminderRequest> reminders
 ) {
 
   public UpdateTodoCommand toCommand() {
@@ -44,9 +39,6 @@ public record UpdateTodoRequest(
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt)
-        .remindDays(remindDays)
-        .remindHours(remindHours)
-        .remindMinutes(remindMinutes)
         .build();
   }
 

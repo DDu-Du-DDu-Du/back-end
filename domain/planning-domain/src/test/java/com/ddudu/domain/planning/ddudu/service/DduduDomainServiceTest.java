@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.todo.dto.CreateTodoCommand;
 import com.ddudu.domain.planning.todo.dto.UpdateTodoCommand;
-import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.TodoFixture;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,7 +44,7 @@ class TodoDomainServiceTest {
       memo = TodoFixture.createValidMemo();
       scheduledOn = LocalDate.now();
       command = new CreateTodoCommand(
-          goalId, name, memo, scheduledOn, null, null, null, null, null);
+          goalId, name, memo, scheduledOn, null, null);
     }
 
     @Test
@@ -66,9 +66,6 @@ class TodoDomainServiceTest {
           goalId,
           name,
           memo,
-          null,
-          null,
-          null,
           null,
           null,
           null

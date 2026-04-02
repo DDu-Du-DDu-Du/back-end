@@ -41,6 +41,19 @@ public class ReminderFixture extends BaseFixture {
         .build();
   }
 
+  public static Reminder createValidReminderWithUserIdAndTodoId(
+      Long userId,
+      Long todoId,
+      LocalDateTime todoScheduledAt
+  ) {
+    LocalDateTime remindsAt = getRandomDateTimeBetween(
+        LocalDateTime.now().plusMinutes(1),
+        todoScheduledAt.minusMinutes(1)
+    );
+
+    return Reminder.from(userId, todoId, remindsAt, todoScheduledAt);
+  }
+
   public static Reminder createReminderWithTodoId(Long todoId) {
     Long userId = getRandomId();
     LocalDateTime scheduledAt = getFutureDateTime(10, TimeUnit.DAYS);

@@ -69,8 +69,8 @@ class RetrieveTodoServiceTest {
         .hasFieldOrPropertyWithValue("scheduledOn", todo.getScheduledOn())
         .hasFieldOrPropertyWithValue("beginAt", todo.getBeginAt())
         .hasFieldOrPropertyWithValue("endAt", todo.getEndAt())
-        .hasFieldOrPropertyWithValue("postponedAt", todo.getPostponedAt())
-        .hasFieldOrPropertyWithValue("remindAt", todo.getRemindAt());
+        .hasFieldOrPropertyWithValue("postponedAt", todo.getPostponedAt());
+    assertThat(actual.reminders()).isNotNull();
 
   }
 

@@ -19,9 +19,6 @@ public class TodoDomainService {
         .scheduledOn(command.scheduledOn())
         .beginAt(command.beginAt())
         .endAt(command.endAt())
-        .remindDays(command.remindDays())
-        .remindHours(command.remindHours())
-        .remindMinutes(command.remindMinutes())
         .build();
   }
 
@@ -32,10 +29,7 @@ public class TodoDomainService {
         command.memo(),
         command.scheduledOn(),
         command.beginAt(),
-        command.endAt(),
-        command.remindDays(),
-        command.remindHours(),
-        command.remindMinutes()
+        command.endAt()
     );
   }
 

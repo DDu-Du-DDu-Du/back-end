@@ -92,12 +92,6 @@ public class TodoEntity extends BaseEntity {
   )
   private LocalDateTime postponedAt;
 
-  @Column(
-      name = "remind_at",
-      columnDefinition = "TIMESTAMP"
-  )
-  private LocalDateTime remindAt;
-
   public static TodoEntity from(Todo todo) {
     return TodoEntity.builder()
         .id(todo.getId())
@@ -111,7 +105,6 @@ public class TodoEntity extends BaseEntity {
         .scheduledOn(todo.getScheduledOn())
         .beginAt(todo.getBeginAt())
         .endAt(todo.getEndAt())
-        .remindAt(todo.getRemindAt())
         .build();
   }
 
@@ -128,7 +121,6 @@ public class TodoEntity extends BaseEntity {
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt)
-        .remindAt(remindAt)
         .build();
   }
 
@@ -140,7 +132,6 @@ public class TodoEntity extends BaseEntity {
     this.scheduledOn = todo.getScheduledOn();
     this.beginAt = todo.getBeginAt();
     this.endAt = todo.getEndAt();
-    this.remindAt = todo.getRemindAt();
   }
 
 }
