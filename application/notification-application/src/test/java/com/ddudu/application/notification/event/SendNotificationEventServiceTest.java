@@ -10,6 +10,7 @@ import com.ddudu.application.common.port.notification.out.NotificationDeviceToke
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventLoaderPort;
 import com.ddudu.application.common.port.reminder.out.ReminderCommandPort;
+import com.ddudu.application.common.port.todo.out.DeleteTodoPort;
 import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.common.exception.NotificationEventErrorCode;
 import com.ddudu.common.exception.ReminderErrorCode;
@@ -52,6 +53,9 @@ class SendNotificationEventServiceTest {
 
   @Autowired
   SaveTodoPort saveTodoPort;
+
+  @Autowired
+  DeleteTodoPort deleteTodoPort;
 
   @Autowired
   NotificationEventCommandPort notificationEventCommandPort;
@@ -133,19 +137,30 @@ class SendNotificationEventServiceTest {
   @Test
   void 알림_이벤트에_연동된_투두가_없는_경우_알림_발송을_실패한다() {
     // given
-    long invalidId = NotificationEventFixture.getRandomId();
-    Reminder orphanReminder = reminderCommandPort.save(
-        ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), invalidId)
+    LocalDateTime scheduledAt = LocalDateTime.now()
+        .plusSeconds(2);
+    LocalDateTime remindAt = LocalDateTime.now()
+        .plusSeconds(1);
+    Todo deletedTodo = saveTodoPort.save(TodoFixture.createTodoWithReminder(
+        user.getId(),
+        goal.getId(),
+        scheduledAt.toLocalDate(),
+        scheduledAt.toLocalTime(),
+        remindAt
+    ));
+    Reminder reminderWithDeletedTodo = reminderCommandPort.save(
+        ReminderFixture.createReminderWithUserIdAndTodoId(user.getId(), deletedTodo.getId())
     );
-    NotificationEvent eventWithInvalidTodo = notificationEventCommandPort.save(
+    deleteTodoPort.delete(deletedTodo);
+    NotificationEvent eventWithDeletedTodo = notificationEventCommandPort.save(
         NotificationEventFixture.createValidTodoEventNowWithUserAndContext(
             user.getId(),
-            orphanReminder.getId()
+            reminderWithDeletedTodo.getId()
         )
     );
 
     // when
-    ThrowingCallable send = () -> sendNotificationEventUseCase.send(eventWithInvalidTodo.getId());
+    ThrowingCallable send = () -> sendNotificationEventUseCase.send(eventWithDeletedTodo.getId());
 
     // then
     assertThatExceptionOfType(MissingResourceException.class).isThrownBy(send)
