@@ -8,7 +8,7 @@ import com.ddudu.bootstrap.common.annotation.Login;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +21,7 @@ public class NotificationDeviceTokenController implements NotificationDeviceToke
   private final SaveDeviceTokenUseCase saveDeviceTokenUseCase;
 
   @Override
-  @PostMapping
+  @PutMapping
   public ResponseEntity<SaveDeviceTokenResponse> registerDeviceToken(
       @Login
       Long loginId,
@@ -31,7 +31,7 @@ public class NotificationDeviceTokenController implements NotificationDeviceToke
   ) {
     SaveDeviceTokenResponse response = saveDeviceTokenUseCase.save(loginId, request);
 
-    return ResponseEntity.created(null)
+    return ResponseEntity.ok()
         .body(response);
   }
 

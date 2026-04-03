@@ -4,12 +4,14 @@ import com.ddudu.application.common.dto.notification.request.SaveDeviceTokenRequ
 import com.ddudu.application.common.dto.notification.response.SaveDeviceTokenResponse;
 import com.ddudu.application.common.port.notification.in.SaveDeviceTokenUseCase;
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenCommandPort;
+import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenLoaderPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.NotificationDeviceTokenErrorCode;
 import com.ddudu.domain.notification.device.aggregate.NotificationDeviceToken;
 import com.ddudu.domain.notification.device.aggregate.enums.DeviceChannel;
 import com.ddudu.domain.user.user.aggregate.User;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ public class SaveDeviceTokenService implements SaveDeviceTokenUseCase {
 
   private final UserLoaderPort userLoaderPort;
   private final NotificationDeviceTokenCommandPort notificationDeviceTokenCommandPort;
+  private final NotificationDeviceTokenLoaderPort notificationDeviceTokenLoaderPort;
 
   @Override
   public SaveDeviceTokenResponse save(Long loginId, SaveDeviceTokenRequest request) {
@@ -28,6 +31,14 @@ public class SaveDeviceTokenService implements SaveDeviceTokenUseCase {
         NotificationDeviceTokenErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
     );
     DeviceChannel channel = DeviceChannel.get(request.channel());
+    Optional<NotificationDeviceToken> existing = notificationDeviceTokenLoaderPort
+        .getTokensOfUserByChannel(user.getId(), channel)
+        .stream()
+        .filter(token -> token.getToken().equals(request.token()))
+        .findFirst();
+    if (existing.isPresent()) {
+      return new SaveDeviceTokenResponse(existing.get().getId());
+    }
     NotificationDeviceToken deviceToken = NotificationDeviceToken.builder()
         .userId(user.getId())
         .channel(channel)

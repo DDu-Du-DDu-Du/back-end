@@ -4,6 +4,7 @@ import com.ddudu.application.common.port.notification.out.NotificationDeviceToke
 import com.ddudu.application.common.port.notification.out.NotificationDeviceTokenLoaderPort;
 import com.ddudu.common.annotation.DrivenAdapter;
 import com.ddudu.domain.notification.device.aggregate.NotificationDeviceToken;
+import com.ddudu.domain.notification.device.aggregate.enums.DeviceChannel;
 import com.ddudu.infra.mysql.notification.device.entity.NotificationDeviceTokenEntity;
 import com.ddudu.infra.mysql.notification.device.repository.NotificationDeviceTokenRepository;
 import java.util.List;
@@ -25,6 +26,14 @@ public class NotificationDeviceTokenAdapter implements NotificationDeviceTokenCo
   @Override
   public List<NotificationDeviceToken> getAllTokensOfUser(Long userId) {
     return notificationDeviceTokenRepository.findAllByUserId(userId)
+        .stream()
+        .map(NotificationDeviceTokenEntity::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<NotificationDeviceToken> getTokensOfUserByChannel(Long userId, DeviceChannel channel) {
+    return notificationDeviceTokenRepository.findAllByUserIdAndChannel(userId, channel)
         .stream()
         .map(NotificationDeviceTokenEntity::toDomain)
         .toList();

@@ -18,12 +18,12 @@ import org.springframework.http.ResponseEntity;
 )
 public interface NotificationDeviceTokenControllerDoc {
 
-  @Operation(summary = "디바이스 토큰 등록")
+  @Operation(summary = "디바이스 토큰 등록/갱신")
   @ApiResponses(
       {
           @ApiResponse(
-              responseCode = "201",
-              description = "CREATED",
+              responseCode = "200",
+              description = "OK",
               useReturnTypeSchema = true
           ),
           @ApiResponse(
