@@ -42,7 +42,10 @@ public class CancelReminderByIdService implements CancelReminderByIdUseCase {
 
     reminderCommandPort.deleteById(reminderId);
 
-    InterimCancelReminderEvent interimEvent = InterimCancelReminderEvent.from(user.getId(), reminder);
+    InterimCancelReminderEvent interimEvent = InterimCancelReminderEvent.from(
+        user.getId(),
+        reminder
+    );
     applicationEventPublisher.publishEvent(interimEvent);
   }
 

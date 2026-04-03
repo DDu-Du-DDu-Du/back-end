@@ -4,14 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.common.exception.StatsErrorCode;
-import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.ddudu.domain.user.user.aggregate.User;
-import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDate;
 import java.time.YearMonth;

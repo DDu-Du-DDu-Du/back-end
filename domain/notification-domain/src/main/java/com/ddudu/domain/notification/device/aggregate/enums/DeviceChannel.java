@@ -13,6 +13,10 @@ public enum DeviceChannel {
     return Arrays.stream(DeviceChannel.values())
         .filter(deviceChannel -> Objects.equals(deviceChannel.name(), channel))
         .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException(NotificationDeviceTokenErrorCode.INVALID_CHANNEL.getCodeName()));
+        .orElseThrow(
+            () -> new IllegalArgumentException(
+                NotificationDeviceTokenErrorCode.INVALID_CHANNEL.getCodeName()
+            )
+        );
   }
 }

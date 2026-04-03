@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class DeleteRepeatTodoServiceTest {
+class DeleteRepeatDduduServiceTest {
 
   @Autowired
   DeleteRepeatTodoService deleteRepeatTodoService;

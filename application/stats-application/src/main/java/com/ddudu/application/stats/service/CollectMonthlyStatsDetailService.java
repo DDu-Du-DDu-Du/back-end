@@ -7,12 +7,12 @@ import com.ddudu.application.common.dto.stats.GenericCalendarStats;
 import com.ddudu.application.common.dto.stats.PostponedDetailOverviewDto;
 import com.ddudu.application.common.dto.stats.RepeatTodoStatsDto;
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
-import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
+import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsDetailUseCase;
-import com.ddudu.application.common.port.stats.out.TodoStatsPort;
 import com.ddudu.application.common.port.stats.out.MonthlyStatsPort;
+import com.ddudu.application.common.port.stats.out.TodoStatsPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
 import com.ddudu.common.exception.StatsErrorCode;
@@ -49,7 +49,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
       YearMonth fromMonth,
       YearMonth toMonth
   ) {
-    User user = userLoaderPort.getUserOrElseThrow(
+    final User user = userLoaderPort.getUserOrElseThrow(
         loginId,
         StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
     );
@@ -99,7 +99,7 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
       YearMonth fromMonth,
       YearMonth toMonth
   ) {
-    User user = userLoaderPort.getUserOrElseThrow(
+    final User user = userLoaderPort.getUserOrElseThrow(
         loginId,
         StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName()
     );

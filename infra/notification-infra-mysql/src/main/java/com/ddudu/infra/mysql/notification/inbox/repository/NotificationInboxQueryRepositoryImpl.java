@@ -34,6 +34,20 @@ public class NotificationInboxQueryRepositoryImpl implements NotificationInboxQu
         .fetch();
   }
 
+  @Override
+  public long countUnreadByUserId(Long userId) {
+    Long unreadCount = jpaQueryFactory
+        .select(notificationInboxEntity.count())
+        .from(notificationInboxEntity)
+        .where(
+            notificationInboxEntity.userId.eq(userId),
+            notificationInboxEntity.readAt.isNull()
+        )
+        .fetchOne();
+
+    return unreadCount == null ? 0L : unreadCount;
+  }
+
   private BooleanExpression getCursorFilter(String cursor) {
     if (StringUtils.isBlank(cursor)) {
       return null;

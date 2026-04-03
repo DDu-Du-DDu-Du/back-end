@@ -2,6 +2,7 @@ package com.ddudu.api.notification.inbox.doc;
 
 import com.ddudu.application.common.dto.notification.request.NotificationInboxSearchRequest;
 import com.ddudu.application.common.dto.notification.response.NotificationInboxSearchResponse;
+import com.ddudu.application.common.dto.notification.response.NotificationInboxStatusResponse;
 import com.ddudu.application.common.dto.notification.response.ReadNotificationInboxResponse;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
@@ -61,6 +62,38 @@ public interface NotificationInboxControllerDoc {
       @ParameterObject
       NotificationInboxSearchRequest request
   );
+
+  @Operation(summary = "알림 인박스 상태 조회")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "5002",
+                      value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                  )
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT_FOUND",
+              content = @Content(
+                  examples = @ExampleObject(
+                      name = "11007",
+                      value = NotificationInboxErrorExamples.LOGIN_USER_NOT_EXISTING
+                  )
+              )
+          )
+      }
+  )
+  ResponseEntity<NotificationInboxStatusResponse> getStatus(Long loginId);
 
   @Operation(summary = "알림 인박스 읽음 처리")
   @ApiResponses(

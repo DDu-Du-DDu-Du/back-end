@@ -3,8 +3,10 @@ package com.ddudu.api.notification.inbox.controller;
 import com.ddudu.api.notification.inbox.doc.NotificationInboxControllerDoc;
 import com.ddudu.application.common.dto.notification.request.NotificationInboxSearchRequest;
 import com.ddudu.application.common.dto.notification.response.NotificationInboxSearchResponse;
+import com.ddudu.application.common.dto.notification.response.NotificationInboxStatusResponse;
 import com.ddudu.application.common.dto.notification.response.ReadNotificationInboxResponse;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
+import com.ddudu.application.common.port.notification.in.GetNotificationInboxStatusUseCase;
 import com.ddudu.application.common.port.notification.in.NotificationInboxSearchUseCase;
 import com.ddudu.application.common.port.notification.in.ReadNotificationInboxUseCase;
 import com.ddudu.bootstrap.common.annotation.Login;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationInboxController implements NotificationInboxControllerDoc {
 
   private final NotificationInboxSearchUseCase notificationInboxSearchUseCase;
+  private final GetNotificationInboxStatusUseCase getNotificationInboxStatusUseCase;
   private final ReadNotificationInboxUseCase readNotificationInboxUseCase;
 
   @Override
@@ -31,9 +34,23 @@ public class NotificationInboxController implements NotificationInboxControllerD
       Long loginId,
       NotificationInboxSearchRequest request
   ) {
-    ScrollResponse<NotificationInboxSearchResponse> response = notificationInboxSearchUseCase.search(
-        loginId,
-        request
+    ScrollResponse<NotificationInboxSearchResponse> response =
+        notificationInboxSearchUseCase.search(
+            loginId,
+            request
+        );
+
+    return ResponseEntity.ok(response);
+  }
+
+  @Override
+  @GetMapping("/status")
+  public ResponseEntity<NotificationInboxStatusResponse> getStatus(
+      @Login
+      Long loginId
+  ) {
+    NotificationInboxStatusResponse response = getNotificationInboxStatusUseCase.getStatus(
+        loginId
     );
 
     return ResponseEntity.ok(response);

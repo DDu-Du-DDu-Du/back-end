@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class UpdateRepeatTodoServiceTest {
+class UpdateRepeatDduduServiceTest {
 
   @Autowired
   UpdateRepeatTodoService updateRepeatTodoService;

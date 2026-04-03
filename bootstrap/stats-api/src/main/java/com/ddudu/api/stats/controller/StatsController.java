@@ -2,11 +2,11 @@ package com.ddudu.api.stats.controller;
 
 import com.ddudu.api.stats.doc.StatsControllerDoc;
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
-import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.GoalDetailStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
+import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.port.stats.in.CalculateCompletionUseCase;
 import com.ddudu.application.common.port.stats.in.CollectGoalDetailStatsUseCase;
 import com.ddudu.application.common.port.stats.in.CollectMonthlyStatsDetailUseCase;

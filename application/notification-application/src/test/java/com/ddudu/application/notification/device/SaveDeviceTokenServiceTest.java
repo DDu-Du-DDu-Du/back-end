@@ -58,7 +58,9 @@ class SaveDeviceTokenServiceTest {
     SaveDeviceTokenResponse actual = saveDeviceTokenUseCase.save(user.getId(), request);
 
     // then
-    NotificationDeviceToken expected = notificationDeviceTokenLoaderPort.getAllTokensOfUser(user.getId())
+    NotificationDeviceToken expected = notificationDeviceTokenLoaderPort.getAllTokensOfUser(
+            user.getId()
+        )
         .stream()
         .findFirst()
         .orElseThrow();

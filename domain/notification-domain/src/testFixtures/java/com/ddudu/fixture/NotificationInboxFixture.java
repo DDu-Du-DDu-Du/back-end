@@ -43,6 +43,54 @@ public final class NotificationInboxFixture extends BaseFixture {
     );
   }
 
+  public static NotificationInbox createUnreadTodoReminderInboxWithRandomContent(Long userId) {
+    return createNotReadTodoReminderInboxWithContent(
+        getRandomId(),
+        userId,
+        getRandomId(),
+        getRandomSentenceWithMax(50),
+        getRandomSentenceWithMax(200)
+    );
+  }
+
+  public static NotificationInbox createUnreadInboxWithRandomContentFromNotificationEvent(
+      NotificationEvent event
+  ) {
+    return createNotReadInboxWithContentFromNotificationEvent(
+        event,
+        getRandomSentenceWithMax(50),
+        getRandomSentenceWithMax(200)
+    );
+  }
+
+  public static NotificationInbox createReadInboxWithRandomContentFromNotificationEvent(
+      NotificationEvent event
+  ) {
+    return createReadInboxOfUserBySenderWithContextAndContent(
+        event.getId(),
+        event.getReceiverId(),
+        event.getSenderId(),
+        event.getTypeCode(),
+        event.getContextId(),
+        getRandomSentenceWithMax(50),
+        getRandomSentenceWithMax(200),
+        LocalDateTime.now()
+    );
+  }
+
+  public static NotificationInbox createReadTodoReminderInboxWithRandomContent(Long userId) {
+    return createReadInboxOfUserBySenderWithContextAndContent(
+        getRandomId(),
+        userId,
+        userId,
+        NotificationEventTypeCode.TODO_REMINDER,
+        getRandomId(),
+        getRandomSentenceWithMax(50),
+        getRandomSentenceWithMax(200),
+        LocalDateTime.now()
+    );
+  }
+
   public static NotificationInbox createNotReadInboxSelfWithContextAndContent(
       Long eventId,
       Long userId,

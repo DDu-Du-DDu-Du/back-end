@@ -22,11 +22,12 @@ public class RemoveNotificationEventService implements RemoveNotificationEventUs
 
   @Override
   public void remove(NotificationEventRemoveEvent event) {
-    Optional<NotificationEvent> optionalEvent = notificationEventLoaderPort.getOptionalEventByContext(
-        event.userId(),
-        event.typeCode(),
-        event.contextId()
-    );
+    Optional<NotificationEvent> optionalEvent =
+        notificationEventLoaderPort.getOptionalEventByContext(
+            event.userId(),
+            event.typeCode(),
+            event.contextId()
+        );
 
     if (optionalEvent.isEmpty()) {
       return;

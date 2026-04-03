@@ -214,15 +214,16 @@ class NotificationInboxTest {
     @Test
     void 접근자가_동일_사용자면_검증에_성공한다() {
       // given
-      NotificationInbox inbox = NotificationInboxFixture.createNotReadInboxOfUserBySenderWithContextAndContent(
-          eventId,
-          userId,
-          senderId,
-          typeCode,
-          contextId,
-          title,
-          body
-      );
+      NotificationInbox inbox =
+          NotificationInboxFixture.createNotReadInboxOfUserBySenderWithContextAndContent(
+              eventId,
+              userId,
+              senderId,
+              typeCode,
+              contextId,
+              title,
+              body
+          );
 
       // when
       ThrowingCallable validate = () -> inbox.validateOwner(userId);
@@ -235,15 +236,16 @@ class NotificationInboxTest {
     void 접근_권한이_없는_사용자면_검증에_실패한다() {
       // given
       long otherUserId = NotificationInboxFixture.getRandomId();
-      NotificationInbox inbox = NotificationInboxFixture.createNotReadInboxOfUserBySenderWithContextAndContent(
-          eventId,
-          userId,
-          senderId,
-          typeCode,
-          contextId,
-          title,
-          body
-      );
+      NotificationInbox inbox =
+          NotificationInboxFixture.createNotReadInboxOfUserBySenderWithContextAndContent(
+              eventId,
+              userId,
+              senderId,
+              typeCode,
+              contextId,
+              title,
+              body
+          );
 
       // when
       ThrowingCallable validate = () -> inbox.validateOwner(otherUserId);
@@ -260,15 +262,16 @@ class NotificationInboxTest {
     @Test
     void 읽음_처리를_성공한다() {
       // given
-      NotificationInbox inbox = NotificationInboxFixture.createNotReadInboxOfUserBySenderWithContextAndContent(
-          eventId,
-          userId,
-          senderId,
-          typeCode,
-          contextId,
-          title,
-          body
-      );
+      NotificationInbox inbox =
+          NotificationInboxFixture.createNotReadInboxOfUserBySenderWithContextAndContent(
+              eventId,
+              userId,
+              senderId,
+              typeCode,
+              contextId,
+              title,
+              body
+          );
 
       // when
       NotificationInbox actual = inbox.markRead();

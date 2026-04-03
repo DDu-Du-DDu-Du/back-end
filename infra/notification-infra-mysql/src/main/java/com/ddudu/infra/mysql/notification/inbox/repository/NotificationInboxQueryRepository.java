@@ -8,4 +8,6 @@ public interface NotificationInboxQueryRepository {
 
   List<NotificationInboxCursorDto> findInboxScroll(Long userId, ScrollRequest request);
 
+  long countUnreadByUserId(Long userId);
+
 }

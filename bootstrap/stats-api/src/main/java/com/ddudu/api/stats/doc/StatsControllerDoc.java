@@ -1,11 +1,11 @@
 package com.ddudu.api.stats.doc;
 
 import com.ddudu.application.common.dto.stats.response.AchievedStatsDetailResponse;
-import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.application.common.dto.stats.response.GoalDetailStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsReportResponse;
 import com.ddudu.application.common.dto.stats.response.MonthlyStatsSummaryResponse;
 import com.ddudu.application.common.dto.stats.response.PostponedStatsDetailResponse;
+import com.ddudu.application.common.dto.stats.response.TodoCompletionResponse;
 import com.ddudu.bootstrap.common.doc.examples.AuthErrorExamples;
 import com.ddudu.bootstrap.common.doc.examples.StatsErrorExamples;
 import io.swagger.v3.oas.annotations.Operation;

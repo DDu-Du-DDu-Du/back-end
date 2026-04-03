@@ -21,7 +21,7 @@ public enum RepeatTodoErrorCode implements ErrorCode {
   NULL_LAST_DAY(6013, "마지막 날 반복 여부는 필수값입니다."),
   INVALID_GOAL(6014, "유효하지 않은 목표입니다."),
   REPEAT_TODO_NOT_EXIST(6015, "해당 아이디를 가진 반복 투두가 존재하지 않습니다."),
-  GOAL_ALREADY_DONE(6016, "목표가 이미 완료되었습니다.");;
+  GOAL_ALREADY_DONE(6016, "목표가 이미 완료되었습니다.");
 
   private final int code;
   private final String message;

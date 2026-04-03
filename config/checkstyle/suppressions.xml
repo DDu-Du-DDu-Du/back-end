@@ -6,4 +6,5 @@
 <suppressions>
   <suppress files=".*Doc.*" checks="Indentation"/>
   <suppress files=".*Swagger.*" checks="Indentation"/>
+  <suppress files=".*/src/main/generated/.*" checks=".*"/>
 </suppressions>

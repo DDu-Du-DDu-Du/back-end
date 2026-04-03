@@ -31,7 +31,9 @@ public class NotificationEventPersistenceAdapter implements NotificationEventLoa
 
   @Override
   public NotificationEvent update(NotificationEvent event) {
-    NotificationEventEntity notificationEventEntity = notificationEventRepository.findById(event.getId())
+    NotificationEventEntity notificationEventEntity = notificationEventRepository.findById(
+            event.getId()
+        )
         .orElseThrow(EntityNotFoundException::new);
 
     notificationEventEntity.update(event);

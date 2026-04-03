@@ -1,9 +1,9 @@
 package com.ddudu.application.planning.todo.service;
 
 import com.ddudu.application.common.dto.todo.GoalGroupedTodos;
+import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.todo.in.GetDailyTodosByGoalUseCase;
 import com.ddudu.application.common.port.todo.out.TodoLoaderPort;
-import com.ddudu.application.common.port.goal.out.GoalLoaderPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.application.planning.todo.model.TodoList;
 import com.ddudu.common.annotation.UseCase;

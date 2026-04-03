@@ -11,4 +11,6 @@ public interface NotificationInboxLoaderPort {
 
   NotificationInbox getInboxOrElseThrow(Long id, String message);
 
+  long countUnreadByUserId(Long userId);
+
 }
