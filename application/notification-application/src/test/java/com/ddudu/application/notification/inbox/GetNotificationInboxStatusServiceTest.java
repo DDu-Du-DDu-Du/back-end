@@ -5,10 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.ddudu.application.common.dto.notification.response.NotificationInboxStatusResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
+import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationInboxCommandPort;
 import com.ddudu.common.exception.NotificationInboxErrorCode;
+import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.BaseFixture;
+import com.ddudu.fixture.NotificationEventFixture;
 import com.ddudu.fixture.NotificationInboxFixture;
 import com.ddudu.fixture.UserFixture;
 import java.util.MissingResourceException;
@@ -36,6 +39,9 @@ class GetNotificationInboxStatusServiceTest {
   @Autowired
   NotificationInboxCommandPort notificationInboxCommandPort;
 
+  @Autowired
+  NotificationEventCommandPort notificationEventCommandPort;
+
   User user;
 
   @BeforeEach
@@ -55,13 +61,25 @@ class GetNotificationInboxStatusServiceTest {
       int readCount = BaseFixture.getRandomInt(1, 3);
 
       for (int i = 0; i < unreadCount; i++) {
+        NotificationEvent event = notificationEventCommandPort.save(
+            NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(
+                user.getId(),
+                BaseFixture.getRandomId()
+            )
+        );
         notificationInboxCommandPort.save(
-            NotificationInboxFixture.createUnreadTodoReminderInboxWithRandomContent(user.getId())
+            NotificationInboxFixture.createUnreadInboxWithRandomContentFromNotificationEvent(event)
         );
       }
       for (int i = 0; i < readCount; i++) {
+        NotificationEvent event = notificationEventCommandPort.save(
+            NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(
+                user.getId(),
+                BaseFixture.getRandomId()
+            )
+        );
         notificationInboxCommandPort.save(
-            NotificationInboxFixture.createReadTodoReminderInboxWithRandomContent(user.getId())
+            NotificationInboxFixture.createReadInboxWithRandomContentFromNotificationEvent(event)
         );
       }
     }
@@ -88,8 +106,14 @@ class GetNotificationInboxStatusServiceTest {
       int readCount = BaseFixture.getRandomInt(1, 3);
 
       for (int i = 0; i < readCount; i++) {
+        NotificationEvent event = notificationEventCommandPort.save(
+            NotificationEventFixture.createFiredTodoEventNowWithUserAndContext(
+                user.getId(),
+                BaseFixture.getRandomId()
+            )
+        );
         notificationInboxCommandPort.save(
-            NotificationInboxFixture.createReadTodoReminderInboxWithRandomContent(user.getId())
+            NotificationInboxFixture.createReadInboxWithRandomContentFromNotificationEvent(event)
         );
       }
     }
