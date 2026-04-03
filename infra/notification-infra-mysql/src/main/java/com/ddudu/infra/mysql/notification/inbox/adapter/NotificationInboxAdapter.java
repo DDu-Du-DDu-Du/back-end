@@ -52,4 +52,9 @@ public class NotificationInboxAdapter implements NotificationInboxCommandPort,
         .toDomain();
   }
 
+  @Override
+  public long countUnreadByUserId(Long userId) {
+    return notificationInboxRepository.countUnreadByUserId(userId);
+  }
+
 }
