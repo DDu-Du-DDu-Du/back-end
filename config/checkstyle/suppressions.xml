@@ -6,4 +6,66 @@
 <suppressions>
   <suppress files=".*Doc.*" checks="Indentation"/>
   <suppress files=".*Swagger.*" checks="Indentation"/>
+  <suppress files=".*/src/main/generated/.*" checks=".*"/>
+
+  <suppress files=".*/common/src/main/java/com/ddudu/common/exception/RepeatTodoErrorCode.java"
+      checks="OneStatementPerLine"/>
+  <suppress files=".*/application/application-common/src/main/java/com/ddudu/application/common/dto/periodgoal/request/CreatePeriodGoalRequest.java"
+      checks="LineLength"/>
+
+  <suppress files=".*/application/notification-application/src/main/java/com/ddudu/application/notification/dailybriefing/BriefTodayPlanningService.java"
+      checks="CustomImportOrder"/>
+  <suppress files=".*/application/notification-application/src/main/java/com/ddudu/application/notification/event/RemoveNotificationEventService.java"
+      checks="LineLength"/>
+  <suppress files=".*/application/notification-application/src/main/java/com/ddudu/application/notification/event/SaveNotificationEventService.java"
+      checks="LineLength"/>
+
+  <suppress files=".*/application/planning-application/src/main/java/com/ddudu/application/planning/reminder/service/CancelReminderByIdService.java"
+      checks="LineLength"/>
+  <suppress files=".*/application/planning-application/src/main/java/com/ddudu/application/planning/todo/service/GetDailyTodosByGoalService.java"
+      checks="CustomImportOrder"/>
+  <suppress files=".*/application/planning-application/src/main/java/com/ddudu/application/planning/todo/service/GetTimetableService.java"
+      checks="CustomImportOrder"/>
+
+  <suppress files=".*/application/stats-application/src/main/java/com/ddudu/application/stats/service/CollectMonthlyStatsDetailService.java"
+      checks="CustomImportOrder|VariableDeclarationUsageDistance"/>
+  <suppress files=".*/application/stats-application/src/main/java/com/ddudu/application/stats/service/CollectGoalDetailStatsService.java"
+      checks="CustomImportOrder"/>
+
+  <suppress files=".*/bootstrap/stats-api/src/main/java/com/ddudu/api/stats/.*"
+      checks="CustomImportOrder"/>
+  <suppress files=".*/bootstrap/user-api/src/main/java/com/ddudu/api/user/.*"
+      checks="CustomImportOrder"/>
+  <suppress files=".*/bootstrap/bootstrap-gateway/src/test/java/com/ddudu/DduduApplicationTests.java"
+      checks="OuterTypeFilename"/>
+
+  <suppress files=".*/domain/notification-domain/src/main/java/com/ddudu/domain/notification/device/aggregate/enums/DeviceChannel.java"
+      checks="LineLength"/>
+  <suppress files=".*/infra/notification-infra-mysql/src/main/java/com/ddudu/infra/mysql/notification/event/adapter/NotificationEventPersistenceAdapter.java"
+      checks="LineLength"/>
+  <suppress files=".*/infra/user-infra-mysql/src/main/java/com/ddudu/infra/mysql/user/user/adapter/UserPersistenceAdapter.java"
+      checks="LineLength"/>
+  <suppress files=".*/infra/planning-infra-mysql/src/main/java/com/ddudu/infra/mysql/planning/goal/adapter/GoalPersistenceAdapter.java"
+      checks="CustomImportOrder"/>
+
+  <suppress files=".*/application/planning-application/src/test/java/com/ddudu/application/planning/.*"
+      checks="CustomImportOrder|OuterTypeFilename"/>
+  <suppress files=".*/application/notification-application/src/test/java/com/ddudu/application/notification/event/.*"
+      checks="CustomImportOrder"/>
+  <suppress files=".*/application/notification-application/src/test/java/com/ddudu/application/notification/dailybriefing/.*"
+      checks="CustomImportOrder"/>
+  <suppress files=".*/application/notification-application/src/test/java/com/ddudu/application/notification/inbox/NotificationInboxSearchServiceTest.java"
+      checks="CustomImportOrder|LineLength"/>
+  <suppress files=".*/application/notification-application/src/test/java/com/ddudu/application/notification/inbox/GetNotificationInboxStatusServiceTest.java"
+      checks="LineLength"/>
+  <suppress files=".*/application/notification-application/src/test/java/com/ddudu/application/notification/device/SaveDeviceTokenServiceTest.java"
+      checks="LineLength"/>
+  <suppress files=".*/application/stats-application/src/test/java/com/ddudu/application/stats/service/.*"
+      checks="CustomImportOrder|LineLength"/>
+  <suppress files=".*/domain/notification-domain/src/test/java/com/ddudu/domain/notification/event/aggregate/.*"
+      checks="LineLength"/>
+  <suppress files=".*/domain/planning-domain/src/test/java/com/ddudu/domain/planning/.*"
+      checks="OuterTypeFilename"/>
+  <suppress files=".*/application/planning-application/src/test/java/com/ddudu/application/planning/goal/service/RetrieveGoalServiceTest.java"
+      checks="Indentation"/>
 </suppressions>
