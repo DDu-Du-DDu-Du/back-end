@@ -34,10 +34,11 @@ public class NotificationInboxController implements NotificationInboxControllerD
       Long loginId,
       NotificationInboxSearchRequest request
   ) {
-    ScrollResponse<NotificationInboxSearchResponse> response = notificationInboxSearchUseCase.search(
-        loginId,
-        request
-    );
+    ScrollResponse<NotificationInboxSearchResponse> response =
+        notificationInboxSearchUseCase.search(
+            loginId,
+            request
+        );
 
     return ResponseEntity.ok(response);
   }
@@ -48,7 +49,9 @@ public class NotificationInboxController implements NotificationInboxControllerD
       @Login
       Long loginId
   ) {
-    NotificationInboxStatusResponse response = getNotificationInboxStatusUseCase.getStatus(loginId);
+    NotificationInboxStatusResponse response = getNotificationInboxStatusUseCase.getStatus(
+        loginId
+    );
 
     return ResponseEntity.ok(response);
   }
