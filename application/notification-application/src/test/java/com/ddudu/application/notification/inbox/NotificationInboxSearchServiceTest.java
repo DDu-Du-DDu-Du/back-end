@@ -8,22 +8,22 @@ import com.ddudu.application.common.dto.notification.response.NotificationInboxS
 import com.ddudu.application.common.dto.scroll.request.ScrollRequest;
 import com.ddudu.application.common.dto.scroll.response.ScrollResponse;
 import com.ddudu.application.common.port.auth.out.SignUpPort;
-import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.application.common.port.goal.out.SaveGoalPort;
 import com.ddudu.application.common.port.notification.out.NotificationEventCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationInboxCommandPort;
 import com.ddudu.application.common.port.notification.out.NotificationInboxLoaderPort;
+import com.ddudu.application.common.port.todo.out.SaveTodoPort;
 import com.ddudu.common.exception.NotificationInboxErrorCode;
 import com.ddudu.domain.notification.event.aggregate.NotificationEvent;
 import com.ddudu.domain.notification.event.aggregate.enums.NotificationEventTypeCode;
-import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.planning.goal.aggregate.Goal;
+import com.ddudu.domain.planning.todo.aggregate.Todo;
 import com.ddudu.domain.user.user.aggregate.User;
 import com.ddudu.fixture.BaseFixture;
-import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.GoalFixture;
 import com.ddudu.fixture.NotificationEventFixture;
 import com.ddudu.fixture.NotificationInboxFixture;
+import com.ddudu.fixture.TodoFixture;
 import com.ddudu.fixture.UserFixture;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -108,10 +108,11 @@ class NotificationInboxSearchServiceTest {
     NotificationInboxSearchRequest request = new NotificationInboxSearchRequest("0", size);
 
     // when
-    ScrollResponse<NotificationInboxSearchResponse> response = notificationInboxSearchService.search(
-        user.getId(),
-        request
-    );
+    ScrollResponse<NotificationInboxSearchResponse> response =
+        notificationInboxSearchService.search(
+            user.getId(),
+            request
+        );
 
     // then
     Long expectedNextCursor = response.contents()
@@ -140,10 +141,11 @@ class NotificationInboxSearchServiceTest {
     NotificationInboxSearchRequest request = new NotificationInboxSearchRequest("0", null);
 
     // when
-    ScrollResponse<NotificationInboxSearchResponse> response = notificationInboxSearchService.search(
-        user.getId(),
-        request
-    );
+    ScrollResponse<NotificationInboxSearchResponse> response =
+        notificationInboxSearchService.search(
+            user.getId(),
+            request
+        );
 
     // then
     Long expectedNextCursor = response.contents()
@@ -173,10 +175,11 @@ class NotificationInboxSearchServiceTest {
     );
 
     // when
-    ScrollResponse<NotificationInboxSearchResponse> response = notificationInboxSearchService.search(
-        user.getId(),
-        secondRequest
-    );
+    ScrollResponse<NotificationInboxSearchResponse> response =
+        notificationInboxSearchService.search(
+            user.getId(),
+            secondRequest
+        );
 
     // then
     Long expectedNextCursor = response.contents()
@@ -195,10 +198,11 @@ class NotificationInboxSearchServiceTest {
     NotificationInboxSearchRequest request = new NotificationInboxSearchRequest(null, size);
 
     // when
-    ScrollResponse<NotificationInboxSearchResponse> response = notificationInboxSearchService.search(
-        user.getId(),
-        request
-    );
+    ScrollResponse<NotificationInboxSearchResponse> response =
+        notificationInboxSearchService.search(
+            user.getId(),
+            request
+        );
 
     // then
     Long expectedNextCursor = response.contents()
@@ -215,13 +219,17 @@ class NotificationInboxSearchServiceTest {
   void 마지막_페이지면_nextCursor는_null이고_hasNext는_false다() {
     // given
     int totalSize = size + 1;
-    NotificationInboxSearchRequest request = new NotificationInboxSearchRequest("0", totalSize + 10);
+    NotificationInboxSearchRequest request = new NotificationInboxSearchRequest(
+        "0",
+        totalSize + 10
+    );
 
     // when
-    ScrollResponse<NotificationInboxSearchResponse> response = notificationInboxSearchService.search(
-        user.getId(),
-        request
-    );
+    ScrollResponse<NotificationInboxSearchResponse> response =
+        notificationInboxSearchService.search(
+            user.getId(),
+            request
+        );
 
     // then
     assertThat(response.isEmpty()).isFalse();

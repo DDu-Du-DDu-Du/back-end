@@ -64,15 +64,21 @@ class RetrieveGoalServiceTest {
     GoalWithRepeatTodoResponse actual = retrieveGoalService.getById(userId, goal.getId());
 
     // then
-    assertThat(actual).extracting("id", "name", "status", "color", "privacyType", "priority")
-        .containsExactly(
-            goal.getId(),
-            goal.getName(),
-            goal.getStatus(),
-            goal.getColor(),
-            goal.getPrivacyType(),
-            goal.getPriority()
-        );
+    assertThat(actual).extracting(
+        "id",
+        "name",
+        "status",
+        "color",
+        "privacyType",
+        "priority"
+    ).containsExactly(
+        goal.getId(),
+        goal.getName(),
+        goal.getStatus(),
+        goal.getColor(),
+        goal.getPrivacyType(),
+        goal.getPriority()
+    );
   }
 
   @Test
@@ -100,13 +106,17 @@ class RetrieveGoalServiceTest {
 
     assertThat(first.repeatType()).isEqualTo(repeatTodo.getRepeatType());
 
-    assertThat(actual).extracting("name", "repeatType", "startDate", "endDate")
-        .containsExactly(
-            repeatTodo.getName(),
-            repeatTodo.getRepeatType(),
-            repeatTodo.getStartDate(),
-            repeatTodo.getEndDate()
-        );
+    assertThat(actual).extracting(
+        "name",
+        "repeatType",
+        "startDate",
+        "endDate"
+    ).containsExactly(
+        repeatTodo.getName(),
+        repeatTodo.getRepeatType(),
+        repeatTodo.getStartDate(),
+        repeatTodo.getEndDate()
+    );
 
     RepeatPattern actualPattern = actual.getRepeatPattern();
     RepeatPattern expectedPattern = repeatTodo.getRepeatPattern();

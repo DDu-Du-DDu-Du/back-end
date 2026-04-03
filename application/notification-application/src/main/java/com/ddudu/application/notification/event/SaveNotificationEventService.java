@@ -33,11 +33,12 @@ public class SaveNotificationEventService implements SaveNotificationEventUseCas
   }
 
   private NotificationEvent upsertEvent(NotificationEventSaveEvent event) {
-    Optional<NotificationEvent> optionalEvent = notificationEventLoaderPort.getOptionalEventByContext(
-        event.userId(),
-        event.typeCode(),
-        event.contextId()
-    );
+    Optional<NotificationEvent> optionalEvent =
+        notificationEventLoaderPort.getOptionalEventByContext(
+            event.userId(),
+            event.typeCode(),
+            event.contextId()
+        );
 
     if (optionalEvent.isEmpty()) {
       NotificationEvent notificationEvent = NotificationEvent.builder()

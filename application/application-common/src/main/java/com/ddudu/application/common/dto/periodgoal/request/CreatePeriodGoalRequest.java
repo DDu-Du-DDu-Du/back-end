@@ -23,7 +23,8 @@ public record CreatePeriodGoalRequest(
     String type,
     @Schema(
         name = "planDate",
-        description = "기간 목표 날짜 (type이 WEEK일 때는 해당 날짜가 있는 주의 화요일, MONTH일 때는 해당 날짜가 있는 달의 1일이 저장됩니다.)",
+        description = "기간 목표 날짜 (type이 WEEK일 때는 해당 날짜가 있는 주의 화요일,"
+            + " MONTH일 때는 해당 날짜가 있는 달의 1일이 저장됩니다.)",
         example = "2024-06-10"
     )
     @NotNull(message = "4003 PLAN_DATE_NOT_EXISTING")

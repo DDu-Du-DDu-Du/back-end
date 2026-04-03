@@ -63,10 +63,11 @@ public class UserPersistenceAdapter implements UserLoaderPort, SignUpPort, UserC
 
   @Override
   public Optional<User> loadSocialUser(AuthProvider authProvider) {
-    Optional<AuthProviderEntity> providerEntity = authProviderRepository.findByProviderIdAndProviderType(
-        authProvider.getProviderId(),
-        authProvider.getProviderType()
-    );
+    Optional<AuthProviderEntity> providerEntity =
+        authProviderRepository.findByProviderIdAndProviderType(
+            authProvider.getProviderId(),
+            authProvider.getProviderType()
+        );
 
     if (providerEntity.isEmpty()) {
       return Optional.empty();

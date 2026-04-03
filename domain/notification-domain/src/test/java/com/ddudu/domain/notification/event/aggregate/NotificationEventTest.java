@@ -192,12 +192,13 @@ class NotificationEventTest {
       // given
       LocalDateTime tomorrow = LocalDateTime.now()
           .plusDays(1);
-      NotificationEvent notificationEvent = NotificationEventFixture.createValidEventWithUserAndContext(
-          userId,
-          typeCode,
-          contextId,
-          tomorrow
-      );
+      NotificationEvent notificationEvent =
+          NotificationEventFixture.createValidEventWithUserAndContext(
+              userId,
+              typeCode,
+              contextId,
+              tomorrow
+          );
       LocalDateTime expected = NotificationEventFixture.getFutureDateTime(1, TimeUnit.DAYS);
 
       // when
@@ -210,11 +211,12 @@ class NotificationEventTest {
     @Test
     void 이미_발송된_경우_시간_수정을_실패한다() {
       // given
-      NotificationEvent notificationEvent = NotificationEventFixture.createFiredEventNowWithUserAndContext(
-          userId,
-          typeCode,
-          contextId
-      );
+      NotificationEvent notificationEvent =
+          NotificationEventFixture.createFiredEventNowWithUserAndContext(
+              userId,
+              typeCode,
+              contextId
+          );
       LocalDateTime willFireAt = NotificationEventFixture.getFutureDateTime(1, TimeUnit.DAYS);
 
       // when
@@ -228,11 +230,12 @@ class NotificationEventTest {
     @Test
     void 발송_예정_시간이_현재시간보다_이전이면_시간_수정을_실패한다() {
       // given
-      NotificationEvent notificationEvent = NotificationEventFixture.createValidEventNowWithUserAndContext(
-          userId,
-          typeCode,
-          contextId
-      );
+      NotificationEvent notificationEvent =
+          NotificationEventFixture.createValidEventNowWithUserAndContext(
+              userId,
+              typeCode,
+              contextId
+          );
       LocalDateTime willFireAt = NotificationEventFixture.getPastDateTime(1, TimeUnit.DAYS);
 
       // when

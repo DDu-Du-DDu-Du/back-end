@@ -89,7 +89,9 @@ class GetNotificationInboxStatusServiceTest {
       // given
 
       // when
-      NotificationInboxStatusResponse response = getNotificationInboxStatusService.getStatus(user.getId());
+      NotificationInboxStatusResponse response = getNotificationInboxStatusService.getStatus(
+          user.getId()
+      );
 
       // then
       assertThat(response.hasNew()).isTrue();
@@ -123,7 +125,9 @@ class GetNotificationInboxStatusServiceTest {
       // given
 
       // when
-      NotificationInboxStatusResponse response = getNotificationInboxStatusService.getStatus(user.getId());
+      NotificationInboxStatusResponse response = getNotificationInboxStatusService.getStatus(
+          user.getId()
+      );
 
       // then
       assertThat(response.hasNew()).isFalse();

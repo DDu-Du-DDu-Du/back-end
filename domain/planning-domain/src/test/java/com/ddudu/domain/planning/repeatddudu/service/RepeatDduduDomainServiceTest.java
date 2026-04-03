@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class RepeatTodoDomainServiceTest {
+class RepeatDduduDomainServiceTest {
 
   static RepeatTodoDomainService repeatTodoDomainService;
 

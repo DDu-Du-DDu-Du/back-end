@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class TodoDomainServiceTest {
+class DduduDomainServiceTest {
 
   static TodoDomainService dduduDomainService;
 

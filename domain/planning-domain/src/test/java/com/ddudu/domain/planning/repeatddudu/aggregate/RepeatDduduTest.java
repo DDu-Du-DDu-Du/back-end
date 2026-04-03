@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class RepeatTodoTest {
+class RepeatDduduTest {
 
   Long goalId;
 

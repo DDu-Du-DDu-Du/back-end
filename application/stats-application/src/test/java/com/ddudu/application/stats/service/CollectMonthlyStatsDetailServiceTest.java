@@ -119,7 +119,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -140,7 +141,8 @@ class CollectMonthlyStatsDetailServiceTest {
         YearMonth nextMonth = thisMonth.plusMonths(1);
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             nextMonth,
@@ -161,7 +163,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             nullMonth,
@@ -180,7 +183,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -212,7 +216,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -232,7 +237,8 @@ class CollectMonthlyStatsDetailServiceTest {
         YearMonth nextMonth = thisMonth.plusMonths(1);
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             nextMonth,
@@ -280,7 +286,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -301,7 +308,8 @@ class CollectMonthlyStatsDetailServiceTest {
         YearMonth nextMonth = thisMonth.plusMonths(1);
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             nextMonth,
@@ -333,7 +341,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -352,7 +361,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        AchievedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectAchievedDetail(
+        AchievedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectAchievedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -471,7 +481,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
             user.getId(),
             goal.getId(),
             nullMonth,
@@ -492,7 +503,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -565,7 +577,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -585,7 +598,8 @@ class CollectMonthlyStatsDetailServiceTest {
         YearMonth nextMonth = thisMonth.plusMonths(1);
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
             user.getId(),
             goal.getId(),
             nextMonth,
@@ -622,7 +636,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -641,7 +656,8 @@ class CollectMonthlyStatsDetailServiceTest {
         // given
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
             user.getId(),
             goal.getId(),
             thisMonth,
@@ -661,7 +677,8 @@ class CollectMonthlyStatsDetailServiceTest {
         YearMonth another = thisMonth.plusMonths(2);
 
         // when
-        PostponedStatsDetailResponse response = collectMonthlyAchievedDetailService.collectPostponedDetail(
+        PostponedStatsDetailResponse response =
+            collectMonthlyAchievedDetailService.collectPostponedDetail(
             user.getId(),
             goal.getId(),
             another,
@@ -685,7 +702,8 @@ class CollectMonthlyStatsDetailServiceTest {
     YearMonth nextMonth = thisMonth.minusMonths(1);
 
     // when
-    ThrowingCallable collectDetail = () -> collectMonthlyAchievedDetailService.collectAchievedDetail(
+    ThrowingCallable collectDetail =
+        () -> collectMonthlyAchievedDetailService.collectAchievedDetail(
         user.getId(),
         goal.getId(),
         thisMonth,
@@ -703,7 +721,8 @@ class CollectMonthlyStatsDetailServiceTest {
     // given
 
     // when
-    ThrowingCallable collectDetail = () -> collectMonthlyAchievedDetailService.collectAchievedDetail(
+    ThrowingCallable collectDetail =
+        () -> collectMonthlyAchievedDetailService.collectAchievedDetail(
         user.getId(),
         goalId,
         thisMonth,
@@ -721,7 +740,8 @@ class CollectMonthlyStatsDetailServiceTest {
     long invalidUserId = UserFixture.getRandomId();
 
     // when
-    ThrowingCallable collectDetail = () -> collectMonthlyAchievedDetailService.collectAchievedDetail(
+    ThrowingCallable collectDetail =
+        () -> collectMonthlyAchievedDetailService.collectAchievedDetail(
         invalidUserId,
         goal.getId(),
         thisMonth,
@@ -739,7 +759,8 @@ class CollectMonthlyStatsDetailServiceTest {
     long goalId = GoalFixture.getRandomId();
 
     // when
-    ThrowingCallable collectDetail = () -> collectMonthlyAchievedDetailService.collectAchievedDetail(
+    ThrowingCallable collectDetail =
+        () -> collectMonthlyAchievedDetailService.collectAchievedDetail(
         user.getId(),
         goalId,
         thisMonth,
