@@ -32,7 +32,10 @@ public class NotificationDeviceTokenAdapter implements NotificationDeviceTokenCo
   }
 
   @Override
-  public List<NotificationDeviceToken> getTokensOfUserByChannel(Long userId, DeviceChannel channel) {
+  public List<NotificationDeviceToken> getTokensOfUserByChannel(
+      Long userId,
+      DeviceChannel channel
+  ) {
     return notificationDeviceTokenRepository.findAllByUserIdAndChannel(userId, channel)
         .stream()
         .map(NotificationDeviceTokenEntity::toDomain)

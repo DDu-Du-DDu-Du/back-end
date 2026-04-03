@@ -98,13 +98,18 @@ class SaveDeviceTokenServiceTest {
             .id(null)
             .build()
     );
-    SaveDeviceTokenRequest request = new SaveDeviceTokenRequest(existingChannel.name(), existingToken);
+    SaveDeviceTokenRequest request = new SaveDeviceTokenRequest(
+        existingChannel.name(),
+        existingToken
+    );
 
     // when
     SaveDeviceTokenResponse actual = saveDeviceTokenUseCase.save(user.getId(), request);
 
     // then
-    List<NotificationDeviceToken> tokens = notificationDeviceTokenLoaderPort.getAllTokensOfUser(user.getId());
+    List<NotificationDeviceToken> tokens = notificationDeviceTokenLoaderPort.getAllTokensOfUser(
+        user.getId()
+    );
 
     assertThat(actual.id()).isEqualTo(existing.getId());
     assertThat(tokens).hasSize(1);
@@ -127,7 +132,9 @@ class SaveDeviceTokenServiceTest {
     SaveDeviceTokenResponse actual = saveDeviceTokenUseCase.save(user.getId(), request);
 
     // then
-    List<NotificationDeviceToken> tokens = notificationDeviceTokenLoaderPort.getAllTokensOfUser(user.getId());
+    List<NotificationDeviceToken> tokens = notificationDeviceTokenLoaderPort.getAllTokensOfUser(
+        user.getId()
+    );
 
     assertThat(tokens).hasSize(2);
     assertThat(tokens).extracting(NotificationDeviceToken::getId)
