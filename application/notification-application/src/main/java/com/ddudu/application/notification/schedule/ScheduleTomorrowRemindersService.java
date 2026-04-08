@@ -6,6 +6,7 @@ import com.ddudu.application.common.port.notification.out.NotificationEventLoade
 import com.ddudu.application.common.port.notification.out.NotificationSchedulingPort;
 import com.ddudu.application.common.port.user.out.UserLoaderPort;
 import com.ddudu.common.annotation.UseCase;
+import com.ddudu.common.util.SchedulerLogAction;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -50,11 +51,12 @@ public class ScheduleTomorrowRemindersService implements ScheduleTomorrowReminde
   }
 
   private void registerReminderSchedule(Long userId, List<ReminderScheduleTargetDto> reminders) {
-    log.info("Reminder sending for user {}", userId);
     reminders.forEach(reminder -> {
       log.info(
-          "Registering event {} scheduling at {}",
-          reminder.eventId(), reminder.willFireAt()
+          "{} referenceId={} willTriggerAt={}",
+          SchedulerLogAction.REG.prefix(),
+          reminder.eventId(),
+          reminder.willFireAt()
       );
       notificationSchedulingPort.scheduleNotificationEvent(
           reminder.eventId(),
