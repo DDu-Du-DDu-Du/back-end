@@ -4,8 +4,10 @@ import com.ddudu.application.common.dto.scroll.OrderType;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.util.Objects;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public final class ScrollRequest {
 
   private static final int DEFAULT_SIZE = 10;
