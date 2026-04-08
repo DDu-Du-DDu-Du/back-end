@@ -18,7 +18,7 @@ public class ErrorCodeParser {
 
     return switch (codeValue / 1000) {
       case 1 -> UserErrorCode.valueOf(name);
-      case 2 -> TodoErrorCode.valueOf(name);
+      case 2 -> code.charAt(1) == 1 ? ReminderErrorCode.valueOf(name) : TodoErrorCode.valueOf(name);
       case 3 -> GoalErrorCode.valueOf(name);
       case 4 -> PeriodGoalErrorCode.valueOf(name);
       case 5 -> AuthErrorCode.valueOf(name);
