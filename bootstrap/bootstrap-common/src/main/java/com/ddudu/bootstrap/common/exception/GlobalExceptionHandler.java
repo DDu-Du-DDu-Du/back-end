@@ -3,7 +3,9 @@ package com.ddudu.bootstrap.common.exception;
 import com.ddudu.common.exception.DefaultErrorCode;
 import com.ddudu.common.exception.ErrorCode;
 import com.ddudu.common.exception.ErrorCodeParser;
+import com.ddudu.common.util.ExceptionLogAction;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -33,124 +36,161 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<List<ErrorResponse>> handleMethodArgumentNotValidException(
-      MethodArgumentNotValidException e
+      MethodArgumentNotValidException e,
+      HttpServletRequest request
   ) {
-    log.warn(e.getMessage(), e);
+    List<ErrorResponse> errorResponses = convertToErrorResponses(e);
+    ResponseEntity<List<ErrorResponse>> response = ResponseEntity.badRequest()
+        .body(errorResponses);
 
-    List<ErrorResponse> responses = convertToErrorResponses(e);
+    logWarn(e, request, response.getStatusCode(), errorResponses.get(0));
 
-    return ResponseEntity.badRequest()
-        .body(responses);
+    return response;
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
-      MethodArgumentTypeMismatchException e
+      MethodArgumentTypeMismatchException e,
+      HttpServletRequest request
   ) {
-    log.warn(e.getMessage(), e);
-
     String message = formatMessageFrom(e);
-    ErrorResponse response = ErrorResponse.from(INVALID_INPUT_TYPE_CODE, message);
+    ErrorResponse errorResponse = ErrorResponse.from(INVALID_INPUT_TYPE_CODE, message);
+    ResponseEntity<ErrorResponse> response = ResponseEntity.badRequest()
+        .body(errorResponse);
 
-    return ResponseEntity.badRequest()
-        .body(response);
+    logWarn(e, request, response.getStatusCode(), errorResponse);
+
+    return response;
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException e) {
-    log.warn(e.getMessage(), e);
-
+  public ResponseEntity<ErrorResponse> handleInvalidFormatException(
+      InvalidFormatException e,
+      HttpServletRequest request
+  ) {
     String message = formatMessageFrom(e);
-    ErrorResponse response = ErrorResponse.from(INVALID_ENUM_FORMAT_CODE, message);
+    ErrorResponse errorResponse = ErrorResponse.from(INVALID_ENUM_FORMAT_CODE, message);
+    ResponseEntity<ErrorResponse> response = ResponseEntity.badRequest()
+        .body(errorResponse);
 
-    return ResponseEntity.badRequest()
-        .body(response);
+    logWarn(e, request, response.getStatusCode(), errorResponse);
+
+    return response;
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException e) {
-    log.warn(e.getMessage(), e);
-
+  public ResponseEntity<ErrorResponse> handleBadRequest(
+      IllegalArgumentException e,
+      HttpServletRequest request
+  ) {
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
-    ErrorResponse response = ErrorResponse.from(errorCode);
+    ErrorResponse errorResponse = ErrorResponse.from(errorCode);
 
     if (errorCode instanceof DefaultErrorCode) {
-      return handleUnexpected(response);
+      return handleUnexpected(errorResponse);
     }
 
-    return ResponseEntity.badRequest()
-        .body(response);
+    ResponseEntity<ErrorResponse> response = ResponseEntity.badRequest()
+        .body(errorResponse);
+
+    logWarn(e, request, response.getStatusCode(), errorResponse);
+
+    return response;
   }
 
   @ExceptionHandler(UnsupportedOperationException.class)
-  public ResponseEntity<ErrorResponse> handleUnauthorized(UnsupportedOperationException e) {
-    log.warn(e.getMessage(), e);
-
+  public ResponseEntity<ErrorResponse> handleUnauthorized(
+      UnsupportedOperationException e,
+      HttpServletRequest request
+  ) {
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
-    ErrorResponse response = ErrorResponse.from(errorCode);
+    ErrorResponse errorResponse = ErrorResponse.from(errorCode);
 
     if (errorCode instanceof DefaultErrorCode) {
-      return handleUnexpected(response);
+      return handleUnexpected(errorResponse);
     }
 
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-        .body(response);
+    ResponseEntity<ErrorResponse> response = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body(errorResponse);
+
+    logWarn(e, request, response.getStatusCode(), errorResponse);
+
+    return response;
   }
 
   @ExceptionHandler(SecurityException.class)
-  public ResponseEntity<ErrorResponse> handleForbidden(SecurityException e) {
-    log.warn(e.getMessage(), e);
-
+  public ResponseEntity<ErrorResponse> handleForbidden(
+      SecurityException e,
+      HttpServletRequest request
+  ) {
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
-    ErrorResponse response = ErrorResponse.from(errorCode);
+    ErrorResponse errorResponse = ErrorResponse.from(errorCode);
 
     if (errorCode instanceof DefaultErrorCode) {
-      return handleUnexpected(response);
+      return handleUnexpected(errorResponse);
     }
 
-    return ResponseEntity.status(HttpStatus.FORBIDDEN)
-        .body(response);
+    ResponseEntity<ErrorResponse> response = ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .body(errorResponse);
+
+    logWarn(e, request, response.getStatusCode(), errorResponse);
+
+    return response;
   }
 
   @ExceptionHandler(MissingResourceException.class)
-  public ResponseEntity<ErrorResponse> handleNotFound(MissingResourceException e) {
-    log.warn(e.getMessage(), e);
-
+  public ResponseEntity<ErrorResponse> handleNotFound(
+      MissingResourceException e,
+      HttpServletRequest request
+  ) {
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
-    ErrorResponse response = ErrorResponse.from(errorCode);
+    ErrorResponse errorResponse = ErrorResponse.from(errorCode);
 
     if (errorCode instanceof DefaultErrorCode) {
-      return handleUnexpected(response);
+      return handleUnexpected(errorResponse);
     }
 
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(response);
+    ResponseEntity<ErrorResponse> response = ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(errorResponse);
+
+    logWarn(e, request, response.getStatusCode(), errorResponse);
+
+    return response;
   }
 
   @ExceptionHandler(IllegalStateException.class)
-  public ResponseEntity<ErrorResponse> handleUnprocessableEntity(IllegalStateException e) {
-    log.warn(e.getMessage(), e);
-
+  public ResponseEntity<ErrorResponse> handleUnprocessableEntity(
+      IllegalStateException e,
+      HttpServletRequest request
+  ) {
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
-    ErrorResponse response = ErrorResponse.from(errorCode);
+    ErrorResponse errorResponse = ErrorResponse.from(errorCode);
 
     if (errorCode instanceof DefaultErrorCode) {
-      return handleUnexpected(response);
+      return handleUnexpected(errorResponse);
     }
 
-    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-        .body(response);
+    ResponseEntity<ErrorResponse> response = ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+        .body(errorResponse);
+
+    logWarn(e, request, response.getStatusCode(), errorResponse);
+
+    return response;
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> handleUnknownException(Exception e) {
-    log.error(e.getMessage(), e);
-
+  public ResponseEntity<ErrorResponse> handleUnknownException(
+      Exception e,
+      HttpServletRequest request
+  ) {
     ErrorCode errorCode = errorCodeParser.parse(e.getMessage());
-    ErrorResponse response = ErrorResponse.from(errorCode);
+    ErrorResponse errorResponse = ErrorResponse.from(errorCode);
+    ResponseEntity<ErrorResponse> response = ResponseEntity.internalServerError()
+        .body(errorResponse);
 
-    return ResponseEntity.internalServerError()
-        .body(response);
+    logException(e, request, response.getStatusCode(), errorResponse, true);
+
+    return response;
   }
 
   private ResponseEntity<ErrorResponse> handleUnexpected(ErrorResponse response) {
@@ -188,6 +228,53 @@ public class GlobalExceptionHandler {
     ErrorCode errorCode = errorCodeParser.parse(fieldError.getDefaultMessage());
 
     return ErrorResponse.from(errorCode);
+  }
+
+  private void logWarn(
+      Exception e,
+      HttpServletRequest request,
+      HttpStatusCode status,
+      ErrorResponse response
+  ) {
+    logException(e, request, status, response, false);
+  }
+
+  private void logException(
+      Exception e,
+      HttpServletRequest request,
+      HttpStatusCode status,
+      ErrorResponse response,
+      boolean isUnknown
+  ) {
+    String exceptionSimpleName = e.getClass()
+        .getSimpleName();
+    String logMessage = "{} uri={} status={} exception={} code={} message={}";
+
+    if (isUnknown) {
+      log.error(
+          logMessage,
+          ExceptionLogAction.HANDLE.prefix(),
+          request.getRequestURI(),
+          status,
+          exceptionSimpleName,
+          response.code(),
+          response.message(),
+          e
+      );
+
+      return;
+    }
+
+    log.warn(
+        logMessage,
+        ExceptionLogAction.HANDLE.prefix(),
+        request.getRequestURI(),
+        status,
+        exceptionSimpleName,
+        response.code(),
+        response.message(),
+        e
+    );
   }
 
 }
