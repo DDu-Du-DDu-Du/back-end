@@ -3,9 +3,11 @@ package com.ddudu.api.user.auth.resolver;
 import com.ddudu.api.user.auth.jwt.AuthorityProxy;
 import com.ddudu.bootstrap.common.annotation.Login;
 import com.ddudu.common.exception.AuthErrorCode;
+import com.ddudu.common.util.HttpLogAction;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +16,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@Slf4j
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
   @Override
@@ -38,11 +41,17 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     // TODO: 불필요한 Resolver 대신 @AuthenticationPrincipal 고려 필요
 
     if (isGuest(authentication)) {
+      log.info("{} user={}", HttpLogAction.AUTH.prefix(), AuthorityProxy.GUEST);
+
       return null;
     }
 
     if (isMember(authentication)) {
-      return authentication.getPrincipal();
+      Object user = authentication.getPrincipal();
+
+      log.info("{} user={}", HttpLogAction.AUTH.prefix(), user);
+
+      return user;
     }
 
     throw new UnsupportedOperationException(AuthErrorCode.BAD_TOKEN_CONTENT.getCodeName());
