@@ -2,6 +2,7 @@ package com.ddudu.infra.fcm.notification.adapter;
 
 import com.ddudu.application.common.port.notification.out.NotificationSendPort;
 import com.ddudu.common.annotation.DrivenAdapter;
+import com.ddudu.common.util.FcmLogAction;
 import com.ddudu.infra.fcm.notification.config.FcmProperties;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -10,6 +11,7 @@ import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.SendResponse;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,20 +37,45 @@ public class NotificationFcmAdapter implements NotificationSendPort {
         .setNotification(notification)
         .addAllTokens(deviceTokens)
         .build();
-    BatchResponse batchResponse = sendMulticast(multicastMessage);
 
-    handlePartialException(batchResponse);
+    String sendId = UUID.randomUUID()
+        .toString();
+    long start = System.currentTimeMillis();
+
+    BatchResponse batchResponse = sendMulticast(
+        sendId,
+        start,
+        multicastMessage,
+        deviceTokens.size()
+    );
+
+    handlePartialException(sendId, start, batchResponse);
   }
 
-  private BatchResponse sendMulticast(MulticastMessage message) {
+  private BatchResponse sendMulticast(
+      String sendId,
+      long start,
+      MulticastMessage message,
+      int tokenCount
+  ) {
+    log.info("{} sendId={} tokenCount={}", FcmLogAction.SEND.prefix(), sendId, tokenCount);
+
     try {
       return firebaseMessaging.sendEachForMulticast(
           message,
           fcmProperties.validateOnly()
       );
     } catch (FirebaseMessagingException e) {
-      log.warn(
-          "All of firebase multicast failed: [{}] {}",
+      long durationMs = System.currentTimeMillis() - start;
+      String exceptionSimpleName = e.getClass()
+          .getSimpleName();
+
+      log.error(
+          "{} sendId={} durationMs={} exception={} code={} message={}",
+          FcmLogAction.ERR.prefix(),
+          sendId,
+          durationMs,
+          exceptionSimpleName,
           e.getMessagingErrorCode(),
           e.getMessage()
       );
@@ -57,20 +84,30 @@ public class NotificationFcmAdapter implements NotificationSendPort {
     }
   }
 
-  private void handlePartialException(BatchResponse batchResponse) {
+  private void handlePartialException(String sendId, long start, BatchResponse batchResponse) {
+    long durationMs = System.currentTimeMillis() - start;
     int failureCount = batchResponse.getFailureCount();
+
+    log.info(
+        "{} sendId={} successCount={} failureCount={} durationMs={}",
+        FcmLogAction.DONE.prefix(),
+        sendId,
+        batchResponse.getSuccessCount(),
+        failureCount,
+        durationMs
+    );
 
     if (failureCount == 0) {
       return;
     }
 
-    log.warn("{} of firebase multicast failed", failureCount);
-
     batchResponse.getResponses()
         .stream()
         .map(SendResponse::getException)
         .forEach(exception -> log.warn(
-            "[{}] {}",
+            "{} sendId={} code={} message={}",
+            FcmLogAction.FAIL.prefix(),
+            sendId,
             exception.getMessagingErrorCode(),
             exception.getMessage()
         ));
