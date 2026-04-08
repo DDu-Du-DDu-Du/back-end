@@ -9,4 +9,6 @@ dependencies {
     implementation(project(":domain:planning-domain"))
     implementation(project(":domain:stats-domain"))
     implementation(project(":domain:notification-domain"))
+
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 }
