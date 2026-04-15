@@ -1,5 +1,6 @@
 package com.modoo.infra.mysql.planning.goal.adapter;
 
+import com.google.common.collect.Lists;
 import com.modoo.application.common.port.goal.out.DeleteGoalPort;
 import com.modoo.application.common.port.goal.out.GoalLoaderPort;
 import com.modoo.application.common.port.goal.out.SaveGoalPort;
@@ -10,7 +11,6 @@ import com.modoo.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.modoo.infra.mysql.planning.goal.entity.GoalEntity;
 import com.modoo.infra.mysql.planning.goal.repository.GoalRepository;
 import com.modoo.infra.mysql.planning.todo.repository.TodoRepository;
-import com.google.common.collect.Lists;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.MissingResourceException;
