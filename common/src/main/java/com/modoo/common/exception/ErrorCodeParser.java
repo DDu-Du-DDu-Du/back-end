@@ -13,23 +13,25 @@ public class ErrorCodeParser {
 
     String[] codeName = message.split(" ");
     String code = codeName[0];
-    int codeValue = Integer.parseInt(codeName[0]);
+    String prefix = code.substring(0, code.length() - 3);
+    String adjusted = prefix.length() < 2 ? "0" + prefix : prefix;
     String name = codeName[1];
 
-    return switch (codeValue / 1000) {
-      case 1 -> UserErrorCode.valueOf(name);
-      case 2 -> code.charAt(1) == 1 ? ReminderErrorCode.valueOf(name) : TodoErrorCode.valueOf(name);
-      case 3 -> GoalErrorCode.valueOf(name);
-      case 4 -> PeriodGoalErrorCode.valueOf(name);
-      case 5 -> AuthErrorCode.valueOf(name);
-      case 6 -> RepeatTodoErrorCode.valueOf(name);
-      case 7 -> LikeErrorCode.valueOf(name);
-      case 8 -> FollowingErrorCode.valueOf(name);
-      case 9 ->
+    return switch (adjusted) {
+      case "01" -> UserErrorCode.valueOf(name);
+      case "02" ->
+          code.charAt(1) == '1' ? ReminderErrorCode.valueOf(name) : TodoErrorCode.valueOf(name);
+      case "03" -> GoalErrorCode.valueOf(name);
+      case "04" -> PeriodGoalErrorCode.valueOf(name);
+      case "05" -> AuthErrorCode.valueOf(name);
+      case "06" -> RepeatTodoErrorCode.valueOf(name);
+      case "07" -> LikeErrorCode.valueOf(name);
+      case "08" -> FollowingErrorCode.valueOf(name);
+      case "09" ->
           code.charAt(1) != '9' ? StatsErrorCode.valueOf(name) : new DefaultErrorCode(message);
-      case 10 -> NotificationEventErrorCode.valueOf(name);
-      case 11 -> DailyBriefingLogErrorCode.valueOf(name);
-      case 12 -> NotificationDeviceTokenErrorCode.valueOf(name);
+      case "10" -> NotificationEventErrorCode.valueOf(name);
+      case "11" -> DailyBriefingLogErrorCode.valueOf(name);
+      case "12" -> NotificationDeviceTokenErrorCode.valueOf(name);
       default -> new DefaultErrorCode(message);
     };
   }
