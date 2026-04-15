@@ -37,7 +37,7 @@ jobs:
     secrets: inherit
 
   dev_deploy:
-    needs: [detect, infra_update]
+    needs: [ detect, infra_update ]
     if: always() && needs.detect.result == 'success' && (needs.infra_update.result == 'success' || needs.infra_update.result == 'skipped')
     uses: ./.github/workflows/deploy-pipeline.yaml
     with:
