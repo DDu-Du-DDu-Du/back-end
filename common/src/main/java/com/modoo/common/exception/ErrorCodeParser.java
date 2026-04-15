@@ -13,6 +13,11 @@ public class ErrorCodeParser {
 
     String[] codeName = message.split(" ");
     String code = codeName[0];
+
+    if (code.length() < 4) {
+      return new DefaultErrorCode(message);
+    }
+
     String prefix = code.substring(0, code.length() - 3);
     String adjusted = prefix.length() < 2 ? "0" + prefix : prefix;
     String name = codeName[1];
