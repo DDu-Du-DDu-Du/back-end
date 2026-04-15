@@ -221,6 +221,7 @@ gradle-app.setting
 
 # Custom ignores
 DduDuStyle.xml
+JStyle.xml
 
 # Ignore QueryDSL generated files
 /**/**/src/main/generated/
@@ -231,3 +232,9 @@ DduDuStyle.xml
 
 # Secrets
 src/**/application*.yaml
+
+# Terraform
+terraform/dev/local.secrets.auto.tfvars
+terraform/**/.terraform/
+terraform/**/.terraform.*
+terraform/**/tfplan

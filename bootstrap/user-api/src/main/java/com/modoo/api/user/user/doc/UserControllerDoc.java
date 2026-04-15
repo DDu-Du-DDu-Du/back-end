@@ -1,0 +1,152 @@
+package com.modoo.api.user.user.doc;
+
+import com.modoo.application.common.dto.user.request.UpdateUserSettingsRequest;
+import com.modoo.application.common.dto.user.response.MeResponse;
+import com.modoo.application.common.dto.user.response.UserSettingsResponse;
+import com.modoo.bootstrap.common.doc.examples.AuthErrorExamples;
+import com.modoo.bootstrap.common.doc.examples.UserErrorExamples;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+
+@Tag(
+    name = "User",
+    description = "회원 관련 API"
+)
+public interface UserControllerDoc {
+
+  @Operation(summary = "내 정보 조회")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "5002",
+                          value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                      ),
+                      @ExampleObject(
+                          name = "1011",
+                          description = "토큰의 사용자가 존재하지 않는 경우",
+                          value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
+                      )
+                  }
+              )
+          )
+      }
+  )
+  ResponseEntity<MeResponse> validateToken(Long loginId);
+
+  @Operation(summary = "내 세팅 옵션 변경")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "BAD REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "1012",
+                          value = UserErrorExamples.USER_INVALID_WEEK_START_DAY
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "1011",
+                          description = "토큰의 사용자가 존재하지 않는 경우",
+                          value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "5002",
+                          value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                      )
+                  }
+              )
+          )
+      }
+  )
+  ResponseEntity<UserSettingsResponse> updateSettings(
+      Long loginId,
+      UpdateUserSettingsRequest request
+  );
+
+  @Operation(summary = "내 세팅 조회")
+  @ApiResponses(
+      value = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "OK",
+              useReturnTypeSchema = true
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "BAD REQUEST",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "1012",
+                          value = UserErrorExamples.USER_INVALID_WEEK_START_DAY
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "404",
+              description = "NOT FOUND",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "1011",
+                          description = "토큰의 사용자가 존재하지 않는 경우",
+                          value = UserErrorExamples.USER_NO_TARGET_FOR_MY_INFO
+                      )
+                  }
+              )
+          ),
+          @ApiResponse(
+              responseCode = "401",
+              description = "UNAUTHORIZED",
+              content = @Content(
+                  examples = {
+                      @ExampleObject(
+                          name = "5002",
+                          value = AuthErrorExamples.AUTH_BAD_TOKEN_CONTENT
+                      )
+                  }
+              )
+          )
+      }
+  )
+  ResponseEntity<UserSettingsResponse> getUserSettings(Long loginId);
+
+}

@@ -1,7 +1,7 @@
 plugins {
-    id("ddudu.java-conventions")
-    id("ddudu.jacoco-conventions")
-    id("ddudu.test-fixtures-conventions")
+    id("modoo.java-conventions")
+    id("modoo.jacoco-conventions")
+    id("modoo.test-fixtures-conventions")
 }
 
 dependencies {

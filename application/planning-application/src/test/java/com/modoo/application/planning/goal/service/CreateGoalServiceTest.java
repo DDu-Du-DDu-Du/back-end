@@ -1,0 +1,232 @@
+package com.modoo.application.planning.goal.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.modoo.application.common.dto.goal.request.CreateGoalRequest;
+import com.modoo.application.common.dto.goal.request.CreateRepeatTodoRequestWithoutGoal;
+import com.modoo.application.common.dto.goal.response.GoalIdResponse;
+import com.modoo.application.common.port.auth.out.SignUpPort;
+import com.modoo.application.common.port.goal.out.GoalLoaderPort;
+import com.modoo.application.common.port.repeattodo.out.RepeatTodoLoaderPort;
+import com.modoo.application.common.port.todo.out.TodoLoaderPort;
+import com.modoo.common.exception.GoalErrorCode;
+import com.modoo.domain.planning.goal.aggregate.Goal;
+import com.modoo.domain.planning.goal.aggregate.enums.GoalStatus;
+import com.modoo.domain.planning.goal.aggregate.enums.PrivacyType;
+import com.modoo.domain.planning.repeattodo.aggregate.RepeatTodo;
+import com.modoo.domain.planning.repeattodo.aggregate.enums.RepeatType;
+import com.modoo.domain.planning.todo.aggregate.Todo;
+import com.modoo.domain.user.user.aggregate.User;
+import com.modoo.fixture.GoalFixture;
+import com.modoo.fixture.UserFixture;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.MissingResourceException;
+import java.util.Optional;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.AssertionsForClassTypes;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+@SpringBootTest
+@Transactional
+@DisplayNameGeneration(ReplaceUnderscores.class)
+class CreateGoalServiceTest {
+
+  @Autowired
+  CreateGoalService createGoalService;
+
+  @Autowired
+  SignUpPort signUpPort;
+
+  @Autowired
+  GoalLoaderPort goalLoaderPort;
+
+  @Autowired
+  RepeatTodoLoaderPort repeatTodoLoaderPort;
+
+  @Autowired
+  TodoLoaderPort todoLoaderPort;
+
+  CreateGoalRequest request;
+  Long userId;
+  String name;
+  String color;
+  PrivacyType privacyType;
+
+  @BeforeEach
+  void setUp() {
+    User user = createAndSaveUser();
+    userId = user.getId();
+    name = GoalFixture.getRandomSentenceWithMax(50);
+    color = GoalFixture.getRandomColor();
+    privacyType = GoalFixture.getRandomPrivacyType();
+    request = new CreateGoalRequest(name, color, privacyType.name(), new ArrayList<>());
+  }
+
+  @Test
+  void 목표명_색상_공개_설정을_입력해_목표_생성에_성공한다() {
+    // when
+    GoalIdResponse expected = createGoalService.create(userId, request);
+
+    // then
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
+    assertThat(actual.get()).extracting("name", "color", "privacyType", "priority")
+        .containsExactly(name, color, privacyType, 1);
+  }
+
+  @Test
+  void 목표_생성_시_사용자별_마지막_priority보다_1_큰_값이_부여된다() {
+    // given
+    createGoalService.create(userId, request);
+
+    // when
+    GoalIdResponse response = createGoalService.create(userId, request);
+
+    // then
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(response.id());
+    assertThat(actual.get()
+        .getPriority()).isEqualTo(2);
+  }
+
+  @Test
+  void 목표_생성_시_ID가_자동_생성된다() {
+    // when
+    GoalIdResponse expected = createGoalService.create(userId, request);
+
+    // then
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
+    assertThat(actual.get()
+        .getId()).isNotNull();
+  }
+
+  @Test
+  void 목표_생성_시_목표_상태는_IN_PROGRESS가_된다() {
+    // when
+    GoalIdResponse expected = createGoalService.create(userId, request);
+
+    // then
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
+    assertThat(actual.get()
+        .getStatus()).isEqualTo(GoalStatus.IN_PROGRESS);
+  }
+
+  @ParameterizedTest(name = "유효하지 않은 색상 : {0}")
+  @NullAndEmptySource
+  void 색상을_설정하지_않거나_빈_문자열이면_기본값이_적용된다(String invalidColor) {
+    // given
+    String defaultColor = "191919";
+
+    CreateGoalRequest request = new CreateGoalRequest(
+        name,
+        invalidColor,
+        privacyType.name(),
+        new ArrayList<>()
+    );
+
+    // when
+    GoalIdResponse expected = createGoalService.create(userId, request);
+
+    // then
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
+    assertThat(actual.get()
+        .getColor()).isEqualTo(defaultColor);
+  }
+
+  @Test
+  void 보기_설정을_설정하지_않으면_PRIVATE이_적용된다() {
+    // given
+    PrivacyType defaultPrivacyType = PrivacyType.PRIVATE;
+    CreateGoalRequest request = new CreateGoalRequest(name, color, null, new ArrayList<>());
+
+    // when
+    GoalIdResponse expected = createGoalService.create(userId, request);
+
+    // then
+    Optional<Goal> actual = goalLoaderPort.getOptionalGoal(expected.id());
+
+    assertThat(actual.get()
+        .getPrivacyType()).isEqualTo(defaultPrivacyType);
+  }
+
+  @Test
+  void 사용자ID가_유효하지_않으면_예외가_발생한다() {
+    // given
+    Long invalidUserId = UserFixture.getRandomId();
+
+    // when
+    ThrowingCallable create = () -> createGoalService.create(invalidUserId, request);
+
+    // then
+    AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(create)
+        .withMessage(GoalErrorCode.USER_NOT_EXISTING.getCodeName());
+  }
+
+  @Test
+  void 목표_생성_시_반복_투두도_함께_생성할_수_있다() {
+    // given
+    LocalDate nextMonday = LocalDate.now()
+        .with(DayOfWeek.MONDAY)
+        .plusDays(7);
+    LocalDate nextSunday = nextMonday.plusDays(6);
+    List<CreateRepeatTodoRequestWithoutGoal> requests = List.of(
+        new CreateRepeatTodoRequestWithoutGoal(
+            "반복 투두",
+            RepeatType.WEEKLY.name(),
+            List.of(DayOfWeek.SUNDAY.name()),
+            null,
+            null,
+            nextMonday,
+            nextSunday,
+            null,
+            null
+        )
+    );
+
+    CreateGoalRequest request = new CreateGoalRequest(name, color, null, requests);
+
+    // when
+    GoalIdResponse response = createGoalService.create(userId, request);
+
+    // then
+    Goal goal = goalLoaderPort.getOptionalGoal(response.id())
+        .get();
+    List<RepeatTodo> repeatTodos = repeatTodoLoaderPort.getAllByGoal(goal);
+
+    Assertions.assertThat(repeatTodos)
+        .hasSize(1);
+    assertThat(repeatTodos.get(0))
+        .extracting("name", "repeatType", "startDate", "endDate")
+        .containsExactly("반복 투두", RepeatType.WEEKLY, nextMonday, nextSunday);
+
+    List<Todo> todos = todoLoaderPort.getRepeatedTodos(repeatTodos.get(0));
+
+    Assertions.assertThat(todos)
+        .hasSize(1);
+    assertThat(todos.get(0))
+        .extracting(todo -> todo.getScheduledOn()
+            .getDayOfWeek())
+        .isEqualTo(DayOfWeek.SUNDAY);
+  }
+
+  private User createAndSaveUser() {
+    User user = UserFixture.createRandomUserWithId();
+    return signUpPort.save(user);
+  }
+
+}

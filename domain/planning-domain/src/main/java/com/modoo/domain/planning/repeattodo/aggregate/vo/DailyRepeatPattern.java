@@ -1,0 +1,26 @@
+package com.modoo.domain.planning.repeattodo.aggregate.vo;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Stream;
+
+public class DailyRepeatPattern implements RepeatPattern {
+
+  @Override
+  public RepeatInfo getInfo() {
+    return RepeatInfo.day();
+  }
+
+  @Override
+  public List<LocalDate> calculateRepeatDates(LocalDate startDate, LocalDate endDate) {
+    return Stream.iterate(startDate, date -> date.plusDays(1))
+        .limit(countDaysBetween(startDate, endDate))
+        .toList();
+  }
+
+  private long countDaysBetween(LocalDate startDate, LocalDate endDate) {
+    return ChronoUnit.DAYS.between(startDate, endDate) + 1;
+  }
+
+}

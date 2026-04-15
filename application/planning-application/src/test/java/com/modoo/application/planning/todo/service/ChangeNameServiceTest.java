@@ -1,0 +1,117 @@
+package com.modoo.application.planning.todo.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.modoo.application.common.dto.todo.request.ChangeNameRequest;
+import com.modoo.application.common.dto.todo.response.BasicTodoResponse;
+import com.modoo.application.common.port.auth.out.SignUpPort;
+import com.modoo.application.common.port.goal.out.SaveGoalPort;
+import com.modoo.application.common.port.todo.out.SaveTodoPort;
+import com.modoo.common.exception.TodoErrorCode;
+import com.modoo.domain.planning.goal.aggregate.Goal;
+import com.modoo.domain.planning.todo.aggregate.Todo;
+import com.modoo.domain.user.user.aggregate.User;
+import com.modoo.fixture.GoalFixture;
+import com.modoo.fixture.TodoFixture;
+import com.modoo.fixture.UserFixture;
+import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+@SpringBootTest
+@Transactional
+@DisplayNameGeneration(ReplaceUnderscores.class)
+class ChangeNameServiceTest {
+
+  @Autowired
+  ChangeNameService changeNameService;
+
+  @Autowired
+  SignUpPort signUpPort;
+
+  @Autowired
+  SaveGoalPort saveGoalPort;
+
+  @Autowired
+  SaveTodoPort saveTodoPort;
+
+  User user;
+  Goal goal;
+  Todo todo;
+  ChangeNameRequest request;
+
+  @BeforeEach
+  void setUp() {
+    user = signUpPort.save(UserFixture.createRandomUserWithId());
+    goal = saveGoalPort.save(GoalFixture.createRandomGoalWithUser(user.getId()));
+    todo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(goal));
+    request = new ChangeNameRequest(TodoFixture.getRandomSentenceWithMax(50));
+  }
+
+  @Test
+  void 투두의_이름을_변경한다() {
+    // when
+    BasicTodoResponse actual = changeNameService.change(user.getId(), todo.getId(), request);
+
+    // then
+    assertThat(actual.name()).isEqualTo(request.name());
+  }
+
+  @Test
+  void 변경할_이름이_50자가_넘으면_변경에_실패한다() {
+    // given
+    request = new ChangeNameRequest(TodoFixture.getRandomSentence(51, 100));
+
+    // when
+    ThrowingCallable changeName = () -> changeNameService.change(
+        user.getId(),
+        todo.getId(),
+        request
+    );
+
+    // then
+    Assertions.assertThatIllegalArgumentException()
+        .isThrownBy(changeName)
+        .withMessage(TodoErrorCode.EXCESSIVE_NAME_LENGTH.getCodeName());
+  }
+
+  @Test
+  void 존재하지_않는_투두인_경우_변경에_실패한다() {
+    // given
+    Long invalidId = TodoFixture.getRandomId();
+
+    // when
+    ThrowingCallable changeName = () -> changeNameService.change(user.getId(), invalidId, request);
+
+    // then
+    Assertions.assertThatThrownBy(changeName)
+        .isInstanceOf(MissingResourceException.class)
+        .hasMessage(TodoErrorCode.ID_NOT_EXISTING.getCodeName());
+  }
+
+  @Test
+  void 투두를_생성한_사용자가_아닌_경우_변경에_실패한다() {
+    // given
+    User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
+
+    // when
+    ThrowingCallable changeName = () -> changeNameService.change(
+        anotherUser.getId(),
+        todo.getId(),
+        request
+    );
+
+    // then
+    Assertions.assertThatThrownBy(changeName)
+        .isInstanceOf(SecurityException.class)
+        .hasMessage(TodoErrorCode.INVALID_AUTHORITY.getCodeName());
+  }
+
+}

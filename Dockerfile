@@ -1,4 +1,4 @@
-FROM amazoncorretto:17
+FROM amazoncorretto:17-alpine
 
 ARG PROFILE
 ENV SPRING_PROFILE_ACTIVE=${PROFILE}

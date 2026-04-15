@@ -1,0 +1,13 @@
+package com.modoo.application.common.port.notification.out;
+
+import com.modoo.domain.notification.device.aggregate.NotificationDeviceToken;
+import com.modoo.domain.notification.device.aggregate.enums.DeviceChannel;
+import java.util.List;
+
+public interface NotificationDeviceTokenLoaderPort {
+
+  List<NotificationDeviceToken> getAllTokensOfUser(Long userId);
+
+  List<NotificationDeviceToken> getTokensOfUserByChannel(Long userId, DeviceChannel channel);
+
+}

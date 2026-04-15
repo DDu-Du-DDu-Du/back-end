@@ -5,8 +5,8 @@ buildscript {
 }
 
 plugins {
-    id("ddudu.java-conventions")
-    id("ddudu.spring-conventions")
+    id("modoo.java-conventions")
+    id("modoo.spring-conventions")
     id("org.flywaydb.flyway") version "11.8.1"
 }
 
