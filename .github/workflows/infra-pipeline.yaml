@@ -1,0 +1,109 @@
+name: 인프라 관리 파이프라인
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+      ecr_repository_name:
+        required: true
+        type: string
+      ecr_repository_tag_name:
+        required: true
+        type: string
+      infra_update_enabled:
+        required: false
+        default: true
+        type: boolean
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      SUBMODULES_SECRET:
+        required: true
+      TF_VAR_DB_PASSWORD:
+        required: true
+      TF_VAR_RDS_DB_NAME:
+        required: true
+      TF_VAR_RDS_USERNAME:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  infra:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.SUBMODULES_SECRET }}
+          submodules: true
+
+      - name: AWS Credentials 설정
+        uses: aws-actions/configure-aws-credentials@v6
+        if: ${{ inputs.infra_update_enabled }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Terraform 설치
+        uses: hashicorp/setup-terraform@v4
+        if: ${{ inputs.infra_update_enabled }}
+
+      - name: Terraform Init (Remote Backend)
+        if: ${{ inputs.infra_update_enabled }}
+        working-directory: terraform/${{ inputs.env }}
+        run: |
+          terraform init \
+            -reconfigure \
+            -input=false
+
+      - name: Terraform Format Check
+        if: ${{ inputs.infra_update_enabled }}
+        working-directory: terraform/${{ inputs.env }}
+        run: |
+          terraform fmt \
+            -check \
+            -recursive
+
+      - name: Terraform Validate
+        if: ${{ inputs.infra_update_enabled }}
+        working-directory: terraform/${{ inputs.env }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        if: ${{ inputs.infra_update_enabled }}
+        working-directory: terraform/${{ inputs.env }}
+        env:
+          TF_IN_AUTOMATION: "true"
+          TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+          TF_VAR_rds_db_name: ${{ secrets.TF_VAR_RDS_DB_NAME }}
+          TF_VAR_rds_username: ${{ secrets.TF_VAR_RDS_USERNAME }}
+          TF_VAR_ecs_image_tag: latest
+          TF_VAR_ecr_repository_name: ${{ inputs.ecr_repository_name }}
+          TF_VAR_ecr_repository_tag_name: ${{ inputs.ecr_repository_tag_name }}
+        run: |
+          terraform plan \
+            -input=false \
+            -out=tfplan
+
+      - name: Terraform Apply
+        if: ${{ inputs.infra_update_enabled }}
+        working-directory: terraform/${{ inputs.env }}
+        env:
+          TF_IN_AUTOMATION: "true"
+          TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+          TF_VAR_rds_db_name: ${{ secrets.TF_VAR_RDS_DB_NAME }}
+          TF_VAR_rds_username: ${{ secrets.TF_VAR_RDS_USERNAME }}
+          TF_VAR_ecr_repository_name: ${{ inputs.ecr_repository_name }}
+          TF_VAR_ecr_repository_tag_name: ${{ inputs.ecr_repository_tag_name }}
+        run: |
+          terraform apply \
+            -input=false \
+            -auto-approve \
+            tfplan

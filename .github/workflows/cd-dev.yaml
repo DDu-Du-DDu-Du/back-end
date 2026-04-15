@@ -8,21 +8,41 @@ on:
       - main
 
 jobs:
-  dev-deploy:
+  detect:
     if: github.event.pull_request.merged == true
-    uses: ./.github/workflows/cd-pipeline.yaml
+    runs-on: ubuntu-latest
+    outputs:
+      infra_changed: ${{ steps.infra_filter.outputs.infra }}
+    steps:
+      - name: 체크아웃
+        uses: actions/checkout@v6
+
+      - name: Infra 변경사항 감지
+        id: infra_filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            infra:
+              - 'terraform/dev/**'
+              - 'terraform/modules/**'
+  infra_update:
+    needs: detect
+    if: needs.detect.outputs.infra_changed == 'true'
+    uses: ./.github/workflows/infra-pipeline.yaml
     with:
       env: dev
-      task-definition: .aws/dev-task-definition.json
-      ecr-registry-alias: y6p8j3t3
-      ecs-container-name: ddudu-dev-ecs-container
-      ecs-service: ddudu-dev-ecs-service
-      ecs-cluster: ddudu-dev-ecs-cluster
-      alimi-enabled: ${{ contains(toJson(github.event.pull_request.labels.*.name), 'feature') }}
-      swagger-url: http://ddudu-dev-alb-1593082408.ap-northeast-2.elb.amazonaws.com/docs
-      deployment_enabled: false
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
-      SUBMODULES_SECRET: ${{ secrets.SUBMODULES_SECRET }}
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_ALIMI_WEBHOOK_URL }}
+      ecr_repository_name: modoo/dev/spring-app
+      ecr_repository_tag_name: modoo-dev-spring-app
+      infra_update_enabled: true
+    secrets: inherit
+
+  dev_deploy:
+    needs: [detect, infra_update]
+    if: always() && needs.detect.result == 'success' && (needs.infra_update.result == 'success' || needs.infra_update.result == 'skipped')
+    uses: ./.github/workflows/deploy-pipeline.yaml
+    with:
+      env: dev
+      ecr_repository_name: modoo/dev/spring-app
+      ecr_repository_tag_name: modoo-dev-spring-app
+      deployment_enabled: true
+    secrets: inherit
