@@ -29,17 +29,19 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
     String traceId = UUID.randomUUID()
         .toString();
     long startMs = System.currentTimeMillis();
+    String userAgent = request.getHeader("User-Agent");
 
     MDC.put(TRACE_ID, traceId);
 
     log.info(
-        "{} method={} uri={} query={} contentLength={} contentType={}",
+        "{} method={} uri={} query={} contentLength={} contentType={} user-agent={}",
         HttpLogAction.REQ.prefix(),
         request.getMethod(),
         request.getRequestURI(),
         request.getQueryString(),
         request.getContentLength(),
-        request.getContentType()
+        request.getContentType(),
+        userAgent
     );
 
     try {
@@ -57,12 +59,13 @@ public class HttpLoggingFilter extends OncePerRequestFilter {
       }
 
       log.info(
-          "{} method={} uri={} status={} durationMs={}",
+          "{} method={} uri={} status={} durationMs={} user-agent={}",
           prefix,
           request.getMethod(),
           request.getRequestURI(),
           response.getStatus(),
-          duration
+          duration,
+          userAgent
       );
 
       MDC.clear();
