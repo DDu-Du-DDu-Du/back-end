@@ -34,7 +34,13 @@ jobs:
       ecr_repository_name: modoo/dev/spring-app
       ecr_repository_tag_name: modoo-dev-spring-app
       infra_update_enabled: true
-    secrets: inherit
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      SUBMODULES_SECRET: ${{ secrets.SUBMODULES_SECRET }}
+      TF_VAR_DB_PASSWORD: ${{ secrets.DEV_DB_PASSWORD }}
+      TF_VAR_RDS_DB_NAME: ${{ secrets.DEV_DB_NAME }}
+      TF_VAR_RDS_USERNAME: ${{ secrets.DEV_DB_USERNAME }}
 
   dev_deploy:
     needs: [ detect, infra_update ]
@@ -45,4 +51,10 @@ jobs:
       ecr_repository_name: modoo/dev/spring-app
       ecr_repository_tag_name: modoo-dev-spring-app
       deployment_enabled: true
-    secrets: inherit
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+      SUBMODULES_SECRET: ${{ secrets.SUBMODULES_SECRET }}
+      TF_VAR_DB_PASSWORD: ${{ secrets.DEV_DB_PASSWORD }}
+      TF_VAR_RDS_DB_NAME: ${{ secrets.DEV_DB_NAME }}
+      TF_VAR_RDS_USERNAME: ${{ secrets.DEV_DB_USERNAME }}
