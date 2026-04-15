@@ -1,0 +1,66 @@
+package com.modoo.application.common.dto.goal.response;
+
+import com.modoo.application.common.dto.repeattodo.RepeatTodoDto;
+import com.modoo.domain.planning.goal.aggregate.Goal;
+import com.modoo.domain.planning.goal.aggregate.enums.GoalStatus;
+import com.modoo.domain.planning.goal.aggregate.enums.PrivacyType;
+import com.modoo.domain.planning.repeattodo.aggregate.RepeatTodo;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
+import lombok.Builder;
+
+
+@Builder
+@Schema(description = "목표 상세 정보")
+public record GoalWithRepeatTodoResponse(
+    @Schema(
+        description = "목표 식별자",
+        example = "1"
+    )
+    Long id,
+    @Schema(
+        description = "목표 이름",
+        example = "매일 아침 물 마시기"
+    )
+    String name,
+    @Schema(
+        description = "목표 상태 [IN_PROGRESS|DONE]",
+        example = "IN_PROGRESS"
+    )
+    GoalStatus status,
+    @Schema(
+        description = "목표 색상",
+        example = "FFFFFF"
+    )
+    String color,
+    @Schema(
+        description = "목표 공개 범위 [PRIVATE|FOLLOWER|PUBLIC]",
+        example = "PUBLIC"
+    )
+    PrivacyType privacyType,
+    @Schema(
+        description = "목표 우선순위",
+        example = "1"
+    )
+    int priority,
+    @ArraySchema(schema = @Schema(implementation = RepeatTodoDto.class))
+    List<RepeatTodoDto> repeatTodos
+) {
+
+  public static GoalWithRepeatTodoResponse from(Goal goal, List<RepeatTodo> repeatTodos) {
+    return GoalWithRepeatTodoResponse.builder()
+        .id(goal.getId())
+        .name(goal.getName())
+        .status(goal.getStatus())
+        .color(goal.getColor())
+        .privacyType(goal.getPrivacyType())
+        .priority(goal.getPriority())
+        .repeatTodos(
+            repeatTodos.stream()
+                .map(RepeatTodoDto::from)
+                .toList())
+        .build();
+  }
+
+}

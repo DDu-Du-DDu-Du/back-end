@@ -1,6 +1,6 @@
 plugins {
-    id("ddudu.java-conventions")
-    id("ddudu.jpa-conventions")
+    id("modoo.java-conventions")
+    id("modoo.jpa-conventions")
 }
 
 dependencies {

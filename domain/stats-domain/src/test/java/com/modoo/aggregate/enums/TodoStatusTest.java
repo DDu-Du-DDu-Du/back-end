@@ -1,0 +1,26 @@
+package com.modoo.aggregate.enums;
+
+import static org.assertj.core.api.Assertions.assertThatRuntimeException;
+
+import com.modoo.common.exception.StatsErrorCode;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+
+@DisplayNameGeneration(ReplaceUnderscores.class)
+class TodoStatusTest {
+
+  @ParameterizedTest
+  @NullAndEmptySource
+  void 통계를_위한_투두_상태는_항상_유효해야한다(String value) {
+    // given
+    ThrowingCallable create = () -> TodoStatus.from(value);
+
+    // when
+    assertThatRuntimeException().isThrownBy(create)
+        .withMessage(StatsErrorCode.INVALID_TODO_STATUS.getCodeName());
+  }
+
+}

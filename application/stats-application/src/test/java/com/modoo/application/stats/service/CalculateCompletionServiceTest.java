@@ -1,0 +1,239 @@
+package com.modoo.application.stats.service;
+
+import static com.modoo.domain.planning.goal.aggregate.enums.PrivacyType.PRIVATE;
+import static com.modoo.domain.planning.goal.aggregate.enums.PrivacyType.PUBLIC;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.modoo.application.common.dto.stats.response.TodoCompletionResponse;
+import com.modoo.application.common.port.auth.out.SignUpPort;
+import com.modoo.application.common.port.goal.out.SaveGoalPort;
+import com.modoo.application.common.port.todo.out.SaveTodoPort;
+import com.modoo.common.exception.StatsErrorCode;
+import com.modoo.domain.planning.goal.aggregate.Goal;
+import com.modoo.domain.planning.todo.aggregate.Todo;
+import com.modoo.domain.user.user.aggregate.User;
+import com.modoo.fixture.GoalFixture;
+import com.modoo.fixture.TodoFixture;
+import com.modoo.fixture.UserFixture;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.List;
+import java.util.MissingResourceException;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.AssertionsForClassTypes;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+@SpringBootTest
+@Transactional
+@DisplayNameGeneration(ReplaceUnderscores.class)
+class CalculateCompletionServiceTest {
+
+  @Autowired
+  CalculateCompletionService calculateCompletionService;
+  @Autowired
+  SignUpPort signUpPort;
+  @Autowired
+  SaveGoalPort saveGoalPort;
+  @Autowired
+  SaveTodoPort saveTodoPort;
+
+  LocalDate today;
+  YearMonth thisMonth;
+  User user;
+  Goal privateGoal;
+  Goal publicGoal;
+  Todo privateTodo;
+  Todo publicTodo;
+
+  @BeforeEach
+  void setUp() {
+    today = LocalDate.now();
+    thisMonth = YearMonth.now();
+    user = signUpPort.save(UserFixture.createRandomUserWithId());
+    privateGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
+        user.getId(),
+        PRIVATE
+    ));
+    publicGoal = saveGoalPort.save(GoalFixture.createRandomGoalWithUserAndPrivacyType(
+        user.getId(),
+        PUBLIC
+    ));
+    privateTodo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(privateGoal));
+    publicTodo = saveTodoPort.save(TodoFixture.createRandomTodoWithGoal(publicGoal));
+  }
+
+  @Test
+  void 자신의_주간_할_일_달성률_조회를_성공한다() {
+    // given
+    // when
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateWeekly(
+        user.getId(),
+        user.getId(),
+        today
+    );
+
+    // then
+    Assertions.assertThat(responses)
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 2, 0, 2);
+  }
+
+  @Test
+  void 다른_사용자의_주간_할_일_달성률_조회를_성공한다() {
+    // given
+    User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
+    // when
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateWeekly(
+        anotherUser.getId(),
+        user.getId(),
+        today
+    );
+
+    // then
+    Assertions.assertThat(responses)
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 1, 0, 1);
+  }
+
+  @Test
+  void 자신의_월간_할_일_달성률_조회를_성공한다() {
+    // given
+
+    // when
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateMonthly(
+        user.getId(),
+        user.getId(),
+        thisMonth
+    );
+
+    // then
+    Assertions.assertThat(responses)
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 2, 0, 2);
+  }
+
+  @Test
+  void 다른_사용자의_월간_할_일_달성률_조회를_성공한다() {
+    // given
+    User anotherUser = signUpPort.save(UserFixture.createRandomUserWithId());
+
+    // when
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateMonthly(
+        anotherUser.getId(),
+        user.getId(),
+        thisMonth
+    );
+
+    // then
+    Assertions.assertThat(responses)
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 1, 0, 1);
+  }
+
+  @Test
+  void 월간_조회에서_사용자_아이디가_없으면_로그인_사용자로_조회한다() {
+    // given
+
+    // when
+    List<TodoCompletionResponse> responses = calculateCompletionService.calculateMonthly(
+        user.getId(),
+        null,
+        thisMonth
+    );
+
+    // then
+    Assertions.assertThat(responses)
+        .hasSize(1);
+    assertThat(responses.get(0))
+        .extracting("date", "totalCount", "completedCount", "uncompletedCount")
+        .containsExactly(today, 2, 0, 2);
+  }
+
+  @Test
+  void 로그인_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+    // given
+    Long invalidLoginId = UserFixture.getRandomId();
+
+    // when
+    ThrowingCallable findWeeklyCompletions = () -> calculateCompletionService.calculateWeekly(
+        invalidLoginId,
+        user.getId(),
+        today
+    );
+
+    // then
+    AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(findWeeklyCompletions)
+        .withMessage(StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+  }
+
+  @Test
+  void 사용자_아이디가_존재하지_않아_주간_할_일_달성률_조회를_실패한다() {
+    // given
+    Long invalidUserId = UserFixture.getRandomId();
+
+    // when
+    ThrowingCallable findWeeklyCompletions = () -> calculateCompletionService.calculateWeekly(
+        user.getId(),
+        invalidUserId,
+        today
+    );
+
+    // then
+    AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(findWeeklyCompletions)
+        .withMessage(StatsErrorCode.USER_NOT_EXISTING.getCodeName());
+  }
+
+  @Test
+  void 로그인_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+    // given
+    Long invalidLoginId = UserFixture.getRandomId();
+
+    // when
+    ThrowingCallable findMonthlyCompletions = () -> calculateCompletionService.calculateMonthly(
+        invalidLoginId,
+        user.getId(),
+        thisMonth
+    );
+
+    // then
+    AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(findMonthlyCompletions)
+        .withMessage(StatsErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
+  }
+
+  @Test
+  void 사용자_아이디가_존재하지_않아_월간_할_일_달성률_조회를_실패한다() {
+    // given
+    Long invalidUserId = UserFixture.getRandomId();
+
+    // when
+    ThrowingCallable findMonthlyCompletions = () -> calculateCompletionService.calculateMonthly(
+        user.getId(),
+        invalidUserId,
+        thisMonth
+    );
+
+    // then
+    AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)
+        .isThrownBy(findMonthlyCompletions)
+        .withMessage(StatsErrorCode.USER_NOT_EXISTING.getCodeName());
+  }
+
+}
