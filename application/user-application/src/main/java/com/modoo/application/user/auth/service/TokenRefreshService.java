@@ -27,19 +27,14 @@ public class TokenRefreshService implements TokenRefreshUseCase {
   private final TokenManipulationPort tokenManipulationPort;
   private final TokenManager tokenManager;
   private final UserLoaderPort userLoaderPort;
-  private static final long DUPLICATED_REQUEST_GRACE_MINUTES = 3L;
 
   @Override
   public TokenResponse refresh(TokenRefreshRequest request) {
     UserFamily decoded = decodeOrThrowUnauthorized(request.refreshToken());
-    User user = userLoaderPort.loadFullUser(decoded.getUserId())
-        .orElseThrow(() -> new MissingResourceException(
-            AuthErrorCode.USER_NOT_FOUND.getCodeName(),
-            User.class.getCanonicalName(),
-            String.valueOf(decoded.getUserId())
-        ));
-    String accessToken = tokenManager.createAccessToken(user);
-    RefreshToken newRefreshToken = tokenManager.createRefreshToken(user, decoded.getFamily());
+    RefreshToken newRefreshToken = tokenManager.createRefreshToken(
+        decoded.getUserId(),
+        decoded.getFamily()
+    );
     LocalDateTime now = LocalDateTime.now();
 
     long updated = tokenManipulationPort.rotateIfCurrentMatches(
@@ -49,6 +44,14 @@ public class TokenRefreshService implements TokenRefreshUseCase {
         newRefreshToken.getTokenValue(),
         now
     );
+
+    User user = userLoaderPort.loadFullUser(decoded.getUserId())
+        .orElseThrow(() -> new MissingResourceException(
+            AuthErrorCode.USER_NOT_FOUND.getCodeName(),
+            User.class.getCanonicalName(),
+            String.valueOf(decoded.getUserId())
+        ));
+    String accessToken = tokenManager.createAccessToken(user);
 
     if (updated == 1L) {
       return new TokenResponse(accessToken, newRefreshToken.getTokenValue());
@@ -70,7 +73,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
       throw new SecurityException(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
     }
 
-    if (saved.isRefreshedWithin(now, DUPLICATED_REQUEST_GRACE_MINUTES)) {
+    if (saved.isWithinGracePeriod(now)) {
       return new TokenResponse(accessToken, saved.getCurrentToken());
     }
 

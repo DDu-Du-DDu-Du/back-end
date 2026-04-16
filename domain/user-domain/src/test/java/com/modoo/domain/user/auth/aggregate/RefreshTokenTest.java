@@ -134,7 +134,7 @@ class RefreshTokenTest {
       // given
 
       // when
-      boolean actual = refreshToken.isRefreshedWithin(LocalDateTime.now(), 3L);
+      boolean actual = refreshToken.isWithinGracePeriod(LocalDateTime.now());
 
       // then
       assertThat(actual).isTrue();

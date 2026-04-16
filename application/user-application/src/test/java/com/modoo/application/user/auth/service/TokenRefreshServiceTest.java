@@ -163,12 +163,14 @@ class TokenRefreshServiceTest {
   }
 
   @Test
-  void 이전_토큰이지만_삼분이_지났으면_토큰을_삭제하고_토큰_갱신을_실패한다() {
+  void 이전_토큰이지만_삼분이_지났으면_토큰을_삭제하고_토큰_갱신을_실패한다() throws InterruptedException {
     // given
     RefreshToken oldRefreshToken = tokenManager.createRefreshToken(user, family);
     tokenManipulationPort.save(oldRefreshToken);
 
+    sleep(1000);
     RefreshToken newRefreshToken = tokenManager.createRefreshToken(user, family);
+    Assertions.assertThat(newRefreshToken.getTokenValue()).isNotEqualTo(oldRefreshToken.getTokenValue());
     tokenManipulationPort.rotateIfCurrentMatches(
         user.getId(),
         family,

@@ -53,10 +53,8 @@ class LogoutServiceTest {
   void 로그아웃을_성공하면_리프레시_토큰_패밀리를_삭제한다() {
     // given
     RefreshToken refreshToken = tokenManager.createRefreshToken(loginUser, family);
-    RefreshToken anotherRefreshToken = tokenManager.createRefreshToken(loginUser, family);
 
     tokenManipulationPort.save(refreshToken);
-    tokenManipulationPort.save(anotherRefreshToken);
 
     // when
     logoutService.logout(loginUser.getId(), refreshToken.getTokenValue());

@@ -32,8 +32,12 @@ public class TokenManager {
   }
 
   public RefreshToken createRefreshToken(User user, Integer family) {
+    return createRefreshToken(user.getId(), family);
+  }
+
+  public RefreshToken createRefreshToken(Long userId, Integer family) {
     UserFamily userFamily = UserFamily.builder()
-        .userId(user.getId())
+        .userId(userId)
         .family(family)
         .build();
     Map<String, Object> claim = Collections.singletonMap(

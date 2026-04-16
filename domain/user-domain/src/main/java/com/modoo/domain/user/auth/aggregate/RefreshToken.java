@@ -10,6 +10,7 @@ import lombok.Getter;
 @Getter
 public class RefreshToken {
 
+  private static final long GRACE_PERIOD_MINUTES = 3L;
   private final Long id;
 
   @Getter(AccessLevel.NONE)
@@ -73,6 +74,10 @@ public class RefreshToken {
 
     return !refreshedAt.plusMinutes(minutes)
         .isBefore(comparedAt);
+  }
+
+  public boolean isWithinGracePeriod(LocalDateTime comparedAt) {
+    return isRefreshedWithin(comparedAt, GRACE_PERIOD_MINUTES);
   }
 
   public String getTokenValue() {

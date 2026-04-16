@@ -73,7 +73,7 @@ public class RefreshTokenQueryRepositoryImpl implements RefreshTokenQueryReposit
         .and(refreshTokenEntity.currentToken.eq(currentToken));
 
     return jpaQueryFactory.update(refreshTokenEntity)
-        .set(refreshTokenEntity.previousToken, refreshTokenEntity.currentToken)
+        .set(refreshTokenEntity.previousToken, currentToken)
         .set(refreshTokenEntity.currentToken, newCurrentToken)
         .set(refreshTokenEntity.refreshedAt, refreshedAt)
         .where(whereCondition)
