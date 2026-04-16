@@ -68,12 +68,13 @@ public class RefreshTokenQueryRepositoryImpl implements RefreshTokenQueryReposit
       String newCurrentToken,
       LocalDateTime refreshedAt
   ) {
+    String previousToken = currentToken;
     BooleanBuilder whereCondition = new BooleanBuilder(refreshTokenEntity.userId.eq(userId))
         .and(refreshTokenEntity.family.eq(family))
         .and(refreshTokenEntity.currentToken.eq(currentToken));
 
     return jpaQueryFactory.update(refreshTokenEntity)
-        .set(refreshTokenEntity.previousToken, currentToken)
+        .set(refreshTokenEntity.previousToken, previousToken)
         .set(refreshTokenEntity.currentToken, newCurrentToken)
         .set(refreshTokenEntity.refreshedAt, refreshedAt)
         .where(whereCondition)

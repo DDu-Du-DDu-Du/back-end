@@ -31,9 +31,9 @@ public class TokenRefreshService implements TokenRefreshUseCase {
 
   @Override
   public TokenResponse refresh(TokenRefreshRequest request) {
-    String refreshToken = request.refreshToken();
-    UserFamily decoded = decodeOrThrowUnauthorized(refreshToken);
-    String authority = decodeAuthorityOrThrowUnauthorized(refreshToken);
+    String requestRefreshToken = request.refreshToken();
+    UserFamily decoded = decodeOrThrowUnauthorized(requestRefreshToken);
+    String authority = decodeAuthorityOrThrowUnauthorized(requestRefreshToken);
     String accessToken = tokenManager.createAccessToken(decoded.getUserId(), authority);
     RefreshToken newRefreshToken = tokenManager.createRefreshToken(
         decoded.getUserId(),
@@ -45,7 +45,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
     long updated = tokenManipulationPort.rotateIfCurrentMatches(
         decoded.getUserId(),
         decoded.getFamily(),
-        refreshToken,
+        requestRefreshToken,
         newRefreshToken.getTokenValue(),
         now
     );
@@ -72,7 +72,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
         decoded.getUserFamilyValue()
     ));
 
-    if (!saved.hasSamePreviousToken(refreshToken)) {
+    if (!saved.hasSamePreviousToken(requestRefreshToken)) {
       tokenManipulationPort.deleteByUserFamily(decoded.getUserId(), decoded.getFamily());
       throw new SecurityException(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
     }
