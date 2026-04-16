@@ -43,7 +43,7 @@ public class TokenManager {
     String tokenValue = jwtIssuer.issue(claim, Duration.ZERO);
 
     return RefreshToken.builder()
-        .tokenValue(tokenValue)
+        .currentToken(tokenValue)
         .userFamily(userFamily)
         .build();
   }

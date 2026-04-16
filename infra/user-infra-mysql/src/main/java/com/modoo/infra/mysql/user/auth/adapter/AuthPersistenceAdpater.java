@@ -6,7 +6,9 @@ import com.modoo.common.annotation.DrivenAdapter;
 import com.modoo.domain.user.auth.aggregate.RefreshToken;
 import com.modoo.infra.mysql.user.auth.entiy.RefreshTokenEntity;
 import com.modoo.infra.mysql.user.auth.repository.RefreshTokenRepository;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @DrivenAdapter
@@ -47,6 +49,29 @@ public class AuthPersistenceAdpater implements TokenManipulationPort, TokenLoade
         .stream()
         .map(RefreshTokenEntity::toDomain)
         .toList();
+  }
+
+  @Override
+  public Optional<RefreshToken> loadOneByUserFamily(Long userId, int family) {
+    return refreshTokenRepository.findByUserFamily(userId, family)
+        .map(RefreshTokenEntity::toDomain);
+  }
+
+  @Override
+  public long rotateIfCurrentMatches(
+      Long userId,
+      int family,
+      String currentToken,
+      String newCurrentToken,
+      LocalDateTime refreshedAt
+  ) {
+    return refreshTokenRepository.rotateIfCurrentMatches(
+        userId,
+        family,
+        currentToken,
+        newCurrentToken,
+        refreshedAt
+    );
   }
 
 }

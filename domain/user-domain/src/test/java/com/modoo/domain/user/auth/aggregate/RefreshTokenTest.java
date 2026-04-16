@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.modoo.domain.user.auth.aggregate.vo.UserFamily;
 import com.modoo.fixture.UserFixture;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -25,8 +26,7 @@ class RefreshTokenTest {
     void setUp() {
       userId = UserFixture.getRandomId();
       family = UserFixture.getRandomPositive();
-      tokenValue = UUID.randomUUID()
-          .toString();
+      tokenValue = UUID.randomUUID().toString();
     }
 
     @Test
@@ -43,6 +43,7 @@ class RefreshTokenTest {
       // then
       assertThat(refreshToken.getUserId()).isEqualTo(userId);
       assertThat(refreshToken.getFamily()).isEqualTo(family);
+      assertThat(refreshToken.getCurrentToken()).isEqualTo(tokenValue);
     }
 
     @Test
@@ -83,7 +84,61 @@ class RefreshTokenTest {
       // then
       assertThat(refreshToken.getUserId()).isEqualTo(userFamily.getUserId());
     }
+  }
 
+  @Nested
+  class 상태_비교_테스트 {
+
+    RefreshToken refreshToken;
+
+    @BeforeEach
+    void setUp() {
+      // given
+      refreshToken = RefreshToken.builder()
+          .userId(UserFixture.getRandomId())
+          .family(UserFixture.getRandomPositive())
+          .currentToken("current-token")
+          .previousToken("previous-token")
+          .refreshedAt(LocalDateTime.now())
+          .build();
+
+      // when
+
+      // then
+    }
+
+    @Test
+    void 현재_토큰이_같으면_true를_반환한다() {
+      // given
+
+      // when
+      boolean actual = refreshToken.hasSameCurrentToken("current-token");
+
+      // then
+      assertThat(actual).isTrue();
+    }
+
+    @Test
+    void 이전_토큰이_같으면_true를_반환한다() {
+      // given
+
+      // when
+      boolean actual = refreshToken.hasSamePreviousToken("previous-token");
+
+      // then
+      assertThat(actual).isTrue();
+    }
+
+    @Test
+    void 갱신_시각이_삼분_이내면_true를_반환한다() {
+      // given
+
+      // when
+      boolean actual = refreshToken.isRefreshedWithin(LocalDateTime.now(), 3L);
+
+      // then
+      assertThat(actual).isTrue();
+    }
   }
 
 }
