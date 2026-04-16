@@ -44,6 +44,21 @@ class UserFamilyTest {
     }
 
     @Test
+    void 유저_패밀리_문자열_포맷을_반환한다() {
+      // given
+      UserFamily userFamily = UserFamily.builder()
+          .userId(userId)
+          .family(family)
+          .build();
+
+      // when
+      String actual = userFamily.getUserFamilyValue();
+
+      // then
+      assertThat(actual).isEqualTo(userId + "-" + family);
+    }
+
+    @Test
     void 아이디가_null이면_유저_패밀리_생성을_실패한다() {
       // given
       UserFamilyBuilder builder = UserFamily.builder()
@@ -61,15 +76,18 @@ class UserFamilyTest {
     void 문자열_형식으로_유저_패밀리_생성을_성공한다() {
       // given
       String userFamilyValue = userId + "-" + family;
+      String authority = "NORMAL";
 
       // when
       UserFamily actual = UserFamily.builderWithString()
           .userFamilyValue(userFamilyValue)
+          .authority(authority)
           .buildWithString();
 
       // then
       assertThat(actual.getUserId()).isEqualTo(userId);
       assertThat(actual.getFamily()).isEqualTo(family);
+      assertThat(actual.getAuthority()).isEqualTo(authority);
     }
 
     @Test

@@ -12,14 +12,14 @@ import com.modoo.common.exception.AuthErrorCode;
 import com.modoo.domain.user.auth.aggregate.RefreshToken;
 import com.modoo.domain.user.auth.aggregate.vo.UserFamily;
 import com.modoo.domain.user.user.aggregate.User;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.MissingResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 @UseCase
 @RequiredArgsConstructor
-@Transactional(noRollbackFor = UnsupportedOperationException.class)
+@Transactional(noRollbackFor = {UnsupportedOperationException.class, SecurityException.class})
 public class TokenRefreshService implements TokenRefreshUseCase {
 
   private final TokenLoaderPort tokenLoaderPort;
@@ -29,55 +29,59 @@ public class TokenRefreshService implements TokenRefreshUseCase {
 
   @Override
   public TokenResponse refresh(TokenRefreshRequest request) {
-    List<RefreshToken> tokenFamily = getTokenFamilyOf(request.refreshToken());
-    RefreshToken currentRefreshToken = tokenFamily.stream()
-        .filter(token -> token.hasSameTokenValue(request.refreshToken()))
-        .findFirst()
-        .orElseThrow(() -> new UnsupportedOperationException(
-            AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName()
-        ));
+    UserFamily decoded = tokenManager.decodeRefreshToken(request.refreshToken());
+    String accessToken = tokenManager.createAccessToken(
+        decoded.getUserId(),
+        decoded.getAuthority()
+    );
+    RefreshToken newRefreshToken = tokenManager.createRefreshToken(
+        decoded.getUserId(),
+        decoded.getFamily(),
+        decoded.getAuthority()
+    );
+    LocalDateTime now = LocalDateTime.now();
 
-    validateNotUsed(tokenFamily, currentRefreshToken);
+    long updated = tokenManipulationPort.rotateIfCurrentMatches(
+        decoded.getUserId(),
+        decoded.getFamily(),
+        request.refreshToken(),
+        newRefreshToken.getTokenValue(),
+        now
+    );
 
-    User user = userLoaderPort.loadFullUser(currentRefreshToken.getUserId())
+    if (updated == 1L) {
+      return new TokenResponse(accessToken, newRefreshToken.getTokenValue());
+    }
+
+    User user = userLoaderPort.loadFullUser(decoded.getUserId())
         .orElseThrow(() -> new MissingResourceException(
             AuthErrorCode.USER_NOT_FOUND.getCodeName(),
             User.class.getCanonicalName(),
-            String.valueOf(currentRefreshToken.getUserId())
+            String.valueOf(decoded.getUserId())
         ));
 
-    String accessToken = tokenManager.createAccessToken(user);
-    RefreshToken newRefreshToken = tokenManager.createRefreshToken(
-        user,
-        currentRefreshToken.getFamily()
-    );
+    RefreshToken saved = tokenLoaderPort.loadOneByUserFamily(
+            user.getId(),
+            decoded.getFamily()
+        )
+        .orElseThrow(() -> new MissingResourceException(
+            AuthErrorCode.REFRESH_TOKEN_NOT_FOUND.getCodeName(),
+            RefreshToken.class.getCanonicalName(),
+            decoded.getUserFamilyValue()
+        ));
 
-    tokenManipulationPort.save(newRefreshToken);
+    if (!saved.hasSamePreviousToken(request.refreshToken())) {
+      tokenManipulationPort.deleteByUserFamily(decoded.getUserId(), decoded.getFamily());
 
-    return new TokenResponse(accessToken, newRefreshToken.getTokenValue());
-  }
-
-  private List<RefreshToken> getTokenFamilyOf(String refreshToken) {
-    UserFamily decoded = tokenManager.decodeRefreshToken(refreshToken);
-
-    return tokenLoaderPort.loadByUserFamily(decoded.getUserId(), decoded.getFamily());
-  }
-
-  private void validateNotUsed(List<RefreshToken> tokenFamily, RefreshToken refreshToken) {
-    if (tokenFamily.size() == 1) {
-      return;
+      throw new SecurityException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
     }
 
-    Long mostRecent = tokenFamily.stream()
-        .map(RefreshToken::getId)
-        .findFirst()
-        .get();
-
-    if (!refreshToken.hasSameId(mostRecent)) {
-      tokenManipulationPort.deleteAllFamily(tokenFamily);
-
-      throw new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
+    if (saved.isWithinGracePeriod(now)) {
+      return new TokenResponse(accessToken, saved.getCurrentToken());
     }
+
+    tokenManipulationPort.deleteByUserFamily(decoded.getUserId(), decoded.getFamily());
+    throw new SecurityException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
   }
 
 }

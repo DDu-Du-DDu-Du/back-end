@@ -5,6 +5,7 @@ import static com.modoo.infra.mysql.user.auth.entiy.QRefreshTokenEntity.refreshT
 import com.modoo.infra.mysql.user.auth.entiy.RefreshTokenEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +39,43 @@ public class RefreshTokenQueryRepositoryImpl implements RefreshTokenQueryReposit
   }
 
   @Override
+  public Optional<RefreshTokenEntity> findByUserFamily(Long userId, int family) {
+    BooleanBuilder whereCondition = new BooleanBuilder(refreshTokenEntity.userId.eq(userId))
+        .and(refreshTokenEntity.family.eq(family));
+
+    return Optional.ofNullable(
+        jpaQueryFactory.selectFrom(refreshTokenEntity)
+            .where(whereCondition)
+            .fetchOne()
+    );
+  }
+
+  @Override
   public void deleteByUserFamily(Long userId, int family) {
     BooleanBuilder whereCondition = new BooleanBuilder(refreshTokenEntity.userId.eq(userId))
         .and(refreshTokenEntity.family.eq(family));
 
     jpaQueryFactory.delete(refreshTokenEntity)
+        .where(whereCondition)
+        .execute();
+  }
+
+  @Override
+  public long rotateIfCurrentMatches(
+      Long userId,
+      int family,
+      String currentToken,
+      String newCurrentToken,
+      LocalDateTime refreshedAt
+  ) {
+    BooleanBuilder whereCondition = new BooleanBuilder(refreshTokenEntity.userId.eq(userId))
+        .and(refreshTokenEntity.family.eq(family))
+        .and(refreshTokenEntity.currentToken.eq(currentToken));
+
+    return jpaQueryFactory.update(refreshTokenEntity)
+        .set(refreshTokenEntity.previousToken, currentToken)
+        .set(refreshTokenEntity.currentToken, newCurrentToken)
+        .set(refreshTokenEntity.refreshedAt, refreshedAt)
         .where(whereCondition)
         .execute();
   }

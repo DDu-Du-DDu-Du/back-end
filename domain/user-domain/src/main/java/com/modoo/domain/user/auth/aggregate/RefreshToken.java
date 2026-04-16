@@ -1,6 +1,7 @@
 package com.modoo.domain.user.auth.aggregate;
 
 import com.modoo.domain.user.auth.aggregate.vo.UserFamily;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,14 +10,26 @@ import lombok.Getter;
 @Getter
 public class RefreshToken {
 
+  private static final long GRACE_PERIOD_MINUTES = 3L;
   private final Long id;
 
   @Getter(AccessLevel.NONE)
   private final UserFamily userFamily;
-  private final String tokenValue;
+  private final String currentToken;
+  private final String previousToken;
+  private final LocalDateTime refreshedAt;
 
   @Builder
-  private RefreshToken(Long id, String tokenValue, UserFamily userFamily, Long userId, int family) {
+  private RefreshToken(
+      Long id,
+      String tokenValue,
+      String currentToken,
+      String previousToken,
+      LocalDateTime refreshedAt,
+      UserFamily userFamily,
+      Long userId,
+      int family
+  ) {
     this.id = id;
     this.userFamily = Objects.requireNonNullElseGet(
         userFamily,
@@ -25,7 +38,9 @@ public class RefreshToken {
             .family(family)
             .build()
     );
-    this.tokenValue = tokenValue;
+    this.currentToken = Objects.requireNonNullElse(currentToken, tokenValue);
+    this.previousToken = previousToken;
+    this.refreshedAt = refreshedAt;
   }
 
   public Long getUserId() {
@@ -41,7 +56,32 @@ public class RefreshToken {
   }
 
   public boolean hasSameTokenValue(String tokenValue) {
-    return this.tokenValue.equals(tokenValue);
+    return this.currentToken.equals(tokenValue);
+  }
+
+  public boolean hasSameCurrentToken(String tokenValue) {
+    return this.currentToken.equals(tokenValue);
+  }
+
+  public boolean hasSamePreviousToken(String tokenValue) {
+    return Objects.equals(this.previousToken, tokenValue);
+  }
+
+  public boolean isRefreshedWithin(LocalDateTime comparedAt, long minutes) {
+    if (Objects.isNull(refreshedAt)) {
+      return false;
+    }
+
+    return !refreshedAt.plusMinutes(minutes)
+        .isBefore(comparedAt);
+  }
+
+  public boolean isWithinGracePeriod(LocalDateTime comparedAt) {
+    return isRefreshedWithin(comparedAt, GRACE_PERIOD_MINUTES);
+  }
+
+  public String getTokenValue() {
+    return currentToken;
   }
 
 }

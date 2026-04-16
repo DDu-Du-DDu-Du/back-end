@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,15 +40,23 @@ public class RefreshTokenEntity extends BaseEntity {
   private int family;
 
   @Column(
-      name = "token_value",
+      name = "current_token",
       nullable = false
   )
-  private String tokenValue;
+  private String currentToken;
+
+  @Column(name = "previous_token")
+  private String previousToken;
+
+  @Column(name = "refreshed_at")
+  private LocalDateTime refreshedAt;
 
   public static RefreshTokenEntity from(RefreshToken refreshToken) {
     return RefreshTokenEntity.builder()
         .id(refreshToken.getId())
-        .tokenValue(refreshToken.getTokenValue())
+        .currentToken(refreshToken.getCurrentToken())
+        .previousToken(refreshToken.getPreviousToken())
+        .refreshedAt(refreshToken.getRefreshedAt())
         .family(refreshToken.getFamily())
         .userId(refreshToken.getUserId())
         .build();
@@ -56,7 +65,9 @@ public class RefreshTokenEntity extends BaseEntity {
   public RefreshToken toDomain() {
     return RefreshToken.builder()
         .id(id)
-        .tokenValue(tokenValue)
+        .currentToken(currentToken)
+        .previousToken(previousToken)
+        .refreshedAt(refreshedAt)
         .family(family)
         .userId(userId)
         .build();

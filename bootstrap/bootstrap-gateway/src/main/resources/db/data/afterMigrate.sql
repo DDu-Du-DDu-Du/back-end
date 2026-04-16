@@ -34,9 +34,12 @@ VALUES (2, '짜증난 강아지', 'irritatedpuppy30b6f3ed', null, null, 'ADMIN',
 # 투두 구글 계정
 
 -- REFRESH TOKEN
-INSERT INTO refresh_tokens(id, user_id, family, token_value, created_at, updated_at)
+INSERT INTO refresh_tokens(id, user_id, family, current_token, previous_token, refreshed_at,
+                           created_at, updated_at)
 VALUES (1, 1, 1,
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJtYXJjby1kZHVkdSIsInN1YiI6IjEtMSIsImlhdCI6MTcxNTkzMDAyOH0.ig76OI9bD2Da0-NsIgWoaM3rzewvm_Y0HUbjOjJUOG-gBZHk_k5CCrCSynRSZXwcttqdiwLSKhHYzj5zUUf8ZQ',
+        null,
+        '2024-05-17T16:13:48',
         '2024-05-17T16:13:48', '2024-05-17T16:13:48');
 
 -- AUTH PROVIDERS
