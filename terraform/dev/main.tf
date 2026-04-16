@@ -49,17 +49,40 @@ module "ecr" {
 module "alb" {
   source = "../modules/alb"
 
-  alb_name              = var.alb_name
-  alb_tag_name          = var.alb_tag_name
-  target_group_name     = var.target_group_name
-  target_group_tag_name = var.target_group_tag_name
-  listener_tag_name     = var.listener_tag_name
-  vpc_id                = module.network.vpc_id
-  security_group_id     = module.security.alb_security_group_id
+  alb_name                  = var.alb_name
+  alb_tag_name              = var.alb_tag_name
+  target_group_name         = var.target_group_name
+  target_group_tag_name     = var.target_group_tag_name
+  listener_tag_name         = var.listener_tag_name
+  https_listener_tag_name   = var.https_listener_tag_name
+  acm_certificate_arn       = var.acm_certificate_arn
+  https_listener_ssl_policy = var.https_listener_ssl_policy
+  vpc_id                    = module.network.vpc_id
+  security_group_id         = module.security.alb_security_group_id
   public_subnet_ids = [
     module.network.public_subnet_a_id,
     module.network.public_subnet_c_id
   ]
+}
+
+module "route53_dev" {
+  source = "../modules/route53-env"
+
+  hosted_zone_id = var.route53_hosted_zone_id
+  alias_a_records = {
+    dev_api = {
+      name                   = "dev.api.mo-doo.com"
+      dns_name               = "dualstack.${module.alb.alb_dns_name}"
+      hosted_zone_id         = module.alb.alb_zone_id
+      evaluate_target_health = true
+    }
+    www_dev_api = {
+      name                   = "www.dev.api.mo-doo.com"
+      dns_name               = "dualstack.${module.alb.alb_dns_name}"
+      hosted_zone_id         = module.alb.alb_zone_id
+      evaluate_target_health = true
+    }
+  }
 }
 
 module "ecs" {

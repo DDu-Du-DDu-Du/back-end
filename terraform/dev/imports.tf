@@ -154,6 +154,11 @@ import {
 }
 
 import {
+  to = module.alb.aws_lb_listener.modoo_alb_https_listener
+  id = "arn:aws:elasticloadbalancing:ap-northeast-2:650177546654:listener/app/modoo-alb-dev/b084a0f076e41292/28094a24db0567f2"
+}
+
+import {
   to = module.ecs.aws_iam_role.ecs_instance_role
   id = "ecsInstanceRole"
 }
@@ -226,4 +231,14 @@ import {
 import {
   to = module.ecr.aws_ecr_lifecycle_policy.modoo_spring_app
   id = "modoo/dev/spring-app"
+}
+
+import {
+  to = module.route53_dev.aws_route53_record.alias_a["dev_api"]
+  id = "Z09209125CJ92OR19RX7_dev.api.mo-doo.com_A"
+}
+
+import {
+  to = module.route53_dev.aws_route53_record.alias_a["www_dev_api"]
+  id = "Z09209125CJ92OR19RX7_www.dev.api.mo-doo.com_A"
 }
