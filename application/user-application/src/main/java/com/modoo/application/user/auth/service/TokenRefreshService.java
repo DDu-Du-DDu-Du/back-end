@@ -14,6 +14,7 @@ import com.modoo.domain.user.auth.aggregate.vo.UserFamily;
 import com.modoo.domain.user.user.aggregate.User;
 import java.time.LocalDateTime;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,32 +31,35 @@ public class TokenRefreshService implements TokenRefreshUseCase {
 
   @Override
   public TokenResponse refresh(TokenRefreshRequest request) {
-    UserFamily decoded = decodeOrThrowUnauthorized(request.refreshToken());
+    String refreshToken = request.refreshToken();
+    UserFamily decoded = decodeOrThrowUnauthorized(refreshToken);
+    String authority = decodeAuthorityOrThrowUnauthorized(refreshToken);
+    String accessToken = tokenManager.createAccessToken(decoded.getUserId(), authority);
     RefreshToken newRefreshToken = tokenManager.createRefreshToken(
         decoded.getUserId(),
-        decoded.getFamily()
+        decoded.getFamily(),
+        authority
     );
     LocalDateTime now = LocalDateTime.now();
 
     long updated = tokenManipulationPort.rotateIfCurrentMatches(
         decoded.getUserId(),
         decoded.getFamily(),
-        request.refreshToken(),
+        refreshToken,
         newRefreshToken.getTokenValue(),
         now
     );
 
-    User user = userLoaderPort.loadFullUser(decoded.getUserId())
+    if (updated == 1L) {
+      return new TokenResponse(accessToken, newRefreshToken.getTokenValue());
+    }
+
+    userLoaderPort.loadFullUser(decoded.getUserId())
         .orElseThrow(() -> new MissingResourceException(
             AuthErrorCode.USER_NOT_FOUND.getCodeName(),
             User.class.getCanonicalName(),
             String.valueOf(decoded.getUserId())
         ));
-    String accessToken = tokenManager.createAccessToken(user);
-
-    if (updated == 1L) {
-      return new TokenResponse(accessToken, newRefreshToken.getTokenValue());
-    }
 
     Optional<RefreshToken> found = tokenLoaderPort.loadOneByUserFamily(
         decoded.getUserId(),
@@ -68,7 +72,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
         decoded.getUserFamilyValue()
     ));
 
-    if (!saved.hasSamePreviousToken(request.refreshToken())) {
+    if (!saved.hasSamePreviousToken(refreshToken)) {
       tokenManipulationPort.deleteByUserFamily(decoded.getUserId(), decoded.getFamily());
       throw new SecurityException(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
     }
@@ -84,6 +88,20 @@ public class TokenRefreshService implements TokenRefreshUseCase {
   private UserFamily decodeOrThrowUnauthorized(String refreshToken) {
     try {
       return tokenManager.decodeRefreshToken(refreshToken);
+    } catch (RuntimeException e) {
+      throw new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
+    }
+  }
+
+  private String decodeAuthorityOrThrowUnauthorized(String refreshToken) {
+    try {
+      String authority = tokenManager.decodeRefreshTokenAuthority(refreshToken);
+
+      if (Objects.isNull(authority)) {
+        throw new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
+      }
+
+      return authority;
     } catch (RuntimeException e) {
       throw new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
     }
