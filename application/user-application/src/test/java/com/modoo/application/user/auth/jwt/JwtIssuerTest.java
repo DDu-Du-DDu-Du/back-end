@@ -1,10 +1,10 @@
 package com.modoo.application.user.auth.jwt;
 
+import com.google.common.collect.Maps;
 import com.modoo.application.user.auth.config.JwtConfig;
 import com.modoo.application.user.auth.config.TestJwtConfig;
 import com.modoo.common.dto.Authority;
 import com.modoo.fixture.UserFixture;
-import com.google.common.collect.Maps;
 import java.time.Duration;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
