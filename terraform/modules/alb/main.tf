@@ -40,15 +40,33 @@ resource "aws_lb_listener" "modoo_alb_listener" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.modoo_tg.arn
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 
   tags = {
     Name = var.listener_tag_name
   }
+}
 
-  lifecycle {
-    ignore_changes = [default_action]
+resource "aws_lb_listener" "modoo_alb_https_listener" {
+  load_balancer_arn = aws_lb.modoo_alb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = var.acm_certificate_arn
+  ssl_policy        = var.https_listener_ssl_policy
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.modoo_tg.arn
+  }
+
+  tags = {
+    Name = var.https_listener_tag_name
   }
 }
