@@ -7,10 +7,10 @@ on:
         required: true
         type: string
       ecr_repository_name:
-        required: true
+        required: false
         type: string
       ecr_repository_tag_name:
-        required: true
+        required: false
         type: string
       infra_update_enabled:
         required: false
@@ -28,11 +28,11 @@ on:
       SUBMODULES_SECRET:
         required: true
       TF_VAR_DB_PASSWORD:
-        required: true
+        required: false
       TF_VAR_RDS_DB_NAME:
-        required: true
+        required: false
       TF_VAR_RDS_USERNAME:
-        required: true
+        required: false
 
 permissions:
   contents: read
@@ -94,7 +94,9 @@ jobs:
         run: |
           terraform plan \
             -input=false \
-            -out=tfplan
+            -out=tfplan \
+            -exclude=module.ecs.aws_ecs_task_definition.modoo_task \
+            -exclude=module.ecs.aws_ecs_service.modoo_ecs_service
 
       - name: Terraform Apply
         if: ${{ inputs.infra_update_enabled }}
@@ -138,12 +140,6 @@ jobs:
         working-directory: terraform/shared
         env:
           TF_IN_AUTOMATION: "true"
-          TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
-          TF_VAR_rds_db_name: ${{ secrets.TF_VAR_RDS_DB_NAME }}
-          TF_VAR_rds_username: ${{ secrets.TF_VAR_RDS_USERNAME }}
-          TF_VAR_ecs_image_tag: latest
-          TF_VAR_ecr_repository_name: ${{ inputs.ecr_repository_name }}
-          TF_VAR_ecr_repository_tag_name: ${{ inputs.ecr_repository_tag_name }}
         run: |
           terraform plan \
             -input=false \
@@ -154,11 +150,6 @@ jobs:
         working-directory: terraform/shared
         env:
           TF_IN_AUTOMATION: "true"
-          TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
-          TF_VAR_rds_db_name: ${{ secrets.TF_VAR_RDS_DB_NAME }}
-          TF_VAR_rds_username: ${{ secrets.TF_VAR_RDS_USERNAME }}
-          TF_VAR_ecr_repository_name: ${{ inputs.ecr_repository_name }}
-          TF_VAR_ecr_repository_tag_name: ${{ inputs.ecr_repository_tag_name }}
         run: |
           terraform apply \
             -input=false \
