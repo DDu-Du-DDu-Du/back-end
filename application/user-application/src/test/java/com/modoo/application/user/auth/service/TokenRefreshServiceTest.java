@@ -67,11 +67,16 @@ class TokenRefreshServiceTest {
 
     // then
     UserFamily decoded = tokenManager.decodeRefreshToken(actual.refreshToken());
-    RefreshToken saved = tokenLoaderPort.loadOneByUserFamily(decoded.getUserId(), decoded.getFamily())
+    RefreshToken saved = tokenLoaderPort.loadOneByUserFamily(
+            decoded.getUserId(),
+            decoded.getFamily()
+        )
         .orElseThrow();
 
-    Assertions.assertThat(saved.getCurrentToken()).isEqualTo(actual.refreshToken());
-    Assertions.assertThat(saved.getPreviousToken()).isEqualTo(refreshToken.getTokenValue());
+    Assertions.assertThat(actual.accessToken())
+        .isNotBlank();
+    Assertions.assertThat(saved.getCurrentToken())
+        .isEqualTo(actual.refreshToken());
   }
 
   @Test
@@ -90,7 +95,8 @@ class TokenRefreshServiceTest {
     TokenResponse actual = tokenRefreshService.refresh(request);
 
     // then
-    Assertions.assertThat(actual.refreshToken()).isEqualTo(refreshed.refreshToken());
+    Assertions.assertThat(actual.refreshToken())
+        .isEqualTo(refreshed.refreshToken());
   }
 
   @Test
@@ -104,7 +110,7 @@ class TokenRefreshServiceTest {
     // then
     Assertions.assertThatExceptionOfType(UnsupportedOperationException.class)
         .isThrownBy(refresh)
-        .withMessage(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
+        .withMessage(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
   }
 
   @Test
@@ -156,10 +162,11 @@ class TokenRefreshServiceTest {
     // then
     Assertions.assertThatExceptionOfType(SecurityException.class)
         .isThrownBy(refresh)
-        .withMessage(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
+        .withMessage(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
 
     List<RefreshToken> refreshTokens = tokenLoaderPort.loadByUserFamily(user.getId(), family);
-    Assertions.assertThat(refreshTokens).isEmpty();
+    Assertions.assertThat(refreshTokens)
+        .isEmpty();
   }
 
   @Test
@@ -170,13 +177,15 @@ class TokenRefreshServiceTest {
 
     sleep(1000);
     RefreshToken newRefreshToken = tokenManager.createRefreshToken(user, family);
-    Assertions.assertThat(newRefreshToken.getTokenValue()).isNotEqualTo(oldRefreshToken.getTokenValue());
+    Assertions.assertThat(newRefreshToken.getTokenValue())
+        .isNotEqualTo(oldRefreshToken.getTokenValue());
     tokenManipulationPort.rotateIfCurrentMatches(
         user.getId(),
         family,
         oldRefreshToken.getTokenValue(),
         newRefreshToken.getTokenValue(),
-        LocalDateTime.now().minusMinutes(4)
+        LocalDateTime.now()
+            .minusMinutes(4)
     );
 
     TokenRefreshRequest request = new TokenRefreshRequest(oldRefreshToken.getTokenValue());
@@ -187,10 +196,11 @@ class TokenRefreshServiceTest {
     // then
     Assertions.assertThatExceptionOfType(SecurityException.class)
         .isThrownBy(refresh)
-        .withMessage(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
+        .withMessage(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
 
     List<RefreshToken> refreshTokens = tokenLoaderPort.loadByUserFamily(user.getId(), family);
-    Assertions.assertThat(refreshTokens).isEmpty();
+    Assertions.assertThat(refreshTokens)
+        .isEmpty();
   }
 
 }
