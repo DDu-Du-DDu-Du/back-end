@@ -12,9 +12,10 @@ public class UserFamily {
 
   private final Long userId;
   private final int family;
+  private final String authority;
 
   @Builder
-  private UserFamily(Long userId, int family) {
+  private UserFamily(Long userId, int family, String authority) {
     checkArgument(
         Objects.nonNull(userId),
         AuthErrorCode.INVALID_USER_ID_FOR_REFRESH_TOKEN.getCodeName()
@@ -22,13 +23,14 @@ public class UserFamily {
 
     this.userId = userId;
     this.family = family;
+    this.authority = authority;
   }
 
   @Builder(
       builderMethodName = "builderWithString",
       buildMethodName = "buildWithString"
   )
-  private UserFamily(String userFamilyValue) {
+  private UserFamily(String userFamilyValue, String authority) {
     String[] userFamily = userFamilyValue.split("-");
 
     checkArgument(
@@ -38,6 +40,7 @@ public class UserFamily {
 
     this.userId = getUserId(userFamily[0]);
     this.family = getFamily(userFamily[1]);
+    this.authority = authority;
   }
 
   public String getUserFamilyValue() {

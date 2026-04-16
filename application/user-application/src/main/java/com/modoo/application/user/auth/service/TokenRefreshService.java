@@ -14,8 +14,6 @@ import com.modoo.domain.user.auth.aggregate.vo.UserFamily;
 import com.modoo.domain.user.user.aggregate.User;
 import java.time.LocalDateTime;
 import java.util.MissingResourceException;
-import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,21 +29,22 @@ public class TokenRefreshService implements TokenRefreshUseCase {
 
   @Override
   public TokenResponse refresh(TokenRefreshRequest request) {
-    String requestRefreshToken = request.refreshToken();
-    UserFamily decoded = decodeOrThrowUnauthorized(requestRefreshToken);
-    String authority = decodeAuthorityOrThrowUnauthorized(requestRefreshToken);
-    String accessToken = tokenManager.createAccessToken(decoded.getUserId(), authority);
+    UserFamily decoded = tokenManager.decodeRefreshToken(request.refreshToken());
+    String accessToken = tokenManager.createAccessToken(
+        decoded.getUserId(),
+        decoded.getAuthority()
+    );
     RefreshToken newRefreshToken = tokenManager.createRefreshToken(
         decoded.getUserId(),
         decoded.getFamily(),
-        authority
+        decoded.getAuthority()
     );
     LocalDateTime now = LocalDateTime.now();
 
     long updated = tokenManipulationPort.rotateIfCurrentMatches(
         decoded.getUserId(),
         decoded.getFamily(),
-        requestRefreshToken,
+        request.refreshToken(),
         newRefreshToken.getTokenValue(),
         now
     );
@@ -54,27 +53,27 @@ public class TokenRefreshService implements TokenRefreshUseCase {
       return new TokenResponse(accessToken, newRefreshToken.getTokenValue());
     }
 
-    userLoaderPort.loadFullUser(decoded.getUserId())
+    User user = userLoaderPort.loadFullUser(decoded.getUserId())
         .orElseThrow(() -> new MissingResourceException(
             AuthErrorCode.USER_NOT_FOUND.getCodeName(),
             User.class.getCanonicalName(),
             String.valueOf(decoded.getUserId())
         ));
 
-    Optional<RefreshToken> found = tokenLoaderPort.loadOneByUserFamily(
-        decoded.getUserId(),
-        decoded.getFamily()
-    );
+    RefreshToken saved = tokenLoaderPort.loadOneByUserFamily(
+            user.getId(),
+            decoded.getFamily()
+        )
+        .orElseThrow(() -> new MissingResourceException(
+            AuthErrorCode.REFRESH_TOKEN_NOT_FOUND.getCodeName(),
+            RefreshToken.class.getCanonicalName(),
+            decoded.getUserFamilyValue()
+        ));
 
-    RefreshToken saved = found.orElseThrow(() -> new MissingResourceException(
-        AuthErrorCode.REFRESH_TOKEN_NOT_FOUND.getCodeName(),
-        RefreshToken.class.getCanonicalName(),
-        decoded.getUserFamilyValue()
-    ));
-
-    if (!saved.hasSamePreviousToken(requestRefreshToken)) {
+    if (!saved.hasSamePreviousToken(request.refreshToken())) {
       tokenManipulationPort.deleteByUserFamily(decoded.getUserId(), decoded.getFamily());
-      throw new SecurityException(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
+
+      throw new SecurityException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
     }
 
     if (saved.isWithinGracePeriod(now)) {
@@ -82,29 +81,7 @@ public class TokenRefreshService implements TokenRefreshUseCase {
     }
 
     tokenManipulationPort.deleteByUserFamily(decoded.getUserId(), decoded.getFamily());
-    throw new SecurityException(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
-  }
-
-  private UserFamily decodeOrThrowUnauthorized(String refreshToken) {
-    try {
-      return tokenManager.decodeRefreshToken(refreshToken);
-    } catch (RuntimeException e) {
-      throw new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
-    }
-  }
-
-  private String decodeAuthorityOrThrowUnauthorized(String refreshToken) {
-    try {
-      String authority = tokenManager.decodeRefreshTokenAuthority(refreshToken);
-
-      if (Objects.isNull(authority)) {
-        throw new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
-      }
-
-      return authority;
-    } catch (RuntimeException e) {
-      throw new UnsupportedOperationException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
-    }
+    throw new SecurityException(AuthErrorCode.REFRESH_NOT_ALLOWED.getCodeName());
   }
 
 }

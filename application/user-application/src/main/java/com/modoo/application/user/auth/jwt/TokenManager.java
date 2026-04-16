@@ -1,12 +1,14 @@
 package com.modoo.application.user.auth.jwt;
 
+import com.google.common.collect.Maps;
 import com.modoo.application.user.auth.config.JwtProperties;
+import com.modoo.common.exception.AuthErrorCode;
 import com.modoo.domain.user.auth.aggregate.RefreshToken;
 import com.modoo.domain.user.auth.aggregate.vo.UserFamily;
 import com.modoo.domain.user.user.aggregate.User;
-import com.google.common.collect.Maps;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
@@ -24,12 +26,10 @@ public class TokenManager {
   private final JwtDecoder jwtDecoder;
 
   public String createAccessToken(User user) {
-    Map<String, Object> claims = Maps.newHashMap();
+    String authority = user.getAuthority()
+        .getAuthority();
 
-    claims.put(USER_CLAIM, user.getId());
-    claims.put(AUTH_CLAIM, user.getAuthority());
-
-    return jwtIssuer.issue(claims, Duration.ofSeconds(jwtProperties.getExpiredAfter()));
+    return createAccessToken(user.getId(), authority);
   }
 
   public String createAccessToken(Long userId, String authority) {
@@ -42,11 +42,18 @@ public class TokenManager {
   }
 
   public RefreshToken createRefreshToken(User user, Integer family) {
-    return createRefreshToken(user.getId(), family, user.getAuthority()
-        .name());
+    return createRefreshToken(
+        user.getId(),
+        family,
+        user.getAuthority().getAuthority()
+    );
   }
 
   public RefreshToken createRefreshToken(Long userId, Integer family, String authority) {
+    if (Objects.isNull(authority) || authority.isBlank()) {
+      throw new IllegalArgumentException(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
+
     UserFamily userFamily = UserFamily.builder()
         .userId(userId)
         .family(family)
@@ -54,6 +61,7 @@ public class TokenManager {
     Map<String, Object> claim = Maps.newHashMap();
     claim.put(JwtClaimNames.SUB, userFamily.getUserFamilyValue());
     claim.put(AUTH_CLAIM, authority);
+
     String tokenValue = jwtIssuer.issue(claim, Duration.ZERO);
 
     return RefreshToken.builder()
@@ -63,17 +71,25 @@ public class TokenManager {
   }
 
   public UserFamily decodeRefreshToken(String refreshToken) {
-    Jwt jwt = jwtDecoder.decode(refreshToken);
+    Jwt jwt = decode(refreshToken);
+    String authority = jwt.getClaimAsString(AUTH_CLAIM);
+
+    if (Objects.isNull(authority) || authority.isBlank()) {
+      throw new UnsupportedOperationException(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
 
     return UserFamily.builderWithString()
         .userFamilyValue(jwt.getSubject())
+        .authority(authority)
         .buildWithString();
   }
 
-  public String decodeRefreshTokenAuthority(String refreshToken) {
-    Jwt jwt = jwtDecoder.decode(refreshToken);
-
-    return jwt.getClaimAsString(AUTH_CLAIM);
+  private Jwt decode(String jwt) {
+    try {
+      return jwtDecoder.decode(jwt);
+    } catch (RuntimeException e) {
+      throw new UnsupportedOperationException(AuthErrorCode.INVALID_AUTHORITY.getCodeName());
+    }
   }
 
 }
