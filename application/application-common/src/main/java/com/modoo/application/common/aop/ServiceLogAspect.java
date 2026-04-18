@@ -81,11 +81,7 @@ public class ServiceLogAspect {
   }
 
   private boolean isTargetParams(Object arg) {
-    boolean isRecord = arg.getClass()
-        .isRecord();
-    boolean isScroll = arg instanceof ScrollRequest;
-
-    return isRecord || isScroll;
+    return arg instanceof Record || arg instanceof ScrollRequest;
   }
 
 }
