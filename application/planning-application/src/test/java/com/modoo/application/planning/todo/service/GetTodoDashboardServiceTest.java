@@ -143,18 +143,22 @@ class GetTodoDashboardServiceTest {
         .orElseThrow()
         .todos();
 
-    List<Long> expectedOrder = List.of(first.getId(), second.getId(), third.getId());
+    Comparator<TodoDashboardItem> comparator =
+        Comparator.comparing(TodoDashboardItem::status, Comparator.reverseOrder())
+            .thenComparing(TodoDashboardItem::beginAt, Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing(TodoDashboardItem::endAt, Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing(TodoDashboardItem::id);
+
+    List<Long> expectedOrder = List.of(first, second, third).stream()
+        .map(TodoDashboardItem::from)
+        .sorted(comparator)
+        .map(TodoDashboardItem::id)
+        .toList();
+
     assertThat(todos)
         .extracting(TodoDashboardItem::id)
         .containsExactlyElementsOf(expectedOrder);
-
-    assertThat(todos)
-        .isSortedAccordingTo(
-            Comparator.comparing(TodoDashboardItem::status, Comparator.reverseOrder())
-                .thenComparing(TodoDashboardItem::beginAt, Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing(TodoDashboardItem::endAt, Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing(TodoDashboardItem::id)
-        );
+    assertThat(todos).isSortedAccordingTo(comparator);
   }
 
   @Test
