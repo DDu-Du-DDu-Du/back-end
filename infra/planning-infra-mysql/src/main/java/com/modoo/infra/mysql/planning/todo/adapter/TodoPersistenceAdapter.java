@@ -85,6 +85,14 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
   }
 
   @Override
+  public List<Todo> getTodosByUserId(Long userId) {
+    return todoRepository.findAllByUserId(userId)
+        .stream()
+        .map(TodoEntity::toDomain)
+        .toList();
+  }
+
+  @Override
   public Todo update(Todo todo) {
     TodoEntity todoEntity = todoRepository.findById(todo.getId())
         .orElseThrow(EntityNotFoundException::new);

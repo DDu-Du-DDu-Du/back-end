@@ -289,6 +289,14 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
         .fetchOne();
   }
 
+
+  @Override
+  public List<TodoEntity> findAllByUserId(Long userId) {
+    return jpaQueryFactory
+        .selectFrom(todoEntity)
+        .where(todoEntity.userId.eq(userId))
+        .fetch();
+  }
   private Predicate getOpenness(boolean isMine, boolean isFollower) {
     EnumPath<PrivacyType> privacyType = goalEntity.privacyType;
 
