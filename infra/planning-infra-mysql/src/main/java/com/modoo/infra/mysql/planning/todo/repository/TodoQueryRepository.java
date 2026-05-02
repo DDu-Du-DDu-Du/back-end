@@ -63,4 +63,6 @@ public interface TodoQueryRepository {
 
   int countTodayByUserId(Long userId);
 
+  List<TodoEntity> findAllByUserId(Long userId);
+
 }

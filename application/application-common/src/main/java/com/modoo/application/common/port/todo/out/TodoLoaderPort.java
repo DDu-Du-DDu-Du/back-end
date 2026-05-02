@@ -19,4 +19,6 @@ public interface TodoLoaderPort {
 
   int countTodayTodo(Long userId);
 
+  List<Todo> getTodosByUserId(Long userId);
+
 }

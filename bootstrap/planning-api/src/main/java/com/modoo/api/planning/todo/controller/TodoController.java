@@ -17,12 +17,14 @@ import com.modoo.application.common.dto.todo.request.UpdateTodoRequest;
 import com.modoo.application.common.dto.todo.response.BasicTodoResponse;
 import com.modoo.application.common.dto.todo.response.RepeatAnotherDayResponse;
 import com.modoo.application.common.dto.todo.response.TimetableResponse;
+import com.modoo.application.common.dto.todo.response.TodoDashboardResponse;
 import com.modoo.application.common.dto.todo.response.TodoDetailResponse;
 import com.modoo.application.common.port.todo.in.ChangeNameUseCase;
 import com.modoo.application.common.port.todo.in.CreateTodoUseCase;
 import com.modoo.application.common.port.todo.in.DeleteTodoUseCase;
 import com.modoo.application.common.port.todo.in.GetDailyTodosByGoalUseCase;
 import com.modoo.application.common.port.todo.in.GetTimetableUseCase;
+import com.modoo.application.common.port.todo.in.GetTodoDashboardUseCase;
 import com.modoo.application.common.port.todo.in.MoveDateUseCase;
 import com.modoo.application.common.port.todo.in.PeriodSetupUseCase;
 import com.modoo.application.common.port.todo.in.RepeatUseCase;
@@ -58,6 +60,7 @@ public class TodoController implements TodoControllerDoc {
   private final CreateTodoUseCase createTodoUseCase;
   private final GetDailyTodosByGoalUseCase getDailyTodosByGoalUseCase;
   private final GetTimetableUseCase getTimetableUseCase;
+  private final GetTodoDashboardUseCase getTodoDashboardUseCase;
   private final TodoSearchUseCase todoSearchUseCase;
   private final RetrieveTodoUseCase retrieveTodoUseCase;
   private final PeriodSetupUseCase periodSetupUseCase;
@@ -123,6 +126,18 @@ public class TodoController implements TodoControllerDoc {
     date = isNull(date) ? LocalDate.now() : date;
 
     TimetableResponse response = getTimetableUseCase.get(loginId, userId, date);
+    return ResponseEntity.ok(response);
+  }
+
+  /**
+   * 투두 대시보드 조회 API
+   */
+  @GetMapping("/dashboard")
+  public ResponseEntity<TodoDashboardResponse> getDashboard(
+      @Login
+      Long loginId
+  ) {
+    TodoDashboardResponse response = getTodoDashboardUseCase.get(loginId);
     return ResponseEntity.ok(response);
   }
 
