@@ -8,7 +8,11 @@ public record TodoDashboardResponse(
     int todayIndex
 ) {
 
-  public static TodoDashboardResponse of(boolean isEmpty, List<TodoDashboardContent> contents, int todayIndex) {
+  public static TodoDashboardResponse of(
+      boolean isEmpty,
+      List<TodoDashboardContent> contents,
+      int todayIndex
+  ) {
     return new TodoDashboardResponse(isEmpty, contents, todayIndex);
   }
 

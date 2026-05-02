@@ -145,8 +145,12 @@ class GetTodoDashboardServiceTest {
 
     Comparator<TodoDashboardItem> comparator =
         Comparator.comparing(TodoDashboardItem::status, Comparator.reverseOrder())
-            .thenComparing(TodoDashboardItem::beginAt, Comparator.nullsLast(Comparator.naturalOrder()))
-            .thenComparing(TodoDashboardItem::endAt, Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing(
+                TodoDashboardItem::beginAt,
+                Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing(
+                TodoDashboardItem::endAt,
+                Comparator.nullsLast(Comparator.naturalOrder()))
             .thenComparing(TodoDashboardItem::id);
 
     List<Long> expectedOrder = List.of(first, second, third).stream()
