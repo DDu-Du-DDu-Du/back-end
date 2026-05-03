@@ -41,7 +41,7 @@ public class GetTodoDashboardService implements GetTodoDashboardUseCase {
     grouped.computeIfAbsent(today, key -> new ArrayList<>());
 
     List<TodoDashboardContent> contents = grouped.entrySet().stream()
-        .sorted(Map.Entry.comparingByKey())
+        .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
         .map(entry -> TodoDashboardContent.of(
             entry.getKey(),
             entry.getValue().stream()
@@ -64,7 +64,7 @@ public class GetTodoDashboardService implements GetTodoDashboardUseCase {
   }
 
   private Comparator<Todo> todoComparator() {
-    return Comparator.comparing(Todo::getStatus, Comparator.reverseOrder())
+    return Comparator.comparing(Todo::getStatus)
         .thenComparing(Todo::getBeginAt, Comparator.nullsLast(Comparator.naturalOrder()))
         .thenComparing(Todo::getEndAt, Comparator.nullsLast(Comparator.naturalOrder()))
         .thenComparing(Todo::getId);

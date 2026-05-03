@@ -75,20 +75,30 @@ class GetTodoDashboardServiceTest {
   }
 
   @Test
-  void 오늘_외_빈_그룹은_생략하고_오늘_그룹을_포함해_조회한다() {
+  void 대시보드_날짜_그룹은_최신순으로_정렬하고_오늘_그룹을_포함해_조회한다() {
     // given
+    LocalDate today = LocalDate.now();
+    LocalDate tomorrow = today.plusDays(1);
+    LocalDate yesterday = today.minusDays(1);
+
     Todo todayTodo = TodoFixture.getTodoBuilder()
         .goalId(goal.getId())
         .userId(user.getId())
-        .scheduledOn(LocalDate.now())
+        .scheduledOn(today)
         .build();
-    Todo anotherDayTodo = TodoFixture.getTodoBuilder()
+    Todo tomorrowTodo = TodoFixture.getTodoBuilder()
         .goalId(goal.getId())
         .userId(user.getId())
-        .scheduledOn(LocalDate.now().plusDays(1))
+        .scheduledOn(tomorrow)
+        .build();
+    Todo yesterdayTodo = TodoFixture.getTodoBuilder()
+        .goalId(goal.getId())
+        .userId(user.getId())
+        .scheduledOn(yesterday)
         .build();
     saveTodoPort.save(todayTodo);
-    saveTodoPort.save(anotherDayTodo);
+    saveTodoPort.save(tomorrowTodo);
+    saveTodoPort.save(yesterdayTodo);
 
     // when
     TodoDashboardResponse response = getTodoDashboardService.get(user.getId());
@@ -97,8 +107,8 @@ class GetTodoDashboardServiceTest {
     assertThat(response.isEmpty()).isFalse();
     assertThat(response.contents())
         .extracting(TodoDashboardContent::date)
-        .contains(LocalDate.now(), LocalDate.now().plusDays(1));
-    assertThat(response.todayIndex()).isGreaterThanOrEqualTo(0);
+        .containsExactly(tomorrow, today, yesterday);
+    assertThat(response.todayIndex()).isEqualTo(1);
   }
 
   @Test
@@ -144,7 +154,7 @@ class GetTodoDashboardServiceTest {
         .todos();
 
     Comparator<TodoDashboardItem> comparator =
-        Comparator.comparing(TodoDashboardItem::status, Comparator.reverseOrder())
+        Comparator.comparing(TodoDashboardItem::status)
             .thenComparing(
                 TodoDashboardItem::beginAt,
                 Comparator.nullsLast(Comparator.naturalOrder()))
