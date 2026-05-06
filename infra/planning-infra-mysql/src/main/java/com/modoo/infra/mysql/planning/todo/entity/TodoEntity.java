@@ -33,10 +33,7 @@ public class TodoEntity extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @Column(
-      name = "goal_id",
-      nullable = false
-  )
+  @Column(name = "goal_id")
   private Long goalId;
 
   @Column(name = "user_id")
@@ -125,6 +122,7 @@ public class TodoEntity extends BaseEntity {
   }
 
   public void update(Todo todo) {
+    this.goalId = todo.getGoalId();
     this.name = todo.getName();
     this.memo = todo.getMemo();
     this.status = todo.getStatus();

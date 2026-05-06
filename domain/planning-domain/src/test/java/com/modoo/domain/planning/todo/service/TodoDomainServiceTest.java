@@ -60,6 +60,26 @@ class TodoDomainServiceTest {
     }
 
     @Test
+    void 목표가_없어도_투두를_생성한다() {
+      // given
+      CreateTodoCommand request = new CreateTodoCommand(
+          null,
+          name,
+          memo,
+          scheduledOn,
+          null,
+          null
+      );
+
+      // when
+      Todo actual = todoDomainService.create(userId, request);
+
+      // then
+      assertThat(actual).extracting("userId", "goalId", "name", "memo", "scheduledOn")
+          .containsExactly(userId, null, name, memo, scheduledOn);
+    }
+
+    @Test
     void 날짜가_설정되지_않으면_투두의_날짜가_생성_날짜가_된다() {
       // given
       CreateTodoCommand request = new CreateTodoCommand(
@@ -105,6 +125,38 @@ class TodoDomainServiceTest {
     assertThat(actual).extracting("goalId", "name", "memo", "scheduledOn", "beginAt", "endAt")
         .containsExactly(
             command.goalId(),
+            command.name(),
+            command.memo(),
+            command.scheduledOn(),
+            command.beginAt(),
+            command.endAt()
+        );
+  }
+
+  @Test
+  void 목표가_없도록_투두를_수정한다() {
+    // given
+    Todo todo = TodoFixture.getTodoBuilder()
+        .userId(GoalFixture.getRandomId())
+        .goalId(GoalFixture.getRandomId())
+        .build();
+    UpdateTodoCommand command = UpdateTodoCommand.builder()
+        .goalId(null)
+        .name(TodoFixture.getRandomSentenceWithMax(50))
+        .memo(TodoFixture.createValidMemo())
+        .scheduledOn(LocalDate.now()
+            .plusDays(1))
+        .beginAt(LocalTime.of(10, 0))
+        .endAt(LocalTime.of(11, 0))
+        .build();
+
+    // when
+    Todo actual = todoDomainService.update(todo, command);
+
+    // then
+    assertThat(actual).extracting("goalId", "name", "memo", "scheduledOn", "beginAt", "endAt")
+        .containsExactly(
+            null,
             command.name(),
             command.memo(),
             command.scheduledOn(),

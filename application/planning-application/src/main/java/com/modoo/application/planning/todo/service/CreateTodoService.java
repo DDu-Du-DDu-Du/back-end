@@ -36,19 +36,14 @@ public class CreateTodoService implements CreateTodoUseCase {
 
   @Override
   public BasicTodoResponse create(Long loginId, CreateTodoRequest request) {
-    // 1. 요청 유저, 목표 조회
+    // 1. 요청 유저 조회
     User user = userLoaderPort.getUserOrElseThrow(
         loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
-    Goal goal = goalLoaderPort.getGoalOrElseThrow(
-        request.goalId(), TodoErrorCode.GOAL_NOT_EXISTING.getCodeName());
 
-    // 2. 목표 소유자의 요청인지 확인
-    goal.validateGoalCreator(loginId);
+    // 2. 목표가 있는 요청이면 목표 검증
+    validateGoalIfExists(loginId, request.goalId());
 
-    // 3. 종료되지 않은 목표인지 확인
-    validateGoalNotDone(goal);
-
-    // 4. 투두 생성 후 저장
+    // 3. 투두 생성 후 저장
     Todo todo = todoDomainService.create(user.getId(), request.toCommand());
     Todo saved = saveTodoPort.save(todo);
 
@@ -75,6 +70,17 @@ public class CreateTodoService implements CreateTodoUseCase {
                 InterimSetReminderEvent.from(userId, savedReminder)
             )
         );
+  }
+
+  private void validateGoalIfExists(Long loginId, Long goalId) {
+    if (Objects.isNull(goalId)) {
+      return;
+    }
+
+    Goal goal = goalLoaderPort.getGoalOrElseThrow(
+        goalId, TodoErrorCode.GOAL_NOT_EXISTING.getCodeName());
+    goal.validateGoalCreator(loginId);
+    validateGoalNotDone(goal);
   }
 
   private void validateGoalNotDone(Goal goal) {

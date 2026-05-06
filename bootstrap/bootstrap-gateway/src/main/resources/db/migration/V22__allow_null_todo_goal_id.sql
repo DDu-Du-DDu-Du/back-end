@@ -1,0 +1,2 @@
+ALTER TABLE todos
+    MODIFY goal_id BIGINT NULL;
