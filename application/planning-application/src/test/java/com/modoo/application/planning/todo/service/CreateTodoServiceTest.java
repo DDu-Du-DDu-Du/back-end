@@ -60,7 +60,6 @@ class CreateTodoServiceTest {
     memo = TodoFixture.createValidMemo();
   }
 
-
   @Test
   void 할_일_생성에_성공한다() {
     // given
@@ -90,7 +89,7 @@ class CreateTodoServiceTest {
             "userId",
             "status",
             "postponedAt"
-        )
+    )
         .containsExactly(
             name,
             memo,
@@ -99,7 +98,48 @@ class CreateTodoServiceTest {
             user.getId(),
             TodoStatus.UNCOMPLETED,
             null
-        );
+    );
+  }
+
+  @Test
+  void 목표가_없어도_할_일_생성에_성공한다() {
+    // given
+    CreateTodoRequest request = new CreateTodoRequest(
+        null,
+        name,
+        memo,
+        scheduledOn,
+        null,
+        null,
+        null
+    );
+
+    // when
+    BasicTodoResponse response = createTodoService.create(user.getId(), request);
+
+    // then
+    Todo actual = todoLoaderPort.getTodoOrElseThrow(
+        response.id(),
+        "할 일이 생성되지 않았습니다."
+    );
+    assertThat(actual).extracting(
+            "name",
+            "memo",
+            "scheduledOn",
+            "goalId",
+            "userId",
+            "status",
+            "postponedAt"
+    )
+        .containsExactly(
+            name,
+            memo,
+            scheduledOn,
+            null,
+            user.getId(),
+            TodoStatus.UNCOMPLETED,
+            null
+    );
   }
 
   @Test
@@ -128,7 +168,7 @@ class CreateTodoServiceTest {
 
   @Test
   void 사용자_아이디가_유효하지_않으면_예외가_발생한다() {
-    // give
+    // given
     Long invalidUserId = UserFixture.getRandomId();
     CreateTodoRequest request = new CreateTodoRequest(
         goal.getId(),

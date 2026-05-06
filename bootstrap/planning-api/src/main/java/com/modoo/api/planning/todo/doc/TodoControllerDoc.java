@@ -50,10 +50,6 @@ public interface TodoControllerDoc {
               content = @Content(
                   examples = {
                       @ExampleObject(
-                          name = "2001",
-                          value = TodoErrorExamples.TODO_NULL_GOAL_VALUE
-                      ),
-                      @ExampleObject(
                           name = "2014",
                           value = TodoErrorExamples.TODO_NEGATIVE_OR_ZERO_GOAL_ID
                       ),

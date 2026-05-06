@@ -10,7 +10,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record UpdateTodoRequest(
-    @NotNull(message = "2001 NULL_GOAL_VALUE")
     @Positive(message = "2014 NEGATIVE_OR_ZERO_GOAL_ID")
     Long goalId,
     @NotBlank(message = "2002 BLANK_NAME")

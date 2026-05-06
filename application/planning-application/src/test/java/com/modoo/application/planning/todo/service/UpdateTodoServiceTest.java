@@ -10,6 +10,7 @@ import com.modoo.application.common.port.goal.out.SaveGoalPort;
 import com.modoo.application.common.port.reminder.out.ReminderCommandPort;
 import com.modoo.application.common.port.reminder.out.ReminderLoaderPort;
 import com.modoo.application.common.port.todo.out.SaveTodoPort;
+import com.modoo.application.common.port.todo.out.TodoLoaderPort;
 import com.modoo.common.exception.GoalErrorCode;
 import com.modoo.common.exception.TodoErrorCode;
 import com.modoo.domain.planning.goal.aggregate.Goal;
@@ -50,6 +51,9 @@ class UpdateTodoServiceTest {
 
   @Autowired
   SaveTodoPort saveTodoPort;
+
+  @Autowired
+  TodoLoaderPort todoLoaderPort;
 
   @Autowired
   ReminderCommandPort reminderCommandPort;
@@ -102,6 +106,35 @@ class UpdateTodoServiceTest {
     // then
     assertThat(actual.id()).isEqualTo(todo.getId());
     assertThat(actual.name()).isEqualTo(request.name());
+  }
+
+  @Test
+  void 목표가_없도록_투두를_수정한다() {
+    // given
+    UpdateTodoRequest requestWithoutGoal = new UpdateTodoRequest(
+        null,
+        request.name(),
+        request.memo(),
+        request.scheduledOn(),
+        request.beginAt(),
+        request.endAt(),
+        request.reminders()
+    );
+
+    // when
+    BasicTodoResponse actual = updateTodoService.update(
+        user.getId(),
+        todo.getId(),
+        requestWithoutGoal
+    );
+
+    // then
+    Todo updatedTodo = todoLoaderPort.getTodoOrElseThrow(
+        actual.id(),
+        TodoErrorCode.ID_NOT_EXISTING.getCodeName()
+    );
+    assertThat(updatedTodo.getGoalId()).isNull();
+    assertThat(updatedTodo.getName()).isEqualTo(request.name());
   }
 
   @Test

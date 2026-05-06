@@ -55,13 +55,8 @@ public class UpdateTodoService implements UpdateTodoUseCase {
         todoId,
         TodoErrorCode.ID_NOT_EXISTING.getCodeName()
     );
-    Goal goal = goalLoaderPort.getGoalOrElseThrow(
-        request.goalId(),
-        TodoErrorCode.GOAL_NOT_EXISTING.getCodeName()
-    );
-
     todo.validateTodoCreator(user.getId());
-    goal.validateGoalCreator(user.getId());
+    validateGoalIfExists(user.getId(), request.goalId());
 
     Todo updatedTodo = todoDomainService.update(todo, request.toCommand());
     Todo saved = todoUpdatePort.update(updatedTodo);
@@ -69,6 +64,18 @@ public class UpdateTodoService implements UpdateTodoUseCase {
     replaceReminders(user.getId(), saved, request.reminders());
 
     return BasicTodoResponse.from(saved);
+  }
+
+  private void validateGoalIfExists(Long userId, Long goalId) {
+    if (Objects.isNull(goalId)) {
+      return;
+    }
+
+    Goal goal = goalLoaderPort.getGoalOrElseThrow(
+        goalId,
+        TodoErrorCode.GOAL_NOT_EXISTING.getCodeName()
+    );
+    goal.validateGoalCreator(userId);
   }
 
   private void replaceReminders(Long userId, Todo todo, List<UpdateTodoReminderRequest> requests) {

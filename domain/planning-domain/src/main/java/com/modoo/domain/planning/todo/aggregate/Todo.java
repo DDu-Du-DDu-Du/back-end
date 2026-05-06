@@ -51,7 +51,7 @@ public class Todo {
       LocalTime beginAt,
       LocalTime endAt
   ) {
-    validate(goalId, userId, name, memo, beginAt, endAt);
+    validate(userId, name, memo, beginAt, endAt);
 
     this.id = id;
     this.goalId = goalId;
@@ -204,14 +204,12 @@ public class Todo {
   }
 
   private void validate(
-      Long goalId,
       Long userId,
       String name,
       String memo,
       LocalTime beginAt,
       LocalTime endAt
   ) {
-    checkArgument(Objects.nonNull(goalId), TodoErrorCode.NULL_GOAL_VALUE.getCodeName());
     checkArgument(Objects.nonNull(userId), TodoErrorCode.NULL_USER.getCodeName());
     validateName(name);
     validateMemo(memo);

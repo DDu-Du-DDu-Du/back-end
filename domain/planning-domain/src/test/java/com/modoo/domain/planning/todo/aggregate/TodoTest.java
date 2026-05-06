@@ -150,19 +150,17 @@ class TodoTest {
     }
 
     @Test
-    void 목표가_없으면_생성을_실패한다() {
+    void 목표가_없어도_생성을_성공한다() {
       // given
-      TodoBuilder builder = Todo.builder()
-          .userId(userId)
-          .name(name);
 
       // when
-      ThrowingCallable create = builder::build;
+      Todo todo = Todo.builder()
+          .userId(userId)
+          .name(name)
+          .build();
 
       // then
-      Assertions.assertThatIllegalArgumentException()
-          .isThrownBy(create)
-          .withMessage(TodoErrorCode.NULL_GOAL_VALUE.getCodeName());
+      assertThat(todo.getGoalId()).isNull();
     }
 
     @Test
