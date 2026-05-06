@@ -71,7 +71,7 @@ class RetrieveGoalServiceTest {
             "color",
             "privacyType",
             "priority"
-        )
+    )
         .containsExactly(
             goal.getId(),
             goal.getName(),
@@ -79,7 +79,7 @@ class RetrieveGoalServiceTest {
             goal.getColor(),
             goal.getPrivacyType(),
             goal.getPriority()
-        );
+    );
   }
 
   @Test
@@ -112,13 +112,13 @@ class RetrieveGoalServiceTest {
             "repeatType",
             "startDate",
             "endDate"
-        )
+    )
         .containsExactly(
             repeatTodo.getName(),
             repeatTodo.getRepeatType(),
             repeatTodo.getStartDate(),
             repeatTodo.getEndDate()
-        );
+    );
 
     RepeatPattern actualPattern = actual.getRepeatPattern();
     RepeatPattern expectedPattern = repeatTodo.getRepeatPattern();

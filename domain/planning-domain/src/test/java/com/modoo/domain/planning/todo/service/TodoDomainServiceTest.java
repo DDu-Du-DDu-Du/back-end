@@ -130,7 +130,7 @@ class TodoDomainServiceTest {
             command.scheduledOn(),
             command.beginAt(),
             command.endAt()
-        );
+    );
   }
 
   @Test
@@ -162,7 +162,7 @@ class TodoDomainServiceTest {
             command.scheduledOn(),
             command.beginAt(),
             command.endAt()
-        );
+    );
   }
 
 }

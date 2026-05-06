@@ -89,7 +89,7 @@ class CreateTodoServiceTest {
             "userId",
             "status",
             "postponedAt"
-        )
+    )
         .containsExactly(
             name,
             memo,
@@ -98,7 +98,7 @@ class CreateTodoServiceTest {
             user.getId(),
             TodoStatus.UNCOMPLETED,
             null
-        );
+    );
   }
 
   @Test
@@ -130,7 +130,7 @@ class CreateTodoServiceTest {
             "userId",
             "status",
             "postponedAt"
-        )
+    )
         .containsExactly(
             name,
             memo,
@@ -139,7 +139,7 @@ class CreateTodoServiceTest {
             user.getId(),
             TodoStatus.UNCOMPLETED,
             null
-        );
+    );
   }
 
   @Test
