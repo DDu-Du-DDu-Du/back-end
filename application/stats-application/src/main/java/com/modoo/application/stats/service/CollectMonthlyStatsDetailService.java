@@ -22,11 +22,11 @@ import com.modoo.domain.user.user.aggregate.User;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -216,25 +216,23 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
       Goal goal,
       boolean isAchieved
   ) {
-    List<MonthlyCalendarStats<TodoCompletionResponse>> calendarStats = new ArrayList<>();
-    YearMonth currentMonth = fromMonth;
-
-    while (!currentMonth.isAfter(toMonth)) {
-      calendarStats.add(MonthlyCalendarStats.from(
-          currentMonth,
-          todoStatsPort.calculateTodosCompletion(
-              currentMonth.atDay(1),
-              currentMonth.atEndOfMonth(),
-              user.getId(),
-              goal.getId(),
-              Collections.singletonList(PrivacyType.PUBLIC),
-              isAchieved
-          )
-      ));
-      currentMonth = currentMonth.plusMonths(1);
-    }
-
-    return calendarStats;
+    return Stream.iterate(
+            fromMonth,
+            currentMonth -> !currentMonth.isAfter(toMonth),
+            currentMonth -> currentMonth.plusMonths(1)
+        )
+        .map(currentMonth -> MonthlyCalendarStats.from(
+            currentMonth,
+            todoStatsPort.calculateTodosCompletion(
+                currentMonth.atDay(1),
+                currentMonth.atEndOfMonth(),
+                user.getId(),
+                goal.getId(),
+                Collections.singletonList(PrivacyType.PUBLIC),
+                isAchieved
+            )
+        ))
+        .toList();
   }
 
 }
