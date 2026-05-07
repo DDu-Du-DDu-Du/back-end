@@ -24,6 +24,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.DateExpression;
 import com.querydsl.core.types.dsl.EnumPath;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
@@ -99,13 +100,13 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
     }
 
     return jpaQueryFactory
-        .select(projectCompletion())
+        .select(projectCompletion(isAchieved))
         .from(todoEntity)
         .join(goalEntity)
         .on(todoEntity.goalId.eq(goalEntity.id))
         .where(condition)
-        .groupBy(todoEntity.scheduledOn)
-        .orderBy(todoEntity.scheduledOn.asc())
+        .groupBy(completionDate(isAchieved))
+        .orderBy(completionDate(isAchieved).asc())
         .fetch();
   }
 
@@ -265,7 +266,6 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
         .fetch();
   }
 
-
   @Override
   public List<GoalStatusSummaryRaw> findGoalStatuses(Long userId, Long goalId) {
     return jpaQueryFactory
@@ -289,7 +289,6 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
         .fetchOne();
   }
 
-
   @Override
   public List<TodoEntity> findAllByUserId(Long userId) {
     return jpaQueryFactory
@@ -297,6 +296,7 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
         .where(todoEntity.userId.eq(userId))
         .fetch();
   }
+
   private Predicate getOpenness(boolean isMine, boolean isFollower) {
     EnumPath<PrivacyType> privacyType = goalEntity.privacyType;
 
@@ -374,7 +374,7 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
     return todoEntity.scheduledOn.eq(date);
   }
 
-  private ConstructorExpression<TodoCompletionResponse> projectCompletion() {
+  private ConstructorExpression<TodoCompletionResponse> projectCompletion(boolean isAchieved) {
     NumberTemplate<Integer> totalTodosTemplate = Expressions.numberTemplate(
         Integer.class,
         "COUNT({0})",
@@ -397,10 +397,22 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
 
     return Projections.constructor(
         TodoCompletionResponse.class,
-        todoEntity.scheduledOn,
+        completionDate(isAchieved),
         totalTodosTemplate,
         completedTodosTemplate,
         uncompletedTodosTemplate
+    );
+  }
+
+  private DateExpression<LocalDate> completionDate(boolean isAchieved) {
+    if (isAchieved) {
+      return todoEntity.scheduledOn;
+    }
+
+    return Expressions.dateTemplate(
+        LocalDate.class,
+        "DATE({0})",
+        todoEntity.postponedAt
     );
   }
 
