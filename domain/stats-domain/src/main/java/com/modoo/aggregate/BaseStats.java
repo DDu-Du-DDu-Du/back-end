@@ -4,7 +4,6 @@ import com.modoo.aggregate.enums.TodoStatus;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 import lombok.Builder;
@@ -28,30 +27,6 @@ public class BaseStats {
   private final LocalDate scheduledOn;
   private final LocalTime beginAt;
   private final LocalTime endAt;
-
-  public BaseStats(
-      Long todoId,
-      Long goalId,
-      String goalName,
-      String goalColor,
-      TodoStatus status,
-      boolean isPostponed,
-      LocalDateTime statsDateTime,
-      LocalTime beginAt,
-      LocalTime endAt
-  ) {
-    this(
-        todoId,
-        goalId,
-        goalName,
-        goalColor,
-        status,
-        isPostponed,
-        statsDateTime.toLocalDate(),
-        beginAt,
-        endAt
-    );
-  }
 
   public boolean isCompleted() {
     return status.isCompleted();
