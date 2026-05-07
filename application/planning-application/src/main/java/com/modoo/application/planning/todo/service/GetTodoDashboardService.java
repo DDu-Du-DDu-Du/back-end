@@ -8,8 +8,10 @@ import com.modoo.application.common.port.todo.out.TodoLoaderPort;
 import com.modoo.application.common.port.user.out.UserLoaderPort;
 import com.modoo.common.annotation.UseCase;
 import com.modoo.common.exception.TodoErrorCode;
+import com.modoo.common.time.TimeZoneConverter;
 import com.modoo.domain.planning.todo.aggregate.Todo;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -26,18 +28,25 @@ public class GetTodoDashboardService implements GetTodoDashboardUseCase {
   private final UserLoaderPort userLoaderPort;
   private final TodoLoaderPort todoLoaderPort;
 
-  @Override
   public TodoDashboardResponse get(Long loginId) {
+    return get(loginId, null);
+  }
+
+  @Override
+  public TodoDashboardResponse get(Long loginId, String timeZone) {
     userLoaderPort.getUserOrElseThrow(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());
 
+    ZoneId clientZone = TimeZoneConverter.parseOrUtc(timeZone);
     List<Todo> todos = todoLoaderPort.getTodosByUserId(loginId);
     Map<LocalDate, List<Todo>> grouped = new LinkedHashMap<>();
 
     for (Todo todo : todos) {
-      grouped.computeIfAbsent(todo.getScheduledOn(), key -> new ArrayList<>()).add(todo);
+      Todo converted = todo.convert(clientZone);
+      grouped.computeIfAbsent(converted.getScheduledOn(), key -> new ArrayList<>())
+          .add(converted);
     }
 
-    LocalDate today = LocalDate.now();
+    LocalDate today = LocalDate.now(clientZone);
     grouped.computeIfAbsent(today, key -> new ArrayList<>());
 
     List<TodoDashboardContent> contents = grouped.entrySet().stream()

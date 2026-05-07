@@ -44,7 +44,14 @@ class TodoDomainServiceTest {
       memo = TodoFixture.createValidMemo();
       scheduledOn = LocalDate.now();
       command = new CreateTodoCommand(
-          goalId, name, memo, scheduledOn, null, null);
+          goalId,
+          name,
+          memo,
+          scheduledOn,
+          null,
+          null,
+          null
+      );
     }
 
     @Test
@@ -68,6 +75,7 @@ class TodoDomainServiceTest {
           memo,
           scheduledOn,
           null,
+          null,
           null
       );
 
@@ -86,6 +94,7 @@ class TodoDomainServiceTest {
           goalId,
           name,
           memo,
+          null,
           null,
           null,
           null

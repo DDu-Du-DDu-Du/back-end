@@ -10,13 +10,17 @@ import com.modoo.application.common.port.user.out.UserLoaderPort;
 import com.modoo.application.planning.todo.model.Timetable;
 import com.modoo.common.annotation.UseCase;
 import com.modoo.common.exception.TodoErrorCode;
+import com.modoo.common.time.DateTimeRange;
+import com.modoo.common.time.TimeZoneConverter;
 import com.modoo.domain.planning.goal.aggregate.Goal;
 import com.modoo.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.modoo.domain.planning.todo.aggregate.Todo;
 import com.modoo.domain.user.user.aggregate.User;
 import com.modoo.domain.user.user.aggregate.enums.Relationship;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +33,12 @@ public class GetTimetableService implements GetTimetableUseCase {
   private final UserLoaderPort userLoaderPort;
   private final GoalLoaderPort goalLoaderPort;
 
-  @Override
   public TimetableResponse get(Long loginId, Long userId, LocalDate date) {
+    return get(loginId, userId, date, null);
+  }
+
+  @Override
+  public TimetableResponse get(Long loginId, Long userId, LocalDate date, String timeZone) {
     // 1. 요청 유저, 검색 대상 유저 조회 및 검증
     User loginUser = userLoaderPort.getUserOrElseThrow(
         loginId,
@@ -46,7 +54,25 @@ public class GetTimetableService implements GetTimetableUseCase {
     List<PrivacyType> accessiblePrivacyTypes = PrivacyType.getAccessibleTypesIn(relationship);
 
     // 3. 타임 테이블 조회
-    List<Todo> todos = todoLoaderPort.getDailyTodos(date, user.getId(), accessiblePrivacyTypes);
+    ZoneId clientZone = TimeZoneConverter.parseOrUtc(timeZone);
+    LocalDate targetDate = Objects.requireNonNullElse(date, LocalDate.now(clientZone));
+    DateTimeRange range = TimeZoneConverter.toUtcDateRange(targetDate, clientZone);
+    List<Todo> todos = todoLoaderPort.getTodosBetween(
+            range.start(),
+            range.end(),
+            user.getId(),
+            accessiblePrivacyTypes
+        )
+        .stream()
+        .filter(todo -> Objects.isNull(todo.getBeginAt())
+            ? todo.getScheduledOn().isEqual(targetDate)
+            : TimeZoneConverter.isInRange(
+                todo.getScheduledOn(),
+                todo.getBeginAt(),
+                range
+            ))
+        .map(todo -> todo.convert(clientZone))
+        .toList();
     Timetable timetable = new Timetable(todos);
 
     // 4. 응답 생성 (데이터 변환)

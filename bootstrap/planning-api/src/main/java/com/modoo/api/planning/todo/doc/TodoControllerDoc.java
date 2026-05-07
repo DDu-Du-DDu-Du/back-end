@@ -165,7 +165,7 @@ public interface TodoControllerDoc {
           )
       }
   )
-  ResponseEntity<TodoDetailResponse> getById(Long loginId, Long id);
+  ResponseEntity<TodoDetailResponse> getById(Long loginId, Long id, String timeZone);
 
   @Operation(
       summary = "일간 투두 리스트 조회",
@@ -222,7 +222,9 @@ public interface TodoControllerDoc {
           )
       }
   )
-  ResponseEntity<List<GoalGroupedTodos>> getDailyList(Long loginId, Long userId, LocalDate date);
+  ResponseEntity<List<GoalGroupedTodos>> getDailyList(
+      Long loginId, Long userId, LocalDate date, String timeZone
+  );
 
   @Operation(
       summary = "일간 타임테이블 조회",
@@ -279,7 +281,9 @@ public interface TodoControllerDoc {
           )
       }
   )
-  ResponseEntity<TimetableResponse> getDailyTimetable(Long loginId, Long userId, LocalDate date);
+  ResponseEntity<TimetableResponse> getDailyTimetable(
+      Long loginId, Long userId, LocalDate date, String timeZone
+  );
 
   @Operation(summary = "투두 이름(내용) 변경")
   @ApiResponses(

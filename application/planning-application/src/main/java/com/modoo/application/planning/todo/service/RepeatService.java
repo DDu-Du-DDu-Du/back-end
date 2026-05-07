@@ -30,7 +30,8 @@ public class RepeatService implements RepeatUseCase {
 
     todo.validateTodoCreator(loginId);
 
-    Todo replica = todo.reproduceOnDate(request.repeatOn());
+    Todo replica = todo.convert(request.timeZone())
+        .reproduceOnDate(request.repeatOn());
     Todo repeatedTodo = repeatTodoPort.save(replica);
 
     return new RepeatAnotherDayResponse(repeatedTodo.getId());

@@ -82,7 +82,7 @@ public interface StatsControllerDoc {
   )
   @Deprecated
   ResponseEntity<List<TodoCompletionResponse>> getWeeklyCompletion(
-      Long loginId, Long userId, LocalDate date
+      Long loginId, Long userId, LocalDate date, String timeZone
   );
 
   @Operation(summary = "월간 투두 완료도 조회")
@@ -138,7 +138,7 @@ public interface StatsControllerDoc {
       }
   )
   ResponseEntity<List<TodoCompletionResponse>> getMonthlyCompletion(
-      Long loginId, Long userId, YearMonth yearMonth
+      Long loginId, Long userId, YearMonth yearMonth, String timeZone
   );
 
   @Operation(summary = "월별 통합 투두 통계 리포트")

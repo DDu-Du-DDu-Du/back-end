@@ -7,6 +7,7 @@ import com.modoo.application.common.port.todo.out.TodoUpdatePort;
 import com.modoo.common.annotation.UseCase;
 import com.modoo.common.exception.TodoErrorCode;
 import com.modoo.domain.planning.todo.aggregate.Todo;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,8 @@ public class MoveDateService implements MoveDateUseCase {
 
     todo.validateTodoCreator(loginId);
 
-    Todo movedTodo = todo.moveDate(request.newDate(), request.postpone());
+    Todo movedTodo = todo.convert(request.timeZone())
+        .moveDate(request.newDate(), request.postpone());
 
     todoUpdatePort.update(movedTodo);
   }

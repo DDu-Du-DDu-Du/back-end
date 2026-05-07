@@ -60,7 +60,7 @@ class TodoPeriodSetupServiceTest {
   void 투두_시작_및_종료시간을_설정한다() {
     // given
     LocalTime now = LocalTime.now();
-    PeriodSetupRequest request = new PeriodSetupRequest(now, LocalTime.MAX);
+    PeriodSetupRequest request = new PeriodSetupRequest(now, LocalTime.MAX, null);
 
     // when
     todoPeriodSetupService.setUpPeriod(user.getId(), todo.getId(), request);
@@ -76,7 +76,7 @@ class TodoPeriodSetupServiceTest {
   void 투두가_없으면_시간_설정을_실패한다() {
     // given
     LocalTime now = LocalTime.now();
-    PeriodSetupRequest request = new PeriodSetupRequest(now, LocalTime.MAX);
+    PeriodSetupRequest request = new PeriodSetupRequest(now, LocalTime.MAX, null);
     long invalidId = TodoFixture.getRandomId();
 
     // when

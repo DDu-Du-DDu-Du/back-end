@@ -19,8 +19,12 @@ public class RetrieveTodoService implements RetrieveTodoUseCase {
   private final TodoLoaderPort todoLoaderPort;
   private final ReminderLoaderPort reminderLoaderPort;
 
-  @Override
   public TodoDetailResponse findById(Long loginId, Long id) {
+    return findById(loginId, id, null);
+  }
+
+  @Override
+  public TodoDetailResponse findById(Long loginId, Long id, String timeZone) {
     Todo todo = todoLoaderPort.getTodoOrElseThrow(
         id,
         TodoErrorCode.ID_NOT_EXISTING.getCodeName()
@@ -29,7 +33,7 @@ public class RetrieveTodoService implements RetrieveTodoUseCase {
     todo.validateTodoCreator(loginId);
 
     return TodoDetailResponse.from(
-        todo,
+        todo.convert(timeZone),
         reminderLoaderPort.getRemindersByTodoId(todo.getId())
             .stream()
             .map(RetrieveReminderResponse::from)

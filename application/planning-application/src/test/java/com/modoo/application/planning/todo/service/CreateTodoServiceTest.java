@@ -70,6 +70,7 @@ class CreateTodoServiceTest {
         scheduledOn,
         null,
         null,
+        null,
         null
     );
 
@@ -109,6 +110,7 @@ class CreateTodoServiceTest {
         name,
         memo,
         scheduledOn,
+        null,
         null,
         null,
         null
@@ -152,6 +154,7 @@ class CreateTodoServiceTest {
         null,
         null,
         null,
+        null,
         null
     );
 
@@ -177,6 +180,7 @@ class CreateTodoServiceTest {
         scheduledOn,
         null,
         null,
+        null,
         null
     );
 
@@ -198,6 +202,7 @@ class CreateTodoServiceTest {
         name,
         memo,
         scheduledOn,
+        null,
         null,
         null,
         null
@@ -226,6 +231,7 @@ class CreateTodoServiceTest {
         name,
         memo,
         scheduledOn,
+        null,
         null,
         null,
         null
