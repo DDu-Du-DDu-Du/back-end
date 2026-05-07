@@ -41,6 +41,13 @@ public interface TodoQueryRepository {
       List<PrivacyType> accessiblePrivacyTypes
   );
 
+  List<TodoEntity> findAllBetweenAndUserAndPrivacyTypes(
+      LocalDateTime startAt,
+      LocalDateTime endAt,
+      Long userId,
+      List<PrivacyType> accessiblePrivacyTypes
+  );
+
   void deleteAllByRepeatTodoId(Long repeatTodoId);
 
   List<BaseStats> findStatsBaseOfUser(Long userId, Long goalId, LocalDate from, LocalDate to);

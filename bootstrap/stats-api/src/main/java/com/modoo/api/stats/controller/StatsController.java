@@ -50,12 +50,15 @@ public class StatsController implements StatsControllerDoc {
           required = false
       )
       @DateTimeFormat(pattern = "yyyy-MM")
-      YearMonth yearMonth
+      YearMonth yearMonth,
+      @RequestParam(required = false)
+      String timeZone
   ) {
     List<TodoCompletionResponse> response = calculateCompletionUseCase.calculateMonthly(
         loginId,
         userId,
-        yearMonth
+        yearMonth,
+        timeZone
     );
 
     return ResponseEntity.ok(response);
@@ -73,12 +76,15 @@ public class StatsController implements StatsControllerDoc {
       Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+      LocalDate date,
+      @RequestParam(required = false)
+      String timeZone
   ) {
     List<TodoCompletionResponse> response = calculateCompletionUseCase.calculateWeekly(
         loginId,
         userId,
-        date
+        date,
+        timeZone
     );
 
     return ResponseEntity.ok(response);

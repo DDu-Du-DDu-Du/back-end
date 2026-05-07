@@ -100,12 +100,15 @@ public class TodoController implements TodoControllerDoc {
       Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+      LocalDate date,
+      @RequestParam(required = false)
+      String timeZone
   ) {
     userId = isNull(userId) ? loginId : userId;
-    date = isNull(date) ? LocalDate.now() : date;
 
-    List<GoalGroupedTodos> response = getDailyTodosByGoalUseCase.get(loginId, userId, date);
+    List<GoalGroupedTodos> response = getDailyTodosByGoalUseCase.get(
+        loginId, userId, date, timeZone
+    );
     return ResponseEntity.ok(response);
   }
 
@@ -120,12 +123,13 @@ public class TodoController implements TodoControllerDoc {
       Long userId,
       @RequestParam(required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
-      LocalDate date
+      LocalDate date,
+      @RequestParam(required = false)
+      String timeZone
   ) {
     userId = isNull(userId) ? loginId : userId;
-    date = isNull(date) ? LocalDate.now() : date;
 
-    TimetableResponse response = getTimetableUseCase.get(loginId, userId, date);
+    TimetableResponse response = getTimetableUseCase.get(loginId, userId, date, timeZone);
     return ResponseEntity.ok(response);
   }
 
@@ -135,9 +139,11 @@ public class TodoController implements TodoControllerDoc {
   @GetMapping("/dashboard")
   public ResponseEntity<TodoDashboardResponse> getDashboard(
       @Login
-      Long loginId
+      Long loginId,
+      @RequestParam(required = false)
+      String timeZone
   ) {
-    TodoDashboardResponse response = getTodoDashboardUseCase.get(loginId);
+    TodoDashboardResponse response = getTodoDashboardUseCase.get(loginId, timeZone);
     return ResponseEntity.ok(response);
   }
 
@@ -164,9 +170,11 @@ public class TodoController implements TodoControllerDoc {
       @Login
       Long loginId,
       @PathVariable("id")
-      Long id
+      Long id,
+      @RequestParam(required = false)
+      String timeZone
   ) {
-    TodoDetailResponse response = retrieveTodoUseCase.findById(loginId, id);
+    TodoDetailResponse response = retrieveTodoUseCase.findById(loginId, id, timeZone);
 
     return ResponseEntity.ok(response);
   }

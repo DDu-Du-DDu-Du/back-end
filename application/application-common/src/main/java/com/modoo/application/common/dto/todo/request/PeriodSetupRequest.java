@@ -19,7 +19,14 @@ public record PeriodSetupRequest(
         format = "time",
         example = "00:00:00"
     )
-    LocalTime endAt
+    LocalTime endAt,
+    @Schema(
+        name = "timeZone",
+        description = "클라이언트 타임존",
+        type = "string",
+        example = "Asia/Seoul"
+    )
+    String timeZone
 ) {
 
 }

@@ -5,6 +5,6 @@ import java.time.LocalDate;
 
 public interface GetTimetableUseCase {
 
-  TimetableResponse get(Long loginId, Long userId, LocalDate date);
+  TimetableResponse get(Long loginId, Long userId, LocalDate date, String timeZone);
 
 }

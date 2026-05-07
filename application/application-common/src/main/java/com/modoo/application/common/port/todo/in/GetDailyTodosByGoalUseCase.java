@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface GetDailyTodosByGoalUseCase {
 
-  List<GoalGroupedTodos> get(Long loginId, Long userId, LocalDate date);
+  List<GoalGroupedTodos> get(Long loginId, Long userId, LocalDate date, String timeZone);
 
 }

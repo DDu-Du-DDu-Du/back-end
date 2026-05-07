@@ -71,7 +71,7 @@ class GetDailyTodosByTimeServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    TimetableResponse response = getTimetableService.get(user.getId(), user.getId(), date);
+    TimetableResponse response = getTimetableService.get(user.getId(), user.getId(), date, null);
 
     // then
     int countOfTime = response.timetable()
@@ -107,7 +107,7 @@ class GetDailyTodosByTimeServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    TimetableResponse response = getTimetableService.get(user.getId(), user.getId(), date);
+    TimetableResponse response = getTimetableService.get(user.getId(), user.getId(), date, null);
 
     // then
     assertThat(response.unassignedTodos()
@@ -141,7 +141,8 @@ class GetDailyTodosByTimeServiceTest {
     TimetableResponse response = getTimetableService.get(
         user.getId(),
         user.getId(),
-        LocalDate.now()
+        LocalDate.now(),
+        null
     );
 
     // then
@@ -176,7 +177,12 @@ class GetDailyTodosByTimeServiceTest {
     LocalDate date = LocalDate.now();
 
     // when
-    TimetableResponse response = getTimetableService.get(anotherUser.getId(), user.getId(), date);
+    TimetableResponse response = getTimetableService.get(
+        anotherUser.getId(),
+        user.getId(),
+        date,
+        null
+    );
 
     // then
     int countOfTime = response.timetable()
@@ -201,7 +207,8 @@ class GetDailyTodosByTimeServiceTest {
     ThrowingCallable findAllByDate = () -> getTimetableService.get(
         invalidLoginId,
         user.getId(),
-        date
+        date,
+        null
     );
 
     // then
@@ -221,7 +228,8 @@ class GetDailyTodosByTimeServiceTest {
     ThrowingCallable findAllByDate = () -> getTimetableService.get(
         loginUserId,
         invalidUserId,
-        date
+        date,
+        null
     );
 
     // then

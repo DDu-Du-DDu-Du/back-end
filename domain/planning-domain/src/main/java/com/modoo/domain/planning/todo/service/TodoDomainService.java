@@ -19,18 +19,20 @@ public class TodoDomainService {
         .scheduledOn(command.scheduledOn())
         .beginAt(command.beginAt())
         .endAt(command.endAt())
+        .timeZone(command.clientTimeZone())
         .build();
   }
 
   public Todo update(Todo todo, UpdateTodoCommand command) {
-    return todo.update(
-        command.goalId(),
-        command.name(),
-        command.memo(),
-        command.scheduledOn(),
-        command.beginAt(),
-        command.endAt()
-    );
+    return todo.convert(command.clientTimeZone())
+        .update(
+            command.goalId(),
+            command.name(),
+            command.memo(),
+            command.scheduledOn(),
+            command.beginAt(),
+            command.endAt()
+        );
   }
 
 }

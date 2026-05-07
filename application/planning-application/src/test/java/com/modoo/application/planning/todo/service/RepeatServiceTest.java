@@ -63,7 +63,7 @@ class RepeatServiceTest {
     // given
     LocalDate tomorrow = LocalDate.now()
         .plusDays(1);
-    RepeatAnotherDayRequest request = new RepeatAnotherDayRequest(tomorrow);
+    RepeatAnotherDayRequest request = new RepeatAnotherDayRequest(tomorrow, null);
 
     // when
     RepeatAnotherDayResponse response = repeatService.repeatOnAnotherDay(
@@ -85,7 +85,7 @@ class RepeatServiceTest {
     long invalidId = TodoFixture.getRandomId();
     LocalDate tomorrow = LocalDate.now()
         .plusDays(1);
-    RepeatAnotherDayRequest request = new RepeatAnotherDayRequest(tomorrow);
+    RepeatAnotherDayRequest request = new RepeatAnotherDayRequest(tomorrow, null);
 
     // when
     ThrowingCallable repeat = () -> repeatService.repeatOnAnotherDay(

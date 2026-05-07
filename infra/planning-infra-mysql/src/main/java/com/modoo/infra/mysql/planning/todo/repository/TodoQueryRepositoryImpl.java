@@ -155,6 +155,26 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
         .fetch();
   }
 
+
+  @Override
+  public List<TodoEntity> findAllBetweenAndUserAndPrivacyTypes(
+      LocalDateTime startAt,
+      LocalDateTime endAt,
+      Long userId,
+      List<PrivacyType> accessiblePrivacyTypes
+  ) {
+    return jpaQueryFactory
+        .selectFrom(todoEntity)
+        .join(goalEntity)
+        .on(todoEntity.goalId.eq(goalEntity.id))
+        .where(
+            todoEntity.scheduledOn.between(startAt.toLocalDate(), endAt.toLocalDate()),
+            todoEntity.userId.eq(userId),
+            privacyTypesIn(accessiblePrivacyTypes)
+        )
+        .fetch();
+  }
+
   @Override
   public void deleteAllByGoalId(Long goalId) {
     jpaQueryFactory
@@ -297,6 +317,7 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
         .where(todoEntity.userId.eq(userId))
         .fetch();
   }
+
   private Predicate getOpenness(boolean isMine, boolean isFollower) {
     EnumPath<PrivacyType> privacyType = goalEntity.privacyType;
 

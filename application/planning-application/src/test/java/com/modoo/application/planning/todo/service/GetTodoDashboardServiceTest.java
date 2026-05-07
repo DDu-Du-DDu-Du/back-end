@@ -64,7 +64,7 @@ class GetTodoDashboardServiceTest {
     // given
 
     // when
-    TodoDashboardResponse response = getTodoDashboardService.get(user.getId());
+    TodoDashboardResponse response = getTodoDashboardService.get(user.getId(), null);
 
     // then
     assertThat(response.isEmpty()).isTrue();
@@ -101,7 +101,7 @@ class GetTodoDashboardServiceTest {
     saveTodoPort.save(yesterdayTodo);
 
     // when
-    TodoDashboardResponse response = getTodoDashboardService.get(user.getId());
+    TodoDashboardResponse response = getTodoDashboardService.get(user.getId(), null);
 
     // then
     assertThat(response.isEmpty()).isFalse();
@@ -144,7 +144,7 @@ class GetTodoDashboardServiceTest {
         .build());
 
     // when
-    TodoDashboardResponse response = getTodoDashboardService.get(user.getId());
+    TodoDashboardResponse response = getTodoDashboardService.get(user.getId(), null);
 
     // then
     List<TodoDashboardItem> todos = response.contents().stream()
@@ -181,7 +181,7 @@ class GetTodoDashboardServiceTest {
     Long invalidLoginId = UserFixture.getRandomId();
 
     // when
-    ThrowingCallable getDashboard = () -> getTodoDashboardService.get(invalidLoginId);
+    ThrowingCallable getDashboard = () -> getTodoDashboardService.get(invalidLoginId, null);
 
     // then
     AssertionsForClassTypes.assertThatExceptionOfType(MissingResourceException.class)

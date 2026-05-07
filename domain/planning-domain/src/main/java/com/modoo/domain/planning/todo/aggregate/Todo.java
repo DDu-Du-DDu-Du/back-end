@@ -9,6 +9,9 @@ import com.modoo.domain.planning.todo.aggregate.enums.TodoStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -21,6 +24,7 @@ public class Todo {
 
   private static final int MAX_NAME_LENGTH = 50;
   private static final int MAX_MEMO_LENGTH = 2000;
+  private static final ZoneId DEFAULT_TIME_ZONE = ZoneOffset.UTC;
 
   @EqualsAndHashCode.Include
   private final Long id;
@@ -34,6 +38,7 @@ public class Todo {
   private final LocalDate scheduledOn;
   private final LocalTime beginAt;
   private final LocalTime endAt;
+  private final ZoneId timeZone;
 
   @Builder
   private Todo(
@@ -49,7 +54,8 @@ public class Todo {
       String statusValue,
       LocalDate scheduledOn,
       LocalTime beginAt,
-      LocalTime endAt
+      LocalTime endAt,
+      ZoneId timeZone
   ) {
     validate(userId, name, memo, beginAt, endAt);
 
@@ -64,12 +70,37 @@ public class Todo {
     this.scheduledOn = Objects.requireNonNullElse(scheduledOn, LocalDate.now());
     this.beginAt = beginAt;
     this.endAt = endAt;
+    this.timeZone = Objects.requireNonNullElse(timeZone, DEFAULT_TIME_ZONE);
   }
 
   public void validateTodoCreator(Long userId) {
     if (!isCreatedByUser(userId)) {
       throw new SecurityException(TodoErrorCode.INVALID_AUTHORITY.getCodeName());
     }
+  }
+
+  public Todo convert(String timeZone) {
+    if (Objects.isNull(timeZone) || timeZone.isBlank()) {
+      return convert(DEFAULT_TIME_ZONE);
+    }
+
+    return convert(ZoneId.of(timeZone));
+  }
+
+  public Todo convert(ZoneId targetTimeZone) {
+    ZoneId targetZone = Objects.requireNonNull(targetTimeZone);
+    if (this.timeZone.equals(targetZone)) {
+      return getFullBuilder()
+          .timeZone(targetZone)
+          .build();
+    }
+
+    return getFullBuilder()
+        .scheduledOn(convertScheduledOn(targetZone))
+        .beginAt(convertTime(beginAt, targetZone))
+        .endAt(convertTime(endAt, targetZone))
+        .timeZone(targetZone)
+        .build();
   }
 
   public Todo setUpPeriod(LocalTime beginAt, LocalTime endAt) {
@@ -188,7 +219,34 @@ public class Todo {
         .scheduledOn(this.scheduledOn)
         .postponedAt(this.postponedAt)
         .beginAt(this.beginAt)
-        .endAt(this.endAt);
+        .endAt(this.endAt)
+        .timeZone(this.timeZone);
+  }
+
+  private LocalDate convertScheduledOn(ZoneId targetZone) {
+    if (nonNull(beginAt)) {
+      return convertDateTime(beginAt, targetZone).toLocalDate();
+    }
+
+    if (nonNull(endAt)) {
+      return convertDateTime(endAt, targetZone).toLocalDate();
+    }
+
+    return scheduledOn;
+  }
+
+  private LocalTime convertTime(LocalTime time, ZoneId targetZone) {
+    if (isNull(time)) {
+      return null;
+    }
+
+    return convertDateTime(time, targetZone).toLocalTime();
+  }
+
+  private ZonedDateTime convertDateTime(LocalTime time, ZoneId targetZone) {
+    return scheduledOn.atTime(time)
+        .atZone(timeZone)
+        .withZoneSameInstant(targetZone);
   }
 
   private LocalDateTime resolvePostponedAt(LocalDateTime postponedAt, Boolean isPostponed) {
