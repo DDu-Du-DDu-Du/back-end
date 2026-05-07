@@ -56,7 +56,7 @@ class RetrieveTodoServiceTest {
   @Test
   void ID를_통해_투두를_조회할_수_있다() {
     // when
-    TodoDetailResponse actual = retrieveTodoService.findById(user.getId(), todo.getId());
+    TodoDetailResponse actual = retrieveTodoService.findById(user.getId(), todo.getId(), null);
 
     // then
     assertThat(actual)
@@ -84,7 +84,8 @@ class RetrieveTodoServiceTest {
     // when
     TodoDetailResponse actual = retrieveTodoService.findById(
         user.getId(),
-        postponedTodo.getId()
+        postponedTodo.getId(),
+        null
     );
 
     // then
@@ -97,7 +98,7 @@ class RetrieveTodoServiceTest {
     Long invalidId = TodoFixture.getRandomId();
 
     // when
-    ThrowingCallable callable = () -> retrieveTodoService.findById(user.getId(), invalidId);
+    ThrowingCallable callable = () -> retrieveTodoService.findById(user.getId(), invalidId, null);
 
     // then
     AssertionsForClassTypes.assertThatThrownBy(callable)
@@ -113,7 +114,8 @@ class RetrieveTodoServiceTest {
     // when
     ThrowingCallable callable = () -> retrieveTodoService.findById(
         anotherUser.getId(),
-        todo.getId()
+        todo.getId(),
+        null
     );
 
     // then

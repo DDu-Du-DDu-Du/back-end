@@ -28,10 +28,6 @@ public class GetTodoDashboardService implements GetTodoDashboardUseCase {
   private final UserLoaderPort userLoaderPort;
   private final TodoLoaderPort todoLoaderPort;
 
-  public TodoDashboardResponse get(Long loginId) {
-    return get(loginId, null);
-  }
-
   @Override
   public TodoDashboardResponse get(Long loginId, String timeZone) {
     userLoaderPort.getUserOrElseThrow(loginId, TodoErrorCode.LOGIN_USER_NOT_EXISTING.getCodeName());

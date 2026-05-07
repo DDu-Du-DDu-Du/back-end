@@ -76,7 +76,8 @@ class CalculateCompletionServiceTest {
     List<TodoCompletionResponse> responses = calculateCompletionService.calculateWeekly(
         user.getId(),
         user.getId(),
-        today
+        today,
+        null
     );
 
     // then
@@ -95,7 +96,8 @@ class CalculateCompletionServiceTest {
     List<TodoCompletionResponse> responses = calculateCompletionService.calculateWeekly(
         anotherUser.getId(),
         user.getId(),
-        today
+        today,
+        null
     );
 
     // then
@@ -114,7 +116,8 @@ class CalculateCompletionServiceTest {
     List<TodoCompletionResponse> responses = calculateCompletionService.calculateMonthly(
         user.getId(),
         user.getId(),
-        thisMonth
+        thisMonth,
+        null
     );
 
     // then
@@ -134,7 +137,8 @@ class CalculateCompletionServiceTest {
     List<TodoCompletionResponse> responses = calculateCompletionService.calculateMonthly(
         anotherUser.getId(),
         user.getId(),
-        thisMonth
+        thisMonth,
+        null
     );
 
     // then
@@ -153,7 +157,8 @@ class CalculateCompletionServiceTest {
     List<TodoCompletionResponse> responses = calculateCompletionService.calculateMonthly(
         user.getId(),
         null,
-        thisMonth
+        thisMonth,
+        null
     );
 
     // then
@@ -173,7 +178,8 @@ class CalculateCompletionServiceTest {
     ThrowingCallable findWeeklyCompletions = () -> calculateCompletionService.calculateWeekly(
         invalidLoginId,
         user.getId(),
-        today
+        today,
+        null
     );
 
     // then
@@ -191,7 +197,8 @@ class CalculateCompletionServiceTest {
     ThrowingCallable findWeeklyCompletions = () -> calculateCompletionService.calculateWeekly(
         user.getId(),
         invalidUserId,
-        today
+        today,
+        null
     );
 
     // then
@@ -209,7 +216,8 @@ class CalculateCompletionServiceTest {
     ThrowingCallable findMonthlyCompletions = () -> calculateCompletionService.calculateMonthly(
         invalidLoginId,
         user.getId(),
-        thisMonth
+        thisMonth,
+        null
     );
 
     // then
@@ -227,7 +235,8 @@ class CalculateCompletionServiceTest {
     ThrowingCallable findMonthlyCompletions = () -> calculateCompletionService.calculateMonthly(
         user.getId(),
         invalidUserId,
-        thisMonth
+        thisMonth,
+        null
     );
 
     // then

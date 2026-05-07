@@ -65,7 +65,8 @@ class GetDailyTodosByGoalServiceTest {
     List<GoalGroupedTodos> responses = getDailyTodosByGoalService.get(
         user.getId(),
         user.getId(),
-        date
+        date,
+        null
     );
 
     // then
@@ -94,7 +95,8 @@ class GetDailyTodosByGoalServiceTest {
     List<GoalGroupedTodos> responses = getDailyTodosByGoalService.get(
         user.getId(),
         user.getId(),
-        date
+        date,
+        null
     );
 
     // then
@@ -123,7 +125,8 @@ class GetDailyTodosByGoalServiceTest {
     List<GoalGroupedTodos> responses = getDailyTodosByGoalService.get(
         anotherUser.getId(),
         user.getId(),
-        date
+        date,
+        null
     );
 
     // then
@@ -145,7 +148,8 @@ class GetDailyTodosByGoalServiceTest {
     ThrowingCallable findAllByDate = () -> getDailyTodosByGoalService.get(
         invalidLoginId,
         user.getId(),
-        date
+        date,
+        null
     );
 
     // then
@@ -165,7 +169,8 @@ class GetDailyTodosByGoalServiceTest {
     ThrowingCallable findAllByDate = () -> getDailyTodosByGoalService.get(
         loginUserId,
         invalidUserId,
-        date
+        date,
+        null
     );
 
     // then

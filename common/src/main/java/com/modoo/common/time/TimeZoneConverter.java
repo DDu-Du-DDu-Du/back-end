@@ -25,6 +25,24 @@ public final class TimeZoneConverter {
     return toUtcRange(clientDate, LocalTime.MIN, LocalTime.MAX, clientZone);
   }
 
+  public static DateTimeRange toUtcDateRange(
+      LocalDate startDate,
+      LocalDate endDate,
+      ZoneId clientZone
+  ) {
+    ZoneId zone = Objects.requireNonNull(clientZone);
+    ZonedDateTime start = Objects.requireNonNull(startDate)
+        .atTime(LocalTime.MIN)
+        .atZone(zone)
+        .withZoneSameInstant(ZoneOffset.UTC);
+    ZonedDateTime end = Objects.requireNonNull(endDate)
+        .atTime(LocalTime.MAX)
+        .atZone(zone)
+        .withZoneSameInstant(ZoneOffset.UTC);
+
+    return new DateTimeRange(start.toLocalDateTime(), end.toLocalDateTime());
+  }
+
   public static DateTimeRange toUtcRange(
       LocalDate clientDate,
       LocalTime startTime,

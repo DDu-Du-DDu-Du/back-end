@@ -13,7 +13,6 @@ import com.modoo.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.modoo.domain.user.user.aggregate.User;
 import com.modoo.domain.user.user.aggregate.enums.Relationship;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.List;
@@ -32,11 +31,6 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
   private final TodoStatsPort todoStatsPort;
 
   @Deprecated
-  public List<TodoCompletionResponse> calculateWeekly(Long loginId, Long userId, LocalDate date) {
-    return calculateWeekly(loginId, userId, date, null);
-  }
-
-  @Deprecated
   @Override
   public List<TodoCompletionResponse> calculateWeekly(
       Long loginId, Long userId, LocalDate date, String timeZone
@@ -45,15 +39,13 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
     LocalDate targetDate = Objects.requireNonNullElse(date, LocalDate.now(clientZone));
     LocalDate firstDayOfWeek = DayOfWeekUtil.getFirstDayOfWeek(targetDate);
     LocalDate afterOneWeek = firstDayOfWeek.plusDays(6);
-    DateTimeRange range = toUtcRange(firstDayOfWeek, afterOneWeek, clientZone);
+    DateTimeRange range = TimeZoneConverter.toUtcDateRange(
+        firstDayOfWeek,
+        afterOneWeek,
+        clientZone
+    );
 
     return calculate(loginId, userId, range.startDate(), range.endDate());
-  }
-
-  public List<TodoCompletionResponse> calculateMonthly(
-      Long loginId, Long userId, YearMonth yearMonth
-  ) {
-    return calculateMonthly(loginId, userId, yearMonth, null);
   }
 
   @Override
@@ -69,22 +61,9 @@ public class CalculateCompletionService implements CalculateCompletionUseCase {
         .atDay(1);
     LocalDate endDate = month.plusMonths(1)
         .atEndOfMonth();
-    DateTimeRange range = toUtcRange(firstDayOfMonth, endDate, clientZone);
+    DateTimeRange range = TimeZoneConverter.toUtcDateRange(firstDayOfMonth, endDate, clientZone);
 
     return calculate(loginId, userId, range.startDate(), range.endDate());
-  }
-
-  private DateTimeRange toUtcRange(LocalDate startDate, LocalDate endDate, ZoneId clientZone) {
-    return new DateTimeRange(
-        startDate.atTime(LocalTime.MIN)
-            .atZone(clientZone)
-            .withZoneSameInstant(ZoneId.of("UTC"))
-            .toLocalDateTime(),
-        endDate.atTime(LocalTime.MAX)
-            .atZone(clientZone)
-            .withZoneSameInstant(ZoneId.of("UTC"))
-            .toLocalDateTime()
-    );
   }
 
   private List<TodoCompletionResponse> calculate(
