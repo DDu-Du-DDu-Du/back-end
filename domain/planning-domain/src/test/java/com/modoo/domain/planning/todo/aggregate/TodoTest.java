@@ -6,9 +6,12 @@ import com.modoo.common.exception.TodoErrorCode;
 import com.modoo.domain.planning.todo.aggregate.Todo.TodoBuilder;
 import com.modoo.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.modoo.fixture.TodoFixture;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,6 +77,7 @@ class TodoTest {
       assertThat(todo.getStatus()).isEqualTo(TodoStatus.UNCOMPLETED);
       assertThat(todo.isPostponed()).isFalse();
       assertThat(todo.getScheduledOn()).isEqualTo(LocalDate.now());
+      assertThat(todo.getTimeZone()).isEqualTo(ZoneOffset.UTC);
     }
 
     @ParameterizedTest
@@ -213,6 +217,70 @@ class TodoTest {
       userId = TodoFixture.getRandomId();
       goalId = TodoFixture.getRandomId();
       todo = TodoFixture.createRandomTodoWithReference(goalId, userId, false, null);
+    }
+
+
+    @Nested
+    class 타임존_변환_테스트 {
+
+      @Test
+      void 타임존에_맞춰_일정일자와_시간을_변환한다() {
+        // given
+        Todo utcTodo = Todo.builder()
+            .goalId(goalId)
+            .userId(userId)
+            .name(TodoFixture.getRandomSentenceWithMax(50))
+            .scheduledOn(LocalDate.of(2026, 5, 7))
+            .beginAt(LocalTime.of(23, 30))
+            .endAt(LocalTime.of(23, 59))
+            .timeZone(ZoneOffset.UTC)
+            .build();
+
+        // when
+        Todo actual = utcTodo.convert(ZoneId.of("Asia/Seoul"));
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(LocalDate.of(2026, 5, 8));
+        assertThat(actual.getBeginAt()).isEqualTo(LocalTime.of(8, 30));
+        assertThat(actual.getEndAt()).isEqualTo(LocalTime.of(8, 59));
+        assertThat(actual.getTimeZone()).isEqualTo(ZoneId.of("Asia/Seoul"));
+      }
+
+      @Test
+      void 시간이_없으면_일정일자는_유지하고_타임존만_변경한다() {
+        // given
+        LocalDate scheduledOn = LocalDate.of(2026, 5, 7);
+        Todo dateOnlyTodo = Todo.builder()
+            .goalId(goalId)
+            .userId(userId)
+            .name(TodoFixture.getRandomSentenceWithMax(50))
+            .scheduledOn(scheduledOn)
+            .timeZone(ZoneOffset.UTC)
+            .build();
+
+        // when
+        Todo actual = dateOnlyTodo.convert("Asia/Seoul");
+
+        // then
+        assertThat(actual.getScheduledOn()).isEqualTo(scheduledOn);
+        assertThat(actual.getBeginAt()).isNull();
+        assertThat(actual.getEndAt()).isNull();
+        assertThat(actual.getTimeZone()).isEqualTo(ZoneId.of("Asia/Seoul"));
+      }
+
+      @Test
+      void 유효하지_않은_타임존이면_변환을_실패한다() {
+        // given
+        Todo todo = TodoFixture.createRandomTodoWithReference(goalId, userId, false, null);
+
+        // when
+        ThrowingCallable convert = () -> todo.convert("Invalid/TimeZone");
+
+        // then
+        Assertions.assertThatExceptionOfType(DateTimeException.class)
+            .isThrownBy(convert);
+      }
+
     }
 
     @Nested

@@ -27,7 +27,8 @@ public class PeriodSetupService implements PeriodSetupUseCase {
 
     todo.validateTodoCreator(loginId);
 
-    Todo updatedTodo = todo.setUpPeriod(request.beginAt(), request.endAt());
+    Todo updatedTodo = todo.convert(request.timeZone())
+        .setUpPeriod(request.beginAt(), request.endAt());
 
     todoUpdatePort.update(updatedTodo);
   }

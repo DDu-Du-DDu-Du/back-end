@@ -25,6 +25,7 @@ import com.modoo.infra.mysql.planning.todo.entity.TodoEntity;
 import com.modoo.infra.mysql.planning.todo.repository.TodoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,24 @@ public class TodoPersistenceAdapter implements TodoLoaderPort, TodoUpdatePort, S
       List<PrivacyType> accessiblePrivacyTypes
   ) {
     return todoRepository.findAllByDateAndUserAndPrivacyTypes(date, userId, accessiblePrivacyTypes)
+        .stream()
+        .map(TodoEntity::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<Todo> getTodosBetween(
+      LocalDateTime startAt,
+      LocalDateTime endAt,
+      Long userId,
+      List<PrivacyType> accessiblePrivacyTypes
+  ) {
+    return todoRepository.findAllBetweenAndUserAndPrivacyTypes(
+            startAt,
+            endAt,
+            userId,
+            accessiblePrivacyTypes
+        )
         .stream()
         .map(TodoEntity::toDomain)
         .toList();

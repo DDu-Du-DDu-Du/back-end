@@ -1,5 +1,6 @@
 package com.modoo.application.common.dto.todo.request;
 
+import com.modoo.common.time.TimeZoneConverter;
 import com.modoo.domain.planning.todo.dto.CreateTodoCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,6 +28,7 @@ public record CreateTodoRequest(
     LocalDate scheduledOn,
     LocalTime beginAt,
     LocalTime endAt,
+    String timeZone,
     List<CreateTodoReminderRequest> reminders
 ) {
 
@@ -38,6 +40,7 @@ public record CreateTodoRequest(
         .scheduledOn(scheduledOn)
         .beginAt(beginAt)
         .endAt(endAt)
+        .clientTimeZone(TimeZoneConverter.parseOrUtc(timeZone))
         .build();
   }
 

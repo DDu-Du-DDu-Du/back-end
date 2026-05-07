@@ -88,6 +88,7 @@ class UpdateTodoServiceTest {
         scheduledOn,
         LocalTime.of(10, 0),
         LocalTime.of(11, 0),
+        null,
         null
     );
   }
@@ -118,6 +119,7 @@ class UpdateTodoServiceTest {
         request.scheduledOn(),
         request.beginAt(),
         request.endAt(),
+        null,
         request.reminders()
     );
 
@@ -201,6 +203,7 @@ class UpdateTodoServiceTest {
         request.scheduledOn(),
         request.beginAt(),
         request.endAt(),
+        null,
         request.reminders()
     );
 
@@ -232,6 +235,7 @@ class UpdateTodoServiceTest {
         request.scheduledOn(),
         request.beginAt(),
         request.endAt(),
+        null,
         List.of(new UpdateTodoReminderRequest(null, remindAt))
     );
 
@@ -259,6 +263,7 @@ class UpdateTodoServiceTest {
         request.scheduledOn(),
         request.beginAt(),
         request.endAt(),
+        null,
         request.reminders()
     );
 
@@ -301,6 +306,7 @@ class UpdateTodoServiceTest {
         request.scheduledOn(),
         request.beginAt(),
         request.endAt(),
+        null,
         List.of(new UpdateTodoReminderRequest(savedReminder.getId(), updatedRemindAt))
     );
 
@@ -348,6 +354,7 @@ class UpdateTodoServiceTest {
         request.scheduledOn(),
         request.beginAt(),
         request.endAt(),
+        null,
         List.of(new UpdateTodoReminderRequest(secondReminder.getId(), secondRemindAt))
     );
 

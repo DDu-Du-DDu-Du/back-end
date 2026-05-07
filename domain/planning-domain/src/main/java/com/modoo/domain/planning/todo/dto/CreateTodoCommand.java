@@ -2,6 +2,9 @@ package com.modoo.domain.planning.todo.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Objects;
 import lombok.Builder;
 
 @Builder
@@ -11,7 +14,12 @@ public record CreateTodoCommand(
     String memo,
     LocalDate scheduledOn,
     LocalTime beginAt,
-    LocalTime endAt
+    LocalTime endAt,
+    ZoneId clientTimeZone
 ) {
+
+  public CreateTodoCommand {
+    clientTimeZone = Objects.requireNonNullElse(clientTimeZone, ZoneOffset.UTC);
+  }
 
 }

@@ -65,7 +65,7 @@ class MoveDateServiceTest {
   void 투두를_미루기_한다() {
     // given
     final LocalDate previousScheduledOn = todo.getScheduledOn();
-    MoveDateRequest request = new MoveDateRequest(tomorrow, true);
+    MoveDateRequest request = new MoveDateRequest(tomorrow, true, null);
 
     // when
     moveDateService.moveDate(user.getId(), todo.getId(), request);
@@ -88,7 +88,7 @@ class MoveDateServiceTest {
         goal.getId(),
         yesterday
     ));
-    MoveDateRequest request = new MoveDateRequest(LocalDate.now(), false);
+    MoveDateRequest request = new MoveDateRequest(LocalDate.now(), false, null);
 
     // when
     moveDateService.moveDate(user.getId(), pastTodo.getId(), request);
@@ -116,7 +116,7 @@ class MoveDateServiceTest {
         TodoStatus.COMPLETE,
         twoDaysAgo
     ));
-    MoveDateRequest request = new MoveDateRequest(yesterday, false);
+    MoveDateRequest request = new MoveDateRequest(yesterday, false, null);
 
     // when
     moveDateService.moveDate(user.getId(), pastTodo.getId(), request);
@@ -134,7 +134,7 @@ class MoveDateServiceTest {
         goal,
         TodoStatus.COMPLETE
     ));
-    MoveDateRequest request = new MoveDateRequest(tomorrow, true);
+    MoveDateRequest request = new MoveDateRequest(tomorrow, true, null);
 
     // when
     ThrowingCallable moveDate = () -> moveDateService.moveDate(
@@ -152,7 +152,7 @@ class MoveDateServiceTest {
   void 투두가_존재하지_않으면_날짜_변경을_실패한다() {
     // given
     long invalidId = TodoFixture.getRandomId();
-    MoveDateRequest request = new MoveDateRequest(tomorrow, true);
+    MoveDateRequest request = new MoveDateRequest(tomorrow, true, null);
 
     // when
     ThrowingCallable moveDate = () -> moveDateService.moveDate(user.getId(), invalidId, request);

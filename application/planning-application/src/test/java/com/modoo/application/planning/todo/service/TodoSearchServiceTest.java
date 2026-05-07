@@ -67,7 +67,7 @@ class TodoSearchServiceTest {
   @Test
   void 투두_최신순_목록_조회를_성공한다() {
     // given
-    TodoSearchRequest request = new TodoSearchRequest(null, null, size, null);
+    TodoSearchRequest request = new TodoSearchRequest(null, null, size, null, null);
 
     // when
     ScrollResponse<SimpleTodoSearchDto> response = todoSearchService.search(
@@ -89,7 +89,7 @@ class TodoSearchServiceTest {
   @Test
   void 기본_10개의_투두_목록_조회를_성공한다() {
     // given
-    TodoSearchRequest request = new TodoSearchRequest(null, null, null, null);
+    TodoSearchRequest request = new TodoSearchRequest(null, null, null, null, null);
     int defaultSize = 10;
 
     // when
@@ -114,7 +114,7 @@ class TodoSearchServiceTest {
     // given
     int expectedSize = 5;
     String nextCursor = String.valueOf(latestId - expectedSize + 1);
-    TodoSearchRequest request = new TodoSearchRequest(null, nextCursor, expectedSize, null);
+    TodoSearchRequest request = new TodoSearchRequest(null, nextCursor, expectedSize, null, null);
 
     // when
     ScrollResponse<SimpleTodoSearchDto> response = todoSearchService.search(
@@ -146,7 +146,8 @@ class TodoSearchServiceTest {
         null,
         null,
         size,
-        postponedTodo.getName()
+        postponedTodo.getName(),
+        null
     );
 
     // when
@@ -169,7 +170,7 @@ class TodoSearchServiceTest {
   void 사용자가_없으면_조회를_실패한다() {
     // given
     long invalidId = TodoFixture.getRandomId();
-    TodoSearchRequest request = new TodoSearchRequest(null, null, size, null);
+    TodoSearchRequest request = new TodoSearchRequest(null, null, size, null, null);
 
     // when
     ThrowingCallable search = () -> todoSearchService.search(invalidId, request);

@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -90,18 +91,20 @@ public class TodoEntity extends BaseEntity {
   private LocalDateTime postponedAt;
 
   public static TodoEntity from(Todo todo) {
+    Todo utcTodo = todo.convert(ZoneOffset.UTC);
+
     return TodoEntity.builder()
-        .id(todo.getId())
-        .goalId(todo.getGoalId())
-        .userId(todo.getUserId())
-        .repeatTodoId(todo.getRepeatTodoId())
-        .name(todo.getName())
-        .memo(todo.getMemo())
-        .status(todo.getStatus())
-        .postponedAt(todo.getPostponedAt())
-        .scheduledOn(todo.getScheduledOn())
-        .beginAt(todo.getBeginAt())
-        .endAt(todo.getEndAt())
+        .id(utcTodo.getId())
+        .goalId(utcTodo.getGoalId())
+        .userId(utcTodo.getUserId())
+        .repeatTodoId(utcTodo.getRepeatTodoId())
+        .name(utcTodo.getName())
+        .memo(utcTodo.getMemo())
+        .status(utcTodo.getStatus())
+        .postponedAt(utcTodo.getPostponedAt())
+        .scheduledOn(utcTodo.getScheduledOn())
+        .beginAt(utcTodo.getBeginAt())
+        .endAt(utcTodo.getEndAt())
         .build();
   }
 
@@ -122,14 +125,16 @@ public class TodoEntity extends BaseEntity {
   }
 
   public void update(Todo todo) {
-    this.goalId = todo.getGoalId();
-    this.name = todo.getName();
-    this.memo = todo.getMemo();
-    this.status = todo.getStatus();
-    this.postponedAt = todo.getPostponedAt();
-    this.scheduledOn = todo.getScheduledOn();
-    this.beginAt = todo.getBeginAt();
-    this.endAt = todo.getEndAt();
+    Todo utcTodo = todo.convert(ZoneOffset.UTC);
+
+    this.goalId = utcTodo.getGoalId();
+    this.name = utcTodo.getName();
+    this.memo = utcTodo.getMemo();
+    this.status = utcTodo.getStatus();
+    this.postponedAt = utcTodo.getPostponedAt();
+    this.scheduledOn = utcTodo.getScheduledOn();
+    this.beginAt = utcTodo.getBeginAt();
+    this.endAt = utcTodo.getEndAt();
   }
 
 }

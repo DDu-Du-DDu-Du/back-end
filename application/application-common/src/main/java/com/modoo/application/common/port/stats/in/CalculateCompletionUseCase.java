@@ -8,8 +8,12 @@ import java.util.List;
 public interface CalculateCompletionUseCase {
 
   @Deprecated
-  List<TodoCompletionResponse> calculateWeekly(Long loginId, Long userId, LocalDate date);
+  List<TodoCompletionResponse> calculateWeekly(
+      Long loginId, Long userId, LocalDate date, String timeZone
+  );
 
-  List<TodoCompletionResponse> calculateMonthly(Long loginId, Long userId, YearMonth yearMonth);
+  List<TodoCompletionResponse> calculateMonthly(
+      Long loginId, Long userId, YearMonth yearMonth, String timeZone
+  );
 
 }
