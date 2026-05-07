@@ -196,7 +196,7 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
     }
 
     return jpaQueryFactory
-        .select(projectionStatsBase())
+        .select(projectionStatsBase(todoEntity.scheduledOn))
         .from(todoEntity)
         .join(goalEntity)
         .on(todoEntity.goalId.eq(goalEntity.id))
@@ -224,14 +224,14 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
     }
 
     return jpaQueryFactory
-        .select(projectionStatsBase())
+        .select(projectionStatsBase(completionDate(false)))
         .from(todoEntity)
         .join(goalEntity)
         .on(todoEntity.goalId.eq(goalEntity.id))
         .where(condition)
         .orderBy(
-            todoEntity.scheduledOn.yearMonth()
-                .asc(), todoEntity.scheduledOn.asc(), todoEntity.status.asc()
+            completionDate(false).yearMonth()
+                .asc(), completionDate(false).asc(), todoEntity.status.asc()
         )
         .fetch();
   }
@@ -416,7 +416,9 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
     );
   }
 
-  private ConstructorExpression<BaseStats> projectionStatsBase() {
+  private ConstructorExpression<BaseStats> projectionStatsBase(
+      DateExpression<LocalDate> statsDate
+  ) {
     Expression<com.modoo.aggregate.enums.TodoStatus> status = ExpressionUtils.as(
         todoEntity.status.when(TodoStatus.COMPLETE)
             .then(com.modoo.aggregate.enums.TodoStatus.COMPLETE)
@@ -432,7 +434,7 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
         goalEntity.color.stringValue(),
         status,
         todoEntity.postponedAt.isNotNull(),
-        todoEntity.scheduledOn,
+        statsDate,
         todoEntity.beginAt,
         todoEntity.endAt
     );

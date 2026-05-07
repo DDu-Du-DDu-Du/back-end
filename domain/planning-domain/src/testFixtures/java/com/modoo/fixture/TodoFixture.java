@@ -30,22 +30,36 @@ public class TodoFixture extends BaseFixture {
       int reattainedCount,
       int totalPostponedCount
   ) {
+    return createReattainedTodosWithPostponedAt(
+        goal,
+        reattainedCount,
+        totalPostponedCount,
+        LocalDateTime.now()
+    );
+  }
+
+  public static List<Todo> createReattainedTodosWithPostponedAt(
+      Goal goal,
+      int reattainedCount,
+      int totalPostponedCount,
+      LocalDateTime postponedAt
+  ) {
     List<Todo> todos = new ArrayList<>();
 
     for (int i = 0; i < reattainedCount; i++) {
-      todos.add(createRandomTodoWithReference(
+      todos.add(createRandomTodoWithReferenceAndPostponedAt(
           goal.getId(),
           goal.getUserId(),
-          true,
+          postponedAt,
           TodoStatus.COMPLETE
       ));
     }
 
     for (int i = reattainedCount; i < totalPostponedCount; i++) {
-      todos.add(createRandomTodoWithReference(
+      todos.add(createRandomTodoWithReferenceAndPostponedAt(
           goal.getId(),
           goal.getUserId(),
-          true,
+          postponedAt,
           TodoStatus.UNCOMPLETED
       ));
     }
@@ -163,6 +177,20 @@ public class TodoFixture extends BaseFixture {
         .goalId(goalId)
         .userId(userId)
         .isPostponed(isPostponed)
+        .status(status)
+        .build();
+  }
+
+  public static Todo createRandomTodoWithReferenceAndPostponedAt(
+      Long goalId,
+      Long userId,
+      LocalDateTime postponedAt,
+      TodoStatus status
+  ) {
+    return getTodoBuilder()
+        .goalId(goalId)
+        .userId(userId)
+        .postponedAt(postponedAt)
         .status(status)
         .build();
   }

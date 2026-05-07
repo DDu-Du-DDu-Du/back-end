@@ -419,10 +419,12 @@ class CollectMonthlyStatsDetailServiceTest {
         totalPostponed = MonthlyStatsFixture.getRandomInt(1, totalCount);
         totalNotPostponed = totalCount - totalPostponed;
         reattained = MonthlyStatsFixture.getRandomInt(0, totalPostponed);
-        List<Todo> postponed = TodoFixture.createReattainedTodos(
+        List<Todo> postponed = TodoFixture.createReattainedTodosWithPostponedAt(
             goal,
             reattained,
-            totalPostponed
+            totalPostponed,
+            thisMonth.atDay(1)
+                .atStartOfDay()
         );
         List<Todo> notPostponed = TodoFixture.createTodosWithPostponedFlag(
             goal,
@@ -577,7 +579,13 @@ class CollectMonthlyStatsDetailServiceTest {
         size = TodoFixture.getRandomInt(1, 100);
         int reattained = TodoFixture.getRandomInt(0, size);
 
-        saveTodoPort.saveAll(TodoFixture.createReattainedTodos(goal, reattained, size));
+        saveTodoPort.saveAll(TodoFixture.createReattainedTodosWithPostponedAt(
+            goal,
+            reattained,
+            size,
+            thisMonth.atDay(1)
+                .atStartOfDay()
+        ));
       }
 
       @Test
@@ -596,8 +604,12 @@ class CollectMonthlyStatsDetailServiceTest {
         // then
         DayOfWeekStatsDto actual = response.dayOfWeekStats();
 
+        DayOfWeek postponedDay = thisMonth.atDay(1)
+            .getDayOfWeek();
+
         assertThat(actual.stats()).hasSize(DayOfWeek.values().length);
-        assertThat(actual.mostActiveDays()).isNotNull();
+        assertThat(actual.stats()).containsEntry(postponedDay, size);
+        assertThat(actual.mostActiveDays()).containsExactly(postponedDay);
       }
 
       @Test
@@ -636,7 +648,13 @@ class CollectMonthlyStatsDetailServiceTest {
         size = TodoFixture.getRandomInt(1, 50);
         int reattained = TodoFixture.getRandomInt(0, size);
 
-        saveTodoPort.saveAll(TodoFixture.createReattainedTodos(goal, reattained, size));
+        saveTodoPort.saveAll(TodoFixture.createReattainedTodosWithPostponedAt(
+            goal,
+            reattained,
+            size,
+            thisMonth.atDay(1)
+                .atStartOfDay()
+        ));
       }
 
       @Test
