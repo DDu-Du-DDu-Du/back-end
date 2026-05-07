@@ -3,7 +3,7 @@ package com.modoo.application.stats.service;
 import com.modoo.aggregate.MonthlyStats;
 import com.modoo.application.common.dto.stats.AchievedDetailOverviewDto;
 import com.modoo.application.common.dto.stats.DayOfWeekStatsDto;
-import com.modoo.application.common.dto.stats.GenericCalendarStats;
+import com.modoo.application.common.dto.stats.MonthlyCalendarStats;
 import com.modoo.application.common.dto.stats.PostponedDetailOverviewDto;
 import com.modoo.application.common.dto.stats.RepeatTodoStatsDto;
 import com.modoo.application.common.dto.stats.response.AchievedStatsDetailResponse;
@@ -22,6 +22,7 @@ import com.modoo.domain.user.user.aggregate.User;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -72,11 +73,9 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
         from,
         to
     );
-    GenericCalendarStats<TodoCompletionResponse> completions = getCalendarCompletions(
+    List<MonthlyCalendarStats<TodoCompletionResponse>> completions = getCalendarCompletions(
         fromMonth,
         toMonth,
-        from,
-        to,
         user,
         goal,
         IS_ACHIEVED
@@ -116,11 +115,9 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
     MonthlyStats reduced = collectPostponedStatsAtOnce(user.getId(), goal, fromMonth, to);
     PostponedDetailOverviewDto overview = createPostponedOverview(reduced);
     DayOfWeekStatsDto dayOfWeekStats = createDayOfWeekStats(reduced, IS_POSTPONED);
-    GenericCalendarStats<TodoCompletionResponse> calendarStats = getCalendarCompletions(
+    List<MonthlyCalendarStats<TodoCompletionResponse>> calendarStats = getCalendarCompletions(
         fromMonth,
         toMonth,
-        from,
-        to,
         user,
         goal,
         IS_POSTPONED
@@ -212,29 +209,32 @@ public class CollectMonthlyStatsDetailService implements CollectMonthlyStatsDeta
         .toList();
   }
 
-  private GenericCalendarStats<TodoCompletionResponse> getCalendarCompletions(
+  private List<MonthlyCalendarStats<TodoCompletionResponse>> getCalendarCompletions(
       YearMonth fromMonth,
       YearMonth toMonth,
-      LocalDate from,
-      LocalDate to,
       User user,
       Goal goal,
       boolean isAchieved
   ) {
-    if (toMonth.isAfter(fromMonth)) {
-      return GenericCalendarStats.from(false, Collections.emptyList());
+    List<MonthlyCalendarStats<TodoCompletionResponse>> calendarStats = new ArrayList<>();
+    YearMonth currentMonth = fromMonth;
+
+    while (!currentMonth.isAfter(toMonth)) {
+      calendarStats.add(MonthlyCalendarStats.from(
+          currentMonth,
+          todoStatsPort.calculateTodosCompletion(
+              currentMonth.atDay(1),
+              currentMonth.atEndOfMonth(),
+              user.getId(),
+              goal.getId(),
+              Collections.singletonList(PrivacyType.PUBLIC),
+              isAchieved
+          )
+      ));
+      currentMonth = currentMonth.plusMonths(1);
     }
 
-    List<TodoCompletionResponse> completions = todoStatsPort.calculateTodosCompletion(
-        from,
-        to,
-        user.getId(),
-        goal.getId(),
-        Collections.singletonList(PrivacyType.PUBLIC),
-        isAchieved
-    );
-
-    return GenericCalendarStats.from(true, completions);
+    return calendarStats;
   }
 
 }
