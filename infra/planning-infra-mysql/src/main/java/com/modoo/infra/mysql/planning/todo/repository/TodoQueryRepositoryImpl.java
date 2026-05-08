@@ -16,7 +16,6 @@ import com.modoo.domain.planning.goal.aggregate.enums.PrivacyType;
 import com.modoo.domain.planning.todo.aggregate.enums.TodoStatus;
 import com.modoo.infra.mysql.planning.todo.entity.TodoEntity;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
@@ -101,7 +100,17 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
     }
 
     if (!isAchieved) {
-      return fetchPostponedTodoCompletions(condition);
+      DateExpression<java.sql.Date> completionDate = postponedDate();
+
+      return jpaQueryFactory
+          .select(projectCompletion(todoEntity.postponedAt.min()))
+          .from(todoEntity)
+          .join(goalEntity)
+          .on(todoEntity.goalId.eq(goalEntity.id))
+          .where(condition)
+          .groupBy(completionDate)
+          .orderBy(completionDate.asc())
+          .fetch();
     }
 
     return jpaQueryFactory
@@ -228,7 +237,17 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
       condition.and(todoEntity.goalId.eq(goalId));
     }
 
-    return fetchPostponedStatsBase(condition);
+    return jpaQueryFactory
+        .select(projectionStatsBase(todoEntity.postponedAt))
+        .from(todoEntity)
+        .join(goalEntity)
+        .on(todoEntity.goalId.eq(goalEntity.id))
+        .where(condition)
+        .orderBy(
+            todoEntity.postponedAt.yearMonth()
+                .asc(), todoEntity.postponedAt.asc(), todoEntity.status.asc()
+        )
+        .fetch();
   }
 
   @Override
@@ -369,39 +388,8 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
     return todoEntity.scheduledOn.eq(date);
   }
 
-  private List<TodoCompletionResponse> fetchPostponedTodoCompletions(BooleanBuilder condition) {
-    DateExpression<java.sql.Date> completionDate = postponedDate();
-    NumberTemplate<Integer> totalTodosTemplate = totalTodosTemplate();
-    NumberTemplate<Integer> completedTodosTemplate = completedTodosTemplate();
-    NumberTemplate<Integer> uncompletedTodosTemplate = uncompletedTodosTemplate();
-
-    return jpaQueryFactory
-        .select(
-            completionDate,
-            totalTodosTemplate,
-            completedTodosTemplate,
-            uncompletedTodosTemplate
-        )
-        .from(todoEntity)
-        .join(goalEntity)
-        .on(todoEntity.goalId.eq(goalEntity.id))
-        .where(condition)
-        .groupBy(completionDate)
-        .orderBy(completionDate.asc())
-        .fetch()
-        .stream()
-        .map(row -> new TodoCompletionResponse(
-            row.get(completionDate)
-                .toLocalDate(),
-            row.get(totalTodosTemplate),
-            row.get(completedTodosTemplate),
-            row.get(uncompletedTodosTemplate)
-        ))
-        .toList();
-  }
-
   private ConstructorExpression<TodoCompletionResponse> projectCompletion(
-      DateExpression<LocalDate> completionDate
+      Expression<?> completionDate
   ) {
     return Projections.constructor(
         TodoCompletionResponse.class,
@@ -448,40 +436,8 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
     );
   }
 
-  private List<BaseStats> fetchPostponedStatsBase(BooleanBuilder condition) {
-    DateExpression<java.sql.Date> completionDate = postponedDate();
-    StringExpression goalColor = goalEntity.color.stringValue();
-    Expression<com.modoo.aggregate.enums.TodoStatus> status = statsStatus();
-    BooleanExpression isPostponed = todoEntity.postponedAt.isNotNull();
-
-    return jpaQueryFactory
-        .select(
-            todoEntity.id,
-            goalEntity.id,
-            goalEntity.name,
-            goalColor,
-            status,
-            isPostponed,
-            todoEntity.postponedAt,
-            todoEntity.beginAt,
-            todoEntity.endAt
-        )
-        .from(todoEntity)
-        .join(goalEntity)
-        .on(todoEntity.goalId.eq(goalEntity.id))
-        .where(condition)
-        .orderBy(
-            completionDate.yearMonth()
-                .asc(), completionDate.asc(), todoEntity.status.asc()
-        )
-        .fetch()
-        .stream()
-        .map(row -> toBaseStats(row, goalColor, status, isPostponed))
-        .toList();
-  }
-
   private ConstructorExpression<BaseStats> projectionStatsBase(
-      DateExpression<LocalDate> statsDate
+      Expression<?> statsDate
   ) {
     return Projections.constructor(
         BaseStats.class,
@@ -494,26 +450,6 @@ public class TodoQueryRepositoryImpl implements TodoQueryRepository {
         statsDate,
         todoEntity.beginAt,
         todoEntity.endAt
-    );
-  }
-
-  private BaseStats toBaseStats(
-      Tuple row,
-      StringExpression goalColor,
-      Expression<com.modoo.aggregate.enums.TodoStatus> status,
-      BooleanExpression isPostponed
-  ) {
-    return new BaseStats(
-        row.get(todoEntity.id),
-        row.get(goalEntity.id),
-        row.get(goalEntity.name),
-        row.get(goalColor),
-        row.get(status),
-        row.get(isPostponed),
-        row.get(todoEntity.postponedAt)
-            .toLocalDate(),
-        row.get(todoEntity.beginAt),
-        row.get(todoEntity.endAt)
     );
   }
 
