@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 
 import com.modoo.application.common.dto.stats.AchievedDetailOverviewDto;
 import com.modoo.application.common.dto.stats.DayOfWeekStatsDto;
-import com.modoo.application.common.dto.stats.GenericCalendarStats;
+import com.modoo.application.common.dto.stats.MonthlyCalendarStats;
 import com.modoo.application.common.dto.stats.PostponedDetailOverviewDto;
 import com.modoo.application.common.dto.stats.RepeatTodoStatsDto;
 import com.modoo.application.common.dto.stats.response.AchievedStatsDetailResponse;
@@ -337,7 +337,7 @@ class CollectMonthlyStatsDetailServiceTest {
       }
 
       @Test
-      void 단일월_요청이면_달력통계조회가_가능하다() {
+      void 단일월_요청이면_월별_달력통계를_반환한다() {
         // given
 
         // when
@@ -350,14 +350,17 @@ class CollectMonthlyStatsDetailServiceTest {
             );
 
         // then
-        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
+        List<MonthlyCalendarStats<TodoCompletionResponse>> actual = response.calendarStats();
 
-        assertThat(actual.isAvailable()).isTrue();
-        assertThat(actual.stats()).isNotNull();
+        assertThat(actual).hasSize(1);
+        assertThat(actual.get(0)
+            .yearMonth()).isEqualTo(thisMonth);
+        assertThat(actual.get(0)
+            .stats()).isNotNull();
       }
 
       @Test
-      void 단일월_요청이_아니면_달력통계가_불가능하다() {
+      void 복수월_요청이면_월별_달력통계를_반환한다() {
         // given
 
         // when
@@ -370,10 +373,12 @@ class CollectMonthlyStatsDetailServiceTest {
             );
 
         // then
-        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
+        List<MonthlyCalendarStats<TodoCompletionResponse>> actual = response.calendarStats();
 
-        assertThat(actual.isAvailable()).isFalse();
-        assertThat(actual.stats()).isEmpty();
+        assertThat(actual).hasSize(2);
+        assertThat(actual).extracting(MonthlyCalendarStats::yearMonth)
+            .containsExactly(thisMonth, nextMonth);
+        assertThat(actual).allSatisfy(stats -> assertThat(stats.stats()).isNotNull());
       }
 
     }
@@ -414,10 +419,12 @@ class CollectMonthlyStatsDetailServiceTest {
         totalPostponed = MonthlyStatsFixture.getRandomInt(1, totalCount);
         totalNotPostponed = totalCount - totalPostponed;
         reattained = MonthlyStatsFixture.getRandomInt(0, totalPostponed);
-        List<Todo> postponed = TodoFixture.createReattainedTodos(
+        List<Todo> postponed = TodoFixture.createReattainedTodosWithPostponedAt(
             goal,
             reattained,
-            totalPostponed
+            totalPostponed,
+            thisMonth.atDay(1)
+                .atStartOfDay()
         );
         List<Todo> notPostponed = TodoFixture.createTodosWithPostponedFlag(
             goal,
@@ -572,7 +579,13 @@ class CollectMonthlyStatsDetailServiceTest {
         size = TodoFixture.getRandomInt(1, 100);
         int reattained = TodoFixture.getRandomInt(0, size);
 
-        saveTodoPort.saveAll(TodoFixture.createReattainedTodos(goal, reattained, size));
+        saveTodoPort.saveAll(TodoFixture.createReattainedTodosWithPostponedAt(
+            goal,
+            reattained,
+            size,
+            thisMonth.atDay(1)
+                .atStartOfDay()
+        ));
       }
 
       @Test
@@ -591,8 +604,12 @@ class CollectMonthlyStatsDetailServiceTest {
         // then
         DayOfWeekStatsDto actual = response.dayOfWeekStats();
 
+        DayOfWeek postponedDay = thisMonth.atDay(1)
+            .getDayOfWeek();
+
         assertThat(actual.stats()).hasSize(DayOfWeek.values().length);
-        assertThat(actual.mostActiveDays()).isNotNull();
+        assertThat(actual.stats()).containsEntry(postponedDay, size);
+        assertThat(actual.mostActiveDays()).containsExactly(postponedDay);
       }
 
       @Test
@@ -631,11 +648,17 @@ class CollectMonthlyStatsDetailServiceTest {
         size = TodoFixture.getRandomInt(1, 50);
         int reattained = TodoFixture.getRandomInt(0, size);
 
-        saveTodoPort.saveAll(TodoFixture.createReattainedTodos(goal, reattained, size));
+        saveTodoPort.saveAll(TodoFixture.createReattainedTodosWithPostponedAt(
+            goal,
+            reattained,
+            size,
+            thisMonth.atDay(1)
+                .atStartOfDay()
+        ));
       }
 
       @Test
-      void 단일월_요청이면_달력통계조회가_가능하다() {
+      void 단일월_요청이면_월별_달력통계를_반환한다() {
         // given
 
         // when
@@ -648,14 +671,17 @@ class CollectMonthlyStatsDetailServiceTest {
             );
 
         // then
-        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
+        List<MonthlyCalendarStats<TodoCompletionResponse>> actual = response.calendarStats();
 
-        assertThat(actual.isAvailable()).isTrue();
-        assertThat(actual.stats()).isNotNull();
+        assertThat(actual).hasSize(1);
+        assertThat(actual.get(0)
+            .yearMonth()).isEqualTo(thisMonth);
+        assertThat(actual.get(0)
+            .stats()).isNotNull();
       }
 
       @Test
-      void 단일월_요청이_아니면_달력통계가_불가능하다() {
+      void 복수월_요청이면_월별_달력통계를_반환한다() {
         // given
 
         // when
@@ -668,14 +694,16 @@ class CollectMonthlyStatsDetailServiceTest {
             );
 
         // then
-        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
+        List<MonthlyCalendarStats<TodoCompletionResponse>> actual = response.calendarStats();
 
-        assertThat(actual.isAvailable()).isFalse();
-        assertThat(actual.stats()).isEmpty();
+        assertThat(actual).hasSize(2);
+        assertThat(actual).extracting(MonthlyCalendarStats::yearMonth)
+            .containsExactly(thisMonth, nextMonth);
+        assertThat(actual).allSatisfy(stats -> assertThat(stats.stats()).isNotNull());
       }
 
       @Test
-      void 단일월이지만_데이터가_없으면_Available_이면서_items는_빈_리스트다() {
+      void 단일월이지만_데이터가_없으면_월별_달력통계의_stats는_빈_리스트다() {
         // given
         YearMonth another = thisMonth.plusMonths(2);
 
@@ -689,10 +717,13 @@ class CollectMonthlyStatsDetailServiceTest {
             );
 
         // then
-        GenericCalendarStats<TodoCompletionResponse> actual = response.calendarStats();
+        List<MonthlyCalendarStats<TodoCompletionResponse>> actual = response.calendarStats();
 
-        assertThat(actual.isAvailable()).isTrue();
-        assertThat(actual.stats()).isEmpty();
+        assertThat(actual).hasSize(1);
+        assertThat(actual.get(0)
+            .yearMonth()).isEqualTo(another);
+        assertThat(actual.get(0)
+            .stats()).isEmpty();
       }
 
     }
