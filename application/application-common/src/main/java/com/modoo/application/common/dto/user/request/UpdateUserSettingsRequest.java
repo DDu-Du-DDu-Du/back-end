@@ -11,7 +11,9 @@ public record UpdateUserSettingsRequest(
 
   public record Display(
       String weekStartDay,
-      boolean isDarkMode
+      boolean isDarkMode,
+      String language,
+      String timeFormat
   ) {
 
   }

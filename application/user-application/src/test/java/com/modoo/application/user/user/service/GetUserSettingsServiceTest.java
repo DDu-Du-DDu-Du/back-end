@@ -41,6 +41,11 @@ class GetUserSettingsServiceTest {
         .weekStartDay()).isEqualTo(expected.getWeekStartDay());
     assertThat(actual.display()
         .isDarkMode()).isEqualTo(expected.isDarkMode());
+    assertThat(actual.display()
+        .language()).isEqualTo(expected.getLanguage());
+    assertThat(actual.display()
+        .timeFormat()).isEqualTo(expected.getTimeFormat()
+        .getCode());
     assertThat(actual.menuActivation()
         .calendar()
         .isActive())

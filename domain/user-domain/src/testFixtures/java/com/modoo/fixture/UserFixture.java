@@ -2,9 +2,11 @@ package com.modoo.fixture;
 
 import com.modoo.common.dto.Authority;
 import com.modoo.domain.user.user.aggregate.User;
+import com.modoo.domain.user.user.aggregate.enums.Language;
 import com.modoo.domain.user.user.aggregate.enums.ProviderType;
 import com.modoo.domain.user.user.aggregate.enums.RandomUserAdjective;
 import com.modoo.domain.user.user.aggregate.enums.RandomUserAnimal;
+import com.modoo.domain.user.user.aggregate.enums.TimeFormat;
 import com.modoo.domain.user.user.aggregate.enums.UserStatus;
 import com.modoo.domain.user.user.aggregate.enums.WeekStartDay;
 import com.modoo.domain.user.user.aggregate.vo.AppConnectionOptions;
@@ -92,6 +94,8 @@ public class UserFixture extends BaseFixture {
             .weekStartDay(getRandomWeekStartDay())
             .darkMode(faker.bool()
                 .bool())
+            .language(getRandomLanguage())
+            .timeFormat(getRandomTimeFormat())
             .build())
         .menuActivation(MenuActivationOptions.builder()
             .calendar(createRandomMenuActivationItem())
@@ -117,6 +121,8 @@ public class UserFixture extends BaseFixture {
             .weekStartDay(WeekStartDay.get(weekStartDay))
             .darkMode(faker.bool()
                 .bool())
+            .language(getRandomLanguage())
+            .timeFormat(getRandomTimeFormat())
             .build())
         .menuActivation(MenuActivationOptions.builder()
             .calendar(MenuActivationItem.builder()
@@ -200,6 +206,8 @@ public class UserFixture extends BaseFixture {
         .display(DisplayOptions.builder()
             .weekStartDay(user.getWeekStartDay())
             .darkMode(user.isDarkMode())
+            .language(user.getLanguage())
+            .timeFormat(user.getTimeFormat())
             .build())
         .menuActivation(MenuActivationOptions.builder()
             .calendar(MenuActivationItem.builder()
@@ -237,6 +245,18 @@ public class UserFixture extends BaseFixture {
     WeekStartDay[] weekStartDays = WeekStartDay.values();
     int index = getRandomInt(0, weekStartDays.length - 1);
     return weekStartDays[index];
+  }
+
+  private static Language getRandomLanguage() {
+    Language[] languages = Language.values();
+    int index = getRandomInt(0, languages.length - 1);
+    return languages[index];
+  }
+
+  private static TimeFormat getRandomTimeFormat() {
+    TimeFormat[] timeFormats = TimeFormat.values();
+    int index = getRandomInt(0, timeFormats.length - 1);
+    return timeFormats[index];
   }
 
   public static AuthProvider createRandomAuthProvider() {

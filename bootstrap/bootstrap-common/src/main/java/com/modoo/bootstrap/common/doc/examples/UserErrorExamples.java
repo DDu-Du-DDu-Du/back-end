@@ -16,4 +16,18 @@ public final class UserErrorExamples {
       }
       """;
 
+  public static final String USER_INVALID_LANGUAGE = """
+      {
+        "code": 1013,
+        "message": "언어는 KO 또는 EN만 입력할 수 있습니다."
+      }
+      """;
+
+  public static final String USER_INVALID_TIME_FORMAT = """
+      {
+        "code": 1014,
+        "message": "시간 형식은 12H 또는 24H만 입력할 수 있습니다."
+      }
+      """;
+
 }

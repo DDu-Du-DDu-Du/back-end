@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.modoo.common.dto.Authority;
 import com.modoo.common.exception.UserErrorCode;
 import com.modoo.domain.user.user.aggregate.User.UserBuilder;
+import com.modoo.domain.user.user.aggregate.enums.Language;
 import com.modoo.domain.user.user.aggregate.enums.RandomUserAdjective;
 import com.modoo.domain.user.user.aggregate.enums.RandomUserAnimal;
+import com.modoo.domain.user.user.aggregate.enums.TimeFormat;
 import com.modoo.domain.user.user.aggregate.enums.WeekStartDay;
 import com.modoo.fixture.UserFixture;
 import java.util.UUID;
@@ -213,6 +215,8 @@ class UserTest {
       assertThat(user.getWeekStartDay()
           .name()).isEqualTo("SUN");
       assertThat(user.isDarkMode()).isFalse();
+      assertThat(user.getLanguage()).isEqualTo(Language.EN);
+      assertThat(user.getTimeFormat()).isEqualTo(TimeFormat.TWELVE_HOUR);
       assertThat(user.isActiveCalendar()).isTrue();
       assertThat(user.getPriorityCalendar()).isEqualTo(1);
       assertThat(user.isActiveDashboard()).isTrue();
@@ -238,6 +242,8 @@ class UserTest {
       User actual = user.updateOptions(
           "mon",
           true,
+          "ko",
+          "24h",
           false,
           7,
           true,
@@ -252,6 +258,8 @@ class UserTest {
       // then
       assertThat(actual.getWeekStartDay()).isEqualTo(WeekStartDay.MON);
       assertThat(actual.isDarkMode()).isTrue();
+      assertThat(actual.getLanguage()).isEqualTo(Language.KO);
+      assertThat(actual.getTimeFormat()).isEqualTo(TimeFormat.TWENTY_FOUR_HOUR);
       assertThat(actual.isActiveCalendar()).isFalse();
       assertThat(actual.getPriorityCalendar()).isEqualTo(7);
       assertThat(actual.isRealtimeSyncNotion()).isTrue();

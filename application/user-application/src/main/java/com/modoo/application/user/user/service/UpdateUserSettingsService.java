@@ -30,6 +30,10 @@ public class UpdateUserSettingsService implements UpdateUserSettingsUseCase {
             .weekStartDay(),
         request.display()
             .isDarkMode(),
+        request.display()
+            .language(),
+        request.display()
+            .timeFormat(),
         request.menuActivation()
             .calendar()
             .isActive(),
@@ -63,6 +67,8 @@ public class UpdateUserSettingsService implements UpdateUserSettingsUseCase {
     return UserSettingsResponse.from(
         saved.getWeekStartDay(),
         saved.isDarkMode(),
+        saved.getLanguage(),
+        saved.getTimeFormat(),
         saved.isActiveCalendar(),
         saved.getPriorityCalendar(),
         saved.isActiveDashboard(),

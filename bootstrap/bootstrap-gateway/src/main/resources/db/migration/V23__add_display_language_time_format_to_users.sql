@@ -1,0 +1,3 @@
+ALTER TABLE users
+    ADD COLUMN language VARCHAR(2) NOT NULL DEFAULT 'EN' AFTER dark_mode,
+    ADD COLUMN time_format VARCHAR(3) NOT NULL DEFAULT '12H' AFTER language;

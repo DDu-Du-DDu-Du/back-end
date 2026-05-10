@@ -24,6 +24,8 @@ public class GetUserSettingsService implements GetUserSettingsUseCase {
     return UserSettingsResponse.from(
         user.getWeekStartDay(),
         user.isDarkMode(),
+        user.getLanguage(),
+        user.getTimeFormat(),
         user.isActiveCalendar(),
         user.getPriorityCalendar(),
         user.isActiveDashboard(),
