@@ -1,5 +1,7 @@
 package com.modoo.application.common.dto.user.response;
 
+import com.modoo.domain.user.user.aggregate.enums.Language;
+import com.modoo.domain.user.user.aggregate.enums.TimeFormat;
 import com.modoo.domain.user.user.aggregate.enums.WeekStartDay;
 import lombok.Builder;
 
@@ -13,6 +15,8 @@ public record UserSettingsResponse(
   public static UserSettingsResponse from(
       WeekStartDay weekStartDay,
       boolean isDarkMode,
+      Language language,
+      TimeFormat timeFormat,
       boolean isActiveCalendar,
       int priorityCalendar,
       boolean isActiveDashboard,
@@ -27,6 +31,8 @@ public record UserSettingsResponse(
         .display(Display.builder()
             .weekStartDay(weekStartDay)
             .isDarkMode(isDarkMode)
+            .language(language)
+            .timeFormat(timeFormat.getCode())
             .build())
         .menuActivation(MenuActivation.builder()
             .calendar(MenuActivationItem.builder()
@@ -55,7 +61,9 @@ public record UserSettingsResponse(
   @Builder
   public record Display(
       WeekStartDay weekStartDay,
-      boolean isDarkMode
+      boolean isDarkMode,
+      Language language,
+      String timeFormat
   ) {
 
   }

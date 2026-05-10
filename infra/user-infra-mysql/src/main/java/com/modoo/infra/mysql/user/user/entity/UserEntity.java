@@ -3,6 +3,8 @@ package com.modoo.infra.mysql.user.user.entity;
 import com.modoo.common.dto.Authority;
 import com.modoo.domain.user.user.aggregate.User;
 import com.modoo.domain.user.user.aggregate.User.UserBuilder;
+import com.modoo.domain.user.user.aggregate.enums.Language;
+import com.modoo.domain.user.user.aggregate.enums.TimeFormat;
 import com.modoo.domain.user.user.aggregate.enums.UserStatus;
 import com.modoo.domain.user.user.aggregate.enums.WeekStartDay;
 import com.modoo.domain.user.user.aggregate.vo.AppConnectionOptions;
@@ -13,7 +15,9 @@ import com.modoo.domain.user.user.aggregate.vo.MenuActivationOptions;
 import com.modoo.domain.user.user.aggregate.vo.Options;
 import com.modoo.domain.user.user.aggregate.vo.RealtimeSyncOptions;
 import com.modoo.infra.mysql.common.entity.BaseEntity;
+import com.modoo.infra.mysql.user.user.converter.TimeFormatConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -117,6 +121,23 @@ public class UserEntity extends BaseEntity {
   private boolean darkMode;
 
   @Column(
+      name = "language",
+      columnDefinition = "VARCHAR",
+      length = 2,
+      nullable = false
+  )
+  @Enumerated(EnumType.STRING)
+  private Language language;
+
+  @Column(
+      name = "time_format",
+      length = 3,
+      nullable = false
+  )
+  @Convert(converter = TimeFormatConverter.class)
+  private TimeFormat timeFormat;
+
+  @Column(
       name = "active_calendar",
       nullable = false
   )
@@ -184,6 +205,8 @@ public class UserEntity extends BaseEntity {
         .todoNotification(user.isNotifyingTodo())
         .weekStartDay(user.getWeekStartDay())
         .darkMode(user.isDarkMode())
+        .language(user.getLanguage())
+        .timeFormat(user.getTimeFormat())
         .activeCalendar(user.isActiveCalendar())
         .priorityCalendar(user.getPriorityCalendar())
         .activeDashboard(user.isActiveDashboard())
@@ -208,6 +231,8 @@ public class UserEntity extends BaseEntity {
     this.todoNotification = user.isNotifyingTodo();
     this.weekStartDay = user.getWeekStartDay();
     this.darkMode = user.isDarkMode();
+    this.language = user.getLanguage();
+    this.timeFormat = user.getTimeFormat();
     this.activeCalendar = user.isActiveCalendar();
     this.priorityCalendar = user.getPriorityCalendar();
     this.activeDashboard = user.isActiveDashboard();
@@ -256,6 +281,8 @@ public class UserEntity extends BaseEntity {
     return DisplayOptions.builder()
         .weekStartDay(weekStartDay)
         .darkMode(darkMode)
+        .language(language)
+        .timeFormat(timeFormat)
         .build();
   }
 

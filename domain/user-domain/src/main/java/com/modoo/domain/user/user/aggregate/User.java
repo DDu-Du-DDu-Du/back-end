@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.modoo.common.dto.Authority;
 import com.modoo.common.exception.UserErrorCode;
+import com.modoo.domain.user.user.aggregate.enums.Language;
+import com.modoo.domain.user.user.aggregate.enums.TimeFormat;
 import com.modoo.domain.user.user.aggregate.enums.UserStatus;
 import com.modoo.domain.user.user.aggregate.enums.WeekStartDay;
 import com.modoo.domain.user.user.aggregate.vo.AppConnectionOptions;
@@ -96,6 +98,16 @@ public class User {
         .isDarkMode();
   }
 
+  public Language getLanguage() {
+    return this.options.getDisplay()
+        .getLanguage();
+  }
+
+  public TimeFormat getTimeFormat() {
+    return this.options.getDisplay()
+        .getTimeFormat();
+  }
+
   public boolean isActiveCalendar() {
     return this.options.getMenuActivation()
         .getCalendar()
@@ -170,6 +182,8 @@ public class User {
   public User updateOptions(
       String weekStartDay,
       boolean isDarkMode,
+      String language,
+      String timeFormat,
       boolean isActiveCalendar,
       int priorityCalendar,
       boolean isActiveDashboard,
@@ -187,6 +201,8 @@ public class User {
         .display(DisplayOptions.builder()
             .weekStartDay(WeekStartDay.get(weekStartDay))
             .darkMode(isDarkMode)
+            .language(Language.get(language))
+            .timeFormat(TimeFormat.get(timeFormat))
             .build())
         .menuActivation(MenuActivationOptions.builder()
             .calendar(MenuActivationItem.builder()

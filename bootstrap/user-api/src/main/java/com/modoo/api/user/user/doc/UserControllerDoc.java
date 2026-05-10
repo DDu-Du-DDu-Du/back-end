@@ -64,6 +64,14 @@ public interface UserControllerDoc {
                       @ExampleObject(
                           name = "1012",
                           value = UserErrorExamples.USER_INVALID_WEEK_START_DAY
+                      ),
+                      @ExampleObject(
+                          name = "1013",
+                          value = UserErrorExamples.USER_INVALID_LANGUAGE
+                      ),
+                      @ExampleObject(
+                          name = "1014",
+                          value = UserErrorExamples.USER_INVALID_TIME_FORMAT
                       )
                   }
               )
@@ -116,6 +124,14 @@ public interface UserControllerDoc {
                       @ExampleObject(
                           name = "1012",
                           value = UserErrorExamples.USER_INVALID_WEEK_START_DAY
+                      ),
+                      @ExampleObject(
+                          name = "1013",
+                          value = UserErrorExamples.USER_INVALID_LANGUAGE
+                      ),
+                      @ExampleObject(
+                          name = "1014",
+                          value = UserErrorExamples.USER_INVALID_TIME_FORMAT
                       )
                   }
               )

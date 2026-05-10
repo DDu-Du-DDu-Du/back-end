@@ -17,7 +17,9 @@ public enum UserErrorCode implements ErrorCode {
   BLANK_PROVIDER_ID(1009, "존재하지 않는 소셜 유저 아이디입니다."),
   EXCESSIVE_PROFILE_IMAGE_URL_LENGTH(1010, "프로필 사진 URL이 최대 글자 수를 초과했습니다."),
   NO_TARGET_FOR_MY_INFO(1011, "존재하지 않는 사용자는 내 정보를 불러올 수 없습니다."),
-  INVALID_WEEK_START_DAY(1012, "주 시작 요일은 MON 또는 SUN만 입력할 수 있습니다.");
+  INVALID_WEEK_START_DAY(1012, "주 시작 요일은 MON 또는 SUN만 입력할 수 있습니다."),
+  INVALID_LANGUAGE(1013, "언어는 KO 또는 EN만 입력할 수 있습니다."),
+  INVALID_TIME_FORMAT(1014, "시간 형식은 12H 또는 24H만 입력할 수 있습니다.");
 
   private final int code;
   private final String message;

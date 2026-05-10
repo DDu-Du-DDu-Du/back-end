@@ -2,6 +2,8 @@ package com.modoo.domain.user.user.aggregate.vo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.modoo.domain.user.user.aggregate.enums.Language;
+import com.modoo.domain.user.user.aggregate.enums.TimeFormat;
 import com.modoo.domain.user.user.aggregate.enums.WeekStartDay;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -29,6 +31,8 @@ class OptionsTest {
           .display(DisplayOptions.builder()
               .weekStartDay(WeekStartDay.MON)
               .darkMode(true)
+              .language(Language.KO)
+              .timeFormat(TimeFormat.TWENTY_FOUR_HOUR)
               .build())
           .menuActivation(MenuActivationOptions.builder()
               .calendar(MenuActivationItem.builder()
@@ -61,6 +65,10 @@ class OptionsTest {
           .getWeekStartDay()).isEqualTo(WeekStartDay.MON);
       assertThat(actual.getDisplay()
           .isDarkMode()).isTrue();
+      assertThat(actual.getDisplay()
+          .getLanguage()).isEqualTo(Language.KO);
+      assertThat(actual.getDisplay()
+          .getTimeFormat()).isEqualTo(TimeFormat.TWENTY_FOUR_HOUR);
       assertThat(actual.getMenuActivation()
           .getCalendar()
           .isActive()).isFalse();
@@ -94,6 +102,10 @@ class OptionsTest {
           .getWeekStartDay()).isEqualTo(WeekStartDay.SUN);
       assertThat(actual.getDisplay()
           .isDarkMode()).isFalse();
+      assertThat(actual.getDisplay()
+          .getLanguage()).isEqualTo(Language.EN);
+      assertThat(actual.getDisplay()
+          .getTimeFormat()).isEqualTo(TimeFormat.TWELVE_HOUR);
       assertThat(actual.getMenuActivation()
           .getCalendar()
           .isActive()).isTrue();

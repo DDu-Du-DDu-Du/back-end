@@ -7,6 +7,7 @@ import com.modoo.application.common.dto.user.response.UserSettingsResponse;
 import com.modoo.application.common.port.user.out.UserCommandPort;
 import com.modoo.common.exception.UserErrorCode;
 import com.modoo.domain.user.user.aggregate.User;
+import com.modoo.domain.user.user.aggregate.enums.Language;
 import com.modoo.domain.user.user.aggregate.enums.WeekStartDay;
 import com.modoo.fixture.UserFixture;
 import java.util.MissingResourceException;
@@ -56,6 +57,10 @@ class UpdateUserSettingsServiceTest {
         .weekStartDay()).isEqualTo(WeekStartDay.MON);
     assertThat(actual.display()
         .isDarkMode()).isTrue();
+    assertThat(actual.display()
+        .language()).isEqualTo(Language.KO);
+    assertThat(actual.display()
+        .timeFormat()).isEqualTo("24H");
     assertThat(actual.menuActivation()
         .calendar()
         .isActive()).isFalse();
@@ -95,7 +100,7 @@ class UpdateUserSettingsServiceTest {
       int priority
   ) {
     return UpdateUserSettingsRequest.builder()
-        .display(new UpdateUserSettingsRequest.Display(weekStartDay, darkMode))
+        .display(new UpdateUserSettingsRequest.Display(weekStartDay, darkMode, "ko", "24h"))
         .menuActivation(new UpdateUserSettingsRequest.MenuActivation(
             new UpdateUserSettingsRequest.MenuActivation.MenuActivationItem(isActive, priority),
             new UpdateUserSettingsRequest.MenuActivation.MenuActivationItem(true, priority + 1),

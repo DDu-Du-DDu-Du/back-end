@@ -2,6 +2,8 @@ package com.modoo.domain.user.user.aggregate.vo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.modoo.domain.user.user.aggregate.enums.Language;
+import com.modoo.domain.user.user.aggregate.enums.TimeFormat;
 import com.modoo.domain.user.user.aggregate.enums.WeekStartDay;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -21,6 +23,8 @@ class OptionSubVoTest {
     // then
     assertThat(actual.getWeekStartDay()).isEqualTo(WeekStartDay.SUN);
     assertThat(actual.isDarkMode()).isFalse();
+    assertThat(actual.getLanguage()).isEqualTo(Language.EN);
+    assertThat(actual.getTimeFormat()).isEqualTo(TimeFormat.TWELVE_HOUR);
   }
 
   @Test
